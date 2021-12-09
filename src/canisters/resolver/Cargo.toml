@@ -1,0 +1,26 @@
+[package]
+name = "resolver"
+version = "0.1.0"
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+ic-cdk = "0.3.3"
+ic-cdk-macros = "0.3.3"
+candid = "0.7.8"
+serde = "1.0.130"
+serde_bytes = "0.11"
+common = { path = "../common" }
+log = "0.4"
+url = "2.2.2"
+
+
+[dev-dependencies]
+env_logger = "0.9.0"
+test_common = { path = "../test_common" }
+async-std = { version = "1.10", features = ["attributes"] }
+rstest = "0.11.0"

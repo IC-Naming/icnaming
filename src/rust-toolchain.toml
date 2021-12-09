@@ -1,0 +1,10 @@
+[toolchain]
+channel = "stable"
+components = [
+    "rustc",
+    "rust-std",
+    "rustfmt",
+    #    "llvm-tools-preview",
+]
+targets = ["wasm32-unknown-unknown"]
+profile = "minimal"

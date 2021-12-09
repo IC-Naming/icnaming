@@ -1,0 +1,13 @@
+[workspace]
+members = [
+    "canisters/common",
+    "canisters/registrar",
+    "canisters/registry",
+    "canisters/favorites",
+    "canisters/resolver",
+    "canisters/test_common",
+]
+
+
+[profile.release]
+lto = true

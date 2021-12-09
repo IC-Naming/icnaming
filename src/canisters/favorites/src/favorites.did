@@ -1,0 +1,8 @@
+type ErrorInfo = record { code : nat32; message : text };
+type Result = variant { Ok : bool; Err : ErrorInfo };
+type Result_1 = variant { Ok : vec text; Err : ErrorInfo };
+service : {
+  add_favorite : (text) -> (Result);
+  get_favorites : () -> (Result_1) query;
+  remove_favorite : (text) -> (Result);
+}

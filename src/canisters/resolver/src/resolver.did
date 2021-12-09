@@ -1,0 +1,8 @@
+type ErrorInfo = record { code : nat32; message : text };
+type Result = variant { Ok : bool; Err : ErrorInfo };
+type Result_1 = variant { Ok : vec record { text; text }; Err : ErrorInfo };
+service : {
+  ensure_resolver_created : (text) -> (Result);
+  get_record_value : (text) -> (Result_1) query;
+  set_record_value : (text, vec record { text; text }) -> (Result);
+}

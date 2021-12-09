@@ -1,0 +1,50 @@
+name: build
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+    container: 
+      image: docker.io/kentsday/dfx_rust:bullseye
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      # - name: setup dfx
+      #   run: |
+      #     sh -ci "$(curl -fsSL https://sdk.dfinity.org/install.sh)"
+      # - name: Install toolchain
+      #   uses: actions-rs/toolchain@v1
+      #   with:
+      #     profile: minimal
+      #     toolchain: stable
+      #     override: true
+      #     components: rustfmt, clippy
+      - name: install canister
+        run: |
+          cd $GITHUB_WORKSPACE/src
+          chmod a+x ./sh_start.sh
+          chmod a+x ./sh_deploy.sh
+          ./sh_start.sh
+
+          dfx stop
+      - name: create package
+        run: |
+          cd $GITHUB_WORKSPACE/src
+          pipenv install
+          pipenv run invoke package
+      - name:  unit test
+        run: |
+          cd $GITHUB_WORKSPACE/src
+          cargo test

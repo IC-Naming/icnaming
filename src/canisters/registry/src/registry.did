@@ -1,0 +1,28 @@
+type ErrorInfo = record { code : nat32; message : text };
+type GetPageInput = record { offset : nat64; limit : nat64 };
+type GetPageOutput = record { items : vec text };
+type RegistryDto = record {
+  ttl : nat64;
+  resolver : principal;
+  owner : principal;
+  name : text;
+};
+type RegistryUsers = record { owner : principal; operators : vec principal };
+type Result = variant { Ok : GetPageOutput; Err : ErrorInfo };
+type Result_1 = variant { Ok : RegistryDto; Err : ErrorInfo };
+type Result_2 = variant { Ok : principal; Err : ErrorInfo };
+type Result_3 = variant { Ok : nat64; Err : ErrorInfo };
+type Result_4 = variant { Ok : RegistryUsers; Err : ErrorInfo };
+type Result_5 = variant { Ok : bool; Err : ErrorInfo };
+service : {
+  get_controlled_names : (principal, GetPageInput) -> (Result) query;
+  get_details : (text) -> (Result_1) query;
+  get_owner : (text) -> (Result_2) query;
+  get_resolver : (text) -> (Result_2) query;
+  get_ttl : (text) -> (Result_3) query;
+  get_users : (text) -> (Result_4) query;
+  set_approval : (text, principal, bool) -> (Result_5);
+  set_record : (text, nat64, principal) -> (Result_5);
+  set_subdomain_owner : (text, text, principal, nat64, principal) -> (Result_1);
+  set_top_name : () -> (Result_5);
+}

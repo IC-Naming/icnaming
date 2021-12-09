@@ -1,0 +1,11 @@
+version: "3.4"
+services:
+  icnaming:
+    image: kentsday/dfx_rust
+    ports:
+      - "2222:22"
+      - "18000:8000"
+    volumes:
+      - ./:/root/src
+      - /root/src/.dfx/
+

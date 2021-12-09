@@ -1,0 +1,4 @@
+# Configuration for labeler - https://github.com/actions/labeler
+
+📖 Canister: src/canisters/**/*
+Actions: .github/workflows/**/*

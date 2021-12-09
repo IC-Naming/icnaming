@@ -1,0 +1,46 @@
+{
+  "canisters": {
+    "registry": {
+      "type": "rust",
+      "package": "registry",
+      "candid": "canisters/registry/src/registry.did"
+    },
+    "registrar": {
+      "type": "rust",
+      "package": "registrar",
+      "candid": "canisters/registrar/src/registrar.did",
+      "dependencies": [
+        "registry"
+      ]
+    },
+    "resolver": {
+      "type": "rust",
+      "package": "resolver",
+      "candid": "canisters/resolver/src/resolver.did",
+      "dependencies": [
+        "registry"
+      ]
+    },
+    "favorites": {
+      "type": "rust",
+      "package": "favorites",
+      "candid": "canisters/favorites/src/favorites.did"
+    }
+  },
+  "defaults": {
+    "build": {
+      "packtool": ""
+    }
+  },
+  "networks": {
+    "ic": {
+      "providers": ["https://ic0.app"],
+      "type": "persistent"
+    },
+    "local": {
+      "bind": "127.0.0.1:8000",
+      "type": "ephemeral"
+    }
+  },
+  "version": 1
+}

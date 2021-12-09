@@ -1,0 +1,27 @@
+type ErrorInfo = record { code : nat32; message : text };
+type GetPageInput = record { offset : nat64; limit : nat64 };
+type GetPageOutput = record { items : vec RegistrationDto };
+type RegistrationDetails = record {
+  owner : principal;
+  name : text;
+  created_at : nat64;
+  expired_at : nat64;
+};
+type RegistrationDto = record {
+  name : text;
+  created_at : nat64;
+  expired_at : nat64;
+};
+type Result = variant { Ok : bool; Err : ErrorInfo };
+type Result_1 = variant { Ok : RegistrationDetails; Err : ErrorInfo };
+type Result_2 = variant { Ok : nat64; Err : ErrorInfo };
+type Result_3 = variant { Ok : GetPageOutput; Err : ErrorInfo };
+type Result_4 = variant { Ok : principal; Err : ErrorInfo };
+service : {
+  available : (text) -> (Result) query;
+  get_details : (text) -> (Result_1) query;
+  get_name_expires : (text) -> (Result_2) query;
+  get_names : (principal, GetPageInput) -> (Result_3) query;
+  get_owner : (text) -> (Result_4) query;
+  register_for : (text, principal, nat64) -> (Result);
+}
