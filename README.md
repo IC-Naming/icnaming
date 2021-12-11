@@ -1,6 +1,10 @@
-# IC Naming
+<div align="center">
+<img src="asset/ICNAMING2-512.png" width="128" >
+<h1>IC Naming</h1>
+</div>
 
-This repository contains the canister and canister-related components of IC Naming. You can own your web3 name on IC with IC Naming.
+This repository contains the canister and canister-related components of IC Naming. 
+You can own your web3 name with IC Naming.
 
 ## Development
 
