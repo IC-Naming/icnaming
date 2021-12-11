@@ -1,5 +1,5 @@
 <div align="center">
-<img src="asset/ICNAMING2-512.png" width="128" >
+<img src="asset/icnaming_logo.png" width="128" >
 <h1>IC Naming</h1>
 </div>
 
