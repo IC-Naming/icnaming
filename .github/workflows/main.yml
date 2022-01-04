@@ -31,19 +31,19 @@ jobs:
       #     toolchain: stable
       #     override: true
       #     components: rustfmt, clippy
-      # - name: install canister
-      #   run: |
-      #     cd $GITHUB_WORKSPACE/src
-      #     chmod a+x ./sh_start.sh
-      #     chmod a+x ./sh_deploy.sh
-      #     ./sh_start.sh
+      - name: install canister
+        run: |
+          cd $GITHUB_WORKSPACE/src
+          chmod a+x ./sh_start.sh
+          chmod a+x ./sh_deploy.sh
+          ./sh_start.sh
 
-      #     dfx stop
-      # - name: create package
-      #   run: |
-      #     cd $GITHUB_WORKSPACE/src
-      #     pipenv install
-      #     pipenv run invoke package
+          dfx stop
+      - name: create package
+        run: |
+          cd $GITHUB_WORKSPACE/src
+          pipenv install
+          pipenv run invoke package
       - name:  unit test
         run: |
           cd $GITHUB_WORKSPACE/src
