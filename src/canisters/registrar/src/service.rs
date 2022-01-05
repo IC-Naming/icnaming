@@ -12,7 +12,7 @@ use common::errors::{ICNSError, ICNSResult};
 use common::ic_api::wrapper::ICStaticApi;
 use common::ic_api::IClock;
 use common::naming::{normalize_name, NameParseResult};
-use common::state::{get_principal, is_owner, NAMED_PRINCIPALS};
+use common::state::{get_principal, is_owner};
 
 use crate::models::*;
 use crate::state::{REGISTRATIONS, SETTINGS, USER_QUOTA_MANAGER};

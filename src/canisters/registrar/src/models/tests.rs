@@ -1,10 +1,5 @@
-use std::sync::Arc;
-
 use candid::Principal;
 use rstest::*;
-
-use test_common::canister_api::*;
-use test_common::ic_api::init_test;
 
 use super::*;
 
