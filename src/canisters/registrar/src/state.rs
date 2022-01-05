@@ -2,7 +2,7 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::ops::Deref;
 
-use candid::{CandidType, Deserialize};
+use candid::{CandidType, Deserialize, Principal};
 use ic_cdk::{api, storage};
 use ic_cdk_macros::*;
 use log::info;
@@ -21,6 +21,7 @@ mod models;
 thread_local! {
     pub static SETTINGS : RefCell<Settings> = RefCell::new(Settings::new());
     pub static REGISTRATIONS: RefCell<HashMap<String, Registration>> = RefCell::new(HashMap::new());
+    pub static USER_QUOTA_MANAGER: RefCell<UserQuotaManager> = RefCell::new(UserQuotaManager::new());
 }
 
 #[derive(Debug, Clone, CandidType, Deserialize)]
@@ -28,6 +29,7 @@ struct UpgradePayloadStable {
     named_principals: NamedPrincipalStable,
     registrations: HashMap<String, RegistrationStable>,
     settings: SettingsStable,
+    user_quotas: Option<Vec<(Principal, QuotaType, u32)>>,
 }
 
 #[init]
@@ -49,6 +51,10 @@ fn pre_upgrade() {
         settings: SETTINGS.with(|s| {
             let settings = s.borrow();
             SettingsStable::from(settings.deref())
+        }),
+        user_quotas: USER_QUOTA_MANAGER.with(|u| {
+            let u = u.borrow();
+            Some(u.get_quotas())
         }),
     },))
     {
@@ -85,6 +91,14 @@ fn post_upgrade() {
                 let mut settings = state.borrow_mut();
                 *settings = Settings::from(&settings_stable);
             });
+
+            if let Some(user_quotas) = payload.user_quotas {
+                USER_QUOTA_MANAGER.with(|state| {
+                    let mut uqm = state.borrow_mut();
+                    uqm.load_quotas(user_quotas);
+                });
+            }
+
             info!("Loaded state after upgrade");
         }
         Err(e) => api::trap(format!("Failed to restored state after upgrade: {:?}", e).as_str()),

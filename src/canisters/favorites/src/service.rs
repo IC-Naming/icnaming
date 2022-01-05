@@ -2,7 +2,7 @@ use ic_kit::Principal;
 
 use common::constants::{MAX_COUNT_USER_FAVORITES, MAX_LENGTH_USER_FAVORITES};
 use common::errors::ICNSError::{
-    InvalidName, PermissionDenied, TooManyFavorites, Unauthorized, ValueMaxLengthError,
+    InvalidName, TooManyFavorites, Unauthorized, ValueMaxLengthError,
 };
 use common::errors::ICNSResult;
 use common::naming::{normalize_name, parse_name};

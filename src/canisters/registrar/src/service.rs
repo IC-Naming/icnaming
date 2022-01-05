@@ -12,10 +12,10 @@ use common::errors::{ICNSError, ICNSResult};
 use common::ic_api::wrapper::ICStaticApi;
 use common::ic_api::IClock;
 use common::naming::{normalize_name, NameParseResult};
-use common::state::get_principal;
+use common::state::{get_principal, is_owner};
 
 use crate::models::*;
-use crate::state::{REGISTRATIONS, SETTINGS};
+use crate::state::{REGISTRATIONS, SETTINGS, USER_QUOTA_MANAGER};
 
 #[cfg(test)]
 mod tests;
@@ -24,6 +24,8 @@ pub struct RegistrarService {
     pub registry_api: Arc<dyn IRegistryApi>,
     pub clock: Arc<dyn IClock>,
 }
+
+impl RegistrarService {}
 
 impl Debug for RegistrarService {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
@@ -107,6 +109,39 @@ impl RegistrarService {
     pub fn normalize_name(&self, name: &str) -> String {
         normalize_name(name)
     }
+
+    pub fn validate_quota(
+        &self,
+        name: &NameParseResult,
+        owner: &Principal,
+        quota_type: &QuotaType,
+    ) -> Result<(), String> {
+        let first = name.get_current_level().unwrap();
+        match quota_type {
+            QuotaType::LenEq(len) => {
+                if first.chars().count() != len.clone() as usize {
+                    return Err(format!("Name must be exactly {} characters long", len));
+                }
+            }
+            QuotaType::LenGte(len) => {
+                if first.chars().count() < len.clone() as usize {
+                    return Err(format!("Name must be at least {} characters long", len));
+                }
+            }
+        }
+        let result = USER_QUOTA_MANAGER.with(|user_quota_manager| {
+            let user_quota_manager = user_quota_manager.borrow();
+            let quota = user_quota_manager
+                .get_quota(owner, &quota_type)
+                .unwrap_or(0);
+            if quota == 0 {
+                return Err(format!("User has no quota for {}", quota_type));
+            }
+            return Ok(());
+        });
+        result
+    }
+
     pub fn validate_name(&self, name: &str) -> Result<NameParseResult, String> {
         let result = NameParseResult::parse(name);
         if result.get_level_count() != 2 {
@@ -119,9 +154,7 @@ impl RegistrarService {
         if first.len() > 63 {
             return Err("second level name must be less than 64 characters".to_string());
         }
-        if first.len() < 4 {
-            return Err("second level name must be more than 3 characters".to_string());
-        }
+
         if !first.chars().all(|c| c.is_ascii_alphanumeric() || c == '-') {
             return Err("name must be alphanumeric or -".to_string());
         }
@@ -134,17 +167,38 @@ impl RegistrarService {
         owner: &Principal,
         years: u64,
         now_in_ms: u64,
+        quota_owner: &Principal,
+        quota_type: QuotaType,
     ) -> ICNSResult<bool> {
         let name = self.normalize_name(&name);
-        let result = self.validate_name(&name);
-        if result.is_err() {
+
+        // validate name
+        let name_result = self.validate_name(&name);
+        if name_result.is_err() {
             return Err(ICNSError::InvalidName {
-                reason: result.err().unwrap().to_string(),
+                reason: name_result.err().unwrap().to_string(),
             });
         }
+        let name_result = name_result.unwrap();
+
+        // validate user
         if *owner == Principal::anonymous() {
             return Err(ICNSError::InvalidOwner);
         }
+
+        // validate quota_owner
+        if *quota_owner == Principal::anonymous() {
+            return Err(ICNSError::InvalidOwner);
+        }
+
+        // validate quota
+        let quota_result = self.validate_quota(&name_result, quota_owner, &quota_type);
+        if quota_result.is_err() {
+            return Err(ICNSError::InvalidName {
+                reason: quota_result.err().unwrap().to_string(),
+            });
+        }
+
         REGISTRATIONS.with(|registrations| {
             let registrations = registrations.borrow();
             if registrations.contains_key(&name) {
@@ -164,6 +218,13 @@ impl RegistrarService {
             Ok(())
         })?;
 
+        // update quota before await in case of concurrent register
+        USER_QUOTA_MANAGER.with(|user_quota_manager| {
+            let mut user_quota_manager = user_quota_manager.borrow_mut();
+            let result = user_quota_manager.sub_quota(quota_owner, &quota_type, 1);
+            assert_eq!(result, true);
+        });
+
         // TODO adjusts to date format w/o seconds
         // keep date for now_in_ms
         let expired_at = now_in_ms + year_to_ms(years);
@@ -172,7 +233,7 @@ impl RegistrarService {
         let api_result = self
             .registry_api
             .set_subdomain_owner(
-                result.unwrap().get_current_level().unwrap().clone(),
+                name_result.get_current_level().unwrap().clone(),
                 TOP_LABEL.to_string(),
                 owner.clone(),
                 DEFAULT_TTL,
@@ -186,6 +247,11 @@ impl RegistrarService {
             });
             Ok(true)
         } else {
+            // rollback quota
+            USER_QUOTA_MANAGER.with(|user_quota_manager| {
+                let mut user_quota_manager = user_quota_manager.borrow_mut();
+                user_quota_manager.add_quota(quota_owner.clone(), quota_type, 1);
+            });
             Err(RemoteError(api_result.err().unwrap()))
         }
     }
@@ -209,6 +275,57 @@ impl RegistrarService {
 
     pub fn clean_expired(&mut self, _now_in_ms: u64) -> ICNSResult<()> {
         todo!("clean up")
+    }
+
+    pub fn add_quota(
+        &mut self,
+        caller: &Principal,
+        quota_owner: Principal,
+        quota_type: QuotaType,
+        diff: u32,
+    ) -> ICNSResult<bool> {
+        if !is_owner(caller) {
+            return Err(ICNSError::OwnerOnly);
+        };
+        USER_QUOTA_MANAGER.with(|user_quota_manager| {
+            let mut user_quota_manager = user_quota_manager.borrow_mut();
+            user_quota_manager.add_quota(quota_owner, quota_type, diff);
+        });
+        Ok(true)
+    }
+
+    pub fn sub_quota(
+        &mut self,
+        caller: &Principal,
+        quota_owner: Principal,
+        quota_type: QuotaType,
+        diff: u32,
+    ) -> ICNSResult<bool> {
+        if !is_owner(caller) {
+            return Err(ICNSError::OwnerOnly);
+        };
+        USER_QUOTA_MANAGER.with(|user_quota_manager| {
+            let mut user_quota_manager = user_quota_manager.borrow_mut();
+            user_quota_manager.sub_quota(&quota_owner, &quota_type, diff);
+        });
+        Ok(true)
+    }
+
+    pub fn get_quota(
+        &self,
+        caller: &Principal,
+        quota_owner: Principal,
+        quota_type: QuotaType,
+    ) -> ICNSResult<u32> {
+        if !is_owner(caller) {
+            return Err(ICNSError::OwnerOnly);
+        };
+        USER_QUOTA_MANAGER.with(|user_quota_manager| {
+            let user_quota_manager = user_quota_manager.borrow();
+            Ok(user_quota_manager
+                .get_quota(&quota_owner, &quota_type)
+                .unwrap_or(0))
+        })
     }
 }
 
