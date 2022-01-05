@@ -39,7 +39,35 @@ async fn register_for(name: String, owner: Principal, years: u64) -> ICNSActorRe
 
     let mut service = RegistrarService::new();
     let result = service
-        .register(&name, &owner, years, api::time() / 1_000_000)
+        .register(
+            &name,
+            &owner,
+            years,
+            api::time() / 1_000_000,
+            caller,
+            QuotaType::LenGte(4),
+        )
+        .await;
+    to_actor_result(result)
+}
+
+#[update(name = "register_with_quota")]
+#[candid_method(update, rename = "register_with_quota")]
+async fn register_with_quota(name: String, quota_type: QuotaType) -> ICNSActorResult<bool> {
+    let caller = &ic_caller();
+    debug!("register_with_quota: caller: {}", caller);
+
+    let mut service = RegistrarService::new();
+    let years = 1;
+    let result = service
+        .register(
+            &name,
+            &caller,
+            years,
+            api::time() / 1_000_000,
+            &caller,
+            quota_type,
+        )
         .await;
     to_actor_result(result)
 }
@@ -68,6 +96,39 @@ fn get_owner(name: String) -> ICNSActorResult<Principal> {
 fn get_details(name: String) -> ICNSActorResult<RegistrationDetails> {
     let service = RegistrarService::new();
     let result = service.get_details(&name);
+    to_actor_result(result)
+}
+
+#[update(name = "add_quota")]
+#[candid_method(update, rename = "add_quota")]
+fn add_quota(quota_owner: Principal, quota_type: QuotaType, diff: u32) -> ICNSActorResult<bool> {
+    let caller = &ic_caller();
+    debug!("add_quota: caller: {}", caller);
+
+    let mut service = RegistrarService::new();
+    let result = service.add_quota(caller, quota_owner, quota_type, diff);
+    to_actor_result(result)
+}
+
+#[update(name = "sub_quota")]
+#[candid_method(update, rename = "sub_quota")]
+fn sub_quota(quota_owner: Principal, quota_type: QuotaType, diff: u32) -> ICNSActorResult<bool> {
+    let caller = &ic_caller();
+    debug!("sub_quota: caller: {}", caller);
+
+    let mut service = RegistrarService::new();
+    let result = service.sub_quota(caller, quota_owner, quota_type, diff);
+    to_actor_result(result)
+}
+
+#[query(name = "get_quota")]
+#[candid_method(query, rename = "get_quota")]
+fn get_quota(quota_owner: Principal, quota_type: QuotaType) -> ICNSActorResult<u32> {
+    let caller = &ic_caller();
+    debug!("sub_quota: caller: {}", caller);
+
+    let service = RegistrarService::new();
+    let result = service.get_quota(caller, quota_owner, quota_type);
     to_actor_result(result)
 }
 

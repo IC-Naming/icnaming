@@ -9,11 +9,7 @@ use test_common::ic_api::init_test;
 
 use super::*;
 
-#[fixture]
-fn service() -> RegistrarService {
-    let service = RegistrarService::new();
-    service
-}
+const TEST_QUOTA: QuotaType = QuotaType::LenGte(4);
 
 #[fixture]
 fn owner() -> Principal {
@@ -21,8 +17,30 @@ fn owner() -> Principal {
 }
 
 #[fixture]
+fn quota_owner() -> Principal {
+    Principal::from_text("5i47k-cqaaa-aaaak-qaddq-cai").unwrap()
+}
+
+#[fixture]
 fn default_resolver() -> Principal {
     owner()
+}
+
+#[fixture]
+fn service(_init_test: (), quota_owner: Principal) -> RegistrarService {
+    USER_QUOTA_MANAGER.with(|m| {
+        let mut m = m.borrow_mut();
+        m.add_quota(quota_owner, TEST_QUOTA, 1);
+    });
+    let service = RegistrarService::new();
+    service
+}
+
+fn assert_quota_count(quota_owner: &Principal, count: u32) {
+    USER_QUOTA_MANAGER.with(|m| {
+        let m = m.borrow();
+        assert_eq!(m.get_quota(quota_owner, &TEST_QUOTA).unwrap_or(0), count);
+    });
 }
 
 mod normalized {
@@ -34,12 +52,7 @@ mod normalized {
     #[case(" trim_blank ", "trim_blank")]
     #[case(" TOLOWER ", "tolower")]
     #[case(" 你好 ", "你好")]
-    fn test_normalized(
-        _init_test: (),
-        service: RegistrarService,
-        #[case] input: &str,
-        #[case] expected: &str,
-    ) {
+    fn test_normalized(service: RegistrarService, #[case] input: &str, #[case] expected: &str) {
         let normalized = service.normalize_name(input);
         assert_eq!(normalized, expected);
     }
@@ -49,7 +62,6 @@ mod validate_name {
     use super::*;
 
     #[rstest]
-    #[trace]
     #[case("nice.icp", Ok(NameParseResult::parse("nice.icp")))]
     #[case("ni-e.icp", Ok(NameParseResult::parse("ni-e.icp")))]
     #[case("n1-e.icp", Ok(NameParseResult::parse("n1-e.icp")))]
@@ -62,27 +74,71 @@ mod validate_name {
     #[case("01234567890123456789012345678901234567890123456789012345678912345.icp",
     Err("second level name must be less than 64 characters".to_string())
     )]
-    #[case("nic.icp",
-    Err("second level name must be more than 3 characters".to_string())
-    )]
     #[case("nic%.icp",
     Err("name must be alphanumeric or -".to_string()),
     )]
+    #[case("你好.icp",
+    Err("name must be alphanumeric or -".to_string()),
+    )]
     fn test_validate_name(
-        _init_test: (),
         service: RegistrarService,
         #[case] input: &str,
         #[case] expected: Result<NameParseResult, String>,
     ) {
         let result = service.validate_name(input);
-        match result {
-            Ok(parse_result) => {
-                assert_eq!(parse_result, expected.unwrap());
-            }
-            Err(message) => {
-                assert_eq!(message, expected.unwrap_err());
-            }
-        }
+        assert_eq!(result, expected);
+    }
+}
+
+mod validate_quota {
+    use super::*;
+
+    #[rstest]
+    #[case(NameParseResult::parse("nice.icp"),
+    QuotaType::LenGte(3),
+    Ok(()),
+    )]
+    #[case(NameParseResult::parse("nice.icp"),
+    QuotaType::LenGte(4),
+    Ok(()),
+    )]
+    #[case(NameParseResult::parse("nice.icp"),
+    QuotaType::LenGte(5),
+    Err("Name must be at least 5 characters long".to_string()),
+    )]
+    #[case(NameParseResult::parse("nice.icp"),
+    QuotaType::LenEq(3),
+    Err("Name must be exactly 3 characters long".to_string()),
+    )]
+    #[case(NameParseResult::parse("nice.icp"),
+    QuotaType::LenEq(4),
+    Ok(()),
+    )]
+    #[case(NameParseResult::parse("nice.icp"),
+    QuotaType::LenEq(5),
+    Err("Name must be exactly 5 characters long".to_string()),
+    )]
+    fn test_validate_quota(
+        service: RegistrarService,
+        owner: Principal,
+        #[case] name: NameParseResult,
+        #[case] quota_type: QuotaType,
+        #[case] expected: Result<(), String>,
+    ) {
+        USER_QUOTA_MANAGER.with(|m| {
+            let mut m = m.borrow_mut();
+            m.add_quota(owner.clone(), quota_type.clone(), 1);
+        });
+        let result = service.validate_quota(&name, &owner, &quota_type);
+        assert_eq!(result, expected);
+    }
+
+    #[rstest]
+    fn test_validate_quota_no_quota(service: RegistrarService, owner: Principal) {
+        let name = NameParseResult::parse("nice.icp");
+        let quota_type = QuotaType::LenGte(3);
+        let result = service.validate_quota(&name, &owner, &quota_type);
+        assert_eq!(result, Err("User has no quota for len_gte(3)".to_string()));
     }
 }
 
@@ -90,7 +146,7 @@ mod available {
     use super::*;
 
     #[rstest]
-    fn test_available(_init_test: (), service: RegistrarService) {
+    fn test_available(service: RegistrarService) {
         {
             let result = service.available("www.nice.icp");
             assert_eq!(
@@ -122,7 +178,7 @@ mod get_name_expires {
     use super::*;
 
     #[rstest]
-    fn test_get_name_expires(_init_test: (), service: RegistrarService) {
+    fn test_get_name_expires(service: RegistrarService) {
         {
             let name = "nice.icp";
             let expires = service.get_name_expires(name);
@@ -146,7 +202,7 @@ mod get_names {
     use super::*;
 
     #[rstest]
-    fn test_get_names_invalid_owner(_init_test: (), service: RegistrarService) {
+    fn test_get_names_invalid_owner(service: RegistrarService) {
         let owner = Principal::anonymous();
         let input = GetPageInput {
             limit: 1,
@@ -165,7 +221,7 @@ mod get_names {
     }
 
     #[rstest]
-    fn test_get_names_invalid_page(_init_test: (), service: RegistrarService) {
+    fn test_get_names_invalid_page(service: RegistrarService) {
         let owner = Principal::anonymous();
         let input = GetPageInput {
             limit: 0,
@@ -199,13 +255,16 @@ mod register {
 
     #[rstest]
     async fn test_register_err_name_invalid(
-        _init_test: (),
         mut service: RegistrarService,
         owner: Principal,
+        quota_owner: Principal,
     ) {
         let name = "www.nice.icp";
         let _year = 0;
-        let result = service.register(name, &owner, 0, 0).await;
+        let result = service
+            .register(name, &owner, 0, 0, &quota_owner, TEST_QUOTA)
+            .await;
+        assert_quota_count(&quota_owner, 1);
         assert_eq!(
             result,
             Err(ICNSError::InvalidName {
@@ -215,23 +274,58 @@ mod register {
     }
 
     #[rstest]
-    async fn test_register_err_owner_invalid(_init_test: (), mut service: RegistrarService) {
+    async fn test_register_err_owner_invalid(
+        mut service: RegistrarService,
+        quota_owner: Principal,
+    ) {
         let owner = Principal::anonymous();
         let name = "nice.icp";
-        let _year = 0;
-        let result = service.register(name, &owner, 0, 0).await;
+        let year = 0;
+        let result = service
+            .register(name, &owner, year, 0, &quota_owner, TEST_QUOTA)
+            .await;
+        assert_quota_count(&quota_owner, 1);
         assert_eq!(result, Err(ICNSError::InvalidOwner));
     }
 
     #[rstest]
-    async fn test_register_err_year_invalid(
-        _init_test: (),
+    async fn test_register_err_lack_of_quota(
         mut service: RegistrarService,
         owner: Principal,
+        quota_owner: Principal,
+    ) {
+        let name = "nice.icp";
+        let year = 1;
+        USER_QUOTA_MANAGER.with(|quota_manager| {
+            let mut quota_manager = quota_manager.borrow_mut();
+            quota_manager.sub_quota(&quota_owner.to_owned(), &TEST_QUOTA, 1);
+        });
+
+        // act
+        let result = service
+            .register(name, &owner, year, 0, &quota_owner, TEST_QUOTA)
+            .await;
+        assert_quota_count(&quota_owner, 0);
+        assert_eq!(
+            result,
+            Err(ICNSError::InvalidName {
+                reason: "User has no quota for len_gte(4)".to_string()
+            })
+        );
+    }
+
+    #[rstest]
+    async fn test_register_err_year_invalid(
+        mut service: RegistrarService,
+        owner: Principal,
+        quota_owner: Principal,
     ) {
         let name = "nice.icp";
         let year = 0;
-        let result = service.register(name, &owner, year, 0).await;
+        let result = service
+            .register(name, &owner, year, 0, &quota_owner, TEST_QUOTA)
+            .await;
+        assert_quota_count(&quota_owner, 1);
         assert_eq!(
             result,
             Err(ICNSError::YearsRangeError {
@@ -243,9 +337,9 @@ mod register {
 
     #[rstest]
     async fn test_register_err_already_taken(
-        _init_test: (),
         mut service: RegistrarService,
         owner: Principal,
+        quota_owner: Principal,
     ) {
         let name = "nice.icp";
         let year = 0;
@@ -255,7 +349,10 @@ mod register {
                 Registration::new(owner, name.to_string(), 0, 0),
             );
         });
-        let result = service.register(name, &owner, year, 0).await;
+        let result = service
+            .register(name, &owner, year, 0, &quota_owner, TEST_QUOTA)
+            .await;
+        assert_quota_count(&quota_owner, 1);
         assert_eq!(result, Err(ICNSError::RegistrationHasBeenTaken));
     }
 
@@ -269,10 +366,10 @@ mod register {
 
     #[rstest]
     async fn test_register_api_failed(
-        _init_test: (),
         _setup_resolver_canister_name: (),
         mut service: RegistrarService,
         owner: Principal,
+        quota_owner: Principal,
         default_resolver: Principal,
         mut mock_registry_api: MockRegistryApi,
     ) {
@@ -293,9 +390,12 @@ mod register {
         service.registry_api = Arc::new(mock_registry_api);
 
         // act
-        let result = service.register(name, &owner, year, now).await;
+        let result = service
+            .register(name, &owner, year, now, &quota_owner, TEST_QUOTA)
+            .await;
 
         // assert
+        assert_quota_count(&quota_owner, 1);
         REGISTRATIONS.with(|registrations| {
             assert_eq!(registrations.borrow().len(), 0);
         });
@@ -307,10 +407,10 @@ mod register {
 
     #[rstest]
     async fn test_register_success(
-        _init_test: (),
         _setup_resolver_canister_name: (),
         mut service: RegistrarService,
         owner: Principal,
+        quota_owner: Principal,
         default_resolver: Principal,
         mut mock_registry_api: MockRegistryApi,
     ) {
@@ -336,9 +436,12 @@ mod register {
         service.registry_api = Arc::new(mock_registry_api);
 
         // act
-        let result = service.register(name, &owner, year, now).await;
+        let result = service
+            .register(name, &owner, year, now, &quota_owner, TEST_QUOTA)
+            .await;
 
         // assert
+        assert_quota_count(&quota_owner, 0);
         REGISTRATIONS.with(|registrations| {
             assert_eq!(
                 registrations.borrow().get(&name.to_string()),
