@@ -20,6 +20,9 @@ use crate::state::{REGISTRATIONS, SETTINGS, USER_QUOTA_MANAGER};
 #[cfg(test)]
 mod tests;
 
+/// Check if name is available.
+/// Returns true if name is available.
+/// * `name` - name to check, e.g. "hello.icp"
 pub struct RegistrarService {
     pub registry_api: Arc<dyn IRegistryApi>,
     pub clock: Arc<dyn IClock>,
