@@ -2,3 +2,8 @@ icnaming
 dfinity
 internetcomputer
 ic
+cycles
+cycle
+icp
+nns
+sns

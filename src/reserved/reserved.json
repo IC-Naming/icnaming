@@ -1,0 +1,3502 @@
+[
+    {
+        "id": "aedile",
+        "title": "Aedile",
+        "summary": "Project management dapp",
+        "grant": "25000.0",
+        "icnaming": "aedile",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "aedile"
+    },
+    {
+        "id": "agryo",
+        "title": "Agryo",
+        "summary": "Global risk intelligence for agriculture",
+        "grant": "25000.0",
+        "icnaming": "agryo",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "agryo"
+    },
+    {
+        "id": "aikin",
+        "title": "AIKIN",
+        "summary": "We are blockchain software development company building on the Internet Computer by Dfinity.",
+        "grant": "",
+        "icnaming": "aikin",
+        "type": "icapp",
+        "url": "https://www.aikin.io/",
+        "recommend_url": "aikin"
+    },
+    {
+        "id": "astrome",
+        "title": "ME",
+        "summary": "A self-sovereign identity protocol on Internet Computer",
+        "grant": "",
+        "icnaming": "astrome",
+        "type": "icp123",
+        "url": "http://beta.astrox.me/",
+        "recommend_url": "astrome"
+    },
+    {
+        "id": "astrox",
+        "title": "AstroX",
+        "summary": "Dart developer tools and \"mini apps\" framework",
+        "grant": "25000.0",
+        "icnaming": "astrox",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "astrox"
+    },
+    {
+        "id": "aviate-labs",
+        "title": "Aviate Labs",
+        "summary": "A Web3 Construction Lab.",
+        "grant": "",
+        "icnaming": "aviate-labs",
+        "type": "icapp",
+        "url": "https://aviate-labs.com/",
+        "recommend_url": "aviate-labs"
+    },
+    {
+        "id": "axon",
+        "title": "Axon",
+        "summary": "A community-built neuron management solution for the Internet Computer.",
+        "grant": "",
+        "icnaming": "axon",
+        "type": "icp123",
+        "url": "https://axon.ooo/",
+        "recommend_url": "axon"
+    },
+    {
+        "id": "b9 labs",
+        "title": "B9 Labs",
+        "summary": "Developer onboarding documentation",
+        "grant": "25000.0",
+        "icnaming": "b9-labs",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "b9-labs"
+    },
+    {
+        "id": "b9lab",
+        "title": "B9 Labs",
+        "summary": "Successful teams focus on code quality, usefulness and adoption to make sure their technology is core to the ecosystem.",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icp123",
+        "url": "https://b9lab.com/",
+        "recommend_url": "b9lab"
+    },
+    {
+        "id": "bauction",
+        "title": "Bauction",
+        "summary": "Decentralized and transparent auction platform",
+        "grant": "25000.0",
+        "icnaming": "bauction",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "bauction"
+    },
+    {
+        "id": "bebenture",
+        "title": "Bebenture",
+        "summary": "Decentralized derivatives issuance and transaction protocol",
+        "grant": "5000.0",
+        "icnaming": "bebenture",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "bebenture"
+    },
+    {
+        "id": "blockchain at berkeley",
+        "title": "Blockchain at Berkeley",
+        "summary": "DAO prototype that allows participants to nominate developers for grant funding",
+        "grant": "25000.0",
+        "icnaming": "berkeley",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "blockchain-at-berkeley"
+    },
+    {
+        "id": "blockchain heroes",
+        "title": "Blockchain Heroes",
+        "summary": "<p>The best-selling Blockchain Heroes series has been brought to the Internet Computer! Originally presented on the WAX blockchain in Summer of 2020 (selling out in minutes), Blockchain Heroes is a set of 50 super heroes inspired by real-world blockchain and crypto personalities. Now the original 50 heroes are being issued on ICP with all NEW variations. Booster packs with $0 gas fees. </p>",
+        "grant": "",
+        "icnaming": "blockchain-heroes",
+        "type": "showcase",
+        "url": "https://entrepot.app/marketplace/blockchain-heroes",
+        "recommend_url": "blockchain-heroes"
+    },
+    {
+        "id": "blockchain-heroes",
+        "title": "Blockchain Heroes",
+        "summary": "The world's top collectible digital trading card set. Join the battle for freedom and decentralization!",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icapp",
+        "url": "https://bcheroes.com/",
+        "recommend_url": "blockchain-heroes"
+    },
+    {
+        "id": "blockchainatberkeley",
+        "title": "Blockchain at Berkeley",
+        "summary": "Building people and a blockchain community",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icp123",
+        "url": "https://blockchain.berkeley.edu/",
+        "recommend_url": "blockchainatberkeley"
+    },
+    {
+        "id": "blocks",
+        "title": "Blocks",
+        "summary": "Visual editor for Motoko with 3D and gaming elements",
+        "grant": "25000.0",
+        "icnaming": "blocks",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "blocks"
+    },
+    {
+        "id": "bluebird",
+        "title": "BlueBird",
+        "summary": "On chain transformation of user generated rich media content",
+        "grant": "25000.0",
+        "icnaming": "bluebird",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "bluebird"
+    },
+    {
+        "id": "btc-flower",
+        "title": "BTC Flower",
+        "summary": "BTC Flower is the digital version of the R.I.P Banking System art piece by Ludo. BTC Flower is a purely artistic expression that expands on the chimera archetype Ludo has dedicated his life to exploring.",
+        "grant": "",
+        "icnaming": "btc-flower",
+        "type": "icapp",
+        "url": "https://btcflower.xyz/",
+        "recommend_url": "btc-flower"
+    },
+    {
+        "id": "bunchd",
+        "title": "Bunchd",
+        "summary": "Create, Collaborate, and Earn on the Subscription Platform controlled by Creators.",
+        "grant": "",
+        "icnaming": "bunchd",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "bunchd"
+    },
+    {
+        "id": "candid-convert",
+        "title": "candid-convert",
+        "summary": "Developer tools for parsing Candid to TypeScript",
+        "grant": "5000.0",
+        "icnaming": "candid-convert",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "candid-convert"
+    },
+    {
+        "id": "canistore",
+        "title": "Canistore",
+        "summary": "Simplify the storing, selling, and sharing of your photos, music, and videos\u2026 forever!",
+        "grant": "",
+        "icnaming": "canistore",
+        "type": "icp123",
+        "url": "https://canistore.io/",
+        "recommend_url": "canistore"
+    },
+    {
+        "id": "canlista",
+        "title": "Canlista",
+        "summary": "Canister directory to find, publish, and extend applications with the goal of aiding in composability",
+        "grant": "25000.0",
+        "icnaming": "canlista",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "canlista"
+    },
+    {
+        "id": "cap",
+        "title": "CAP",
+        "summary": "CAP is an open internet service providing transaction history & asset provenance for NFT\u2019s & Tokens on the Internet Computer.It solves the huge IC problem that assets don\u2019t have native transaction history, and does so in a scalable, trustless and seamless way so any NFT/Token can integrate with one line of code.",
+        "grant": "",
+        "icnaming": "cap",
+        "type": "icapp",
+        "url": "https://cap.ooo/",
+        "recommend_url": "cap"
+    },
+    {
+        "id": "catalyze",
+        "title": "Catalyze",
+        "summary": "The premier Web 3 platform for community development & social impact. The WeAct tool set moved to blockchain + so much more!",
+        "grant": "",
+        "icnaming": "catalyze",
+        "type": "icapp",
+        "url": "https://www.weact.chat/",
+        "recommend_url": "catalyze"
+    },
+    {
+        "id": "ccc",
+        "title": "Crowd Created Canvas ",
+        "summary": "C3 Protocol is composed of the word 'Crowd Creative Collections'.",
+        "grant": "",
+        "icnaming": "ccc",
+        "type": "icp123",
+        "url": "https://sdnoa-fiaaa-aaaah-aaubq-cai.ic0.app/",
+        "recommend_url": "ccc"
+    },
+    {
+        "id": "cetoswap",
+        "title": "CetoSwap",
+        "summary": "CetoSwap \u221e is a fungible and non-fungible asset management platform base on #Dfinity",
+        "grant": "",
+        "icnaming": "cetoswap",
+        "type": "icp123",
+        "url": " https://ijnlb-jiaaa-aaaah-qaesa-cai.ic0.app/",
+        "recommend_url": "cetoswap"
+    },
+    {
+        "id": "chain-cloud",
+        "title": "CHAIN-CLOUD",
+        "summary": "Dapp to auto-deploy and manage canisters",
+        "grant": "25000.0",
+        "icnaming": "chain-cloud",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "chain-cloud"
+    },
+    {
+        "id": "chainide",
+        "title": "ChainIDE",
+        "summary": "Motoko IDE with sample dapps",
+        "grant": "25000.0",
+        "icnaming": "chainide",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "chainide"
+    },
+    {
+        "id": "checkrr",
+        "title": "Checkrr",
+        "summary": "Decentralized fact checking protocol",
+        "grant": "25000.0",
+        "icnaming": "checkrr",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "checkrr"
+    },
+    {
+        "id": "cipherproxy",
+        "title": "CipherProxy",
+        "summary": "CipherProxy is a research and development foundation.",
+        "grant": "",
+        "icnaming": "cipherproxy",
+        "type": "icp123",
+        "url": "https://www.cipherproxy.com/",
+        "recommend_url": "cipherproxy"
+    },
+    {
+        "id": "civol",
+        "title": "Civol",
+        "summary": "Asynchronous video conversation platform enabling decentralized discourse, debate, and collective decision-making",
+        "grant": "25000.0",
+        "icnaming": "civol",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "civol"
+    },
+    {
+        "id": "coin-flipper",
+        "title": "Coin Flipper",
+        "summary": "Simple app that flips a coin.",
+        "grant": "",
+        "icnaming": "coin-flipper",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "coin-flipper"
+    },
+    {
+        "id": "content fly",
+        "title": "Content Fly",
+        "summary": "Content marketplace connecting high quality creators with brands",
+        "grant": "25000.0",
+        "icnaming": "content-fly",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "content-fly"
+    },
+    {
+        "id": "contentfly",
+        "title": "ContentFly",
+        "summary": "Marketplace app connecting high quality Content Creators to Brands, running on Dfinity Internet Computer",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icp123",
+        "url": "https://contentfly.app/",
+        "recommend_url": "contentfly"
+    },
+    {
+        "id": "contentfly-app",
+        "title": "ContentFly.app",
+        "summary": "Marketplace app connecting high quality Content Creators to Brands, running on Dfinity Internet Computer.",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icapp",
+        "url": "https://contentfly.app/",
+        "recommend_url": "contentfly-app"
+    },
+    {
+        "id": "cosmicrafts",
+        "title": "Cosmicrafts",
+        "summary": "Multiplayer HTML5/WebGL game with NFTs",
+        "grant": "25000.0",
+        "icnaming": "cosmicrafts",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "cosmicrafts"
+    },
+    {
+        "id": "cover",
+        "title": "Cover",
+        "summary": "Code Verification \ud83d\udfe2 open internet service for canisters on the #InternetComputer, to reduce risks & increase trust on the IC!",
+        "grant": "",
+        "icnaming": "cover",
+        "type": "icapp",
+        "url": "https://covercode.ooo/",
+        "recommend_url": "cover"
+    },
+    {
+        "id": "cronic",
+        "title": "Cronic",
+        "summary": "Cronics is a Play-to-earn NFT game being developed by ToniqLabs for the Internet Computer. Cronics incorporates breeding mechanics, wearable NFTs and a p2e minigame ecosystem and more.",
+        "grant": "",
+        "icnaming": "cronic",
+        "type": "icapp",
+        "url": "https://cronic.toniqlabs.com/",
+        "recommend_url": "cronic"
+    },
+    {
+        "id": "cronicnfts",
+        "title": "Cronic NFTs",
+        "summary": "Cronics play-to-earn ecosystem on the $ICP blockchain. ",
+        "grant": "",
+        "icnaming": "cronicnfts",
+        "type": "icp123",
+        "url": "https://cronic.toniqlabs.com/",
+        "recommend_url": "cronicnfts"
+    },
+    {
+        "id": "crowd-created-canvas",
+        "title": "Crowd Created Canvas",
+        "summary": "CCC(Crowd Created Canvas) is the first product of C3 Protocol and the first truly decentralized creation project of NFT in blockchain field. The products realized on CCC Dfinity (Internet Computer) really make NFT creation decentralized in all aspects. Its outstanding points are: users create canvases through decentralization and collaboration, and the creation and transaction data of paintings are stored in IC Canister.",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "crowd-created-canvas"
+    },
+    {
+        "id": "crowdeats",
+        "title": "crowdEats",
+        "summary": "Restrauant review dapp with social and reward components",
+        "grant": "5000.0",
+        "icnaming": "crowdeats",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "crowdeats"
+    },
+    {
+        "id": "crowdrecords",
+        "title": "Crowd Records",
+        "summary": "Decentralized Song Rights Economy where musical ideas become songs, almost magically",
+        "grant": "",
+        "icnaming": "crowdrecords",
+        "type": "icp123",
+        "url": "https://crowdrecords.com/",
+        "recommend_url": "crowdrecords"
+    },
+    {
+        "id": "crowdrecords.com",
+        "title": "CrowdRecords.com",
+        "summary": "Decentralized economy for creating music",
+        "grant": "5000.0",
+        "icnaming": "skip",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "crowdrecords.com"
+    },
+    {
+        "id": "crowns",
+        "title": "Crowns",
+        "summary": "Crowns are a collection of 10,000 uniquely generated NFTs on the Internet Computer. With a mix of traditional and psychedelic materials, and a CAP-powered transaction history for full provenance.",
+        "grant": "",
+        "icnaming": "crowns",
+        "type": "icapp",
+        "url": "https://crowns.ooo/",
+        "recommend_url": "crowns"
+    },
+    {
+        "id": "cube run",
+        "title": "Cube Run",
+        "summary": "<p>The classic game, \"Cube Run\" gets an update by having a new graphic interface and being hosted completely on-chain. The decentralized version of this game lets you keep your high-score running in your browser through persistent memory. </p>",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "showcase",
+        "url": "https://7qx3n-ziaaa-aaaad-qaqca-cai.raw.ic0.app/",
+        "recommend_url": "cube-run"
+    },
+    {
+        "id": "cuberun",
+        "title": "Cube Run",
+        "summary": "The classic game, \u201cCube Run\u201d gets an update by having a new graphic interface and being hosted completely on-chain. ",
+        "grant": "",
+        "icnaming": "cuberun",
+        "type": "icp123",
+        "url": "https://7qx3n-ziaaa-aaaad-qaqca-cai.raw.ic0.app/",
+        "recommend_url": "cuberun"
+    },
+    {
+        "id": "cubic",
+        "title": "Cubic",
+        "summary": "Cubic is a generative art project. Data such as ownership history and transaction history are used in different ways to generate unique canvases in a variety of styles.",
+        "grant": "",
+        "icnaming": "cubic",
+        "type": "icapp",
+        "url": "https://cubic.place/",
+        "recommend_url": "cubic"
+    },
+    {
+        "id": "cycle",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "cycle",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "cycle"
+    },
+    {
+        "id": "cycle-dao",
+        "title": "cycle_dao",
+        "summary": "We support autonomous open services on the Internet Computer",
+        "grant": "",
+        "icnaming": "cycle-dao",
+        "type": "icapp",
+        "url": "https://cycledao.xyz/",
+        "recommend_url": "cycle-dao"
+    },
+    {
+        "id": "cycles",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "cycles",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "cycles"
+    },
+    {
+        "id": "cycles-bet",
+        "title": "Cycles Bet",
+        "summary": "Provably secure & fair games.",
+        "grant": "",
+        "icnaming": "cycles-bet",
+        "type": "icapp",
+        "url": "https://cycles.bet/",
+        "recommend_url": "cycles-bet"
+    },
+    {
+        "id": "cyman",
+        "title": "CYMAN",
+        "summary": "10,000 randomly generated cybernetic humanoid's from 550,000,000 BCE built on the Internet Computer. ",
+        "grant": "",
+        "icnaming": "cyman",
+        "type": "icp123",
+        "url": "https://www.cyman.live/",
+        "recommend_url": "cyman"
+    },
+    {
+        "id": "dab",
+        "title": "DAB",
+        "summary": "DAB provides seamless access to #InternetComputer data that many apps/UI\u2019s need to surface.",
+        "grant": "",
+        "icnaming": "dab",
+        "type": "icp123",
+        "url": "https://dab.ooo/",
+        "recommend_url": "dab"
+    },
+    {
+        "id": "dank",
+        "title": "Dank",
+        "summary": "Dank is the first Decentralized Bank built on the Internet Computer, developed by Fleek. ",
+        "grant": "",
+        "icnaming": "dank",
+        "type": "icp123",
+        "url": "https://dank.ooo/",
+        "recommend_url": "dank"
+    },
+    {
+        "id": "data app development platform",
+        "title": "Data App Development Platform",
+        "summary": "Low code platform that enables engineering teams build data apps and workflows",
+        "grant": "25000.0",
+        "icnaming": "tbd",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "data-app-development-platform"
+    },
+    {
+        "id": "dbox",
+        "title": "dbox",
+        "summary": "Spam free inbox for IC dapp developers to communicate directly with their users",
+        "grant": "25000.0",
+        "icnaming": "dbox",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "dbox"
+    },
+    {
+        "id": "dbox-foundation",
+        "title": "DBOX Foundation",
+        "summary": "The decentralized inbox built on Dfinity's  #internetcomputer.",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icapp",
+        "url": "https://www.dbox.foundation/",
+        "recommend_url": "dbox-foundation"
+    },
+    {
+        "id": "deckdeckgo",
+        "title": "DeckDeckGo",
+        "summary": "Open source tools for creating presentations on the Internet Computer",
+        "grant": "25000.0",
+        "icnaming": "deckdeckgo",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "deckdeckgo"
+    },
+    {
+        "id": "deckdeckgo (follow-on)",
+        "title": "DeckDeckGo (Follow-On)",
+        "summary": "Additional features and full migration to the IC",
+        "grant": "25000.0",
+        "icnaming": "skip",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "deckdeckgo-(follow-on)"
+    },
+    {
+        "id": "deland",
+        "title": "Deland",
+        "summary": "Fungible Token Standard and DeFi components",
+        "grant": "5000.0",
+        "icnaming": "deland",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "deland"
+    },
+    {
+        "id": "deland-labs",
+        "title": "Deland Labs",
+        "summary": "Dfinity Open Order Protocol.",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icapp",
+        "url": "https://delandlabs.com/",
+        "recommend_url": "deland-labs"
+    },
+    {
+        "id": "demodroids",
+        "title": "Demodroids",
+        "summary": "10,000 Androids programmed for only one purpose, demolition!",
+        "grant": "",
+        "icnaming": "demodroids",
+        "type": "icapp",
+        "url": "demodroids.com",
+        "recommend_url": "demodroids"
+    },
+    {
+        "id": "departure labs",
+        "title": "Departure Labs",
+        "summary": "<p>Departure Labs is exploring on-chain media, web native NFTs, and developing productized open internet services for developers and consumers. Departure Labs is currently developing a non-fungible token standard that leverages the unique properties of the Internet Computer and enables builders to create entire experiences from a single contract.</p>",
+        "grant": "",
+        "icnaming": "departure-labs",
+        "type": "showcase",
+        "url": "https://github.com/DepartureLabsIC/non-fungible-token",
+        "recommend_url": "departure-labs"
+    },
+    {
+        "id": "departure-labs",
+        "title": "Departure Labs",
+        "summary": "Departure Labs is developing productized open internet services for developers and consumers.",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icp123",
+        "url": "https://github.com/DepartureLabsIC/non-fungible-token",
+        "recommend_url": "departure-labs"
+    },
+    {
+        "id": "devnull",
+        "title": "DevNull",
+        "summary": "Social platform for software developers",
+        "grant": "5000.0",
+        "icnaming": "devnull",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "devnull"
+    },
+    {
+        "id": "dfinance",
+        "title": "DFinance",
+        "summary": "Foundational DeFi components for the Internet Computer",
+        "grant": "25000.0",
+        "icnaming": "dfinance",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "dfinance"
+    },
+    {
+        "id": "dfinity",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "dfinity",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "dfinity"
+    },
+    {
+        "id": "dfinity",
+        "title": "DFINITY",
+        "summary": "The DFINITY Foundation is a major contributor to the Internet Computer.",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icp123",
+        "url": "https://dfinity.org/",
+        "recommend_url": "dfinity"
+    },
+    {
+        "id": "dfinity explorer",
+        "title": "DFINITY Explorer",
+        "summary": "<p>DFINITY Explorer, a project started in 2018, is an open-source, community-built dashboard and explorer for the Internet Computer, providing live information and statistics about the network, governance, and the ICP utility token, including account and transaction information.</p>",
+        "grant": "",
+        "icnaming": "dfinity-explorer",
+        "type": "showcase",
+        "url": "https://www.dfinityexplorer.org/#/datacenters",
+        "recommend_url": "dfinity-explorer"
+    },
+    {
+        "id": "dfinity-academy-ru",
+        "title": "Internet Computer \u0410\u043a\u0430\u0434\u0435\u043c\u0438\u044f DFINITY",
+        "summary": "Educational materials on the technical features of the Internet Computer blockchain in Russian.",
+        "grant": "",
+        "icnaming": "dfinity-academy-ru",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "dfinity-academy-ru"
+    },
+    {
+        "id": "dfinity-bulls",
+        "title": "Dfinity Bulls",
+        "summary": "8,888 Awesome Badass Bulls will ever be minted! Exclusively on ICP!",
+        "grant": "",
+        "icnaming": "dfinity-bulls",
+        "type": "icp123",
+        "url": "https://twitter.com/DBulls_NFT",
+        "recommend_url": "dfinity-bulls"
+    },
+    {
+        "id": "dfinity-bulls-nft",
+        "title": "Dfinity Bulls NFT",
+        "summary": "8,888 Awesome Badass Bulls will ever be minted! Exclusively on ICP!",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "dfinity-bulls-nft"
+    },
+    {
+        "id": "dfinity-club",
+        "title": "DfinityClub",
+        "summary": "The world's most influential Dfinity community - building a new world of decentralized InternetComputer blockchain.",
+        "grant": "",
+        "icnaming": "dfinity-club",
+        "type": "icp123",
+        "url": "https://t.me/DfinityClub_Chat",
+        "recommend_url": "dfinity-club"
+    },
+    {
+        "id": "dfinity-community",
+        "title": "DfinityCommunity",
+        "summary": "The Extraordinary Community Behind The Internet Computer.",
+        "grant": "",
+        "icnaming": "dfinity-community",
+        "type": "icp123",
+        "url": "https://www.dfinitycommunity.com/",
+        "recommend_url": "dfinity-community"
+    },
+    {
+        "id": "dfinity-en-espanol",
+        "title": "DFINITY en Espa\u00f1ol",
+        "summary": "#InternetComputer reinventando la internet p\u00fablica como una computadora blockchain. Noticias sobre #InternetComputer en espa\u00f1ol.",
+        "grant": "",
+        "icnaming": "dfinity-en-espanol",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "dfinity-en-espanol"
+    },
+    {
+        "id": "dfinity-explorer",
+        "title": "Dfinity Explorer",
+        "summary": "DFINITY Explorer is an open-source project under the MIT license, providing transparency, reliability, and security.",
+        "grant": "",
+        "icnaming": "dfinity-explorer",
+        "type": "icp123",
+        "url": "https://www.dfinityexplorer.org/",
+        "recommend_url": "dfinity-explorer"
+    },
+    {
+        "id": "dfinity-scan",
+        "title": "DFINITY SCAN",
+        "summary": "The Internet Computer is a public blockchain network .",
+        "grant": "",
+        "icnaming": "dfinity-scan",
+        "type": "icp123",
+        "url": "https://www.icp.report/",
+        "recommend_url": "dfinity-scan"
+    },
+    {
+        "id": "dfinity-space-apes",
+        "title": "Dfinity Space Apes",
+        "summary": "10,000 Space Apes on the Internet Computer.",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "dfinity-space-apes"
+    },
+    {
+        "id": "dfinity-sz",
+        "title": "Dfinity SZ",
+        "summary": "DfinitySZ is the leading Dfinity Chinese community in China. ",
+        "grant": "",
+        "icnaming": "dfinity-sz",
+        "type": "icp123",
+        "url": "https://dfisz.com/",
+        "recommend_url": "dfinity-sz"
+    },
+    {
+        "id": "dfinity-vietnam",
+        "title": "Dfinity Vietnam",
+        "summary": "Founded in June 2021 we are a group of people passionate about learning about Internet Computer. We want to build a Dfinity Vietnam community where everyone can find knowledge from basic to advanced.",
+        "grant": "",
+        "icnaming": "dfinity-vietnam",
+        "type": "icapp",
+        "url": "https://dfinityvietnam.com/",
+        "recommend_url": "dfinity-vietnam"
+    },
+    {
+        "id": "dfinitynft",
+        "title": "DfinityNFT",
+        "summary": "NFT standard with metadata focus",
+        "grant": "5000.0",
+        "icnaming": "skip",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "dfinitynft"
+    },
+    {
+        "id": "dfinitynodes",
+        "title": "DFINITYNodes",
+        "summary": "Crowd-funded nodes, powering the #IC developing, more info soon.",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "dfinitynodes"
+    },
+    {
+        "id": "dfinitysz",
+        "title": "DfinitySZ\u4e2d\u6587\u793e\u533a",
+        "summary": "Dfinity\u4e2d\u56fd\u793e\u533a\uff0c\u7acb\u8db3\u4e8e\u4e2d\u56fd\u524d\u6cbf\u57ce\u5e02\u6df1\u5733\uff0c\u4e13\u6ce8\u4e8eDfinity\u751f\u6001\u6280\u672f\u53d1\u5c55\u4ea4\u6d41\u4e0e\u4f18\u8d28\u9879\u76ee\u6316\u6398\u5206\u6790\u3002",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icapp",
+        "url": "https://dfisz.com/",
+        "recommend_url": "dfinitysz"
+    },
+    {
+        "id": "dfinityvietnam",
+        "title": "Dfinity Vietnam",
+        "summary": "Founded in June 2021 we are a group of people passionate about learning about Internet Computer. ",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icp123",
+        "url": "https://dfinityvietnam.com/",
+        "recommend_url": "dfinityvietnam"
+    },
+    {
+        "id": "dfistarter",
+        "title": "Dfistarter",
+        "summary": "DfiStarter is the first project accelerator for Dfinity.",
+        "grant": "",
+        "icnaming": "dfistarter",
+        "type": "icp123",
+        "url": "https://dfistarter.io/",
+        "recommend_url": "dfistarter"
+    },
+    {
+        "id": "dflow",
+        "title": "dFlow",
+        "summary": "Decentralized workflows for B2B collaboration",
+        "grant": "25000.0",
+        "icnaming": "dflow",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "dflow"
+    },
+    {
+        "id": "dgdg",
+        "title": "DGDG (dgastonia)",
+        "summary": "The most comprehensive browsing experience for NFTs on The Internet Computer. Sort and filter by price & rarity, expose floors, ... more to come!",
+        "grant": "",
+        "icnaming": "dgdg",
+        "type": "icapp",
+        "url": "https://www.dgastonia.com/nfts/collections/",
+        "recommend_url": "dgdg"
+    },
+    {
+        "id": "difibase",
+        "title": "Difibase",
+        "summary": "\"Database\" solution for the Internet Computer",
+        "grant": "5000.0",
+        "icnaming": "difibase",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "difibase"
+    },
+    {
+        "id": "distrikt",
+        "title": "Distrikt",
+        "summary": "Distrikt is a completely decentralized, community-owned professional network. ",
+        "grant": "",
+        "icnaming": "distrikt",
+        "type": "icp123",
+        "url": "https://az5sd-cqaaa-aaaae-aaarq-cai.ic0.app/",
+        "recommend_url": "distrikt"
+    },
+    {
+        "id": "dmail",
+        "title": "Dmail Network ",
+        "summary": "Dmail is the first mail application based on Web3.0 and Dfinity technology .",
+        "grant": "",
+        "icnaming": "dmail",
+        "type": "icp123",
+        "url": "http://dmail.ai/",
+        "recommend_url": "dmail"
+    },
+    {
+        "id": "doocoins",
+        "title": "DooCoins",
+        "summary": "A task-based rewards platform for kids",
+        "grant": "5000.0",
+        "icnaming": "doocoins",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "doocoins"
+    },
+    {
+        "id": "dots",
+        "title": "Dots",
+        "summary": "This is a hackathon project, build in less than 1 day.",
+        "grant": "",
+        "icnaming": "dots",
+        "type": "icp123",
+        "url": "https://2kvgp-zyaaa-aaaai-aappq-cai.raw.ic0.app/",
+        "recommend_url": "dots"
+    },
+    {
+        "id": "drip-land",
+        "title": "Drip.Land",
+        "summary": "The home of the IC Drip universe. Is your outfit drippin?",
+        "grant": "",
+        "icnaming": "drip-land",
+        "type": "icapp",
+        "url": "https://drip.land/",
+        "recommend_url": "drip-land"
+    },
+    {
+        "id": "dscvr",
+        "title": "DSCVR",
+        "summary": "A completely decentralized social content platform running on the #InternetComputer beta preview started!",
+        "grant": "",
+        "icnaming": "dscvr",
+        "type": "icp123",
+        "url": "https://h5aet-waaaa-aaaab-qaamq-cai.raw.ic0.app/",
+        "recommend_url": "dscvr"
+    },
+    {
+        "id": "dservice",
+        "title": "dService",
+        "summary": "Next-generation decentralized Service Management Application",
+        "grant": "25000.0",
+        "icnaming": "dservice",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "dservice"
+    },
+    {
+        "id": "dsocial",
+        "title": "DSocial",
+        "summary": "Decentralized & censorship resistant \ud83d\udcfa built on the Internet Computer & ARWeave.",
+        "grant": "",
+        "icnaming": "dsocial",
+        "type": "icapp",
+        "url": "http://dsocial.app/",
+        "recommend_url": "dsocial"
+    },
+    {
+        "id": "dstar",
+        "title": "Dstar",
+        "summary": "This is a technical test of dstar.",
+        "grant": "",
+        "icnaming": "dstar",
+        "type": "icp123",
+        "url": "https://II.dstar.app",
+        "recommend_url": "dstar"
+    },
+    {
+        "id": "dws (dfinity web services)",
+        "title": "DWS (Dfinity Web Services)",
+        "summary": "Data management tools for developers",
+        "grant": "5000.0",
+        "icnaming": "dws",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "dws-(dfinity-web-services)"
+    },
+    {
+        "id": "earth wallet",
+        "title": "Earth Wallet",
+        "summary": "Security audit support for non-custodial wallet",
+        "grant": "25000.0",
+        "icnaming": "earth-wallet",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "earth-wallet"
+    },
+    {
+        "id": "earth-wallet",
+        "title": "Earth Wallet",
+        "summary": "Earth Wallet is the self-proclaimed Key to Web3.0.",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icp123",
+        "url": "https://www.earthwallet.io/",
+        "recommend_url": "earth-wallet"
+    },
+    {
+        "id": "economia",
+        "title": "Economia ",
+        "summary": "Incentive protocol that allows users to leverage their social networks to complete and monetize tasks",
+        "grant": "5000.0",
+        "icnaming": "economia",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "economia"
+    },
+    {
+        "id": "eimolad",
+        "title": "Eimolad",
+        "summary": "Eimolad is a fantasy world full of adventures and populated by the first NFT game characters - MetaHeroes.",
+        "grant": "",
+        "icnaming": "eimolad",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "eimolad"
+    },
+    {
+        "id": "elementum",
+        "title": "Elementum",
+        "summary": "Elementum focuses on delivering products and services, games more specifically. With our core being a Trading Card Game in IC.",
+        "grant": "",
+        "icnaming": "elementum",
+        "type": "icapp",
+        "url": "https://elementum.one/",
+        "recommend_url": "elementum"
+    },
+    {
+        "id": "ensofinance",
+        "title": "EnsoFinance",
+        "summary": "Discover and create open DeFi metastrategies.",
+        "grant": "",
+        "icnaming": "ensofinance",
+        "type": "icp123",
+        "url": "https://www.enso.finance/",
+        "recommend_url": "ensofinance"
+    },
+    {
+        "id": "entrepot",
+        "title": "Entrepot",
+        "summary": "By definition, an entrep\u00f4t is a port, city, or trading post where merchandise may be imported, stored or traded. ",
+        "grant": "",
+        "icnaming": "entrepot",
+        "type": "icp123",
+        "url": "https://entrepot.app/",
+        "recommend_url": "entrepot"
+    },
+    {
+        "id": "eria",
+        "title": "Eria",
+        "summary": "CoreWeave API for generative art on the IC",
+        "grant": "5000.0",
+        "icnaming": "eria",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "eria"
+    },
+    {
+        "id": "evm on icp",
+        "title": "EVM on ICP",
+        "summary": "<p>An Ethereum Virtual Machine (EVM) demo built and hosted on the Internet Computer blockchain. \"The Ethereum protocol itself exists solely for the purpose of keeping the continuous, uninterrupted, and immutable operation of this special state machine; It's the environment in which all Ethereum accounts and smart contracts live. At any given block in the chain, Ethereum has one and only one 'canonical' state, and the EVM is what defines the rules for computing a new valid state from block to block.\" - Ethereum.org P.S. there is a hidden game in the demo. </p>",
+        "grant": "",
+        "icnaming": "evm-on-icp",
+        "type": "showcase",
+        "url": "https://fxa77-fiaaa-aaaae-aaana-cai.raw.ic0.app/evm/",
+        "recommend_url": "evm-on-icp"
+    },
+    {
+        "id": "exponent",
+        "title": "Exponent",
+        "summary": "EXT Token Standard and DEX prototype",
+        "grant": "25000.0",
+        "icnaming": "exponent",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "exponent"
+    },
+    {
+        "id": "fleek",
+        "title": "Fleek",
+        "summary": "Fleek brings decentralized web-hosting to the Internet Computer. ",
+        "grant": "",
+        "icnaming": "fleek",
+        "type": "icp123",
+        "url": "https://fleek.co/",
+        "recommend_url": "fleek"
+    },
+    {
+        "id": "fleek-co",
+        "title": "Fleek.co",
+        "summary": "Effortlessly build Open Web sites & apps. Hosting, ENS, Storage, Pinning! Built on the Internet Computer, IPFS, Ethereum, Filecoin, etc.",
+        "grant": "",
+        "icnaming": "fleek-co",
+        "type": "icapp",
+        "url": "https://fleek.co/",
+        "recommend_url": "fleek-co"
+    },
+    {
+        "id": "fleek-ooo",
+        "title": "Fleek.ooo",
+        "summary": "Easily build, deploy, and manage canisters, cycles, apps, & infrastructure on DFINITY's Internet Computer.",
+        "grant": "",
+        "icnaming": "fleek-ooo",
+        "type": "icapp",
+        "url": "https://fleek.ooo/",
+        "recommend_url": "fleek-ooo"
+    },
+    {
+        "id": "freeos",
+        "title": "Freeos",
+        "summary": "Proton <> Internet Computer integration and oracle prototype",
+        "grant": "25000.0",
+        "icnaming": "freeos",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "freeos"
+    },
+    {
+        "id": "functionland",
+        "title": "Functionland",
+        "summary": "Blockchain-Attached Storage (BAS) and the Borg Protocol. Rewarding OS devs for their contributions to a thriving #dApp ecosystem.",
+        "grant": "",
+        "icnaming": "functionland",
+        "type": "icapp",
+        "url": "https://fx.land/",
+        "recommend_url": "functionland"
+    },
+    {
+        "id": "gauzs",
+        "title": "Gauzs",
+        "summary": "Social network for academics",
+        "grant": "25000.0",
+        "icnaming": "gauzs",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "gauzs"
+    },
+    {
+        "id": "get-impact-now",
+        "title": "GET.IMPACT.NOW",
+        "summary": "get.impact.now wants to cive everyone the ability to collaborate on answers to the small questions of your village as well as the big questions of our civilization.",
+        "grant": "",
+        "icnaming": "get-impact-now",
+        "type": "icp123",
+        "url": "https://getimpactnow.org/",
+        "recommend_url": "get-impact-now"
+    },
+    {
+        "id": "get.impact.now",
+        "title": "get.impact.now",
+        "summary": "Non-partisan cooperative platform for democratic decision making",
+        "grant": "25000.0",
+        "icnaming": "skip",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "get.impact.now"
+    },
+    {
+        "id": "gigaverse-labs",
+        "title": "Gigaverse Labs",
+        "summary": "We believe that the Internet Computer is the best ecosystem for building a metaverse. Technologically it\u2019s ready to host the whole world on the blockchain: the game, the assets, the players. Working on this belief, we want to bring a metaverse to the IC. We\u2019ve started with a collection of ICPunks and Infinity Frogs. Our next goal is to create a bridge from Ethereum to IC, so that people can freely move NFTs (also Decentraland assets) to the IC and back. The next step would be to establish a DAO to fuel the growth of the crosschain ecosystem of apps and tools. We believe in the open gasless NFT ecosystem.",
+        "grant": "",
+        "icnaming": "gigaverse-labs",
+        "type": "icapp",
+        "url": "https://gigaverselabs.com/",
+        "recommend_url": "gigaverse-labs"
+    },
+    {
+        "id": "gobazzinga",
+        "title": "GoBazzinga",
+        "summary": "Challenge-based social spectulation platform",
+        "grant": "25000.0",
+        "icnaming": "gobazzinga",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "gobazzinga"
+    },
+    {
+        "id": "golang developer tools",
+        "title": "Golang Developer Tools",
+        "summary": "Candid implementation and Golang agent",
+        "grant": "25000.0",
+        "icnaming": "golang-developer-tools",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "golang-developer-tools"
+    },
+    {
+        "id": "haundet-hamsters",
+        "title": "Haundet Hamsters",
+        "summary": "Haunted Hamsters are 3333 hamsters, who have been haunted on the hill of Hamsterville.",
+        "grant": "",
+        "icnaming": "haundet-hamsters",
+        "type": "icp123",
+        "url": "https://www.hauntedhamsters.io/",
+        "recommend_url": "haundet-hamsters"
+    },
+    {
+        "id": "haunted-hamsters",
+        "title": "Haunted Hamsters",
+        "summary": "Haunted Hamsters are 3,333 hamsters, who have been haunted on the hill of Hamsterville.",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icapp",
+        "url": "https://www.hauntedhamsters.io/",
+        "recommend_url": "haunted-hamsters"
+    },
+    {
+        "id": "hexgl",
+        "title": "HexGL",
+        "summary": "HexGL is a futuristic racing game .",
+        "grant": "",
+        "icnaming": "hexgl",
+        "type": "icp123",
+        "url": "https://neqb2-dyaaa-aaaad-qameq-cai.raw.ic0.app/",
+        "recommend_url": "hexgl"
+    },
+    {
+        "id": "ibridge",
+        "title": "iBridge",
+        "summary": "Become the bridge between Dfinity and other public chain ecosystem",
+        "grant": "",
+        "icnaming": "ibridge",
+        "type": "icp123",
+        "url": "https://www.ibridge.pro/",
+        "recommend_url": "ibridge"
+    },
+    {
+        "id": "ic",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "ic",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "ic"
+    },
+    {
+        "id": "ic drive",
+        "title": "IC Drive",
+        "summary": "Decentralized file storage and sharing",
+        "grant": "25000.0",
+        "icnaming": "ic-drive",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "ic-drive"
+    },
+    {
+        "id": "ic drive (follow-on)",
+        "title": "IC Drive (Follow-On)",
+        "summary": "Analysis of cycles for storage",
+        "grant": "5000.0",
+        "icnaming": "skip",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "ic-drive-(follow-on)"
+    },
+    {
+        "id": "ic gallery",
+        "title": "IC Gallery",
+        "summary": "<p>The IC Gallery is an interoperable 3D metaverse blending GameFi and DeFi, where users can play, mint, and trade all their existing NFTs through various immersive 3D experiences on the Internet Computer and Ethereum. Hosted completely on-chain, the IC Gallery is the ultimate 3D NFT metaverse experience.</p>",
+        "grant": "",
+        "icnaming": "ic-gallery",
+        "type": "showcase",
+        "url": "https://ic.gallery/",
+        "recommend_url": "ic-gallery"
+    },
+    {
+        "id": "ic rocks",
+        "title": "IC Rocks",
+        "summary": "<p>IC.Rocks is a complete \"block explorer\" for the Internet Computer \u2013 built by the community. Tracking everything from transactions, to network upgrades, to cycles, IC.Rocks enables anyone to explore the inner-workings of the Internet Computer. </p>",
+        "grant": "",
+        "icnaming": "ic-rocks",
+        "type": "showcase",
+        "url": "https://ic.rocks/",
+        "recommend_url": "ic-rocks"
+    },
+    {
+        "id": "ic video",
+        "title": "IC Video",
+        "summary": "Decentralized video conferencing",
+        "grant": "25000.0",
+        "icnaming": "ic-video",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "ic-video"
+    },
+    {
+        "id": "ic-ape-ventures",
+        "title": "IC Ape Ventures",
+        "summary": "10,000 Unique Apes are getting ready to take their first steps in to the #ICP ecosystem.",
+        "grant": "",
+        "icnaming": "ic-ape-ventures",
+        "type": "icapp",
+        "url": "https://icapeventures.com/",
+        "recommend_url": "ic-ape-ventures"
+    },
+    {
+        "id": "ic-canvas",
+        "title": "IC Canvas",
+        "summary": "This is an experimental project from the Dfinity Foundation 2021 hackathon. ",
+        "grant": "",
+        "icnaming": "ic-canvas",
+        "type": "icp123",
+        "url": "https://rdbii-uiaaa-aaaab-qadva-cai.raw.ic0.app/",
+        "recommend_url": "ic-canvas"
+    },
+    {
+        "id": "ic-cards",
+        "title": "IC Cards",
+        "summary": "IC Cards is an NFT-based game on the IC Protocol. Gather, craft, level, and prepare yourself for a world full of monsters and villains.",
+        "grant": "",
+        "icnaming": "ic-cards",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "ic-cards"
+    },
+    {
+        "id": "ic-dashboard",
+        "title": "IC Dashboard",
+        "summary": "The Internet Computer Association (ICA) is a Geneva-based independent members organization.",
+        "grant": "",
+        "icnaming": "ic-dashboard",
+        "type": "icp123",
+        "url": "https://dashboard.internetcomputer.org/",
+        "recommend_url": "ic-dashboard"
+    },
+    {
+        "id": "ic-dinos",
+        "title": "IC Dinos",
+        "summary": "IC Dinos NFT Collection \ud83e\udd95  \ud83e\udd96 8,888 unique eggs - pre-sale Q1 2022. Hatching date TBA. Website/Roadmap/Discord coming soon.",
+        "grant": "",
+        "icnaming": "ic-dinos",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "ic-dinos"
+    },
+    {
+        "id": "ic-drip",
+        "title": "IC DRIP",
+        "summary": "IC Drip are randomly generated meta-commerce shopping carts for outfits and personas stored on chain. ",
+        "grant": "",
+        "icnaming": "ic-drip",
+        "type": "icp123",
+        "url": "https://drip.land/",
+        "recommend_url": "ic-drip"
+    },
+    {
+        "id": "ic-drive",
+        "title": "IC Drive",
+        "summary": "A decentralized private file storage dapp built on the Internet Computer. ",
+        "grant": "",
+        "icnaming": "ic-drive",
+        "type": "icp123",
+        "url": "https://rglue-kyaaa-aaaah-qakca-cai.ic0.app/",
+        "recommend_url": "ic-drive"
+    },
+    {
+        "id": "ic-gallery",
+        "title": "IC Gallery",
+        "summary": " Home of the Metaverse. 9999 unique 3D Moonwalker NFTs",
+        "grant": "",
+        "icnaming": "ic-gallery",
+        "type": "icp123",
+        "url": "https://gan2q-ciaaa-aaaai-aanoq-cai.raw.ic0.app/",
+        "recommend_url": "ic-gallery"
+    },
+    {
+        "id": "ic-naming",
+        "title": "IC Naming",
+        "summary": "ICNaming is a Decentralized Domain Name Server based on Dfinity network, which accomplishes the basic functions of Domain Name Server by decentralized method, also an on-chain server corresponding to IP address and wallet address on Dfinity.",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "ic-naming"
+    },
+    {
+        "id": "ic-notes",
+        "title": "IC Notes",
+        "summary": "An app that stores your notes on the IC. Therefore your notes are highly private and no intermediary may reveal any information.",
+        "grant": "",
+        "icnaming": "ic-notes",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "ic-notes"
+    },
+    {
+        "id": "ic-rocks",
+        "title": "ic.rocks",
+        "summary": "IC.Rocks is a complete block explorer for the Internet Computer.",
+        "grant": "",
+        "icnaming": "ic-rocks",
+        "type": "icp123",
+        "url": "https://ic.rocks/",
+        "recommend_url": "ic-rocks"
+    },
+    {
+        "id": "ic-turtles",
+        "title": "IC Turtles",
+        "summary": "IC Turtles is a collection of 10000 algorithmically generated turtles (AND ACCESSORIES) on the IC. ",
+        "grant": "",
+        "icnaming": "ic-turtles",
+        "type": "icp123",
+        "url": "",
+        "recommend_url": "ic-turtles"
+    },
+    {
+        "id": "ic.rocks",
+        "title": "ic.rocks",
+        "summary": "A collection of developer tools for understanding activity and transactions on the Internet Computer",
+        "grant": "25000.0",
+        "icnaming": "skip",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "ic.rocks"
+    },
+    {
+        "id": "ic_tools_dart",
+        "title": "ic_tools_dart",
+        "summary": "Dart agent to help support Flutter dapps on the Internet Computer",
+        "grant": "5000.0",
+        "icnaming": "ic-tools-dart",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "ic_tools_dart"
+    },
+    {
+        "id": "ica",
+        "title": "Internet Computer Association",
+        "summary": "The Internet Computer Association (ICA) is a Geneva-based independent members organization.",
+        "grant": "",
+        "icnaming": "ica",
+        "type": "icp123",
+        "url": "https://internetcomputer.org/",
+        "recommend_url": "ica"
+    },
+    {
+        "id": "ica dashboard",
+        "title": "ICA Dashboard",
+        "summary": "<p>The Internet Computer Association maintains a public dashboard where anyone can track the latest statistics for the Internet Computer blockchain. Tracking everything from blocks per second, to NNS proposals and their information and voting record, as well the latest state of the network, and transaction data. </p>",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "showcase",
+        "url": "https://dashboard.internetcomputer.org/",
+        "recommend_url": "ica-dashboard"
+    },
+    {
+        "id": "icape-ventures",
+        "title": "IC Ape Ventures",
+        "summary": "We make sure that every emerging product looks realistic, charismatic, strong and intelligent. ",
+        "grant": "",
+        "icnaming": "icape-ventures",
+        "type": "icp123",
+        "url": "https://icapeventures.com/",
+        "recommend_url": "icape-ventures"
+    },
+    {
+        "id": "icapps",
+        "title": "icApps",
+        "summary": "IC dapps directory and developer portal",
+        "grant": "25000.0",
+        "icnaming": "icapps",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "icapps"
+    },
+    {
+        "id": "icats",
+        "title": "ICats",
+        "summary": "ICats are companions to ICPunks, the most popular Internet Computer NFT collection. ICats were airdropped to ICPunk holders as a thank you note and a sign of what is coming from Gigaverse Labs. There are exactly 10,000 unique ICats in the collection.",
+        "grant": "",
+        "icnaming": "icats",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "icats"
+    },
+    {
+        "id": "icbunny",
+        "title": "ICPBunny",
+        "summary": "Yieldable #NFT & Breedable #NFT Powered by Dfinity",
+        "grant": "",
+        "icnaming": "icbunny",
+        "type": "icp123",
+        "url": "https://linktr.ee/icpbunny",
+        "recommend_url": "icbunny"
+    },
+    {
+        "id": "iccomics",
+        "title": "ICComics",
+        "summary": "The First Procedural Community Driven Web Comic On The Internet Computer.",
+        "grant": "",
+        "icnaming": "iccomics",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "iccomics"
+    },
+    {
+        "id": "icdrip",
+        "title": "ICDrip",
+        "summary": "IC Drip are randomly generated meta-commerce shopping carts for outfits and personas stored on chain. Stats, images, and other functionality are intentionally omitted for others to interpret. Feel free to use IC Drip in any way you want.",
+        "grant": "",
+        "icnaming": "icdrip",
+        "type": "icapp",
+        "url": "http://icdrip.io/",
+        "recommend_url": "icdrip"
+    },
+    {
+        "id": "ices",
+        "title": "ICES",
+        "summary": "a storage and analysis service for canister's event logs on Dfinity.",
+        "grant": "",
+        "icnaming": "ices",
+        "type": "icp123",
+        "url": "https://www.ices.one/",
+        "recommend_url": "ices"
+    },
+    {
+        "id": "icevent",
+        "title": "ICEvent",
+        "summary": "An open event service built on Internet Computer. Manage and share calendars, events, todo list...",
+        "grant": "",
+        "icnaming": "icevent",
+        "type": "icp123",
+        "url": "https://znisf-eqaaa-aaaaj-aabta-cai.raw.ic0.app/",
+        "recommend_url": "icevent"
+    },
+    {
+        "id": "icircle nft",
+        "title": "iCircle NFT",
+        "summary": "<p>The first generative NFT project hosted on the Internet Computer blockchain \u2013 iCircle had their inaugural collection sell out in under 6 minutes. The iCircle project consists of generative art NFTs, hosted on the Internet Computer, as well as NFT holders having governance rights in the newly announced iCircle DAO. More releases and minting tools for generative artists are on the way. </p>",
+        "grant": "",
+        "icnaming": "icircle-nft",
+        "type": "showcase",
+        "url": "https://entrepot.app/marketplace/icircle",
+        "recommend_url": "icircle-nft"
+    },
+    {
+        "id": "icircle-nft",
+        "title": "ICircle NFT",
+        "summary": "8,888 Generative Art NFTs Launch Soon in #InternetComputer | Math + Art = Beautiful | Join our discord today! 500 free mint roles available | #8YearGang",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "icircle-nft"
+    },
+    {
+        "id": "ickitties",
+        "title": "ICKitties",
+        "summary": "10,000 8-bit kitties living on the #InternetComputer. Join us as we explore the 7 Kingdoms!",
+        "grant": "",
+        "icnaming": "ickitties",
+        "type": "icapp",
+        "url": "https://ickitties.com/",
+        "recommend_url": "ickitties"
+    },
+    {
+        "id": "iclighthouse",
+        "title": "ICLight.house",
+        "summary": "ICLighthouse: Blockchain drives value creation.",
+        "grant": "",
+        "icnaming": "iclighthouse",
+        "type": "icapp",
+        "url": "https://iclight.house/login",
+        "recommend_url": "iclighthouse"
+    },
+    {
+        "id": "icme",
+        "title": "ICME",
+        "summary": "No code website builder",
+        "grant": "25000.0",
+        "icnaming": "icme",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "icme"
+    },
+    {
+        "id": "icmoji",
+        "title": "ICMoji Origins",
+        "summary": "ICMoji Origins is an NFT-based multiplayer game built end-to-end on-chain on the Internet Computer.",
+        "grant": "",
+        "icnaming": "icmoji",
+        "type": "icp123",
+        "url": "https://icmojis.com/",
+        "recommend_url": "icmoji"
+    },
+    {
+        "id": "icmoji origins",
+        "title": "ICmoji Origins",
+        "summary": "DSCVR Hackathon Season 2 Winner, NFT-based game",
+        "grant": "25000.0",
+        "icnaming": "icmoji-origins",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "icmoji-origins"
+    },
+    {
+        "id": "icmoji-origins",
+        "title": "ICmoji Origins",
+        "summary": "NFT game powered by Internet Computer. Winner of the DSCVR Hackathon Season 2.",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icapp",
+        "url": "https://icmoji.com/",
+        "recommend_url": "icmoji-origins"
+    },
+    {
+        "id": "icname",
+        "title": "IC naming",
+        "summary": "Name service on IC ",
+        "grant": "",
+        "icnaming": "tbd",
+        "type": "icp123",
+        "url": "https://icnaming.com",
+        "recommend_url": "icname"
+    },
+    {
+        "id": "icnaming",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "icnaming",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "icnaming"
+    },
+    {
+        "id": "icnaming",
+        "title": "ICNaming",
+        "summary": "<p>ICNaming is a testnet that is enabling the Internet Computer ecosystem to register domain names on the Internet Computer Name Service. Similar to the Ethereum Name Servce (ENS), ICNaming aims to offer a decentralized name service for users to pseudonomize their wallet addresses on ICP, as well as domain names, and canister smart contract IDs. </p>",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "showcase",
+        "url": "https://app-testnet.icnaming.com/",
+        "recommend_url": "icnaming"
+    },
+    {
+        "id": "icp",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "icp",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "icp"
+    },
+    {
+        "id": "icp squad nft",
+        "title": "ICP Squad NFT",
+        "summary": "<p>ICP Squad NFT is the world's first Engage 2 Earn NFT. ICP Squad is a community-focused group that wanted to reward the Internet Computer ecosystem for using different dapps. Using the Internet Computer blockchain to create the build-your-own minting engine for avatars, as well as the storage of the assets. In addition, users can add accessories and much more to their avatars. By using different dapps across the ICP ecosystem such as Distrikt and DSCVR, users are issued rewards on their NFT. </p>",
+        "grant": "",
+        "icnaming": "icp-squad-nft",
+        "type": "showcase",
+        "url": "https://p3z4x-vaaaa-aaaaj-qaixq-cai.raw.ic0.app/#/",
+        "recommend_url": "icp-squad-nft"
+    },
+    {
+        "id": "icp-art",
+        "title": "ICP Art",
+        "summary": "Exclusive Hand-Crafted Art Collections, Brought to You by the IC.",
+        "grant": "",
+        "icnaming": "icp-art",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "icp-art"
+    },
+    {
+        "id": "icp-dog",
+        "title": "ICP.Dog",
+        "summary": "The most profitable GameFi on IC. Join Dog and reap your wealth.",
+        "grant": "",
+        "icnaming": "icp-dog",
+        "type": "icapp",
+        "url": "http://icp.dog/",
+        "recommend_url": "icp-dog"
+    },
+    {
+        "id": "icp-france",
+        "title": "ICP France - la communaut\u00e9 francophone",
+        "summary": "Portail de la communaut\u00e9 francophone ICP (Internet Computer).",
+        "grant": "",
+        "icnaming": "icp-france",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "icp-france"
+    },
+    {
+        "id": "icp-global-fund",
+        "title": "ICP Global Fund",
+        "summary": " ICP Global Fund is a Hedge Fund, headquartered in Luxembourg, with branches in Z\u00fcrich, Neuch\u00e2tel, Tokyo, and Shanghai. Our team brings together decades of combined experience in research, investment, entrepreneurship and operations. ICP Global Fund is dedicated to incubating and investing in projects on the Internet Computer. ",
+        "grant": "",
+        "icnaming": "icp-global-fund",
+        "type": "icapp",
+        "url": "https://www.icp.global/",
+        "recommend_url": "icp-global-fund"
+    },
+    {
+        "id": "icp-guide",
+        "title": "The ICP Guide",
+        "summary": "The definitive guide to the Internet Computer Protocol (ICP)",
+        "grant": "",
+        "icnaming": "icp-guide",
+        "type": "icapp",
+        "url": "https://icp.guide/",
+        "recommend_url": "icp-guide"
+    },
+    {
+        "id": "icp-league",
+        "title": "ICP League",
+        "summary": "ICP League is a non profit organization.",
+        "grant": "",
+        "icnaming": "icp-league",
+        "type": "icp123",
+        "url": "https://icpleague.com/",
+        "recommend_url": "icp-league"
+    },
+    {
+        "id": "icp-neuron-calculator",
+        "title": "ICP Neuron Calculator",
+        "summary": "Long time Internet Computer fan.",
+        "grant": "",
+        "icnaming": "icp-neuron-calculator",
+        "type": "icp123",
+        "url": "https://networknervoussystem.com/",
+        "recommend_url": "icp-neuron-calculator"
+    },
+    {
+        "id": "icp-squad",
+        "title": "ICP Squad",
+        "summary": "Engage To Earn NFT Game. Powered by @ICPSquad.",
+        "grant": "",
+        "icnaming": "icp-squad",
+        "type": "icapp",
+        "url": "https://www.dfinitycommunity.com/tag/icpsquad/",
+        "recommend_url": "icp-squad"
+    },
+    {
+        "id": "icp-swap",
+        "title": "ICP Swap",
+        "summary": "ICPSwap #DFINITY. The Hub of Future Decentralized Finance.",
+        "grant": "",
+        "icnaming": "icp-swap",
+        "type": "icp123",
+        "url": "https://3pbcj-viaaa-aaaah-qaajq-cai.raw.ic0.app/",
+        "recommend_url": "icp-swap"
+    },
+    {
+        "id": "icp123",
+        "title": "ICP123",
+        "summary": "Ecosystem page built on the Internet Computer",
+        "grant": "5000.0",
+        "icnaming": "icp123",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "icp123"
+    },
+    {
+        "id": "icpart",
+        "title": "ICP Art",
+        "summary": "Exclusive Hand-Crafted Art Collections",
+        "grant": "",
+        "icnaming": "icpart",
+        "type": "icp123",
+        "url": "https://linktr.ee/ICPArt",
+        "recommend_url": "icpart"
+    },
+    {
+        "id": "icpbunny",
+        "title": "ICPBunny",
+        "summary": "Yieldable #NFT & Breedable #NFT Power by Dfinity.",
+        "grant": "",
+        "icnaming": "icpbunny",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "icpbunny"
+    },
+    {
+        "id": "icpdog",
+        "title": "ICP.Dog",
+        "summary": "The most profitable GameFi on IC. Join Dog and reap your wealth",
+        "grant": "",
+        "icnaming": "icpdog",
+        "type": "icp123",
+        "url": "http://icp.dog/",
+        "recommend_url": "icpdog"
+    },
+    {
+        "id": "icpets",
+        "title": "ICPets",
+        "summary": "ICPets is Community Revenue Focused NFT Project",
+        "grant": "",
+        "icnaming": "icpets",
+        "type": "icp123",
+        "url": "https://icpets.io/",
+        "recommend_url": "icpets"
+    },
+    {
+        "id": "icpfans",
+        "title": "ICPFans",
+        "summary": "ICPFans is committed to building the most developer-friendly Dfinity Chinese technology community.",
+        "grant": "",
+        "icnaming": "icpfans",
+        "type": "icp123",
+        "url": "https://icpfans.xyz/",
+        "recommend_url": "icpfans"
+    },
+    {
+        "id": "icphotographers",
+        "title": "IC Photographers",
+        "summary": "At IC photographers, the aim is to bring both creator and collector together.",
+        "grant": "",
+        "icnaming": "icphotographers",
+        "type": "icp123",
+        "url": "https://www.icphotographers.com/",
+        "recommend_url": "icphotographers"
+    },
+    {
+        "id": "icpipeline",
+        "title": "ICPipeline",
+        "summary": "Developer tools to bring SDLC best practices to the IC",
+        "grant": "25000.0",
+        "icnaming": "icpipeline",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "icpipeline"
+    },
+    {
+        "id": "icpl-community",
+        "title": "ICPL Community",
+        "summary": "ICPL(Internet Computer Protocol Lab) Community is the Extraordinary Community behind the #InternetComputer",
+        "grant": "",
+        "icnaming": "icpl-community",
+        "type": "icapp",
+        "url": "https://icpl.online/",
+        "recommend_url": "icpl-community"
+    },
+    {
+        "id": "icplaces",
+        "title": "ICPlaces",
+        "summary": "Virtual reality prototype",
+        "grant": "5000.0",
+        "icnaming": "icplaces",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "icplaces"
+    },
+    {
+        "id": "icplaunchpad",
+        "title": "ICPLaunchPad",
+        "summary": "IC dapp statistics and user rewards platform",
+        "grant": "25000.0",
+        "icnaming": "icplaunchpad",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "icplaunchpad"
+    },
+    {
+        "id": "icpmaps",
+        "title": "ICPmaps",
+        "summary": "Open Maps, GIS data on the IC",
+        "grant": "25000.0",
+        "icnaming": "icpmaps",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "icpmaps"
+    },
+    {
+        "id": "icpmeet",
+        "title": "ICPmeet",
+        "summary": "Decentralized dating app",
+        "grant": "25000.0",
+        "icnaming": "icpmeet",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "icpmeet"
+    },
+    {
+        "id": "icprime8s",
+        "title": "ICPrime8s",
+        "summary": "5 releases of Prime8 focused, randomly generated NFTs on the #InternetComputer 1st Release: PROSIMIANS - Available on http://entrepot.app on Dec 17th.",
+        "grant": "",
+        "icnaming": "icprime8s",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "icprime8s"
+    },
+    {
+        "id": "icproject_nft",
+        "title": "Infinite Charity Project ",
+        "summary": "A fine art photography NFT sale to benefit a forever home for rescued chimps.",
+        "grant": "",
+        "icnaming": "icproject_nft",
+        "type": "icp123",
+        "url": "https://chimps.icproject.org/",
+        "recommend_url": "icproject_nft"
+    },
+    {
+        "id": "icpscan",
+        "title": "Icpscan",
+        "summary": "Network and dapp ecosystem explorer",
+        "grant": "5000.0",
+        "icnaming": "icpscan",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "icpscan"
+    },
+    {
+        "id": "icpsquad",
+        "title": "ICP Squad",
+        "summary": "First Engage To Earn #NFTs Game. Powered by @dfinity",
+        "grant": "",
+        "icnaming": "icpsquad",
+        "type": "icp123",
+        "url": "https://upf6d-saaaa-aaaah-aauwa-cai.ic0.app/#/",
+        "recommend_url": "icpsquad"
+    },
+    {
+        "id": "icpswap",
+        "title": "ICPSwap",
+        "summary": "Decentralized exchange infrastructure for the Internet Computer",
+        "grant": "25000.0",
+        "icnaming": "icpswap",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "icpswap"
+    },
+    {
+        "id": "icpugs",
+        "title": "ICPugs",
+        "summary": "10,000 8-bit pug NFTs coming to the InternetComputer.",
+        "grant": "",
+        "icnaming": "icpugs",
+        "type": "icapp",
+        "url": "https://icpugs.com/",
+        "recommend_url": "icpugs"
+    },
+    {
+        "id": "icpumpkin",
+        "title": "ICPumpkin",
+        "summary": "Limited collection of 2,222 unique pumpkins, consisting of 20 cool characters!",
+        "grant": "",
+        "icnaming": "icpumpkin",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "icpumpkin"
+    },
+    {
+        "id": "icpunks",
+        "title": "ICPunks",
+        "summary": "CryptoPunks clone on the Internet Computer, cross-chain NFT infrastructure",
+        "grant": "25000.0",
+        "icnaming": "icpunks",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "icpunks"
+    },
+    {
+        "id": "icpunks (follow-on)",
+        "title": "ICPunks (Follow-On)",
+        "summary": "Cross-chain NFT infrastructure and open source marketplace",
+        "grant": "100000.0",
+        "icnaming": "skip",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "icpunks-(follow-on)"
+    },
+    {
+        "id": "icpuppies",
+        "title": "ICPuppies",
+        "summary": "ICPuppies is the first animal NFT collection deployed on the Internet Computer and also one of the earliest released on Entrepot, a marketplace where you can collect and trade them.",
+        "grant": "",
+        "icnaming": "icpuppies",
+        "type": "icp123",
+        "url": "https://icpuppies.io/",
+        "recommend_url": "icpuppies"
+    },
+    {
+        "id": "icsnakes",
+        "title": "ICSnakes",
+        "summary": "A collection of 10,000 randomly generated Snake NFTs on #ICP blockchain hunting for food.",
+        "grant": "",
+        "icnaming": "icsnakes",
+        "type": "icp123",
+        "url": "https://xn--4n8h7h.ws/",
+        "recommend_url": "icsnakes"
+    },
+    {
+        "id": "ictexas",
+        "title": "ICTexas",
+        "summary": " IC Texas Hold\u2019em is a dapp hosted completely on-chain on the Internet Computer. ",
+        "grant": "",
+        "icnaming": "ictexas",
+        "type": "icp123",
+        "url": "https://lm5fh-ayaaa-aaaah-aafua-cai.ic0.app/",
+        "recommend_url": "ictexas"
+    },
+    {
+        "id": "icwallet",
+        "title": "IC Wallet",
+        "summary": "Asset Management ICP Wallet",
+        "grant": "",
+        "icnaming": "icwallet",
+        "type": "icp123",
+        "url": "http://icwallet.org/",
+        "recommend_url": "icwallet"
+    },
+    {
+        "id": "identity labs",
+        "title": "Identity Labs",
+        "summary": "React authentication plug-in",
+        "grant": "25000.0",
+        "icnaming": "identity-labs",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "identity-labs"
+    },
+    {
+        "id": "identity-labs",
+        "title": "Identity Labs",
+        "summary": "React authentication plug-in.",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "identity-labs"
+    },
+    {
+        "id": "infernal-vampire-colony",
+        "title": "Infernal Vampire Colony",
+        "summary": "Two generations of randomly generated vampires on the Internet Computer. There are 666 vampires in the first generation and 6,000 in the second.",
+        "grant": "",
+        "icnaming": "infernal-vampire-colony",
+        "type": "icapp",
+        "url": "https://www.infernalvampires.com/",
+        "recommend_url": "infernal-vampire-colony"
+    },
+    {
+        "id": "infinite-chimp-nft-collection",
+        "title": "Infinity Chimp NFT Collection",
+        "summary": "The heart of the ICP ecosystem. NFT releases coming soon! A nonprofit corporation and charitable org providing non-commercial fundraising for 501(c)3 charities.",
+        "grant": "",
+        "icnaming": "infinite-chimp-nft-collection",
+        "type": "icapp",
+        "url": "https://chimps.icproject.org/nft-collection",
+        "recommend_url": "infinite-chimp-nft-collection"
+    },
+    {
+        "id": "infinity swap",
+        "title": "Infinity Swap",
+        "summary": "<p>InfinitySwap is a platform to create, stake, and swap tokens on the Internet Computer. Backed by Polychain Capital and 9YardsCapital (amongst others) \u2013\u2013\u00a0InfinitySwap offers users the ability to swap tokens cheaply with their novel technology build on the ICP blockchain. They are also planning to release their own token standard IS20 to support these initiatives. </p>",
+        "grant": "",
+        "icnaming": "infinity-swap",
+        "type": "showcase",
+        "url": "https://infinityswap.one/",
+        "recommend_url": "infinity-swap"
+    },
+    {
+        "id": "infinity-swap",
+        "title": "InfinitySwap",
+        "summary": "A platform to create, stake and swap Dfinity Tokens.",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icp123",
+        "url": "https://infinityswap.one/",
+        "recommend_url": "infinity-swap"
+    },
+    {
+        "id": "infinityswap",
+        "title": "InfinitySwap",
+        "summary": "Atomicity research study and prototype",
+        "grant": "25000.0",
+        "icnaming": "skip",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "infinityswap"
+    },
+    {
+        "id": "interconnect-network",
+        "title": "interconnect.network",
+        "summary": "become mutually connected \u221e built on Dfinity The Internet Computer.",
+        "grant": "",
+        "icnaming": "interconnect-network",
+        "type": "icapp",
+        "url": "https://interconnect.network/",
+        "recommend_url": "interconnect-network"
+    },
+    {
+        "id": "internet astronauts",
+        "title": "Internet Astronauts",
+        "summary": "<p>Internet Astronauts are a set of 10,000 limited edition, uniquely minted astronaut-themed NFTs. These end-to-end on-chain NFTs will be up for grabs to the community through the Entrepot.app marketplace. They are only possible through the Internet Computer blockchain.</p>",
+        "grant": "",
+        "icnaming": "internet-astronauts",
+        "type": "showcase",
+        "url": "https://interastrosc.com/",
+        "recommend_url": "internet-astronauts"
+    },
+    {
+        "id": "internet computer based blogs/news/cms site",
+        "title": "Internet Computer Based Blogs/News/CMS Site",
+        "summary": "Internet Computer Based Blogs/News/CMS Site",
+        "grant": "5000.0",
+        "icnaming": "internet-computer-based-blogs/news/cms-site",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "internet-computer-based-blogs/news/cms-site"
+    },
+    {
+        "id": "internet identity",
+        "title": "Internet Identity",
+        "summary": "<p>Internet Identity guarantees that your data isn\u2019t visible, tracked, or mined. The blockchain authentication system enables users to sign in to dapps on the Internet Computer and sites across the web anonymously and securely. </p>",
+        "grant": "",
+        "icnaming": "internet-identity",
+        "type": "showcase",
+        "url": "https://identity.ic0.app/",
+        "recommend_url": "internet-identity"
+    },
+    {
+        "id": "internet-astronauts",
+        "title": "Internet Astronauts",
+        "summary": "Internet Astronauts is a collection of 10,000 unique digital NFT collectibles only found on the Internet Computer!",
+        "grant": "",
+        "icnaming": "internet-astronauts",
+        "type": "icapp",
+        "url": "https://interastrosc.com/",
+        "recommend_url": "internet-astronauts"
+    },
+    {
+        "id": "internet-computer-dashboard",
+        "title": "Internet Computer Dashboard",
+        "summary": "Internet Computer Association.",
+        "grant": "",
+        "icnaming": "internet-computer-dashboard",
+        "type": "icapp",
+        "url": "https://dashboard.internetcomputer.org/",
+        "recommend_url": "internet-computer-dashboard"
+    },
+    {
+        "id": "internet-computer-event-system",
+        "title": "Internet Computer Event System",
+        "summary": "ICES (Internet Computer Event System) is a canister custom event log storage and analysis service on Dfinity. It mainly solves the problem that canister's interaction records cannot be publicly queried. Any canister can access ICES without permission, store the interactive data permanently, and query it through the public API and dashboard provided by ICES.",
+        "grant": "",
+        "icnaming": "internet-computer-event-system",
+        "type": "icapp",
+        "url": "https://www.ices.one/",
+        "recommend_url": "internet-computer-event-system"
+    },
+    {
+        "id": "internet-identity",
+        "title": "Internet Identity",
+        "summary": "Internet Identity is a smart contract implemented on the Internet Computer blockchain.",
+        "grant": "",
+        "icnaming": "internet-identity",
+        "type": "icp123",
+        "url": "https://identity.ic0.app/",
+        "recommend_url": "internet-identity"
+    },
+    {
+        "id": "internetastronauts",
+        "title": "Internet Astronauts",
+        "summary": "Internet Astronauts is a collection of 10,000 unique digital NFT collectibles only found on the Internet Computer!",
+        "grant": "",
+        "icnaming": "internetastronauts",
+        "type": "icp123",
+        "url": "https://interastrosc.com/",
+        "recommend_url": "internetastronauts"
+    },
+    {
+        "id": "internetcomputer",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "internetcomputer",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "internetcomputer"
+    },
+    {
+        "id": "japan-dao-association",
+        "title": "Japan DAO Association",
+        "summary": "Japan DAO Association -LIFE with DAO- ",
+        "grant": "",
+        "icnaming": "japan-dao-association",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "japan-dao-association"
+    },
+    {
+        "id": "java agent",
+        "title": "Java Agent ",
+        "summary": "<p>Java Agent for the Internet Computer is an open source library. This developer tool enables Java applications to connect remotely to any Canister smart contract on the Internet Computer and execute query and update calls.</p>",
+        "grant": "",
+        "icnaming": "java-agent",
+        "type": "showcase",
+        "url": "https://github.com/rdobrik/dfinity-agent",
+        "recommend_url": "java-agent"
+    },
+    {
+        "id": "javaagent",
+        "title": "Java Agent",
+        "summary": "Java Agent for the Internet Computer is an open source library.",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icp123",
+        "url": "https://github.com/rdobrik/dfinity-agent",
+        "recommend_url": "javaagent"
+    },
+    {
+        "id": "klever.io",
+        "title": "Klever.io",
+        "summary": "Klever.io non-custodial wallet support of ICP",
+        "grant": "25000.0",
+        "icnaming": "klever",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "klever.io"
+    },
+    {
+        "id": "learnd",
+        "title": "LEARND",
+        "summary": "Learning and rewards platform with Internet Computer courses and content",
+        "grant": "5000.0",
+        "icnaming": "skip",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "learnd"
+    },
+    {
+        "id": "learned",
+        "title": "Learned",
+        "summary": " LEARND is a community driven educationnal platform running on Internet Computer. ",
+        "grant": "",
+        "icnaming": "learned",
+        "type": "icp123",
+        "url": "https://learnd.dedn.eu/",
+        "recommend_url": "learned"
+    },
+    {
+        "id": "light-wallet",
+        "title": "Light Wallet",
+        "summary": "Make your ICP transaction to be easier.",
+        "grant": "",
+        "icnaming": "light-wallet",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "light-wallet"
+    },
+    {
+        "id": "lightsail",
+        "title": "Lightsail",
+        "summary": "Lightsail is a fast, lightweight and user friendly NFT app that lets you see and share your NFT collection.",
+        "grant": "",
+        "icnaming": "lightsail",
+        "type": "icapp",
+        "url": "https://www.lightsail.me/",
+        "recommend_url": "lightsail"
+    },
+    {
+        "id": "liquid-icp",
+        "title": "Liquid ICP",
+        "summary": "Liquid ICP DAO (Frog Nation 2.0!!!). DEX&Bridge (under construction).",
+        "grant": "",
+        "icnaming": "liquid-icp",
+        "type": "icapp",
+        "url": "https://www.icp-20.com/",
+        "recommend_url": "liquid-icp"
+    },
+    {
+        "id": "liquidicp",
+        "title": "Liquid ICP",
+        "summary": " Liquid ICP is world\u2019s first s-Bridge where bridged and staked assets remain liquid. ",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icp123",
+        "url": "ttps://www.icp-20.com/",
+        "recommend_url": "liquidicp"
+    },
+    {
+        "id": "lo-fi player",
+        "title": "Lo-Fi Player",
+        "summary": "<p>Lo-Fi Player is a dapp hosted on the Internet Computer that lets users listen to relaxing beats delivered by blockchain. The back-end is using machine learning to build and develop the AI produced tunes, and users can interact within the player to change the sound to their liking. </p>",
+        "grant": "",
+        "icnaming": "lo-fi-player",
+        "type": "showcase",
+        "url": "https://hl2zz-gyaaa-aaaad-qas3a-cai.raw.ic0.app/",
+        "recommend_url": "lo-fi-player"
+    },
+    {
+        "id": "lofiplayer",
+        "title": "Lo-Fi Player",
+        "summary": " Lo-Fi Player is a dapp hosted on the Internet Computer that lets users listen to relaxing beats delivered by blockchain. ",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icp123",
+        "url": " https://hl2zz-gyaaa-aaaad-qas3a-cai.raw.ic0.app/",
+        "recommend_url": "lofiplayer"
+    },
+    {
+        "id": "marspool",
+        "title": "MarsPool",
+        "summary": "MarsPool believes all project stakeholders are as important as each other. Investment funds and communities should work side by side on projects, on the same terms, towards the same goals.",
+        "grant": "",
+        "icnaming": "marspool",
+        "type": "icapp",
+        "url": "https://marspool.xyz/",
+        "recommend_url": "marspool"
+    },
+    {
+        "id": "matoken",
+        "title": "Matoken",
+        "summary": "NFT access control and storage",
+        "grant": "5000.0",
+        "icnaming": "matoken",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "matoken"
+    },
+    {
+        "id": "meme-cake",
+        "title": "Meme Cake",
+        "summary": "Meme Cake is the world's first decentralized comedy platform. Think of it as a 9GAG but decentralized.",
+        "grant": "",
+        "icnaming": "memecake",
+        "type": "icapp",
+        "url": "https://memecake.io/",
+        "recommend_url": "meme-cake"
+    },
+    {
+        "id": "memecake",
+        "title": "Meme Cake",
+        "summary": "Meme Cake is the world's first decentralized comedy platform. Think of it as a 9GAG but decentralized.",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icp123",
+        "url": "https://memecake.io/",
+        "recommend_url": "memecake"
+    },
+    {
+        "id": "metascore",
+        "title": "METASCORE",
+        "summary": "Leaderboards and prizes for the DSCVR Season 2 Gaming Hackathon. ",
+        "grant": "",
+        "icnaming": "metascore",
+        "type": "icp123",
+        "url": "https://t6ury-eiaaa-aaaaj-qabgq-cai.raw.ic0.app/",
+        "recommend_url": "metascore"
+    },
+    {
+        "id": "metasports basketball",
+        "title": "MetaSports Basketball",
+        "summary": "<p>MetaSports Basketball is an open basketball metaverse, built on the Ethereum &#x26; Internet Computer blockchains, where NFT players of all shapes, species, and origin can compete to become basketball superstars on teams owned and managed by the players. Developed by Psychedelic, and Featured in Yahoo and many major media publications, the game allows users to create and mint characters, as well as bring in NFTs from their collection to play on their MBA team. </p>",
+        "grant": "",
+        "icnaming": "metasports-basketball",
+        "type": "showcase",
+        "url": "https://metasportsbball.xyz/",
+        "recommend_url": "metasports-basketball"
+    },
+    {
+        "id": "metasports-basketball",
+        "title": "MetaSports Basketball",
+        "summary": "Own a basketball team. Build your dream #NFT team and become a legend in the MBA.",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icapp",
+        "url": "https://metasportsbball.xyz/",
+        "recommend_url": "metasports-basketball"
+    },
+    {
+        "id": "metaverse",
+        "title": "Welcome Into the Metaverse",
+        "summary": "This game brings digital community into a unified virtual space. ",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icp123",
+        "url": "https://lc7ip-3iaaa-aaaah-aafva-cai.ic0.app/",
+        "recommend_url": "metaverse"
+    },
+    {
+        "id": "metaverse-ai",
+        "title": "Metaverse AI",
+        "summary": "Digital human and virtual idol on IC",
+        "grant": "",
+        "icnaming": "metaverse-ai",
+        "type": "icp123",
+        "url": "https://www.metaverseai.org/",
+        "recommend_url": "metaverse-ai"
+    },
+    {
+        "id": "metaverseai",
+        "title": "MetaverseAI",
+        "summary": "Open source metaverse frameworks",
+        "grant": "25000.0",
+        "icnaming": "metaverseai",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "metaverseai"
+    },
+    {
+        "id": "mission",
+        "title": "Mission Is Possible",
+        "summary": "NFT-powered Play-to-Earn PvP shooter \ud83c\udfae\ud83d\udd2b being built 100% on the #InternetCompute",
+        "grant": "",
+        "icnaming": "mission",
+        "type": "icp123",
+        "url": "https://to3ja-iyaaa-aaaai-qapsq-cai.raw.ic0.app/",
+        "recommend_url": "mission"
+    },
+    {
+        "id": "mission is possible",
+        "title": "Mission is Possible",
+        "summary": "PvP shooter game built with Unity 3D Game Engine",
+        "grant": "25000.0",
+        "icnaming": "mission-is-possible",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "mission-is-possible"
+    },
+    {
+        "id": "mission-is-possible",
+        "title": "Mission is Possible",
+        "summary": "NFT-powered Play-to-Earn PvP shooter.",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "mission-is-possible"
+    },
+    {
+        "id": "modclub",
+        "title": "ModClub",
+        "summary": "Decentralized user generated content (UGC) moderation service, to integrate with existing IC dapps",
+        "grant": "25000.0",
+        "icnaming": "modclub",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "modclub"
+    },
+    {
+        "id": "modeclub",
+        "title": "ModClub",
+        "summary": "A central place to moderate content",
+        "grant": "",
+        "icnaming": "modeclub",
+        "type": "icp123",
+        "url": "https://ljyte-qiaaa-aaaah-qaiva-cai.raw.ic0.app/",
+        "recommend_url": "modeclub"
+    },
+    {
+        "id": "motoko playground",
+        "title": "Motoko Playground",
+        "summary": "Community-driven UI / UX enhancements",
+        "grant": "5000.0",
+        "icnaming": "motoko-playground",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "motoko-playground"
+    },
+    {
+        "id": "motoko school",
+        "title": "Motoko School",
+        "summary": "Internet Computer learning and rewards platform",
+        "grant": "5000.0",
+        "icnaming": "motoko-school",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "motoko-school"
+    },
+    {
+        "id": "motoko-day-drop",
+        "title": "Motoko Day Drop",
+        "summary": "10,000 Motoko Ghosts designed by Jon Ball of Pokedstudios were distributed to the community on the 1 year birthday of the Motoko Programming language. 7,000 airdropped to DSCVR users and 3,000 distributed to in-person attendees of NFT.NYC 2021.",
+        "grant": "",
+        "icnaming": "motoko-day-drop",
+        "type": "icapp",
+        "url": "https://entrepot.app/marketplace/motoko",
+        "recommend_url": "motoko-day-drop"
+    },
+    {
+        "id": "motoko-playground",
+        "title": "Motoko Playground",
+        "summary": "A playground for the Internet Computer's native Motoko language.",
+        "grant": "",
+        "icnaming": "motoko-playground",
+        "type": "icp123",
+        "url": "https://m7sm4-2iaaa-aaaab-qabra-cai.raw.ic0.app/",
+        "recommend_url": "motoko-playground"
+    },
+    {
+        "id": "motoko-school",
+        "title": "Motoko School",
+        "summary": "Motoko School is the first public school for the Metaverse, only on the Internet Computer.",
+        "grant": "",
+        "icnaming": "motoko-school",
+        "type": "icp123",
+        "url": "https://linktr.ee/MotokoSchool",
+        "recommend_url": "motoko-school"
+    },
+    {
+        "id": "mugatunes",
+        "title": "MugaTunes",
+        "summary": "Music curation and NFT platform",
+        "grant": "5000.0",
+        "icnaming": "mugatunes",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "mugatunes"
+    },
+    {
+        "id": "my status",
+        "title": "My Status",
+        "summary": "Social media dapp for sharing short daily status updates",
+        "grant": "5000.0",
+        "icnaming": "my-status",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "my-status"
+    },
+    {
+        "id": "newsie",
+        "title": "Newsie",
+        "summary": "Comic Book and NFT Collection On The Internet Computer",
+        "grant": "",
+        "icnaming": "newsie",
+        "type": "icp123",
+        "url": "https://gh2ig-jqaaa-aaaai-aaslq-cai.raw.ic0.app/",
+        "recommend_url": "newsie"
+    },
+    {
+        "id": "nft english auction",
+        "title": "NFT English Auction",
+        "summary": "English auction canister and developer tools",
+        "grant": "25000.0",
+        "icnaming": "nft-english-auction",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "nft-english-auction"
+    },
+    {
+        "id": "nft studio",
+        "title": "NFT Studio",
+        "summary": "<p>NFT Studio is the first to develop 3D NFTs. This means that the NFTs themselves are living 3D code, as opposed to a .GIF recording of a 3D rendered image. This is only possible thanks to the ICP blockchain as NFTs can run code, not just link to an image. NFT Studio has had features in major media for the 3D NFT minting tools that are being built for global creators.</p>",
+        "grant": "",
+        "icnaming": "nft-studio",
+        "type": "showcase",
+        "url": "https://7xw5z-uqaaa-aaaad-qaqcq-cai.raw.ic0.app/",
+        "recommend_url": "nft-studio"
+    },
+    {
+        "id": "nft studio marketplace",
+        "title": "NFT Studio Marketplace",
+        "summary": "<p>NFT Studio launches their first marketplace featuring 3D NFTs (not .GIF recordings, but actual 3D code as the NFT), purchasable with ICP. Additional innovations include interactive NFTs, as well as entire games as NFTs playable from the marketplace or from within your wallet. These NFTs are all made possible due to the Internet Computer blockchain's scalability, low-costs, and innovations in smart contract technology. </p>",
+        "grant": "",
+        "icnaming": "nft-studio-marketplace",
+        "type": "showcase",
+        "url": "https://marketplacebuild-nftstudio.vercel.app/",
+        "recommend_url": "nft-studio-marketplace"
+    },
+    {
+        "id": "nft studio minting engine",
+        "title": "NFT Studio Minting Engine",
+        "summary": "<p>NFT Studio launches their public minting engine for 3D NFTs, hosted completely on the Internet Computer. Connect your Plug wallet to automatically mint your NFT without any need for coding \u2013 all for less than .05 ICP. NFT Studio enables the previously impossible, possible, using the unique scalability, storage, and \"code as smart contracts\" capabilities of the Internet Computer blockchain. </p>",
+        "grant": "",
+        "icnaming": "nft-studio-minting-engine",
+        "type": "showcase",
+        "url": "https://iiibs-tqaaa-aaaak-aab6q-cai.ic0.app/",
+        "recommend_url": "nft-studio-minting-engine"
+    },
+    {
+        "id": "nft village",
+        "title": "NFT Village",
+        "summary": "<p>Look up the attributes, NRI %, rarity, and other information about Internet Computer NFTs. Simply input the URL of your ICPunks and Cronics NFTs or any other NFT minted on the Internet Computer blockchain and learn all of the details that make the NFT unique.</p>",
+        "grant": "",
+        "icnaming": "nft-village",
+        "type": "showcase",
+        "url": "http://nftvillage.ai/",
+        "recommend_url": "nft-village"
+    },
+    {
+        "id": "nft-studio",
+        "title": "NFT Studio",
+        "summary": "NFT Studio allows users to Mint, Buy, Sell and Stake 3DWASM NFTs on the Internet Computer - Revolutionary.",
+        "grant": "",
+        "icnaming": "nft-studio",
+        "type": "icapp",
+        "url": "http://nftstudio.biz/",
+        "recommend_url": "nft-studio"
+    },
+    {
+        "id": "nftstudio",
+        "title": "NFT Studio",
+        "summary": "NFT Studio allows users to Mint, Buy, Sell and Stake 3DWASM NFTs on the Internet Computer",
+        "grant": "",
+        "icnaming": "nftstudio",
+        "type": "icp123",
+        "url": "https://7xw5z-uqaaa-aaaad-qaqcq-cai.raw.ic0.app/",
+        "recommend_url": "nftstudio"
+    },
+    {
+        "id": "nftvillage",
+        "title": "NFT Village",
+        "summary": "A friendly place for all of your favorite NFTs on the Internet Computer",
+        "grant": "",
+        "icnaming": "nftvillage",
+        "type": "icp123",
+        "url": "https://nntkg-vqaaa-aaaad-qamfa-cai.ic.fleek.co/",
+        "recommend_url": "nftvillage"
+    },
+    {
+        "id": "nns",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "nns",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "nns"
+    },
+    {
+        "id": "nns calculator",
+        "title": "NNS Calculator",
+        "summary": "<p>The Network Nervous System Calculator is a calculator that allows anyone to edit variables and estimate voting rewards based on number of proposals voted on, length of stake, accumulated maturity, and more. </p>",
+        "grant": "",
+        "icnaming": "nns-calculator",
+        "type": "showcase",
+        "url": "https://networknervoussystem.com/",
+        "recommend_url": "nns-calculator"
+    },
+    {
+        "id": "nns front-end dapp",
+        "title": "NNS Front-End Dapp",
+        "summary": "<p>The NNS front-end dapp allows anyone to interact with the Internet Computer's Network Nervous System with a user-friendly UI. Served completely end-to-end through blockchain, this dapp allows you to manage ICP, stake neurons, participate in voting, and earn rewards.</p>",
+        "grant": "",
+        "icnaming": "nns-front-end-dapp",
+        "type": "showcase",
+        "url": "https://nns.ic0.app",
+        "recommend_url": "nns-front-end-dapp"
+    },
+    {
+        "id": "nns-dapp",
+        "title": "NNS Dapp",
+        "summary": "The NNS front-end dapp allows anyone to interact with the Internet Computer's Network Nervous System with a user-friendly UI. Served completely end-to-end through blockchain, this dapp allows you to manage ICP, stake neurons, participate in voting, and earn rewards.",
+        "grant": "",
+        "icnaming": "nns-dapp",
+        "type": "icapp",
+        "url": "https://nns.ic0.app/",
+        "recommend_url": "nns-dapp"
+    },
+    {
+        "id": "nnsdao",
+        "title": "NnsDAO",
+        "summary": "The boundaryless autonomous organization.",
+        "grant": "",
+        "icnaming": "nnsdao",
+        "type": "icp123",
+        "url": "https://www.nnsdao.org/",
+        "recommend_url": "nnsdao"
+    },
+    {
+        "id": "nuance",
+        "title": "Nuance",
+        "summary": "Decentralized blogging platform",
+        "grant": "25000.0",
+        "icnaming": "nuance",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "nuance"
+    },
+    {
+        "id": "open assessment platform",
+        "title": "Open Assessment Platform",
+        "summary": "Open source question editor and renderer for in-dapp assessments",
+        "grant": "5000.0",
+        "icnaming": "open-assessment-platform",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "open-assessment-platform"
+    },
+    {
+        "id": "openchat",
+        "title": "OpenChat",
+        "summary": "Real-time messaging is now possible on a blockchain.",
+        "grant": "",
+        "icnaming": "openchat",
+        "type": "icp123",
+        "url": "https://7e6iv-biaaa-aaaaf-aaada-cai.ic0.app/",
+        "recommend_url": "openchat"
+    },
+    {
+        "id": "optex",
+        "title": "ClinTex CTi",
+        "summary": "Optex is a powerful data visualisation tool designed to provide seamless insights into complex data. ",
+        "grant": "",
+        "icnaming": "optex",
+        "type": "icp123",
+        "url": "https://www.clinicaltrialsintelligence.org/",
+        "recommend_url": "optex"
+    },
+    {
+        "id": "orb",
+        "title": "Orb",
+        "summary": "OpenStreetMap for the IC",
+        "grant": "5000.0",
+        "icnaming": "orb",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "orb"
+    },
+    {
+        "id": "orderswap",
+        "title": "OrderSwap",
+        "summary": "Open Order Protocol and AMM infrastructure",
+        "grant": "25000.0",
+        "icnaming": "orderswap",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "orderswap"
+    },
+    {
+        "id": "origyn",
+        "title": "Origyn",
+        "summary": "<p>The Origyn Foundation is blending luxury goods, with NFTs by providing digital verifications for physical objects. Only possible on the Internet Computer. </p>",
+        "grant": "",
+        "icnaming": "origyn",
+        "type": "showcase",
+        "url": "https://www.origyn.ch/",
+        "recommend_url": "origyn"
+    },
+    {
+        "id": "origyn-foundation",
+        "title": "ORIGYN Foundation",
+        "summary": "We are on a mission to identify, authenticate and unlock the powers of ownership for objects of value.",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icp123",
+        "url": "https://www.origyn.ch/",
+        "recommend_url": "origyn-foundation"
+    },
+    {
+        "id": "osmosis",
+        "title": "Osmosis",
+        "summary": "<p>Osmosis is an \"Interchain Automated Market Maker (AMM)\". As a Web3 solution, now by having the front-end of their swap solution hosted on the Internet Computer blockchain, the full-stack is truly decentralized. This minimizes risks of centralization which include wrongful takedowns, censorship, and more. </p>",
+        "grant": "",
+        "icnaming": "osmosis",
+        "type": "showcase",
+        "url": "https://ate7l-riaaa-aaaaf-qae3q-cai.raw.ic0.app/",
+        "recommend_url": "osmosis"
+    },
+    {
+        "id": "overchute",
+        "title": "Overchute",
+        "summary": "Blind crowdsale protocol for intellectual property",
+        "grant": "25000.0",
+        "icnaming": "overchute",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "overchute"
+    },
+    {
+        "id": "party board",
+        "title": "Party Board",
+        "summary": "Decentralized, topic-based social networking",
+        "grant": "25000.0",
+        "icnaming": "party-board",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "party-board"
+    },
+    {
+        "id": "partyboard",
+        "title": "PartyBoard",
+        "summary": "Metaverse Social Platform, Meta-Social Network, SocialFi.",
+        "grant": "",
+        "icnaming": "partyboard",
+        "type": "icapp",
+        "url": "https://www.partyboard.org/",
+        "recommend_url": "partyboard"
+    },
+    {
+        "id": "perun channels on the internet computer",
+        "title": "Perun Channels on the Internet Computer",
+        "summary": "Perun state channels on the Internet Computer",
+        "grant": "25000.0",
+        "icnaming": "perun-channels-on-the-internet-computer",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "perun-channels-on-the-internet-computer"
+    },
+    {
+        "id": "photos",
+        "title": "Photos",
+        "summary": "Photo sharing and storage dapp",
+        "grant": "25000.0",
+        "icnaming": "photos",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "photos"
+    },
+    {
+        "id": "plug",
+        "title": "Plug Wallet",
+        "summary": "Plug Wallet, built and open sourced by Fleek, is a browser extension.",
+        "grant": "",
+        "icnaming": "plug",
+        "type": "icp123",
+        "url": "https://plugwallet.ooo/",
+        "recommend_url": "plug"
+    },
+    {
+        "id": "pocket4d",
+        "title": "Pocket 4D",
+        "summary": "A framework container runs Mini-Apps or Mini-Programs, using enhanced Canister of cross-platform.",
+        "grant": "",
+        "icnaming": "pocket4d",
+        "type": "icp123",
+        "url": "https://github.com/Pocket4D/Pocket4D-Wiki",
+        "recommend_url": "pocket4d"
+    },
+    {
+        "id": "poked-bots",
+        "title": "Poked Bots",
+        "summary": "A collection of 10,000 individual ROBOTS, designed by Cardiff based creative agency - Poked Studio.",
+        "grant": "",
+        "icnaming": "poked-bots",
+        "type": "icapp",
+        "url": "https://www.pokedstudiobotsnft.co.uk/",
+        "recommend_url": "poked-bots"
+    },
+    {
+        "id": "pokedstudio bots",
+        "title": "PokedStudio Bots",
+        "summary": "<p>PokedStudio Bots are a collection of 10,000 unique bots designed by acclaimed digital artist, Jonathan Ball. The Ultimate Master\u201d Bot which sold for 3,000 ICP (~$172,140), marks the largest single NFT purchase on the Internet Computer, and is one of the largest across all blockchain projects to date. The Bots collection generated nearly $1M in NFT marketplace trading volume in less than 36 hours from public launch. The NFT Bots are all unique and possess differing rarities and attributes that will transfer into a future metaverse gaming experience in beautiful technicolor.</p>",
+        "grant": "",
+        "icnaming": "pokedstudio-bots",
+        "type": "showcase",
+        "url": "https://entrepot.app/marketplace/poked",
+        "recommend_url": "pokedstudio-bots"
+    },
+    {
+        "id": "portal",
+        "title": "PORTAL",
+        "summary": "Live streaming app with WebRTC",
+        "grant": "25000.0",
+        "icnaming": "portal",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "portal"
+    },
+    {
+        "id": "project-txa",
+        "title": "Project TXA",
+        "summary": "Building the #TXA Decentralized Settlement Layer for Tacen's #hDEX architecture @tacen_app.",
+        "grant": "",
+        "icnaming": "project-txa",
+        "type": "icp123",
+        "url": "https://www.txa.app/",
+        "recommend_url": "project-txa"
+    },
+    {
+        "id": "psychedelic",
+        "title": "Psychedelic",
+        "summary": "A decentralized venture studio focused on building products on the Internet Computer.",
+        "grant": "",
+        "icnaming": "psychedelic",
+        "type": "icapp",
+        "url": "https://psychedelic.ooo/",
+        "recommend_url": "psychedelic"
+    },
+    {
+        "id": "puzzle",
+        "title": "PUZZLE",
+        "summary": "Collaborative NFT platform",
+        "grant": "25000.0",
+        "icnaming": "puzzle",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "puzzle"
+    },
+    {
+        "id": "python agent",
+        "title": "Python Agent",
+        "summary": "<p>This Python Agent built for the Internet Computer opens the door for Python developers to more easily become Web3 builders. Featuring basic modules to interact with canisters on the Internet Computer, this Agent, still under development, was a prize winner at the Warpspeed Internet Computer ecosystem hackathon in China.</p>",
+        "grant": "",
+        "icnaming": "python-agent",
+        "type": "showcase",
+        "url": "https://github.com/rocklabs-io/ic-py",
+        "recommend_url": "python-agent"
+    },
+    {
+        "id": "qr gallery",
+        "title": "QR Gallery",
+        "summary": "Connected NFT experiences with a Poland-based art gallery",
+        "grant": "5000.0",
+        "icnaming": "qr-gallery",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "qr-gallery"
+    },
+    {
+        "id": "ratels",
+        "title": "Ratels",
+        "summary": "The most personalized crypto wallet on the Internet Computer.",
+        "grant": "",
+        "icnaming": "ratels",
+        "type": "icp123",
+        "url": "https://Ratels.app/",
+        "recommend_url": "ratels"
+    },
+    {
+        "id": "reversi",
+        "title": "Reversi",
+        "summary": "Reversi is one of the first Canister and a completely decentralized multiplayer game. ",
+        "grant": "",
+        "icnaming": "reversi",
+        "type": "icp123",
+        "url": "https://ivg37-qiaaa-aaaab-aaaga-cai.ic0.app/",
+        "recommend_url": "reversi"
+    },
+    {
+        "id": "rise of the magni",
+        "title": "Rise of the Magni",
+        "summary": "<p>Rise of the Magni, built by Toniq Labs, winner of the DSCVR hackathon for games on the Internet Computer. Buy, earn, and trade collectibles, compete in tactical battles online to earn in-game tokens, and venture through story mode to experience one of the first games built on the Internet Computer.</p>",
+        "grant": "",
+        "icnaming": "rise-of-the-magni",
+        "type": "showcase",
+        "url": "https://riseofthemagni.com/",
+        "recommend_url": "rise-of-the-magni"
+    },
+    {
+        "id": "rise-of-the-magni",
+        "title": "Rise of the Magni",
+        "summary": "It is a game that is experienced through story mode adventure.",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icp123",
+        "url": "https://riseofthemagni.com/",
+        "recommend_url": "rise-of-the-magni"
+    },
+    {
+        "id": "rocklabs",
+        "title": "Rocklabs",
+        "summary": "Building Web3 on the Internet Computer.",
+        "grant": "",
+        "icnaming": "rocklabs",
+        "type": "icapp",
+        "url": "http://www.rocklabs.io/",
+        "recommend_url": "rocklabs"
+    },
+    {
+        "id": "saga",
+        "title": "Saga",
+        "summary": "The Legends Series of NFTs goes beyond aesthetics and status, confering lasting benefits and power in the Saga Tarot economy. The series is comprised of one limited edition release for each of the 21 Major Arcana in the traditional Tarot deck. One hundred cards with exclusive art will be minted for each public release, and releases will occur every two weeks.",
+        "grant": "",
+        "icnaming": "saga",
+        "type": "icapp",
+        "url": "https://legends.saga.cards/",
+        "recommend_url": "saga"
+    },
+    {
+        "id": "saga tarot",
+        "title": "Saga Tarot",
+        "summary": "Tarot game on the IC, with the goal of becoming like Hearthstone or MTG Arena",
+        "grant": "25000.0",
+        "icnaming": "saga-tarot",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "saga-tarot"
+    },
+    {
+        "id": "saga-tarot",
+        "title": "Saga Tarot",
+        "summary": "Have your fortune told on the Internet Computer. ",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icp123",
+        "url": "https://5nl7c-zqaaa-aaaah-qaa7a-cai.ic0.app/",
+        "recommend_url": "saga-tarot"
+    },
+    {
+        "id": "sailfish",
+        "title": "Sailfish",
+        "summary": "The gateway to open financial services on the Internet Computer.",
+        "grant": "",
+        "icnaming": "sailfish",
+        "type": "icp123",
+        "url": "https://sailfish.app/",
+        "recommend_url": "sailfish"
+    },
+    {
+        "id": "shelf",
+        "title": "SHELF",
+        "summary": "\"Phygital\" streaming service using NFTs",
+        "grant": "25000.0",
+        "icnaming": "shelf",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "shelf"
+    },
+    {
+        "id": "skydocs",
+        "title": "SkyDocs",
+        "summary": "Real-time document collaboration and storage",
+        "grant": "25000.0",
+        "icnaming": "skydocs",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "skydocs"
+    },
+    {
+        "id": "sly",
+        "title": "SLY",
+        "summary": "SLY is an open source, collaborative, & friendly CLI for the Internet Computer  Providing abstractions, templates, and tools to streamline development.",
+        "grant": "",
+        "icnaming": "sly",
+        "type": "icapp",
+        "url": "https://sly.ooo/",
+        "recommend_url": "sly"
+    },
+    {
+        "id": "smart contract assets within the metaverse",
+        "title": "Smart Contract Assets Within the Metaverse",
+        "summary": "Integration of canister smart contracts into existing enterprise metaverse platform",
+        "grant": "25000.0",
+        "icnaming": "smart-contract-assets-within-the-metaverse",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "smart-contract-assets-within-the-metaverse"
+    },
+    {
+        "id": "smartpiggies",
+        "title": "SmartPiggies",
+        "summary": "NFTs as digital risk transfer products",
+        "grant": "25000.0",
+        "icnaming": "smartpiggies",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "smartpiggies"
+    },
+    {
+        "id": "sns",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "sns",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "sns"
+    },
+    {
+        "id": "sonic",
+        "title": "Sonic",
+        "summary": "Swap tokens, earn fees as a liquidity provider, & build on the Internet Computer\u2019s AMM.",
+        "grant": "",
+        "icnaming": "sonic",
+        "type": "icp123",
+        "url": "https://sonic.ooo/",
+        "recommend_url": "sonic"
+    },
+    {
+        "id": "speeqo",
+        "title": "SPEEQO",
+        "summary": "Voice-based machine learning and voice analysis",
+        "grant": "25000.0",
+        "icnaming": "speeqo",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "speeqo"
+    },
+    {
+        "id": "stoic wallet",
+        "title": "Stoic Wallet",
+        "summary": "<p>Stoic Wallet by Toniq Labs allows anyone to create a digital wallet, authenticating users through a variety of methods, one of those being Internet Identity. Create accounts, keep an address book, and more. </p>",
+        "grant": "",
+        "icnaming": "stoic-wallet",
+        "type": "showcase",
+        "url": "https://www.stoicwallet.com/",
+        "recommend_url": "stoic-wallet"
+    },
+    {
+        "id": "stoic-wallet",
+        "title": "Stoic Wallet",
+        "summary": "Stoic Wallet allows anyone to create a digital wallet.",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icp123",
+        "url": "https://www.stoicwallet.com/",
+        "recommend_url": "stoic-wallet"
+    },
+    {
+        "id": "sudograph",
+        "title": "Sudograph",
+        "summary": "Sudograph is a GraphQL database for the Internet Computer. ",
+        "grant": "",
+        "icnaming": "sudograph",
+        "type": "icp123",
+        "url": "https://i67uk-hiaaa-aaaae-qaaka-cai.raw.ic0.app/",
+        "recommend_url": "sudograph"
+    },
+    {
+        "id": "supra-oracles",
+        "title": "Supra-Oracles",
+        "summary": "Oracle prototype on the Internet Computer",
+        "grant": "5000.0",
+        "icnaming": "supra-oracles",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "supra-oracles"
+    },
+    {
+        "id": "sushiswap front-end",
+        "title": "SushiSwap Front-End",
+        "summary": "<p>Sushi Swap is a Decentralized Exchange, which enables users to \"swap\" ERC20 Ethereum tokens. The back-end logic and token-standard are decentralized, but the front-end has traditionally been hosted using Web2 services (similar to other ETH \"dapps\") and as a result has experienced outages, censorship and more. This is a front-end for Sushi Swap hosted 100% on-chain, completely decentralized, using the Internet Computer in order to have a complete Web3 stack. This was a result of a community bounty -- inspect the code below. </p>",
+        "grant": "",
+        "icnaming": "sushiswap-front-end",
+        "type": "showcase",
+        "url": "https://aufz7-4qaaa-aaaaf-qae3a-cai.raw.ic0.app/swap",
+        "recommend_url": "sushiswap-front-end"
+    },
+    {
+        "id": "tacen",
+        "title": "Tacen",
+        "summary": "Building the next generation of crypto exchanges.",
+        "grant": "",
+        "icnaming": "tacen",
+        "type": "icp123",
+        "url": "https://tacen.com/",
+        "recommend_url": "tacen"
+    },
+    {
+        "id": "taggr",
+        "title": "Taggr",
+        "summary": "Taggr is an experimental social network on the Internet Computer.",
+        "grant": "",
+        "icnaming": "taggr",
+        "type": "icapp",
+        "url": "http://taggr.top/",
+        "recommend_url": "taggr"
+    },
+    {
+        "id": "terabethia",
+        "title": "Terabethia",
+        "summary": "Terabethia is a bridge between Ethereum & the Internet Computer  that contracts in both chains can use to message each other, and that Ethereum assets (ERC20, ERC721, & ERC1155) can use to be automatically mirrored & used on the IC.",
+        "grant": "",
+        "icnaming": "terabethia",
+        "type": "icapp",
+        "url": "https://terabethia.ooo/",
+        "recommend_url": "terabethia"
+    },
+    {
+        "id": "texas",
+        "title": "Texas",
+        "summary": "Suite of card games",
+        "grant": "5000.0",
+        "icnaming": "texas",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "texas"
+    },
+    {
+        "id": "texas hold'em",
+        "title": "Texas Hold'em",
+        "summary": "<p>IC Texas Hold'em is a dapp hosted completely on-chain on the Internet Computer. 2nd place winner of the DSCVR Hackathon Season 2 \u2013 play against real people across the globe live and challenge them to the classic game of Texas Holdem Poker. Mint GFT (a game token built on the Internet Computer) and use it to play cards instantly from any browser, also send messages and authenticate with Internet Identity or Stoic Wallet. </p>",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "showcase",
+        "url": "https://lm5fh-ayaaa-aaaah-aafua-cai.ic0.app/",
+        "recommend_url": "texas-hold'em"
+    },
+    {
+        "id": "texas-poker",
+        "title": "Texas Poker",
+        "summary": "Texas poker.",
+        "grant": "",
+        "icnaming": "texas-poker",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "texas-poker"
+    },
+    {
+        "id": "the video canister",
+        "title": "The video canister",
+        "summary": "Video streaming infrastructure for developers",
+        "grant": "25000.0",
+        "icnaming": "the-video-canister",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "the-video-canister"
+    },
+    {
+        "id": "the wall",
+        "title": "The Wall",
+        "summary": "Ethereum x Internet Computer dapp",
+        "grant": "5000.0",
+        "icnaming": "the-wall",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "the-wall"
+    },
+    {
+        "id": "the-ic-gallery",
+        "title": "The IC Gallery",
+        "summary": "A creative metaverse to gather all NFT enthusiasts and enjoy arts on the Internet Computer.",
+        "grant": "",
+        "icnaming": "the-ic-gallery",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "the-ic-gallery"
+    },
+    {
+        "id": "the-nft-village",
+        "title": "The NFT Village",
+        "summary": "A friendly place for all of your favorite NFTs on the Internet Computer",
+        "grant": "",
+        "icnaming": "the-nft-village",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "the-nft-village"
+    },
+    {
+        "id": "the-sword-nft",
+        "title": "The Sword NFT",
+        "summary": "An ICP exclusive. Follow for updates and airdrop information. Series 1: Little Ninjas. Only 10K Unique Ninjas will be Minted, ever.",
+        "grant": "",
+        "icnaming": "the-sword-nft",
+        "type": "icapp",
+        "url": "https://theswordnft.com/",
+        "recommend_url": "the-sword-nft"
+    },
+    {
+        "id": "the-wall",
+        "title": "The Wall",
+        "summary": "The Wall is a dapp built on the Internet Computer blockchain.",
+        "grant": "",
+        "icnaming": "the-wall",
+        "type": "icp123",
+        "url": "https://rivyl-6aaaa-aaaaf-qaapq-cai.raw.ic0.app/",
+        "recommend_url": "the-wall"
+    },
+    {
+        "id": "thespiderdao",
+        "title": "theSpiderDAO",
+        "summary": "Official account for the SpiderDAO.",
+        "grant": "",
+        "icnaming": "thespiderdao",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "thespiderdao"
+    },
+    {
+        "id": "theswordnft",
+        "title": "The Sword NFT",
+        "summary": " Follow for updates and airdrop information.",
+        "grant": "",
+        "icnaming": "theswordnft",
+        "type": "icp123",
+        "url": "https://theswordnft.com/",
+        "recommend_url": "theswordnft"
+    },
+    {
+        "id": "thuba",
+        "title": "THUBA Education",
+        "summary": "THUBA Education is an education platform supported by Tsinghua University student Blockchain Association.",
+        "grant": "",
+        "icnaming": "thuba",
+        "type": "icp123",
+        "url": "https://thublockchain.org/",
+        "recommend_url": "thuba"
+    },
+    {
+        "id": "thuba education",
+        "title": "Thuba Education",
+        "summary": "Beginner resources for building on the IC",
+        "grant": "5000.0",
+        "icnaming": "skip",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "thuba-education"
+    },
+    {
+        "id": "tingram",
+        "title": "TinGram",
+        "summary": "Tokenized dating app",
+        "grant": "25000.0",
+        "icnaming": "tingram",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "tingram"
+    },
+    {
+        "id": "toniq labs",
+        "title": "Toniq Labs",
+        "summary": "<p>Toniq Labs is the creator of Entrepot NFT marketplace, Stoic Wallet, Exponent, and Rise of the Magni, Cronic NFTs and more. Try out their projects that range from NFTs to wrapped cycles to games built on, and for, the Internet Computer blockchain.</p>",
+        "grant": "",
+        "icnaming": "toniq-labs",
+        "type": "showcase",
+        "url": "https://igpeu-waaaa-aaaad-qaava-cai.raw.ic0.app/",
+        "recommend_url": "toniq-labs"
+    },
+    {
+        "id": "toniq-labs",
+        "title": "TONIQ LABS",
+        "summary": "Building the future with blockchain",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icp123",
+        "url": "https://igpeu-waaaa-aaaad-qaava-cai.raw.ic0.app/",
+        "recommend_url": "toniq-labs"
+    },
+    {
+        "id": "toniqlabs",
+        "title": "toniqlabs",
+        "summary": "We build professional tools and services on the decentralized web",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icapp",
+        "url": "https://toniqlabs.com/",
+        "recommend_url": "toniqlabs"
+    },
+    {
+        "id": "triip",
+        "title": "Triip",
+        "summary": "A decentralized, sustainable travel co-op",
+        "grant": "25000.0",
+        "icnaming": "triip",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "triip"
+    },
+    {
+        "id": "uniswap",
+        "title": "Uniswap Front End",
+        "summary": "Uniswap front end hosted on the Internet Computer through Fleek.",
+        "grant": "",
+        "icnaming": "uniswap",
+        "type": "icp123",
+        "url": "https://lqku6-wqaaa-aaaad-qalmq-cai.ic.fleek.co/",
+        "recommend_url": "uniswap"
+    },
+    {
+        "id": "uniswap front end on the ic",
+        "title": "Uniswap Front End on the IC",
+        "summary": "<p>Uniswap front end hosted on the Internet Computer through Fleek. Showing how traditional DeFi solutions can now be hosted completely on-chain by using the Internet Computer blockchain. Another use case of completely decentralizing a service which currently has a centralized front end.</p>",
+        "grant": "",
+        "icnaming": "uniswap-front-end-on-the-ic",
+        "type": "showcase",
+        "url": "https://lqku6-wqaaa-aaaad-qalmq-cai.ic.fleek.co/#/swap",
+        "recommend_url": "uniswap-front-end-on-the-ic"
+    },
+    {
+        "id": "unite",
+        "title": "Unite",
+        "summary": "Community organizing dapp",
+        "grant": "5000.0",
+        "icnaming": "unite",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "unite"
+    },
+    {
+        "id": "usergeek",
+        "title": "Usergeek",
+        "summary": "Product analytics tool for IC dapp developers",
+        "grant": "25000.0",
+        "icnaming": "usergeek",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "usergeek"
+    },
+    {
+        "id": "waterslide",
+        "title": "Waterslide",
+        "summary": "Building the first Liquity front-end on the Internet Computer",
+        "grant": "5000.0",
+        "icnaming": "waterslide",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "waterslide"
+    },
+    {
+        "id": "waterslide-app",
+        "title": "waterslide.app",
+        "summary": "Frontend to interact with the Liquity Protocol. Powered by @dfinity",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icapp",
+        "url": "https://waterslide.app/",
+        "recommend_url": "waterslide-app"
+    },
+    {
+        "id": "weact",
+        "title": "WeAct.chat",
+        "summary": "The app made for groups of advocates, activists, and change makers working to better the world",
+        "grant": "",
+        "icnaming": "weact",
+        "type": "icp123",
+        "url": "https://www.weact.chat/dfinity",
+        "recommend_url": "weact"
+    },
+    {
+        "id": "weact.chat",
+        "title": "WeAct.chat",
+        "summary": "Social activism dapp designed to support communication, collaboration, and crowdsourcing of work  ",
+        "grant": "25000.0",
+        "icnaming": "skip",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "weact.chat"
+    },
+    {
+        "id": "webi-ai",
+        "title": "Webi Ai",
+        "summary": "We make decentralized technological solutions for a decentralized technological world.",
+        "grant": "",
+        "icnaming": "webi-ai",
+        "type": "icapp",
+        "url": "https://webi.ai/",
+        "recommend_url": "webi-ai"
+    },
+    {
+        "id": "week-in-dfinity-news",
+        "title": "Week in Dfinity News",
+        "summary": "Week in Dfinity News.",
+        "grant": "",
+        "icnaming": "week-in-dfinity-news",
+        "type": "icapp",
+        "url": "https://www.weekindfinity.com/",
+        "recommend_url": "week-in-dfinity-news"
+    },
+    {
+        "id": "welcome into the metaverse",
+        "title": "Welcome Into the Metaverse",
+        "summary": "<p>Prize winner of the DSCVR hackathon for the Internet Computer \u2013 this game brings digital community into a unified virtual space. Find anecdotes from founding ecosystem members, and go through a series of quests.</p>",
+        "grant": "",
+        "icnaming": "welcome-into-the-metaverse",
+        "type": "showcase",
+        "url": "https://lc7ip-3iaaa-aaaah-aafva-cai.ic0.app/",
+        "recommend_url": "welcome-into-the-metaverse"
+    },
+    {
+        "id": "wild and west",
+        "title": "Wild and West",
+        "summary": "<p>Wild and West NFTs were featured at the 2021 NFT NYC event, as well as showcased at the ICONIC NFT Art Gallery hosted by the DFINITY Foundation and Toniq Labs. Wild and West NFTs are the backbone of a few different cross-blockchain projects being led by the creative studio. Bridging native components of the Ethereum and Internet Computer blockchains to make an immersive experience for NFT holders. </p>",
+        "grant": "",
+        "icnaming": "wild-and-west",
+        "type": "showcase",
+        "url": "https://entrepot.app/marketplace/wildwest",
+        "recommend_url": "wild-and-west"
+    },
+    {
+        "id": "wild-and-west-nft",
+        "title": "Wild and West NFT",
+        "summary": "NFT project by Wild and West creative studio.",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icapp",
+        "url": "https://wildandwest.com/",
+        "recommend_url": "wild-and-west-nft"
+    },
+    {
+        "id": "wrapped-trillion-cycles",
+        "title": "Wrapped Trillion Cycles",
+        "summary": "The stablecoin backed by computation. WTC utilize our Extendable Token Standard to wrap native computation \u201ccycles\u201d. Powered by @ExponentPLTF | From @toniqlabs.",
+        "grant": "",
+        "icnaming": "wrapped-trillion-cycles",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "wrapped-trillion-cycles"
+    },
+    {
+        "id": "xrfoundation",
+        "title": "XR Foundation",
+        "summary": "an open source zero-profit collective building metaverse technologies.",
+        "grant": "",
+        "icnaming": "xrfoundation",
+        "type": "icp123",
+        "url": "https://www.xrfoundation.io/",
+        "recommend_url": "xrfoundation"
+    },
+    {
+        "id": "xrfoundation - xrengine, blockchain-in-a-box, digital beings",
+        "title": "XRFoundation - XREngine, Blockchain-in-a-Box, Digital Beings",
+        "summary": "Open source tools and infrastructure for metaverse building",
+        "grant": "100000.0",
+        "icnaming": "skip",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "xrfoundation---xrengine,-blockchain-in-a-box,-digital-beings"
+    },
+    {
+        "id": "yolo-club",
+        "title": "Yolo Club",
+        "summary": "#YoloOctopus is collection of 8888 Intelligently generated NFTs on the Internet Computer blockchain.",
+        "grant": "",
+        "icnaming": "yolo-club",
+        "type": "icp123",
+        "url": "https://enteryoloclub.com/",
+        "recommend_url": "yolo-club"
+    }
+]
