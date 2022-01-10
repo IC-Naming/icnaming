@@ -7,11 +7,16 @@ use log::info;
 #[cfg(test)]
 mod tests;
 
+/// Name registration
 #[derive(Eq, PartialEq, Debug, Clone)]
 pub struct Registration {
+    /// The owner of the name
     owner: Principal,
+    /// Domain name
     name: String,
+    /// When the name is expired
     expired_at: u64,
+    /// When the name is registered
     created_at: u64,
 }
 
@@ -42,18 +47,27 @@ impl Registration {
     }
 }
 
+/// Details of a registration
 #[derive(CandidType)]
 pub struct RegistrationDetails {
+    /// The owner of the registration
     owner: Principal,
+    /// Domain name
     name: String,
+    /// When the registration expires, ms since epoch
     expired_at: u64,
+    /// When the registration was created, ms since epoch
     created_at: u64,
 }
 
+/// Details of a registration
 #[derive(CandidType)]
-pub(crate) struct RegistrationDto {
+pub struct RegistrationDto {
+    /// Domain name
     name: String,
+    /// When the registration expires, ms since epoch
     expired_at: u64,
+    /// When the registration was created, ms since epoch
     created_at: u64,
 }
 
@@ -79,9 +93,14 @@ impl From<&Registration> for RegistrationDto {
     }
 }
 
+/// Quota type to be used for registration
 #[derive(Deserialize, CandidType, Clone, Hash, Eq, PartialEq, Debug)]
 pub enum QuotaType {
+    /// The length of name's the first part in chars must be equal to the value.
+    /// e.g. LenEq(3) means that the first part of the name must be 3 chars long.
     LenEq(u8),
+    /// The length of name's the first part in chars must be more than or equal to the value.
+    /// e.g. LenGt(3) means that the first part of the name must be at least 3 chars long.
     LenGte(u8),
 }
 

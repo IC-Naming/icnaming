@@ -76,9 +76,12 @@ impl ICNSError {
     }
 }
 
+/// Error information
 #[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq, CandidType, Deserialize)]
 pub struct ErrorInfo {
+    /// Error code
     code: u32,
+    /// Error message
     message: String,
 }
 
@@ -91,6 +94,7 @@ pub fn get_error_code(error: ICNSError) -> ErrorInfo {
 
 pub type ICNSResult<T> = anyhow::Result<T, ICNSError>;
 
+/// A helper function to convert anyhow::Result<T, ICNSError> to ICNSResult<T>
 pub type ICNSActorResult<T> = Result<T, ErrorInfo>;
 
 impl From<ICNSError> for ErrorInfo {
