@@ -88,4 +88,4 @@ echo "calling favorites get_favorites"
 dfx canister call favorites get_favorites '()'
 
 
-dfx canister call registrar get_all_details '(record { offset=0 ; limit=100 })'
+dfx canister  --no-wallet call registrar get_all_details '(record { offset=0 ; limit=100 })'
