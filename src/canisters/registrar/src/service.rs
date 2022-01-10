@@ -15,6 +15,7 @@ use common::naming::{normalize_name, NameParseResult};
 use common::state::{get_principal, is_owner};
 
 use crate::models::*;
+use crate::reserved_list::RESERVED_NAMES;
 use crate::state::{REGISTRATIONS, SETTINGS, USER_QUOTA_MANAGER};
 
 #[cfg(test)]
@@ -84,6 +85,28 @@ impl RegistrarService {
             }
             Ok(RegistrationDetails::from(registration.unwrap()))
         })
+    }
+
+    pub(crate) fn get_all_details(
+        &self,
+        caller: &Principal,
+        input: &GetPageInput,
+    ) -> ICNSResult<Vec<RegistrationDetails>> {
+        if !is_owner(caller) {
+            return Err(ICNSError::InvalidOwner);
+        }
+        input.validate()?;
+        let items = REGISTRATIONS.with(|registrations| {
+            registrations
+                .borrow()
+                .values()
+                .skip(input.offset)
+                .take(input.limit)
+                .map(|registration| registration.into())
+                .collect()
+        });
+
+        Ok(items)
     }
 
     pub(crate) fn get_owner(&self, name: &str) -> ICNSResult<Principal> {
@@ -202,6 +225,11 @@ impl RegistrarService {
             });
         }
 
+        // check reserved names
+        if RESERVED_NAMES.contains(&name_result.get_current_level().unwrap().as_str()) {
+            return Err(ICNSError::RegistrationHasBeenTaken);
+        }
+
         REGISTRATIONS.with(|registrations| {
             let registrations = registrations.borrow();
             if registrations.contains_key(&name) {
@@ -266,6 +294,10 @@ impl RegistrarService {
             return Err(ICNSError::InvalidName {
                 reason: result.err().unwrap().to_string(),
             });
+        }
+        let result = result.unwrap();
+        if RESERVED_NAMES.contains(&result.get_current_level().unwrap().as_str()) {
+            return Err(ICNSError::RegistrationHasBeenTaken);
         }
         REGISTRATIONS.with(|registrations| {
             let registrations = registrations.borrow();

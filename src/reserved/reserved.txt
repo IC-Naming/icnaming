@@ -7,3 +7,4 @@ cycle
 icp
 nns
 sns
+ns

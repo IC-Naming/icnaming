@@ -244,7 +244,7 @@
         "title": "Crowd Created Canvas ",
         "summary": "C3 Protocol is composed of the word 'Crowd Creative Collections'.",
         "grant": "",
-        "icnaming": "ccc",
+        "icnaming": "crowd-created-canvas",
         "type": "icp123",
         "url": "https://sdnoa-fiaaa-aaaah-aaubq-cai.ic0.app/",
         "recommend_url": "ccc"
@@ -444,7 +444,7 @@
         "title": "Cube Run",
         "summary": "<p>The classic game, \"Cube Run\" gets an update by having a new graphic interface and being hosted completely on-chain. The decentralized version of this game lets you keep your high-score running in your browser through persistent memory. </p>",
         "grant": "",
-        "icnaming": "skip",
+        "icnaming": "cube-run",
         "type": "showcase",
         "url": "https://7qx3n-ziaaa-aaaad-qaqca-cai.raw.ic0.app/",
         "recommend_url": "cube-run"
@@ -454,7 +454,7 @@
         "title": "Cube Run",
         "summary": "The classic game, \u201cCube Run\u201d gets an update by having a new graphic interface and being hosted completely on-chain. ",
         "grant": "",
-        "icnaming": "cuberun",
+        "icnaming": "skip",
         "type": "icp123",
         "url": "https://7qx3n-ziaaa-aaaad-qaqca-cai.raw.ic0.app/",
         "recommend_url": "cuberun"
@@ -544,7 +544,7 @@
         "title": "Data App Development Platform",
         "summary": "Low code platform that enables engineering teams build data apps and workflows",
         "grant": "25000.0",
-        "icnaming": "tbd",
+        "icnaming": "data-app-development-platform",
         "type": "grant",
         "url": "",
         "recommend_url": "data-app-development-platform"
@@ -974,7 +974,7 @@
         "title": "DWS (Dfinity Web Services)",
         "summary": "Data management tools for developers",
         "grant": "5000.0",
-        "icnaming": "dws",
+        "icnaming": "dfinity-web-services",
         "type": "grant",
         "url": "",
         "recommend_url": "dws-(dfinity-web-services)"
@@ -1434,7 +1434,7 @@
         "title": "Internet Computer Association",
         "summary": "The Internet Computer Association (ICA) is a Geneva-based independent members organization.",
         "grant": "",
-        "icnaming": "ica",
+        "icnaming": "skip",
         "type": "icp123",
         "url": "https://internetcomputer.org/",
         "recommend_url": "ica"
@@ -1444,7 +1444,7 @@
         "title": "ICA Dashboard",
         "summary": "<p>The Internet Computer Association maintains a public dashboard where anyone can track the latest statistics for the Internet Computer blockchain. Tracking everything from blocks per second, to NNS proposals and their information and voting record, as well the latest state of the network, and transaction data. </p>",
         "grant": "",
-        "icnaming": "skip",
+        "icnaming": "ica-dashboard",
         "type": "showcase",
         "url": "https://dashboard.internetcomputer.org/",
         "recommend_url": "ica-dashboard"
@@ -1894,7 +1894,7 @@
         "title": "Infinite Charity Project ",
         "summary": "A fine art photography NFT sale to benefit a forever home for rescued chimps.",
         "grant": "",
-        "icnaming": "icproject_nft",
+        "icnaming": "icproject-nft",
         "type": "icp123",
         "url": "https://chimps.icproject.org/",
         "recommend_url": "icproject_nft"
@@ -2104,7 +2104,7 @@
         "title": "Internet Computer Based Blogs/News/CMS Site",
         "summary": "Internet Computer Based Blogs/News/CMS Site",
         "grant": "5000.0",
-        "icnaming": "internet-computer-based-blogs/news/cms-site",
+        "icnaming": "internet-computer-based-blogs",
         "type": "grant",
         "url": "",
         "recommend_url": "internet-computer-based-blogs/news/cms-site"
@@ -2584,7 +2584,7 @@
         "title": "NFT Studio",
         "summary": "NFT Studio allows users to Mint, Buy, Sell and Stake 3DWASM NFTs on the Internet Computer - Revolutionary.",
         "grant": "",
-        "icnaming": "nft-studio",
+        "icnaming": "skip",
         "type": "icapp",
         "url": "http://nftstudio.biz/",
         "recommend_url": "nft-studio"
@@ -2594,7 +2594,7 @@
         "title": "NFT Studio",
         "summary": "NFT Studio allows users to Mint, Buy, Sell and Stake 3DWASM NFTs on the Internet Computer",
         "grant": "",
-        "icnaming": "nftstudio",
+        "icnaming": "skip",
         "type": "icp123",
         "url": "https://7xw5z-uqaaa-aaaad-qaqcq-cai.raw.ic0.app/",
         "recommend_url": "nftstudio"
@@ -2604,7 +2604,7 @@
         "title": "NFT Village",
         "summary": "A friendly place for all of your favorite NFTs on the Internet Computer",
         "grant": "",
-        "icnaming": "nftvillage",
+        "icnaming": "skip",
         "type": "icp123",
         "url": "https://nntkg-vqaaa-aaaad-qamfa-cai.ic.fleek.co/",
         "recommend_url": "nftvillage"
@@ -2658,6 +2658,16 @@
         "type": "icp123",
         "url": "https://www.nnsdao.org/",
         "recommend_url": "nnsdao"
+    },
+    {
+        "id": "ns",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "ns",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "ns"
     },
     {
         "id": "nuance",
@@ -2774,7 +2784,7 @@
         "title": "PartyBoard",
         "summary": "Metaverse Social Platform, Meta-Social Network, SocialFi.",
         "grant": "",
-        "icnaming": "partyboard",
+        "icnaming": "skip",
         "type": "icapp",
         "url": "https://www.partyboard.org/",
         "recommend_url": "partyboard"
@@ -2784,7 +2794,7 @@
         "title": "Perun Channels on the Internet Computer",
         "summary": "Perun state channels on the Internet Computer",
         "grant": "25000.0",
-        "icnaming": "perun-channels-on-the-internet-computer",
+        "icnaming": "perun-channels",
         "type": "grant",
         "url": "",
         "recommend_url": "perun-channels-on-the-internet-computer"
@@ -3474,7 +3484,7 @@
         "title": "XR Foundation",
         "summary": "an open source zero-profit collective building metaverse technologies.",
         "grant": "",
-        "icnaming": "xrfoundation",
+        "icnaming": "xr-foundation",
         "type": "icp123",
         "url": "https://www.xrfoundation.io/",
         "recommend_url": "xrfoundation"

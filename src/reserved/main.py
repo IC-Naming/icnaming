@@ -2,6 +2,7 @@ import json
 import csv
 import os
 import shutil
+import re
 
 
 def main():
@@ -66,6 +67,8 @@ def main():
     # write projects to json file
     with open(file_path, 'w', encoding='utf8') as f:
         json.dump([p.serialize() for p in projects], f, indent=4)
+
+    create_reserved_list()
 
 
 def load_grant_projects():
@@ -163,6 +166,56 @@ def csv_to_json():
     # write projects to json file
     with open(json_path, 'w', encoding='utf8') as f:
         json.dump([p.serialize() for p in new_projects], f, indent=4)
+
+
+def create_reserved_list():
+    json_path = 'reserved.json'
+    # load projects from json file
+    with open(json_path, 'r', encoding='utf8') as f:
+        projects = json.load(f)
+
+    # create map of reserved projects with icnaming as key
+    reserved_projects = {}
+    for p in projects:
+        if p['icnaming'] not in reserved_projects:
+            reserved_projects[p['icnaming']] = []
+        reserved_projects[p['icnaming']].append(p['id'])
+
+    result = {}
+    for k, v in reserved_projects.items():
+        result[k] = v[0]
+        kk = k.replace('-', '')
+        if kk != k:
+            result[kk] = v[0]
+
+    # remove 'tbd' and 'skip'
+    result.pop('tbd', None)
+    result.pop('skip', None)
+
+    result = sorted(result.items())
+
+    # ensure all keys are contains only lowercase letters, numbers and '-'
+    for k, v in result:
+        if not re.match('^[a-z0-9-]+$', k):
+            print(f"{k} is not a valid key")
+            exit(1)
+
+    # write result to csv file
+    with open('reserved_list.csv', 'w', encoding='utf8', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow(['icnaming', 'id'])
+        # result to array order by icnaming
+        for k, v in result:
+            writer.writerow([k, v])
+
+    # write keys to rs file
+    with open('../canisters/registrar/src/reserved_list.rs', 'w', encoding='utf8') as f:
+        f.write("pub const RESERVED_NAMES: &[&str] = &[\n")
+        for k, v in result:
+            f.write(f"    \"{k}\",\n")
+        f.write("];\n")
+        
+    print(f"reserved list created")
 
 
 if __name__ == "__main__":

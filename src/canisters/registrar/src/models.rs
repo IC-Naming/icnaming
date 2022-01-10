@@ -62,7 +62,7 @@ pub struct RegistrationDetails {
 
 /// Details of a registration
 #[derive(CandidType)]
-pub(crate) struct RegistrationDto {
+pub struct RegistrationDto {
     /// Domain name
     name: String,
     /// When the registration expires, ms since epoch

@@ -171,6 +171,11 @@ mod available {
             let result = service.available(name);
             assert_eq!(result, Err(ICNSError::RegistrationHasBeenTaken));
         }
+        {
+            let name = "icnaming.icp";
+            let result = service.available(name);
+            assert_eq!(result, Err(ICNSError::RegistrationHasBeenTaken));
+        }
     }
 }
 
@@ -349,6 +354,21 @@ mod register {
                 Registration::new(owner, name.to_string(), 0, 0),
             );
         });
+        let result = service
+            .register(name, &owner, year, 0, &quota_owner, TEST_QUOTA)
+            .await;
+        assert_quota_count(&quota_owner, 1);
+        assert_eq!(result, Err(ICNSError::RegistrationHasBeenTaken));
+    }
+
+    #[rstest]
+    async fn test_register_err_reserved(
+        mut service: RegistrarService,
+        owner: Principal,
+        quota_owner: Principal,
+    ) {
+        let name = "icnaming.icp";
+        let year = 0;
         let result = service
             .register(name, &owner, year, 0, &quota_owner, TEST_QUOTA)
             .await;

@@ -86,3 +86,6 @@ echo "calling favorites remove_favorite"
 dfx canister call favorites remove_favorite '("nice2.icp")'
 echo "calling favorites get_favorites"
 dfx canister call favorites get_favorites '()'
+
+
+dfx canister call registrar get_all_details '(record { offset=0 ; limit=100 })'

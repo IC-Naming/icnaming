@@ -131,6 +131,19 @@ pub fn get_details(name: String) -> ICNSActorResult<RegistrationDetails> {
     to_actor_result(result)
 }
 
+/// Get all details
+/// Returns all name details.
+///
+/// * `name` - name to get details for
+#[query(name = "get_all_details")]
+#[candid_method(query, rename = "get_all_details")]
+pub fn get_all_details(input: GetPageInput) -> ICNSActorResult<Vec<RegistrationDetails>> {
+    let caller = api::caller();
+    let service = RegistrarService::new();
+    let result = service.get_all_details(&caller, &input);
+    to_actor_result(result)
+}
+
 /// Add quotas to a quota owner.
 /// Returns true if quotas are added successfully.
 ///
