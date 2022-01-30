@@ -8,3 +8,7 @@ icp
 nns
 sns
 ns
+cbd
+jan
+dom
+relation

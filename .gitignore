@@ -2,3 +2,5 @@
 
 /src/package/
 .idea
+
+node_modules

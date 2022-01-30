@@ -240,6 +240,16 @@
         "recommend_url": "catalyze"
     },
     {
+        "id": "cbd",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "cbd",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "cbd"
+    },
+    {
         "id": "ccc",
         "title": "Crowd Created Canvas ",
         "summary": "C3 Protocol is composed of the word 'Crowd Creative Collections'.",
@@ -898,6 +908,16 @@
         "type": "icp123",
         "url": "http://dmail.ai/",
         "recommend_url": "dmail"
+    },
+    {
+        "id": "dom",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "dom",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "dom"
     },
     {
         "id": "doocoins",
@@ -2180,6 +2200,16 @@
         "recommend_url": "internetcomputer"
     },
     {
+        "id": "jan",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "jan",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "jan"
+    },
+    {
         "id": "japan-dao-association",
         "title": "Japan DAO Association",
         "summary": "Japan DAO Association -LIFE with DAO- ",
@@ -2918,6 +2948,16 @@
         "type": "icp123",
         "url": "https://Ratels.app/",
         "recommend_url": "ratels"
+    },
+    {
+        "id": "relation",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "relation",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "relation"
     },
     {
         "id": "reversi",
