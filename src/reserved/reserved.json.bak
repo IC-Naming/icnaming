@@ -240,6 +240,16 @@
         "recommend_url": "catalyze"
     },
     {
+        "id": "cbd",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "cbd",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "cbd"
+    },
+    {
         "id": "ccc",
         "title": "Crowd Created Canvas ",
         "summary": "C3 Protocol is composed of the word 'Crowd Creative Collections'.",
@@ -900,6 +910,16 @@
         "recommend_url": "dmail"
     },
     {
+        "id": "dom",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "dom",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "dom"
+    },
+    {
         "id": "doocoins",
         "title": "DooCoins",
         "summary": "A task-based rewards platform for kids",
@@ -918,6 +938,16 @@
         "type": "icp123",
         "url": "https://2kvgp-zyaaa-aaaai-aappq-cai.raw.ic0.app/",
         "recommend_url": "dots"
+    },
+    {
+        "id": "drake",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "drake",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "drake"
     },
     {
         "id": "drip-land",
@@ -1208,6 +1238,16 @@
         "type": "icapp",
         "url": "https://www.hauntedhamsters.io/",
         "recommend_url": "haunted-hamsters"
+    },
+    {
+        "id": "herbert",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "herbert",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "herbert"
     },
     {
         "id": "hexgl",
@@ -1760,6 +1800,16 @@
         "recommend_url": "icp123"
     },
     {
+        "id": "icpad",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "icpad",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "icpad"
+    },
+    {
         "id": "icpart",
         "title": "ICP Art",
         "summary": "Exclusive Hand-Crafted Art Collections",
@@ -1878,6 +1928,16 @@
         "type": "grant",
         "url": "",
         "recommend_url": "icpmeet"
+    },
+    {
+        "id": "icport",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "icport",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "icport"
     },
     {
         "id": "icprime8s",
@@ -2178,6 +2238,16 @@
         "type": "reserved",
         "url": "",
         "recommend_url": "internetcomputer"
+    },
+    {
+        "id": "jan",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "jan",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "jan"
     },
     {
         "id": "japan-dao-association",
@@ -2920,6 +2990,16 @@
         "recommend_url": "ratels"
     },
     {
+        "id": "relation",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "relation",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "relation"
+    },
+    {
         "id": "reversi",
         "title": "Reversi",
         "summary": "Reversi is one of the first Canister and a completely decentralized multiplayer game. ",
@@ -3300,6 +3380,16 @@
         "recommend_url": "tingram"
     },
     {
+        "id": "toniq",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "toniq",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "toniq"
+    },
+    {
         "id": "toniq labs",
         "title": "Toniq Labs",
         "summary": "<p>Toniq Labs is the creator of Entrepot NFT marketplace, Stoic Wallet, Exponent, and Rise of the Magni, Cronic NFTs and more. Try out their projects that range from NFTs to wrapped cycles to games built on, and for, the Internet Computer blockchain.</p>",
@@ -3327,6 +3417,16 @@
         "icnaming": "skip",
         "type": "icapp",
         "url": "https://toniqlabs.com/",
+        "recommend_url": "toniqlabs"
+    },
+    {
+        "id": "toniqlabs",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "toniqlabs",
+        "type": "reserved",
+        "url": "",
         "recommend_url": "toniqlabs"
     },
     {
@@ -3438,6 +3538,16 @@
         "type": "icapp",
         "url": "https://www.weekindfinity.com/",
         "recommend_url": "week-in-dfinity-news"
+    },
+    {
+        "id": "weekindfinity",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "weekindfinity",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "weekindfinity"
     },
     {
         "id": "welcome into the metaverse",
