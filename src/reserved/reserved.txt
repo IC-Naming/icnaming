@@ -26,3 +26,5 @@ earth
 icity
 icpl
 avatar
+gpad
+badge
