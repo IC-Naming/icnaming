@@ -50,6 +50,16 @@
         "recommend_url": "astrox"
     },
     {
+        "id": "avatar",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "avatar",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "avatar"
+    },
+    {
         "id": "aviate-labs",
         "title": "Aviate Labs",
         "summary": "A Web3 Construction Lab.",
@@ -88,6 +98,16 @@
         "type": "icp123",
         "url": "https://b9lab.com/",
         "recommend_url": "b9lab"
+    },
+    {
+        "id": "badge",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "badge",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "badge"
     },
     {
         "id": "bauction",
@@ -318,6 +338,16 @@
         "type": "grant",
         "url": "",
         "recommend_url": "civol"
+    },
+    {
+        "id": "codebase",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "codebase",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "codebase"
     },
     {
         "id": "coin-flipper",
@@ -870,6 +900,16 @@
         "recommend_url": "dflow"
     },
     {
+        "id": "dft",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "dft",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "dft"
+    },
+    {
         "id": "dgdg",
         "title": "DGDG (dgastonia)",
         "summary": "The most comprehensive browsing experience for NFTs on The Internet Computer. Sort and filter by price & rarity, expose floors, ... more to come!",
@@ -1010,6 +1050,16 @@
         "recommend_url": "dws-(dfinity-web-services)"
     },
     {
+        "id": "earth",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "earth",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "earth"
+    },
+    {
         "id": "earth wallet",
         "title": "Earth Wallet",
         "summary": "Security audit support for non-custodial wallet",
@@ -1028,6 +1078,16 @@
         "type": "icp123",
         "url": "https://www.earthwallet.io/",
         "recommend_url": "earth-wallet"
+    },
+    {
+        "id": "earthdao",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "earthdao",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "earthdao"
     },
     {
         "id": "economia",
@@ -1098,6 +1158,16 @@
         "type": "showcase",
         "url": "https://fxa77-fiaaa-aaaae-aaana-cai.raw.ic0.app/evm/",
         "recommend_url": "evm-on-icp"
+    },
+    {
+        "id": "ex3",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "ex3",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "ex3"
     },
     {
         "id": "exponent",
@@ -1218,6 +1288,16 @@
         "type": "grant",
         "url": "",
         "recommend_url": "golang-developer-tools"
+    },
+    {
+        "id": "gpad",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "gpad",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "gpad"
     },
     {
         "id": "haundet-hamsters",
@@ -1540,6 +1620,16 @@
         "recommend_url": "iccomics"
     },
     {
+        "id": "icdevs",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "icdevs",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "icdevs"
+    },
+    {
         "id": "icdrip",
         "title": "ICDrip",
         "summary": "IC Drip are randomly generated meta-commerce shopping carts for outfits and personas stored on chain. Stats, images, and other functionality are intentionally omitted for others to interpret. Feel free to use IC Drip in any way you want.",
@@ -1588,6 +1678,16 @@
         "type": "icapp",
         "url": "",
         "recommend_url": "icircle-nft"
+    },
+    {
+        "id": "icity",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "icity",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "icity"
     },
     {
         "id": "ickitties",
@@ -1878,6 +1978,16 @@
         "type": "grant",
         "url": "",
         "recommend_url": "icpipeline"
+    },
+    {
+        "id": "icpl",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "icpl",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "icpl"
     },
     {
         "id": "icpl-community",
@@ -2658,6 +2768,16 @@
         "type": "icapp",
         "url": "http://nftstudio.biz/",
         "recommend_url": "nft-studio"
+    },
+    {
+        "id": "nftgaga",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "nftgaga",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "nftgaga"
     },
     {
         "id": "nftstudio",
