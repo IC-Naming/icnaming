@@ -14,7 +14,7 @@ serde_bytes = "0.11"
 anyhow = "1.0.53"
 thiserror = "1.0"
 log = "0.4"
-async-trait = "0.1.51"
+async-trait = "0.1.52"
 url = "2.2.2"
 
 [dev-dependencies]
