@@ -23,5 +23,5 @@ ic-kit = { git = "https://github.com/Deland-Labs/ic-kit"}
 [dev-dependencies]
 env_logger = "0.9.0"
 test_common = { path = "../test_common" }
-rstest = "0.11.0"
+rstest = "0.12.0"
 async-std = { version = "1.10", features = ["attributes"] }
