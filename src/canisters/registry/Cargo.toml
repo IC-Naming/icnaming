@@ -11,7 +11,7 @@ crate-type = ["cdylib"]
 [dependencies]
 ic-cdk = "0.3.3"
 ic-cdk-macros = "0.4.0"
-candid = "0.7.8"
+candid = "0.7.10"
 serde = "1.0.130"
 serde_bytes = "0.11"
 common = { path = "../common" }
