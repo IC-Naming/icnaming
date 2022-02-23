@@ -11,40 +11,119 @@ on:
       - develop
 
 jobs:
-  build:
+  integration_test:
     runs-on: ubuntu-latest
-    env:
-      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
     container: 
       image: docker.io/kentsday/dfx_rust:bullseye
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      # - name: setup dfx
-      #   run: |
-      #     sh -ci "$(curl -fsSL https://sdk.dfinity.org/install.sh)"
-      # - name: Install toolchain
-      #   uses: actions-rs/toolchain@v1
-      #   with:
-      #     profile: minimal
-      #     toolchain: stable
-      #     override: true
-      #     components: rustfmt, clippy
-      - name: install canister
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+          cache: 'npm'
+          cache-dependency-path: 'src/package-lock.json'
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          target: 'wasm32-unknown-unknown'
+      - uses: Swatinem/rust-cache@v1
+        with:
+          working-directory: 'src/icnaming_ledger'
+      - uses: Swatinem/rust-cache@v1
+        with:
+          working-directory: 'src'
+      - name: run integration test
         run: |
           cd $GITHUB_WORKSPACE/src
-          chmod a+x ./sh_start.sh
-          chmod a+x ./sh_deploy.sh
-          ./sh_start.sh
+          dfx start --background
+          chmod a+x ./sh_setup_dev.sh
+          ./sh_setup_dev.sh
 
+          chmod a+x ./sh_build.sh
+          ./sh_build.sh
+
+          npm run test-report
           dfx stop
-      - name: create package
+      - uses: deblockt/cucumber-report-annotations-action@v1.7
+        with:
+          access-token: ${{ secrets.GITHUB_TOKEN }}
+          path: "**/cucumber-report.json"
+  unit_test:
+    runs-on: ubuntu-latest
+    container: 
+      image: docker.io/kentsday/dfx_rust:bullseye
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+          cache: 'npm'
+          cache-dependency-path: 'src/package-lock.json'
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          target: 'wasm32-unknown-unknown'
+      - uses: Swatinem/rust-cache@v1
+        with:
+          working-directory: 'src'
+      - name: setup dev
         run: |
           cd $GITHUB_WORKSPACE/src
-          pipenv install
-          pipenv run invoke package
+          dfx start --background
+          chmod a+x ./sh_setup_dev.sh
+          ./sh_setup_dev.sh
       - name:  unit test
         run: |
           cd $GITHUB_WORKSPACE/src
           cargo test
+          cd $GITHUB_WORKSPACE/src/icnaming_ledger
+          cargo test
+  create_package:
+    runs-on: ubuntu-latest
+    container: 
+      image: docker.io/kentsday/dfx_rust:bullseye
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+          cache: 'npm'
+          cache-dependency-path: 'src/package-lock.json'
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          target: 'wasm32-unknown-unknown'
+      - uses: Swatinem/rust-cache@v1
+        with:
+          working-directory: 'src/icnaming_ledger'
+      - uses: Swatinem/rust-cache@v1
+        with:
+          working-directory: 'src'
+      - name: run package
+        run: |
+          cd $GITHUB_WORKSPACE/src
+          dfx start --background
+          chmod a+x ./sh_setup_dev.sh
+          ./sh_setup_dev.sh
+          
+          chmod a+x ./sh_package.sh
+          ./sh_package.sh
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: "dev"
+          path: src/package/dev/
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: "staging"
+          path: src/package/staging/

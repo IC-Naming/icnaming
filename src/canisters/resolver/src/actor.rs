@@ -1,11 +1,54 @@
 use std::collections::HashMap;
 
-use candid::candid_method;
+use candid::{candid_method, CandidType};
+use common::dto::{to_state_export_data, StateExportResponse};
+use common::named_canister_ids::CANISTER_NAME_REGISTRY;
+use ic_cdk::{api, caller};
 use ic_cdk_macros::*;
 
-use common::errors::{to_actor_result, ICNSActorResult};
+use common::errors::{BooleanActorResponse, ErrorInfo, ICNSError, ICNSResult};
+use common::named_canister_ids::get_named_get_canister_id;
+use common::permissions::must_be_system_owner;
+use common::state::StableState;
 
-use crate::service::ResolverService;
+use crate::service::{ResolverService, Stats};
+use crate::state::STATE;
+
+#[query(name = "get_stats")]
+#[candid_method(query, rename = "get_stats")]
+pub fn get_stats() -> GetStatsResponse {
+    let service = ResolverService::new();
+    let stats = service.get_stats();
+    GetStatsResponse::new(Ok(stats))
+}
+
+#[derive(CandidType)]
+pub enum GetStatsResponse {
+    Ok(Stats),
+    Err(ErrorInfo),
+}
+
+impl GetStatsResponse {
+    pub fn new(result: ICNSResult<Stats>) -> GetStatsResponse {
+        match result {
+            Ok(data) => GetStatsResponse::Ok(data),
+            Err(err) => GetStatsResponse::Err(err.into()),
+        }
+    }
+}
+
+#[update(name = "export_state")]
+#[candid_method(update, rename = "export_state")]
+pub async fn export_state() -> StateExportResponse {
+    let caller = &api::caller();
+    let permission_result = must_be_system_owner(caller);
+    if permission_result.is_err() {
+        return StateExportResponse::new(Err(permission_result.err().unwrap()));
+    }
+
+    let source_data = STATE.with(|state| to_state_export_data(state.encode()));
+    StateExportResponse::new(Ok(source_data))
+}
 
 /// Ensure the resolver is created.
 /// Returns true if the resolver is created, false otherwise.
@@ -13,10 +56,15 @@ use crate::service::ResolverService;
 /// * `name` - a name. e.g. `hello.icp`
 #[update(name = "ensure_resolver_created")]
 #[candid_method(update, rename = "ensure_resolver_created")]
-fn ensure_resolver_created(name: String) -> ICNSActorResult<bool> {
-    let mut service = ResolverService::new();
-    let result = service.ensure_resolver_created(name.as_str());
-    to_actor_result(result)
+fn ensure_resolver_created(name: String) -> BooleanActorResponse {
+    let caller = caller();
+    let result = if caller != get_named_get_canister_id(CANISTER_NAME_REGISTRY) {
+        Err(ICNSError::PermissionDenied)
+    } else {
+        let mut service = ResolverService::new();
+        service.ensure_resolver_created(name.as_str())
+    };
+    BooleanActorResponse::new(result)
 }
 
 /// Set the record values for the name
@@ -29,10 +77,10 @@ fn ensure_resolver_created(name: String) -> ICNSActorResult<bool> {
 async fn set_record_value(
     name: String,
     patch_values: HashMap<String, String>,
-) -> ICNSActorResult<bool> {
+) -> BooleanActorResponse {
     let mut service = ResolverService::new();
-    let result = service.set_record_value(name.as_str(), &patch_values).await;
-    to_actor_result(result)
+    let result = service.set_record_value(name.as_str(), patch_values).await;
+    BooleanActorResponse::new(result)
 }
 
 /// Get the values for the name
@@ -41,10 +89,25 @@ async fn set_record_value(
 /// * `name` - a name. e.g. `hello.icp`
 #[query(name = "get_record_value")]
 #[candid_method(query, rename = "get_record_value")]
-fn get_record_value(name: String) -> ICNSActorResult<HashMap<String, String>> {
+fn get_record_value(name: String) -> GetRecordValueResponse {
     let service = ResolverService::new();
     let result = service.get_record_value(name.as_str());
-    to_actor_result(result)
+    GetRecordValueResponse::new(result)
+}
+
+#[derive(CandidType)]
+pub enum GetRecordValueResponse {
+    Ok(HashMap<String, String>),
+    Err(ErrorInfo),
+}
+
+impl GetRecordValueResponse {
+    pub fn new(result: ICNSResult<HashMap<String, String>>) -> Self {
+        match result {
+            Ok(values) => GetRecordValueResponse::Ok(values),
+            Err(err) => GetRecordValueResponse::Err(err.into()),
+        }
+    }
 }
 
 candid::export_service!();

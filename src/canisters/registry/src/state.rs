@@ -1,80 +1,95 @@
+use std::borrow::Borrow;
 use std::cell::RefCell;
-use std::collections::HashMap;
+use std::sync::Once;
 
-use candid::{CandidType, Deserialize};
+use candid::{decode_args, encode_args};
+use common::ic_logger::ICLogger;
+use common::named_canister_ids::{
+    ensure_current_canister_id_match, get_named_get_canister_id, CANISTER_NAME_REGISTRAR,
+    CANISTER_NAME_REGISTRY,
+};
 use ic_cdk::{api, storage};
 use ic_cdk_macros::*;
 use log::info;
 
-use common::state::{
-    get_stable_named_principal, load_stable_named_principal, NamedPrincipalStable,
-};
-
-use crate::models::*;
-use crate::startup::initialize;
-use crate::state::models::RegistryStable;
-
-mod models;
+use crate::registry_store::RegistryStore;
+use crate::service::RegistriesService;
+use common::state::StableState;
 
 thread_local! {
-    pub static REGISTRIES: RefCell<HashMap<String, Registry>> = RefCell::new(HashMap::new());
+    pub static STATE : State = State::default();
 }
 
-#[derive(Debug, Clone, CandidType, Deserialize)]
-struct UpgradePayloadStable {
-    named_principals: NamedPrincipalStable,
-    registries: HashMap<String, RegistryStable>,
+#[derive(Default)]
+pub struct State {
+    // NOTE: When adding new persistent fields here, ensure that these fields
+    // are being persisted in the `replace` method below.
+    pub(crate) registry_store: RefCell<RegistryStore>,
+}
+
+impl State {
+    pub fn replace(&self, new_state: State) {
+        self.registry_store.replace(new_state.registry_store.take());
+    }
+}
+
+impl StableState for State {
+    fn encode(&self) -> Vec<u8> {
+        encode_args((self.registry_store.borrow().encode(),)).unwrap()
+    }
+
+    fn decode(bytes: Vec<u8>) -> Result<Self, String> {
+        let (registry_store_bytes,) = decode_args(&bytes).unwrap();
+
+        Ok(State {
+            registry_store: RefCell::new(RegistryStore::decode(registry_store_bytes)?),
+        })
+    }
+}
+
+static INIT: Once = Once::new();
+
+pub(crate) fn canister_module_init() {
+    INIT.call_once(|| {
+        ICLogger::init();
+    });
+    ensure_current_canister_id_match(CANISTER_NAME_REGISTRY);
 }
 
 #[init]
 fn init_function() {
-    initialize();
+    canister_module_init();
+
+    // insert top level name
+    let registrar = get_named_get_canister_id(CANISTER_NAME_REGISTRAR);
+    let mut service = RegistriesService::new();
+    service.set_top_icp_name(registrar).unwrap();
 }
 
 #[pre_upgrade]
 fn pre_upgrade() {
-    match storage::stable_save((UpgradePayloadStable {
-        named_principals: get_stable_named_principal(),
-        registries: REGISTRIES.with(|registries| {
-            let registries = registries.borrow();
-            let mut registries_stable = HashMap::new();
-            for (name, registry) in registries.iter() {
-                registries_stable.insert(name.clone(), RegistryStable::from(registry));
+    STATE.with(|s| {
+        let bytes = s.encode();
+        match storage::stable_save((&bytes,)) {
+            Ok(_) => {
+                info!("Saved state before upgrade");
+                ()
             }
-            registries_stable
-        }),
-    },))
-    {
-        Ok(_) => {
-            info!("Saved state before upgrade");
-            ()
-        }
-        Err(e) => api::trap(format!("Failed to save state before upgrade: {:?}", e).as_str()),
-    }
+            Err(e) => api::trap(format!("Failed to save state before upgrade: {:?}", e).as_str()),
+        };
+    });
 }
 
 #[post_upgrade]
 fn post_upgrade() {
-    match storage::stable_restore::<(UpgradePayloadStable,)>() {
-        Ok(payload) => {
-            initialize();
+    STATE.with(|s| match storage::stable_restore::<(Vec<u8>,)>() {
+        Ok(bytes) => {
+            let new_state = State::decode(bytes.0).expect("Decoding stable memory failed");
 
-            info!("Start to restored state after upgrade");
-            let payload = payload.0;
-
-            let principal = payload.named_principals;
-            load_stable_named_principal(&principal);
-
-            let registries = payload.registries;
-            REGISTRIES.with(|state| {
-                let mut state = state.borrow_mut();
-                state.clear();
-                for (name, registry) in registries.iter() {
-                    state.insert(name.clone(), Registry::from(registry));
-                }
-            });
-            info!("End of restored state after upgrade");
+            s.replace(new_state);
+            canister_module_init();
+            info!("Loaded state after upgrade");
         }
         Err(e) => api::trap(format!("Failed to restored state after upgrade: {:?}", e).as_str()),
-    }
+    });
 }

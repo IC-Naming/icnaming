@@ -1,31 +1,50 @@
 use candid::candid_method;
 use ic_cdk_macros::*;
-use log::info;
+use serde_bytes::ByteBuf;
 
-use common::http::{HttpRequest, HttpResponse};
+use common::http::{HeaderField, HttpRequest, HttpResponse};
+use common::metrics_encoder::MetricsEncoder;
 
-use crate::service::ResolverService;
+use crate::service::encode_metrics;
 
 #[query]
 #[candid_method(query, rename = "http_request")]
 fn http_request(req: HttpRequest) -> HttpResponse {
-    info!("request: {:?}", req);
-    let name = req.get_query_value("name");
-    let key = req.get_query_value("key");
-
-    if name.is_none() {
-        return HttpResponse::string(400, "name is required");
-    }
-    if key.is_none() {
-        return HttpResponse::string(400, "key is required");
-    }
-    let service = ResolverService::new();
-    let result = service.get_record_value(name.unwrap().as_str());
-    match result {
-        Ok(value) => value
-            .get(key.unwrap().as_str())
-            .map(|v| HttpResponse::string(200, v.to_string().as_str()))
-            .unwrap_or_else(|| HttpResponse::string(404, "not found")),
-        Err(e) => HttpResponse::string(400, format!("{:?}", e).as_str()),
+    let parts: Vec<&str> = req.url.split('?').collect();
+    match parts[0] {
+        "/metrics" => {
+            let now;
+            now = ic_cdk::api::time();
+            let mut writer = MetricsEncoder::new(vec![], (now / 1_000_000) as i64);
+            match encode_metrics(&mut writer) {
+                Ok(()) => {
+                    let body = writer.into_inner();
+                    HttpResponse {
+                        status_code: 200,
+                        headers: vec![
+                            HeaderField(
+                                "Content-Type".to_string(),
+                                "text/plain; version=0.0.4".to_string(),
+                            ),
+                            HeaderField("Content-Length".to_string(), body.len().to_string()),
+                        ],
+                        body: ByteBuf::from(body),
+                        streaming_strategy: None,
+                    }
+                }
+                Err(err) => HttpResponse {
+                    status_code: 500,
+                    headers: vec![],
+                    body: ByteBuf::from(format!("Failed to encode metrics: {}", err)),
+                    streaming_strategy: None,
+                },
+            }
+        }
+        request_path => HttpResponse {
+            status_code: 404,
+            headers: vec![],
+            body: ByteBuf::from(format!("Asset {} not found.", request_path)),
+            streaming_strategy: None,
+        },
     }
 }

@@ -1,6 +1,5 @@
 mod actor;
 mod http;
-mod models;
+mod registry_store;
 mod service;
-mod startup;
 mod state;

@@ -1,8 +1,18 @@
+type BooleanActorResponse = variant { Ok : bool; Err : ErrorInfo };
 type ErrorInfo = record { code : nat32; message : text };
-type Result = variant { Ok : bool; Err : ErrorInfo };
-type Result_1 = variant { Ok : vec text; Err : ErrorInfo };
+type GetFavoritesResponse = variant { Ok : vec text; Err : ErrorInfo };
+type GetStatsResponse = variant { Ok : Stats; Err : ErrorInfo };
+type StateExportData = record { state_data : vec nat8 };
+type StateExportResponse = variant { Ok : StateExportData; Err : ErrorInfo };
+type Stats = record {
+  user_count : nat64;
+  cycles_balance : nat64;
+  favorite_count : nat64;
+};
 service : {
-  add_favorite : (text) -> (Result);
-  get_favorites : () -> (Result_1) query;
-  remove_favorite : (text) -> (Result);
+  add_favorite : (text) -> (BooleanActorResponse);
+  export_state : () -> (StateExportResponse);
+  get_favorites : () -> (GetFavoritesResponse) query;
+  get_stats : () -> (GetStatsResponse) query;
+  remove_favorite : (text) -> (BooleanActorResponse);
 }

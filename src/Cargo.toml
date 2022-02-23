@@ -1,13 +1,17 @@
 [workspace]
 members = [
-    "canisters/common",
+    "common/common",
+    "common/test_common",
+    "canisters/cycles_minting",
     "canisters/registrar",
     "canisters/registry",
     "canisters/favorites",
     "canisters/resolver",
-    "canisters/test_common",
 ]
-
 
 [profile.release]
 lto = true
+opt-level = 'z'
+panic = 'abort'
+
+

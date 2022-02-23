@@ -1,8 +1,19 @@
+type BooleanActorResponse = variant { Ok : bool; Err : ErrorInfo };
 type ErrorInfo = record { code : nat32; message : text };
-type Result = variant { Ok : bool; Err : ErrorInfo };
-type Result_1 = variant { Ok : vec record { text; text }; Err : ErrorInfo };
+type GetRecordValueResponse = variant {
+  Ok : vec record { text; text };
+  Err : ErrorInfo;
+};
+type GetStatsResponse = variant { Ok : Stats; Err : ErrorInfo };
+type StateExportData = record { state_data : vec nat8 };
+type StateExportResponse = variant { Ok : StateExportData; Err : ErrorInfo };
+type Stats = record { cycles_balance : nat64; resolver_count : nat64 };
 service : {
-  ensure_resolver_created : (text) -> (Result);
-  get_record_value : (text) -> (Result_1) query;
-  set_record_value : (text, vec record { text; text }) -> (Result);
+  ensure_resolver_created : (text) -> (BooleanActorResponse);
+  export_state : () -> (StateExportResponse);
+  get_record_value : (text) -> (GetRecordValueResponse) query;
+  get_stats : () -> (GetStatsResponse) query;
+  set_record_value : (text, vec record { text; text }) -> (
+      BooleanActorResponse,
+    );
 }

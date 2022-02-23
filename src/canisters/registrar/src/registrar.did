@@ -1,6 +1,60 @@
+type BooleanActorResponse = variant { Ok : bool; Err : ErrorInfo };
 type ErrorInfo = record { code : nat32; message : text };
+type GetAllDetailsActorResponse = variant {
+  Ok : vec RegistrationDetails;
+  Err : ErrorInfo;
+};
+type GetAstroxMeNameStatsActorResponse = variant {
+  Ok : ImportedStats;
+  Err : ErrorInfo;
+};
+type GetDetailsActorResponse = variant {
+  Ok : RegistrationDetails;
+  Err : ErrorInfo;
+};
+type GetNameExpiresActorResponse = variant { Ok : nat64; Err : ErrorInfo };
+type GetNameOrderResponse = record {
+  status : NameOrderStatus;
+  payment_memo : PaymentMemo;
+  name : text;
+  price_icp_in_e8s : nat;
+  payment_account_id : vec nat8;
+  quota_type : QuotaType;
+  payment_id : nat64;
+  created_user : principal;
+  years : nat32;
+};
+type GetNamesActorResponse = variant { Ok : GetPageOutput; Err : ErrorInfo };
+type GetOwnerActorResponse = variant { Ok : principal; Err : ErrorInfo };
 type GetPageInput = record { offset : nat64; limit : nat64 };
 type GetPageOutput = record { items : vec RegistrationDto };
+type GetPendingOrderActorResponse = variant {
+  Ok : opt GetNameOrderResponse;
+  Err : ErrorInfo;
+};
+type GetPriceTableResponse = variant { Ok : PriceTable; Err : ErrorInfo };
+type GetQuotaActorResponse = variant { Ok : nat32; Err : ErrorInfo };
+type GetStatsActorResponse = variant { Ok : Stats; Err : ErrorInfo };
+type ImportAstroxMeNamesActorResponse = variant {
+  Ok : ImportedStats;
+  Err : ErrorInfo;
+};
+type ImportedStats = record {
+  total : nat32;
+  imported : nat32;
+  not_imported : nat32;
+};
+type NameOrderStatus = variant { New; WaitingToRefund; Done; Canceled };
+type PaymentMemo = variant { ICP : nat64 };
+type PriceTable = record {
+  icp_xdr_conversion_rate : nat64;
+  items : vec PriceTableItem;
+};
+type PriceTableItem = record {
+  len : nat8;
+  price_in_icp_e8s : nat64;
+  price_in_xdr_permyriad : nat64;
+};
 type QuotaType = variant { LenEq : nat8; LenGte : nat8 };
 type RegistrationDetails = record {
   owner : principal;
@@ -13,23 +67,47 @@ type RegistrationDto = record {
   created_at : nat64;
   expired_at : nat64;
 };
-type Result = variant { Ok : bool; Err : ErrorInfo };
-type Result_1 = variant { Ok : vec RegistrationDetails; Err : ErrorInfo };
-type Result_2 = variant { Ok : RegistrationDetails; Err : ErrorInfo };
-type Result_3 = variant { Ok : nat64; Err : ErrorInfo };
-type Result_4 = variant { Ok : GetPageOutput; Err : ErrorInfo };
-type Result_5 = variant { Ok : principal; Err : ErrorInfo };
-type Result_6 = variant { Ok : nat32; Err : ErrorInfo };
+type StateExportData = record { state_data : vec nat8 };
+type StateExportResponse = variant { Ok : StateExportData; Err : ErrorInfo };
+type Stats = record {
+  new_registered_name_count : nat64;
+  cycles_balance : nat64;
+  seconds_since_last_ledger_sync : nat64;
+  last_xdr_permyriad_per_icp : nat64;
+  name_order_cancelled_count : nat64;
+  name_order_placed_count : nat64;
+  name_order_paid_count : nat64;
+  user_name_order_count_by_status : vec record { text; nat64 };
+  last_timestamp_seconds_xdr_permyriad_per_icp : nat64;
+  payment_version : nat64;
+  user_quota_order_count : vec record { text; nat64 };
+  registration_count : nat64;
+};
+type SubmitOrderActorResponse = variant {
+  Ok : SubmitOrderResponse;
+  Err : ErrorInfo;
+};
+type SubmitOrderRequest = record { name : text; years : nat32 };
+type SubmitOrderResponse = record { order : GetNameOrderResponse };
 service : {
-  add_quota : (principal, QuotaType, nat32) -> (Result);
-  available : (text) -> (Result) query;
-  get_all_details : (GetPageInput) -> (Result_1) query;
-  get_details : (text) -> (Result_2) query;
-  get_name_expires : (text) -> (Result_3) query;
-  get_names : (principal, GetPageInput) -> (Result_4) query;
-  get_owner : (text) -> (Result_5) query;
-  get_quota : (principal, QuotaType) -> (Result_6) query;
-  register_for : (text, principal, nat64) -> (Result);
-  register_with_quota : (text, QuotaType) -> (Result);
-  sub_quota : (principal, QuotaType, nat32) -> (Result);
+  add_quota : (principal, QuotaType, nat32) -> (BooleanActorResponse);
+  available : (text) -> (BooleanActorResponse) query;
+  cancel_order : () -> (BooleanActorResponse);
+  export_state : () -> (StateExportResponse);
+  get_all_details : (GetPageInput) -> (GetAllDetailsActorResponse) query;
+  get_astrox_me_name_stats : () -> (GetAstroxMeNameStatsActorResponse) query;
+  get_details : (text) -> (GetDetailsActorResponse) query;
+  get_name_expires : (text) -> (GetNameExpiresActorResponse) query;
+  get_names : (principal, GetPageInput) -> (GetNamesActorResponse) query;
+  get_owner : (text) -> (GetOwnerActorResponse) query;
+  get_pending_order : () -> (GetPendingOrderActorResponse) query;
+  get_price_table : () -> (GetPriceTableResponse);
+  get_quota : (principal, QuotaType) -> (GetQuotaActorResponse) query;
+  get_stats : () -> (GetStatsActorResponse) query;
+  import_astrox_me_names : (vec text) -> (ImportAstroxMeNamesActorResponse);
+  refund_order : () -> (BooleanActorResponse);
+  register_for : (text, principal, nat64) -> (BooleanActorResponse);
+  register_with_quota : (text, QuotaType) -> (BooleanActorResponse);
+  sub_quota : (principal, QuotaType, nat32) -> (BooleanActorResponse);
+  submit_order : (SubmitOrderRequest) -> (SubmitOrderActorResponse);
 }
