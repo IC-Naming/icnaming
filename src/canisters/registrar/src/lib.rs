@@ -5,6 +5,7 @@ mod name_order_store;
 mod payment_store;
 mod payment_sync;
 mod periodic_tasks_runner;
+mod quota_import_store;
 mod quota_order_store;
 mod registration_store;
 mod reserved_list;

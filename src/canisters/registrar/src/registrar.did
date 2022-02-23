@@ -105,6 +105,7 @@ service : {
   get_quota : (principal, QuotaType) -> (GetQuotaActorResponse) query;
   get_stats : () -> (GetStatsActorResponse) query;
   import_astrox_me_names : (vec text) -> (ImportAstroxMeNamesActorResponse);
+  import_quota : (vec nat8) -> (BooleanActorResponse);
   refund_order : () -> (BooleanActorResponse);
   register_for : (text, principal, nat64) -> (BooleanActorResponse);
   register_with_quota : (text, QuotaType) -> (BooleanActorResponse);

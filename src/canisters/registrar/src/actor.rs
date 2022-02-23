@@ -300,6 +300,17 @@ pub fn add_quota(quota_owner: Principal, quota_type: QuotaType, diff: u32) -> Bo
     }
 }
 
+#[update(name = "import_quota")]
+#[candid_method(update, rename = "import_quota")]
+pub fn import_quota(file_content: Vec<u8>) -> BooleanActorResponse {
+    let caller = &api::caller();
+    debug!("import_quota: caller: {}", caller);
+
+    let mut service = RegistrarService::new();
+    let result = service.import_quota(caller, file_content);
+    BooleanActorResponse::new(result)
+}
+
 /// Remove quotas from a quota owner.
 /// Returns true if quotas are removed successfully.
 ///

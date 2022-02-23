@@ -118,6 +118,7 @@ export interface _SERVICE {
   'import_astrox_me_names' : (arg_0: Array<string>) => Promise<
       ImportAstroxMeNamesActorResponse
     >,
+  'import_quota' : (arg_0: Array<number>) => Promise<BooleanActorResponse>,
   'refund_order' : () => Promise<BooleanActorResponse>,
   'register_for' : (arg_0: string, arg_1: Principal, arg_2: bigint) => Promise<
       BooleanActorResponse

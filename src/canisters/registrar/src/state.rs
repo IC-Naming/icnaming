@@ -15,6 +15,7 @@ use common::state::StableState;
 
 use crate::name_order_store::NameOrderStore;
 use crate::payment_store::PaymentStore;
+use crate::quota_import_store::{QuotaImportStore, ACCEPTABLE_HASHES};
 use crate::quota_order_store::QuotaOrderStore;
 use crate::registration_store::RegistrationStore;
 use crate::settings::Settings;
@@ -46,6 +47,7 @@ pub struct State {
     pub user_quota_store: RefCell<UserQuotaStore>,
     pub quota_order_store: RefCell<QuotaOrderStore>,
     pub registration_store: RefCell<RegistrationStore>,
+    pub quota_import_store: RefCell<QuotaImportStore>,
 }
 
 impl State {
@@ -60,6 +62,8 @@ impl State {
             .replace(new_state.user_quota_store.take());
         self.quota_order_store
             .replace(new_state.quota_order_store.take());
+        self.quota_import_store
+            .replace(new_state.quota_import_store.take());
     }
 }
 
@@ -72,6 +76,7 @@ impl StableState for State {
             self.payment_store.borrow().encode(),
             self.user_quota_store.borrow().encode(),
             self.quota_order_store.borrow().encode(),
+            self.quota_import_store.borrow().encode(),
         ))
         .unwrap()
     }
@@ -84,6 +89,7 @@ impl StableState for State {
             payment_store_bytes,
             user_quota_store_bytes,
             quota_order_store_bytes,
+            quota_import_store_bytes,
         ) = decode_args(&bytes).unwrap();
 
         Ok(State {
@@ -93,6 +99,7 @@ impl StableState for State {
             user_quota_store: RefCell::new(UserQuotaStore::decode(user_quota_store_bytes)?),
             quota_order_store: RefCell::new(QuotaOrderStore::decode(quota_order_store_bytes)?),
             registration_store: RefCell::new(RegistrationStore::decode(registration_store_bytes)?),
+            quota_import_store: RefCell::new(QuotaImportStore::decode(quota_import_store_bytes)?),
         })
     }
 }
@@ -107,6 +114,19 @@ pub(crate) fn canister_module_init() {
 
     let principal = get_admin_principal();
     info!("Admin principal: {}", principal);
+
+    STATE.with(|s| {
+        let mut store = s.quota_import_store.borrow_mut();
+        let hashes = ACCEPTABLE_HASHES
+            .iter()
+            .map(|h| {
+                // hex to bytes
+                let bytes = hex::decode(h).unwrap();
+                bytes
+            })
+            .collect();
+        store.add_acceptable_file_hash(hashes);
+    })
 }
 
 #[init]

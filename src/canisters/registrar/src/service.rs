@@ -6,7 +6,7 @@ use std::sync::Arc;
 
 use candid::{CandidType, Deserialize, Nat, Principal};
 use ic_cdk::api;
-use log::{debug, trace, warn};
+use log::{debug, error, info, trace, warn};
 use num_bigint::BigUint;
 use num_traits::ToPrimitive;
 
@@ -910,6 +910,33 @@ impl RegistrarService {
         Ok(PriceTable {
             items,
             icp_xdr_conversion_rate,
+        })
+    }
+
+    pub fn import_quota(&self, caller: &Principal, file_content: Vec<u8>) -> ICNSResult<bool> {
+        must_be_system_owner(caller)?;
+        let parse_result = STATE.with(|s| {
+            let store = s.quota_import_store.borrow();
+            store.verify_and_parse(file_content.as_slice())
+        });
+        if parse_result.is_err() {
+            error!("{:?}", parse_result.err().unwrap());
+            return Ok(false);
+        }
+        let (items, hashes) = parse_result.unwrap();
+        info!("{} items to import", items.len());
+
+        // apply items and save hashes
+        STATE.with(|s| {
+            let mut store = s.user_quota_store.borrow_mut();
+            for item in items.iter() {
+                store.add_quota(item.owner, item.quota_type, item.diff);
+            }
+
+            let mut import_quota_store = s.quota_import_store.borrow_mut();
+            info!("file imported, save hashes: {}", hex::encode(&hashes));
+            import_quota_store.add_imported_file_hash(hashes);
+            Ok(true)
         })
     }
 }

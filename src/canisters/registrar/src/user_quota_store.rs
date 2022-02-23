@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::fmt::{Display, Formatter};
+use std::str::FromStr;
 
 use candid::{decode_args, encode_args, CandidType, Deserialize, Principal};
 use log::info;
@@ -7,7 +8,7 @@ use log::info;
 use common::state::StableState;
 
 /// Quota type to be used for registration
-#[derive(Deserialize, CandidType, Clone, Hash, Eq, PartialEq, Debug)]
+#[derive(Deserialize, Copy, CandidType, Clone, Hash, Eq, PartialEq, Debug)]
 pub enum QuotaType {
     /// The length of name's the first part in chars must be equal to the value.
     /// e.g. LenEq(3) means that the first part of the name must be 3 chars long.
@@ -15,6 +16,23 @@ pub enum QuotaType {
     /// The length of name's the first part in chars must be more than or equal to the value.
     /// e.g. LenGt(3) means that the first part of the name must be at least 3 chars long.
     LenGte(u8),
+}
+
+impl FromStr for QuotaType {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        // find () in s
+        let mut iter = s.splitn(2, '(');
+        let name = iter.next().unwrap();
+        let args = iter.next().unwrap();
+        let args = args.trim_end_matches(')');
+        match name {
+            "LenEq" => Ok(QuotaType::LenEq(u8::from_str(args).unwrap())),
+            "LenGte" => Ok(QuotaType::LenGte(u8::from_str(args).unwrap())),
+            _ => Err(()),
+        }
+    }
 }
 
 impl Display for QuotaType {
