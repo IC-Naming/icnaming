@@ -22,14 +22,12 @@
     "@types/chai": "^4.3.0",
     "@types/cucumber": "^7.0.0",
     "@types/debug": "^4.1.7",
-    "@types/jest": "^26.0.23",
     "@types/node": "^16.11.21",
     "@types/shelljs": "^0.8.11",
     "archiver": "^5.3.0",
     "btoa": "^1.2.1",
     "chai": "^4.3.6",
-    "crc": "^4.0.0",
-    "jest": "^26.4.2",
+    "crc": "^3.8.0",
     "js-sha256": "^0.9.0",
     "node-color-log": "^7.0.0",
     "node-fetch": "^2.6.7",
@@ -39,21 +37,10 @@
     "shelljs": "^0.8.4",
     "supports-color": "^9.2.1",
     "text-encoding": "^0.7.0",
-    "ts-jest": "^26.3.0",
     "ts-node": "^10.4.0",
     "tsconfig-paths": "^3.12.0",
     "tslib": "^2.3.1",
     "typescript": "^4.5.4",
     "yargs": "^15.4.1"
-  },
-  "jest": {
-    "testEnvironment": "node",
-    "testMatch": [
-      "**/__tests__/**/*.+(ts|tsx|js)",
-      "**/?(*.)+(spec|test).+(ts|tsx|js)"
-    ],
-    "transform": {
-      "^.+\\.(ts|tsx)$": "ts-jest"
-    }
   }
 }

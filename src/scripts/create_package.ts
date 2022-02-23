@@ -94,7 +94,7 @@ const create = async (build_context: BuildContext) => {
 
     for (let name of Object.keys(build_context.canisters)) {
         canister_node[name] = {
-            "candid": `assets/${name}.wasm`,
+            "candid": `assets/${name}.did`,
             "wasm": `assets/${name}.wasm`,
             "type": "custom"
         };

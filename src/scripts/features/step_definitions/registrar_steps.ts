@@ -5,24 +5,28 @@ import {createLedger, ledger} from "~/declarations/ledger";
 import {assert, expect} from 'chai';
 import {reinstall_all} from "~/../tasks"
 import {
-    GetNameOrderResponse,
-    QuotaType,
+    BooleanActorResponse,
     BooleanActorResponse as RefundResult,
     BooleanActorResponse as AvailableResult,
     BooleanActorResponse as RegisterWithQuotaResult,
-    SubmitOrderActorResponse as SubmitOrderResult,
+    GetNameOrderResponse,
+    QuotaType,
     Stats,
+    SubmitOrderActorResponse as SubmitOrderResult,
 } from "~/declarations/registrar/registrar.did";
-import {hexToBytes, toICPe8s,} from "~/utils/convert";
+import {toICPe8s,} from "~/utils/convert";
 import {identities} from "~/utils/identity";
 import {OptionalResult, Result} from "~/utils/Result";
 import {assert_remote_result} from "./utils";
 import logger from "node-color-log";
+import fs from "fs";
+import {Principal} from "@dfinity/principal";
 
 let global_submit_order_result: SubmitOrderResult;
 let global_refund_response: RefundResult;
 let global_available_response: AvailableResult;
 let global_register_with_quota_response: RegisterWithQuotaResult;
+let global_quota_import_response: BooleanActorResponse;
 let global_stats_result: Stats;
 
 async function submit_order(user: string | null, name: string, years: string) {
@@ -288,7 +292,13 @@ Then(/^User quota status should be as below$/,
         for (const item of items) {
             let quota_type = {};
             quota_type[item.quota_type1] = parseInt(item.quota_type2);
-            let user_principal = identities.get_identity_info(item.user).identity.getPrincipal();
+            let identityInfo = identities.get_identity_info(item.user);
+            let user_principal:Principal;
+            if (identityInfo == null) {
+                user_principal = Principal.fromText(item.user);
+            }else{
+                user_principal = identityInfo.identity.getPrincipal();
+            }
 
             let quota_value = await new Result(registrar.get_quota(user_principal, quota_type as QuotaType)).unwrap();
             expect(quota_value).to.equal(parseInt(item.value));
@@ -389,10 +399,24 @@ When(/^Wait for payment version increased with "([^"]*)"$/,
             if (stats.payment_version >= target_version) {
                 console.info(`Payment version increased to ${target_version}, now is ${stats.payment_version}`);
                 return;
-            }else{
+            } else {
                 console.debug(`Wait for payment version increased to ${target_version}, now is ${stats.payment_version}`);
                 await new Promise(resolve => setTimeout(resolve, 1000));
             }
         }
 
+    });
+When(/^admin import quota file "([^"]*)"$/,
+    async function (filename: string) {
+        // read file from ../../quota_import_data/filename as bytes
+        let content = fs.readFileSync(`quota_import_data/${filename}`);
+        global_quota_import_response = await registrar.import_quota(Array.from(content));
+    });
+Then(/^Last quota import status "([^"]*)"$/,
+    function (status) {
+        if ('Ok' in global_quota_import_response) {
+            expect(global_quota_import_response.Ok.toString()).to.equal(status);
+        } else {
+            expect.fail(`Last quota import status is not Ok but ${JSON.stringify(global_quota_import_response)}`);
+        }
     });

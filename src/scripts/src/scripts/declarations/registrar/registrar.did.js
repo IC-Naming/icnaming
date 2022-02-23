@@ -173,6 +173,7 @@ export const idlFactory = ({ IDL }) => {
         [ImportAstroxMeNamesActorResponse],
         [],
       ),
+    'import_quota' : IDL.Func([IDL.Vec(IDL.Nat8)], [BooleanActorResponse], []),
     'refund_order' : IDL.Func([], [BooleanActorResponse], []),
     'register_for' : IDL.Func(
         [IDL.Text, IDL.Principal, IDL.Nat64],

@@ -10,7 +10,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 serde = "1.0.119"
-itertools = "0.10.3"
+itertools = "0.10.0"
 serde_bytes = "0.11"
 lazy_static = "1.4.0"
 candid = "0.7.4"
