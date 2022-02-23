@@ -283,12 +283,21 @@ impl GetAllDetailsActorResponse {
 #[update(name = "add_quota")]
 #[candid_method(update, rename = "add_quota")]
 pub fn add_quota(quota_owner: Principal, quota_type: QuotaType, diff: u32) -> BooleanActorResponse {
-    let caller = &api::caller();
-    debug!("add_quota: caller: {}", caller);
+    #[cfg(not(feature = "production_canister"))]
+    {
+        let caller = &api::caller();
+        debug!("add_quota: caller: {}", caller);
 
-    let mut service = RegistrarService::new();
-    let result = service.add_quota(caller, quota_owner, quota_type, diff);
-    BooleanActorResponse::new(result)
+        let mut service = RegistrarService::new();
+        let result = service.add_quota(caller, quota_owner, quota_type, diff);
+        BooleanActorResponse::new(result)
+    }
+    #[cfg(feature = "production_canister")]
+    {
+        // it should be always false in production, no one can add quotas in production.
+        // all quotas in production should be imported by import_quota.
+        BooleanActorResponse::new(Ok(false))
+    }
 }
 
 /// Remove quotas from a quota owner.

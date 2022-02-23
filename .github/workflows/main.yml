@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - feature/payment
 
   pull_request:
     branches:
