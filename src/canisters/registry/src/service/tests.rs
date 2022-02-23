@@ -34,8 +34,9 @@ pub(crate) fn create_registry(_name: String, _owner: Principal) -> Registry {
 
 #[fixture]
 fn add_test_registry() -> Registry {
-    REGISTRIES.with(|registries| {
-        let mut registries = registries.borrow_mut();
+    STATE.with(|s| {
+        let mut store = s.registry_store.borrow_mut();
+        let registries = store.get_registries_mut();
         let registry = create_registry("icp".to_string(), top_owner());
         registries.insert("icp".to_string(), registry.clone());
         registry
@@ -54,8 +55,9 @@ mod add_top_name {
         let result = service.set_top_name(icp_registry).err().unwrap();
         assert_eq!(result, ICNSError::TopNameAlreadyExists);
 
-        REGISTRIES.with(|registries| {
-            let registries = registries.borrow();
+        STATE.with(|s| {
+            let store = s.registry_store.borrow();
+            let registries = store.get_registries();
             assert_eq!(registries.len(), 1);
             let item = get_registry(&registries, &TOP_LABEL.to_string()).unwrap();
             info!("{:?}", item);
@@ -100,8 +102,9 @@ mod add_subdomain_to_registries {
         assert!(result.is_ok());
         assert!(service.check_exist("test.icp".to_string()));
 
-        REGISTRIES.with(|registries| {
-            let registries = registries.borrow();
+        STATE.with(|s| {
+            let store = s.registry_store.borrow();
+            let registries = store.get_registries();
             assert_eq!(registries.len(), 2);
             let item = get_registry(&registries, &"test.icp".to_string()).unwrap();
             info!("{:?}", item);
@@ -129,8 +132,9 @@ mod approval {
 
         // assert
         assert!(result.is_ok());
-        REGISTRIES.with(|registries| {
-            let registries = registries.borrow();
+        STATE.with(|s| {
+            let store = s.registry_store.borrow();
+            let registries = store.get_registries();
             let item = get_registry(&registries, &registry.get_name()).unwrap();
             let operators = item.get_operators().unwrap();
             assert_eq!(operators.len(), 1);
@@ -171,8 +175,9 @@ mod approval {
 
         // assert
         assert!(result.is_ok());
-        REGISTRIES.with(|registries| {
-            let registries = registries.borrow();
+        STATE.with(|s| {
+            let store = s.registry_store.borrow();
+            let registries = store.get_registries();
             let item = get_registry(&registries, &registry.get_name()).unwrap();
             let operators = item.get_operators().unwrap();
             assert_eq!(operators.len(), 0);
@@ -196,6 +201,7 @@ mod approval {
         assert_eq!(result.err().unwrap(), ICNSError::PermissionDenied);
     }
 }
+
 mod set_record {
     use super::*;
 
@@ -205,8 +211,9 @@ mod set_record {
         let resolver = Principal::from_text("xzrh4-zyaaa-aaaaj-qagaa-cai").unwrap();
         let name = "icp";
         let ttl = 123;
-        REGISTRIES.with(|registries| {
-            let mut registries = registries.borrow_mut();
+        STATE.with(|s| {
+            let mut store = s.registry_store.borrow_mut();
+            let registries = store.get_registries_mut();
             let registry =
                 Registry::new(name.to_string(), caller.clone(), 0, Principal::anonymous());
             registries.insert(name.to_string(), registry);
@@ -217,8 +224,9 @@ mod set_record {
 
         // assert
         assert!(result.is_ok());
-        REGISTRIES.with(|registries| {
-            let registries = registries.borrow();
+        STATE.with(|s| {
+            let store = s.registry_store.borrow();
+            let registries = store.get_registries();
             let item = get_registry(&registries, &name.to_string()).unwrap();
             assert_eq!(item.get_name(), name.to_string());
             assert_eq!(item.get_ttl(), ttl);
@@ -252,8 +260,9 @@ mod set_record {
         let resolver = Principal::from_text("xzrh4-zyaaa-aaaaj-qagaa-cai").unwrap();
         let name = "icp";
         let ttl = 123;
-        REGISTRIES.with(|registries| {
-            let mut registries = registries.borrow_mut();
+        STATE.with(|s| {
+            let mut store = s.registry_store.borrow_mut();
+            let registries = store.get_registries_mut();
             let registry = Registry::new(
                 name.to_string(),
                 resolver.clone(),

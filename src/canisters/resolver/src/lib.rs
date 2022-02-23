@@ -1,6 +1,6 @@
 mod actor;
+mod coinaddress;
 mod http;
-mod models;
+mod resolver_store;
 mod service;
-mod startup;
 mod state;

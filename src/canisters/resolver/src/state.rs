@@ -1,81 +1,87 @@
+use std::borrow::Borrow;
 use std::cell::RefCell;
-use std::collections::HashMap;
+use std::sync::Once;
 
-use candid::{CandidType, Deserialize};
+use candid::{decode_args, encode_args};
+use common::ic_logger::ICLogger;
+use common::named_canister_ids::ensure_current_canister_id_match;
+use common::named_canister_ids::CANISTER_NAME_RESOLVER;
 use ic_cdk::{api, storage};
 use ic_cdk_macros::*;
 use log::info;
 
-use common::state::{
-    get_stable_named_principal, load_stable_named_principal, NamedPrincipalStable,
-};
+use crate::resolver_store::ResolverStore;
+use common::state::StableState;
 
-use crate::models::*;
-use crate::startup::initialize;
-use crate::state::models::ResolverStable;
-
-mod models;
 thread_local! {
-    pub static RESOLVERS: RefCell<HashMap<String, Resolver>> = RefCell::new(HashMap::new());
-
+    pub static STATE : State = State::default();
 }
 
-#[derive(Debug, Clone, CandidType, Deserialize)]
-struct UpgradePayloadStable {
-    named_principals: NamedPrincipalStable,
-    resolvers: HashMap<String, ResolverStable>,
+#[derive(Default)]
+pub struct State {
+    // NOTE: When adding new persistent fields here, ensure that these fields
+    // are being persisted in the `replace` method below.
+    pub(crate) resolver_store: RefCell<ResolverStore>,
+}
+
+impl State {
+    pub fn replace(&self, new_state: State) {
+        self.resolver_store.replace(new_state.resolver_store.take());
+    }
+}
+
+impl StableState for State {
+    fn encode(&self) -> Vec<u8> {
+        encode_args((self.resolver_store.borrow().encode(),)).unwrap()
+    }
+
+    fn decode(bytes: Vec<u8>) -> Result<Self, String> {
+        let (resolver_store_bytes,) = decode_args(&bytes).unwrap();
+
+        Ok(State {
+            resolver_store: RefCell::new(ResolverStore::decode(resolver_store_bytes)?),
+        })
+    }
+}
+
+static INIT: Once = Once::new();
+
+pub(crate) fn canister_module_init() {
+    INIT.call_once(|| {
+        ICLogger::init();
+    });
+    ensure_current_canister_id_match(CANISTER_NAME_RESOLVER);
 }
 
 #[init]
 fn init_function() {
-    initialize();
+    canister_module_init();
 }
 
 #[pre_upgrade]
 fn pre_upgrade() {
-    match storage::stable_save((UpgradePayloadStable {
-        named_principals: get_stable_named_principal(),
-        resolvers: RESOLVERS.with(|resolvers| {
-            let resolvers = resolvers.borrow();
-            let map = resolvers
-                .iter()
-                .map(|(name, resolver)| (name.clone(), ResolverStable::from(resolver)))
-                .collect();
-            map
-        }),
-    },))
-    {
-        Ok(_) => {
-            info!("Saved state before upgrade");
-            ()
-        }
-        Err(e) => api::trap(format!("Failed to save state before upgrade: {:?}", e).as_str()),
-    }
+    STATE.with(|s| {
+        let bytes = s.encode();
+        match storage::stable_save((&bytes,)) {
+            Ok(_) => {
+                info!("Saved state before upgrade");
+                ()
+            }
+            Err(e) => api::trap(format!("Failed to save state before upgrade: {:?}", e).as_str()),
+        };
+    });
 }
 
 #[post_upgrade]
 fn post_upgrade() {
-    match storage::stable_restore::<(UpgradePayloadStable,)>() {
-        Ok(payload) => {
-            initialize();
+    STATE.with(|s| match storage::stable_restore::<(Vec<u8>,)>() {
+        Ok(bytes) => {
+            let new_state = State::decode(bytes.0).expect("Decoding stable memory failed");
 
-            info!("Start to restored state after upgrade");
-            let payload = payload.0;
-
-            let principal = payload.named_principals;
-            load_stable_named_principal(&principal);
-
-            let resolvers = payload.resolvers;
-            RESOLVERS.with(|state| {
-                let mut state = state.borrow_mut();
-                state.clear();
-                for (name, resolver) in resolvers.iter() {
-                    state.insert(name.clone(), Resolver::from(resolver));
-                }
-            });
-
-            info!("End of restored state after upgrade");
+            s.replace(new_state);
+            canister_module_init();
+            info!("Loaded state after upgrade");
         }
         Err(e) => api::trap(format!("Failed to restored state after upgrade: {:?}", e).as_str()),
-    }
+    });
 }

@@ -1,8 +1,11 @@
+use candid::{decode_args, encode_args, Principal};
+
 use common::constants::{DEFAULT_MAX_REGISTRATION_YEAR, DEFAULT_MIN_REGISTRATION_YEAR};
+use common::state::StableState;
 
 pub struct Settings {
-    pub min_year: u64,
-    pub max_year: u64,
+    pub min_year: u32,
+    pub max_year: u32,
 }
 
 impl Default for Settings {
@@ -18,14 +21,27 @@ impl Settings {
             max_year: DEFAULT_MAX_REGISTRATION_YEAR,
         }
     }
-    pub(crate) fn get_min_year(&self) -> u64 {
+    pub(crate) fn get_min_year(&self) -> u32 {
         self.min_year
     }
-    pub(crate) fn get_max_year(&self) -> u64 {
+    pub(crate) fn get_max_year(&self) -> u32 {
         self.max_year
     }
 
-    pub fn is_year_valid(&self, year: u64) -> bool {
+    pub fn is_year_valid(&self, year: u32) -> bool {
         year >= self.min_year && year < self.max_year
+    }
+}
+
+impl StableState for Settings {
+    fn encode(&self) -> Vec<u8> {
+        encode_args((&self.min_year, &self.max_year)).unwrap()
+    }
+
+    fn decode(bytes: Vec<u8>) -> Result<Self, String> {
+        #[allow(clippy::type_complexity)]
+        let (min_year, max_year): (u32, u32) = decode_args(&bytes).unwrap();
+
+        Ok(Settings { min_year, max_year })
     }
 }

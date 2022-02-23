@@ -14,13 +14,22 @@ ic-cdk-macros = "0.4.0"
 candid = "0.7.11"
 serde = "1.0.136"
 serde_bytes = "0.11"
-common = { path = "../common" }
+common = { path = "../../common/common" , default-features = false}
 log = "0.4"
 url = "2.2.2"
-
+num-bigint = "0.4.3"
+num-traits = "0.2.14"
+num-integer = "0.1.44"
+ic-crypto-sha256 = { git = "https://github.com/dfinity/ic", rev = "89446f5a04f053040b4863eab5458446d925ed0e" }
 
 [dev-dependencies]
 env_logger = "0.9.0"
-test_common = { path = "../test_common" }
+test_common = { path = "../../common/test_common" }
 async-std = { version = "1.10", features = ["attributes"] }
 rstest = "0.12.0"
+
+[features]
+default = ["dev_canister"]
+dev_canister = ["common/dev_canister"]
+staging_canister = ["common/staging_canister"]
+production_canister = ["common/production_canister"]

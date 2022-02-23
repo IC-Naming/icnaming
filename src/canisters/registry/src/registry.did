@@ -1,6 +1,16 @@
+type BooleanActorResponse = variant { Ok : bool; Err : ErrorInfo };
 type ErrorInfo = record { code : nat32; message : text };
+type GetControlledNamesResponse = variant {
+  Ok : GetPageOutput;
+  Err : ErrorInfo;
+};
+type GetDetailsResponse = variant { Ok : RegistryDto; Err : ErrorInfo };
+type GetOwnerResponse = variant { Ok : principal; Err : ErrorInfo };
 type GetPageInput = record { offset : nat64; limit : nat64 };
 type GetPageOutput = record { items : vec text };
+type GetStatsResponse = variant { Ok : Stats; Err : ErrorInfo };
+type GetTtlResponse = variant { Ok : nat64; Err : ErrorInfo };
+type GetUsersResponse = variant { Ok : RegistryUsers; Err : ErrorInfo };
 type RegistryDto = record {
   ttl : nat64;
   resolver : principal;
@@ -8,21 +18,23 @@ type RegistryDto = record {
   name : text;
 };
 type RegistryUsers = record { owner : principal; operators : vec principal };
-type Result = variant { Ok : GetPageOutput; Err : ErrorInfo };
-type Result_1 = variant { Ok : RegistryDto; Err : ErrorInfo };
-type Result_2 = variant { Ok : principal; Err : ErrorInfo };
-type Result_3 = variant { Ok : nat64; Err : ErrorInfo };
-type Result_4 = variant { Ok : RegistryUsers; Err : ErrorInfo };
-type Result_5 = variant { Ok : bool; Err : ErrorInfo };
+type StateExportData = record { state_data : vec nat8 };
+type StateExportResponse = variant { Ok : StateExportData; Err : ErrorInfo };
+type Stats = record { cycles_balance : nat64; registry_count : nat64 };
 service : {
-  get_controlled_names : (principal, GetPageInput) -> (Result) query;
-  get_details : (text) -> (Result_1) query;
-  get_owner : (text) -> (Result_2) query;
-  get_resolver : (text) -> (Result_2) query;
-  get_ttl : (text) -> (Result_3) query;
-  get_users : (text) -> (Result_4) query;
-  set_approval : (text, principal, bool) -> (Result_5);
-  set_record : (text, nat64, principal) -> (Result_5);
-  set_subdomain_owner : (text, text, principal, nat64, principal) -> (Result_1);
-  set_top_name : () -> (Result_5);
+  export_state : () -> (StateExportResponse);
+  get_controlled_names : (principal, GetPageInput) -> (
+      GetControlledNamesResponse,
+    ) query;
+  get_details : (text) -> (GetDetailsResponse) query;
+  get_owner : (text) -> (GetOwnerResponse) query;
+  get_resolver : (text) -> (GetOwnerResponse) query;
+  get_stats : () -> (GetStatsResponse) query;
+  get_ttl : (text) -> (GetTtlResponse) query;
+  get_users : (text) -> (GetUsersResponse) query;
+  set_approval : (text, principal, bool) -> (BooleanActorResponse);
+  set_record : (text, nat64, principal) -> (BooleanActorResponse);
+  set_subdomain_owner : (text, text, principal, nat64, principal) -> (
+      GetDetailsResponse,
+    );
 }

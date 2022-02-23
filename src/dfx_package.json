@@ -1,0 +1,20 @@
+{
+  "canisters": {
+    "ledger": {
+      "exclude_in_package": true
+    },
+    "cycles_minting": {
+      "exclude_in_package": true
+    }
+  },
+  "envs": [
+    {
+      "name": "dev",
+      "feature": "dev_canister"
+    },
+    {
+      "name": "staging",
+      "feature": "staging_canister"
+    }
+  ]
+}

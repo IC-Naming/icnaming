@@ -1,0 +1,17 @@
+{
+  "registry": {
+    "ic": "cxnwn-diaaa-aaaag-aabaq-cai"
+  },
+  "registrar": {
+    "ic": "onof3-pyaaa-aaaal-qac6a-cai"
+  },
+  "resolver": {
+    "ic": "okpdp-caaaa-aaaal-qac6q-cai"
+  },
+  "favorites": {
+    "ic": "oyjuw-oqaaa-aaaal-qac5q-cai"
+  },
+  "icnaming_ledger": {
+    "ic": "ra2t7-3aaaa-aaaaj-aahzq-cai"
+  }
+}
