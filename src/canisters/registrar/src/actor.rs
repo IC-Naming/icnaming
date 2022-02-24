@@ -1,12 +1,12 @@
 use std::collections::HashSet;
 
-use candid::{candid_method, CandidType, Deserialize, Principal};
+use candid::{candid_method, CandidType, Principal};
 use ic_cdk::api;
 use ic_cdk_macros::*;
 use log::debug;
 
 use common::dto::{to_state_export_data, GetPageInput, GetPageOutput, StateExportResponse};
-use common::errors::{BooleanActorResponse, ErrorInfo, ICNSActorResult, ICNSResult};
+use common::errors::{BooleanActorResponse, ErrorInfo, ICNSResult};
 use common::permissions::must_be_system_owner;
 use common::state::StableState;
 
@@ -16,7 +16,7 @@ use crate::registration_store::{RegistrationDetails, RegistrationDto};
 use crate::service::{
     PriceTable, RegistrarService, Stats, SubmitOrderRequest, SubmitOrderResponse,
 };
-use crate::state::{State, STATE};
+use crate::state::STATE;
 use crate::user_quota_store::QuotaType;
 
 #[query(name = "get_stats")]
@@ -88,7 +88,7 @@ impl GetPriceTableResponse {
 pub fn available(name: String) -> BooleanActorResponse {
     let service = RegistrarService::new();
     match service.available(&name) {
-        Ok(result) => BooleanActorResponse::new(Ok(true)),
+        Ok(_) => BooleanActorResponse::new(Ok(true)),
         Err(err) => BooleanActorResponse::new(Err(err.into())),
     }
 }
@@ -104,6 +104,7 @@ pub fn get_name_expires(name: String) -> GetNameExpiresActorResponse {
     let result = service.get_name_expires(&name);
     GetNameExpiresActorResponse::new(result)
 }
+
 #[derive(CandidType)]
 pub enum GetNameExpiresActorResponse {
     Ok(u64),
@@ -306,7 +307,7 @@ pub fn import_quota(file_content: Vec<u8>) -> BooleanActorResponse {
     let caller = &api::caller();
     debug!("import_quota: caller: {}", caller);
 
-    let mut service = RegistrarService::new();
+    let service = RegistrarService::new();
     let result = service.import_quota(caller, file_content);
     BooleanActorResponse::new(result)
 }
@@ -349,6 +350,7 @@ pub enum GetQuotaActorResponse {
     Ok(u32),
     Err(ErrorInfo),
 }
+
 impl GetQuotaActorResponse {
     pub fn new(result: ICNSResult<u32>) -> GetQuotaActorResponse {
         match result {
@@ -460,9 +462,7 @@ impl GetAstroxMeNameStatsActorResponse {
 
 #[update(name = "import_astrox_me_names")]
 #[candid_method(update, rename = "import_astrox_me_names")]
-pub async fn import_astrox_me_names(
-    mut names: HashSet<String>,
-) -> ImportAstroxMeNamesActorResponse {
+pub async fn import_astrox_me_names(names: HashSet<String>) -> ImportAstroxMeNamesActorResponse {
     let caller = &api::caller();
     debug!("import_astrox_me_names: caller: {}", caller);
     let now = api::time();

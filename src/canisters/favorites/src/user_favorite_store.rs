@@ -1,9 +1,10 @@
 use std::collections::HashMap;
 
-use candid::{decode_args, encode_args, CandidType, Deserialize};
-use common::state::StableState;
+use candid::{CandidType, decode_args, Deserialize, encode_args};
 use ic_cdk::export::Principal;
 use log::debug;
+
+use common::state::StableState;
 
 #[derive(CandidType, Deserialize)]
 pub(crate) struct UserFavorite {
@@ -92,12 +93,12 @@ impl UserFavoriteStore {
 
 impl StableState for UserFavoriteStore {
     fn encode(&self) -> Vec<u8> {
-        encode_args((&self.user_favorites,)).unwrap()
+        encode_args((&self.user_favorites, )).unwrap()
     }
 
     fn decode(bytes: Vec<u8>) -> Result<Self, String> {
         #[allow(clippy::type_complexity)]
-        let (user_favorites,): (HashMap<Principal, UserFavorite>,) = decode_args(&bytes).unwrap();
+            let (user_favorites, ): (HashMap<Principal, UserFavorite>, ) = decode_args(&bytes).unwrap();
 
         Ok(UserFavoriteStore { user_favorites })
     }

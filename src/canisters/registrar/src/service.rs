@@ -10,7 +10,6 @@ use log::{debug, error, info, trace, warn};
 use num_bigint::BigUint;
 use num_traits::ToPrimitive;
 
-use crate::astrox_me_name::{ImportedStats, ASTROX_ME_NAME_IMPORT_LIMIT_TIME};
 use common::canister_api::ic_impl::{CyclesMintingApi, ICNamingLedgerApi, RegistryApi};
 use common::canister_api::{ICyclesMintingApi, IICNamingLedgerApi, IRegistryApi};
 use common::constants::*;
@@ -28,6 +27,7 @@ use common::naming::{normalize_name, NameParseResult};
 use common::permissions::must_not_anonymous;
 use common::permissions::{is_admin, must_be_system_owner};
 
+use crate::astrox_me_name::{ImportedStats, ASTROX_ME_NAME_IMPORT_LIMIT_TIME};
 use crate::name_order_store::{GetNameOrderResponse, NameOrderStatus};
 use crate::quota_order_store::{
     GetOrderOutput, ICPMemo, PaymentMemo, PaymentType, PlaceOrderOutput, QuotaOrderDetails,

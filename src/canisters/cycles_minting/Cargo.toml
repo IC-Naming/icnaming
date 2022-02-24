@@ -15,7 +15,7 @@ candid = "0.7.10"
 serde = "1.0.136"
 serde_bytes = "0.11"
 async-trait = "0.1.52"
-common = { path = "../../common/common" , default-features = false}
+common = { path = "../../common/common", default-features = false }
 log = "0.4"
 num-bigint = "0.4.3"
 num-traits = "0.2.14"

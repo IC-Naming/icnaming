@@ -1,8 +1,10 @@
-use candid::{decode_args, encode_args, CandidType, Deserialize, Principal};
+use std::collections::{HashMap, HashSet};
+
+use candid::{CandidType, decode_args, Deserialize, encode_args, Principal};
+
 use common::constants::DEFAULT_TTL;
 use common::dto::{IRegistryUsers, RegistryDto, RegistryUsers};
 use common::state::StableState;
-use std::collections::{HashMap, HashSet};
 
 #[derive(CandidType, Deserialize, Debug, Clone)]
 pub struct Registry {
@@ -122,12 +124,12 @@ impl RegistryStore {
 
 impl StableState for RegistryStore {
     fn encode(&self) -> Vec<u8> {
-        encode_args((&self.registries,)).unwrap()
+        encode_args((&self.registries, )).unwrap()
     }
 
     fn decode(bytes: Vec<u8>) -> Result<Self, String> {
         #[allow(clippy::type_complexity)]
-        let (registries,): (HashMap<String, Registry>,) = decode_args(&bytes).unwrap();
+            let (registries, ): (HashMap<String, Registry>, ) = decode_args(&bytes).unwrap();
 
         Ok(RegistryStore { registries })
     }

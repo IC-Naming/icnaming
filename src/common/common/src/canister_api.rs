@@ -7,7 +7,7 @@ use ic_cdk::call;
 use log::{debug, error};
 use serde::Deserialize;
 
-use crate::constants::*;
+
 use crate::cycles_minting_types::IcpXdrConversionRateCertifiedResponse;
 use crate::dto::*;
 use crate::errors::{ErrorInfo, ICNSActorResult, ICNSError};

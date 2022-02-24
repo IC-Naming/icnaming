@@ -2,11 +2,8 @@ use log::info;
 use rstest::*;
 
 use common::named_canister_ids::{get_named_get_canister_id, CANISTER_NAME_RESOLVER};
-use test_common::canister_api::*;
 use test_common::ic_api::init_test;
 use test_common::user::*;
-
-use crate::service::RegistrarService;
 
 use super::*;
 
@@ -27,7 +24,7 @@ fn default_resolver() -> Principal {
 
 #[fixture]
 fn store(_init_test: ()) -> RegistrationStore {
-    let mut service = RegistrationStore::default();
+    let service = RegistrationStore::default();
     service
 }
 
