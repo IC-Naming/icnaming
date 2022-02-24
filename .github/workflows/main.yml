@@ -127,3 +127,8 @@ jobs:
         with:
           name: "staging"
           path: src/package/staging/
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: "production"
+          path: src/package/production/
