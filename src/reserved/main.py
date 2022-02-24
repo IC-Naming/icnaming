@@ -219,5 +219,7 @@ def create_reserved_list():
 
 
 if __name__ == "__main__":
+    # run main to create a csv
     main()
+    # run csv to json to persist icnaming column in csv
     # csv_to_json()

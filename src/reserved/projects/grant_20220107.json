@@ -6,7 +6,7 @@
   },
   {
     "grantee": "ICME",
-    "summary": "No code website builder",
+    "summary": "No code infrastructure for websites",
     "grant": 25e3
   },
   {
@@ -48,11 +48,6 @@
     "grantee": "Data App Development Platform",
     "summary": "Low code platform that enables engineering teams build data apps and workflows",
     "grant": 25e3
-  },
-  {
-    "grantee": "DevNull",
-    "summary": "Social platform for software developers",
-    "grant": 5e3
   },
   {
     "grantee": "DFinance",
@@ -120,8 +115,8 @@
     "grant": 5e3
   },
   {
-    "grantee": "ICPmaps",
-    "summary": "Open Maps, GIS data on the IC",
+    "grantee": "ICPMAPS",
+    "summary": "Open Maps, GIS data on the Internet Computer",
     "grant": 25e3
   },
   {
@@ -277,11 +272,6 @@
   {
     "grantee": "ICPSwap",
     "summary": "Decentralized exchange infrastructure for the Internet Computer",
-    "grant": 25e3
-  },
-  {
-    "grantee": "Smart Contract Assets Within the Metaverse",
-    "summary": "Integration of canister smart contracts into existing enterprise metaverse platform",
     "grant": 25e3
   },
   {
@@ -500,13 +490,343 @@
     "grant": 25e3
   },
   {
-    "grantee": "MetaverseAI",
-    "summary": "Open source metaverse frameworks",
-    "grant": 25e3
-  },
-  {
     "grantee": "Open Assessment Platform",
     "summary": "Open source question editor and renderer for in-dapp assessments",
     "grant": 5e3
+  },
+  {
+    "grantee": "Bauction (Follow-On)",
+    "summary": "Extension of Bauction features and SDK in PHP and NodeJS",
+    "grant": 25e3
+  },
+  {
+    "grantee": "Sauveur Publishing",
+    "summary": "Decentralized writing platform",
+    "grant": 5e3
+  },
+  {
+    "grantee": "Verific",
+    "summary": "Discord bot for NFT projects",
+    "grant": 5e3
+  },
+  {
+    "grantee": "Content Fly (Follow-On)",
+    "summary": "Decentralized creator marketplace",
+    "grant": 1e5
+  },
+  {
+    "grantee": "Dwitter",
+    "summary": "Decentralized microblogging and social networking service",
+    "grant": 25e3
+  },
+  {
+    "grantee": "dApp Man's Switch",
+    "summary": "Decentralized dead man's switch on the Internet Computer",
+    "grant": 25e3
+  },
+  {
+    "grantee": "NFTAnvil",
+    "summary": "NFT tooling and infrastructure",
+    "grant": 25e3
+  },
+  {
+    "grantee": "ic cards",
+    "summary": "NFT minting, leveling and crafting game",
+    "grant": 25e3
+  },
+  {
+    "grantee": "Kawak",
+    "summary": "Meritocratic writing platform",
+    "grant": 25e3
+  },
+  {
+    "grantee": "The Island Collective",
+    "summary": "Immersive VR spaces on the Internet Computer",
+    "grant": 1e5
+  },
+  {
+    "grantee": "ICP Birds",
+    "summary": "NFT-based, Play2Earn version of \"Flappy Bird\"",
+    "grant": 25e3
+  },
+  {
+    "grantee": "Difibase",
+    "summary": "NoSQL database tooling and infrastructure\"",
+    "grant": 25e3
+  },
+  {
+    "grantee": "ICDevs.org Bounty Acceleration",
+    "summary": "Support for developer bounties\"",
+    "grant": 25e3
+  },
+  {
+    "grantee": "ICPMAPS (Follow-On)",
+    "summary": "Open Maps, GIS data on the IC\"",
+    "grant": 1e5
+  },
+  {
+    "grantee": "Mind Bank Ai - Personal digital twin platform",
+    "summary": "Structured learning algorithms on the IC\"",
+    "grant": 25e3
+  },
+  {
+    "grantee": "NFT Studio And QR Gallery (Follow-On)",
+    "summary": "3D NFT minting engine, marketplace, and bridge infrastructure\"",
+    "grant": 25e3
+  },
+  {
+    "grantee": "DPort",
+    "summary": "Identity service for data ownership\"",
+    "grant": 25e3
+  },
+  {
+    "grantee": "Epic NFTs + Exponent",
+    "summary": "Exponent infrastructure work and Epic NFTs prototype\"",
+    "grant": 1e5
+  },
+  {
+    "grantee": "Itoka",
+    "summary": "Decentralized ecosystem for music creation, management, and consumption\"",
+    "grant": 25e3
+  },
+  {
+    "grantee": "intelligent NFT framework",
+    "summary": "Framework for integrating AI technology with 2D/3D NFT avatars\"",
+    "grant": 1e5
+  },
+  {
+    "grantee": "Java Agent for the Internet Computer",
+    "summary": "Set of native Java libraries for the Internet Computer\"",
+    "grant": 25e3
+  },
+  {
+    "grantee": "Quark",
+    "summary": "Open internet service facilitating payments on the Internet Computer\"",
+    "grant": 25e3
+  },
+  {
+    "grantee": "CryptoSpells・NFTStudio",
+    "summary": "NFT issurance service\"",
+    "grant": 5e3
+  },
+  {
+    "grantee": "IC Gallery",
+    "summary": "Interoperable 3D metaverse blending GameFi and DeFi\"",
+    "grant": 1e5
+  },
+  {
+    "grantee": "Meldd",
+    "summary": "Transaction-based multi-party consensus system",
+    "grant": 5e3
+  },
+  {
+    "grantee": "ICME (Follow-On)",
+    "summary": "No-code infrastructure for NFT minting and marketplaces",
+    "grant": 25e3
+  },
+  {
+    "grantee": "SCINET",
+    "summary": "Decentralized life sciences research and investment platform",
+    "grant": 25e3
+  },
+  {
+    "grantee": "web3r.chat",
+    "summary": "Rasa chatbots on the IC",
+    "grant": 25e3
+  },
+  {
+    "grantee": "Dmail Network",
+    "summary": "Decentralized email that integrates NFTs and distributed storage",
+    "grant": 25e3
+  },
+  {
+    "grantee": "SHELF (Follow-On)",
+    "summary": "\"Phygital\" streaming service using NFTs",
+    "grant": 1e5
+  },
+  {
+    "grantee": "Radius",
+    "summary": "Decentralized physical community organizing and moderation",
+    "grant": 5e3
+  },
+  {
+    "grantee": "ICP Squad",
+    "summary": "Engage2Earn NFT Game",
+    "grant": 25e3
+  },
+  {
+    "grantee": "ICTurtles",
+    "summary": "Play2Earn NFT game and DAO",
+    "grant": 25e3
+  },
+  {
+    "grantee": "dService",
+    "summary": "Decentralized Service Management Application running on the Internet Computer",
+    "grant": 25e3
+  },
+  {
+    "grantee": "Metaverse AI",
+    "summary": "Avatar NFTs on the Internet Computer",
+    "grant": 25e3
+  },
+  {
+    "grantee": "Blocks.",
+    "summary": "An online visual smart contract builder for the Internet Computer",
+    "grant": 25e3
+  },
+  {
+    "grantee": "Sling",
+    "summary": "Secure, decentralised personal data store and utiliser",
+    "grant": 5e3
+  },
+  {
+    "grantee": "CheersLand",
+    "summary": "Play2Earn Game",
+    "grant": 5e3
+  },
+  {
+    "grantee": "CetoSwap",
+    "summary": "Decentralized tokenized asset management platform",
+    "grant": 5e3
+  },
+  {
+    "grantee": "DataBox",
+    "summary": "Service for users to store and govern their asset data and personal information",
+    "grant": 25e3
+  },
+  {
+    "grantee": "Isea",
+    "summary": "NFT issuance and trading platform",
+    "grant": 25e3
+  },
+  {
+    "grantee": "Motoko Library",
+    "summary": "Motoko library development including sha224, base32, hex, base64, crc32fast",
+    "grant": 5e3
+  },
+  {
+    "grantee": "Raver",
+    "summary": "Decentralized social network and DAO",
+    "grant": 25e3
+  },
+  {
+    "grantee": "DeckDeckGo (Follow-On)",
+    "summary": "Open source editor for presentations",
+    "grant": 25e3
+  },
+  {
+    "grantee": "Optex",
+    "summary": "Data visualisation tools",
+    "grant": 25e3
+  },
+  {
+    "grantee": "Rust libraries for IC Devs",
+    "summary": "Stable memory collections, task scheduler, and event-based pub/sub",
+    "grant": 5e4
+  },
+  {
+    "grantee": "Internet Computer Event System (ICES)",
+    "summary": "Custom canister event log storage and analysis service",
+    "grant": 25e3
+  },
+  {
+    "grantee": "DLotto",
+    "summary": "Lottery sample application using ICP in canisters and randomness",
+    "grant": 25e3
+  },
+  {
+    "grantee": "Secrets of the Midgaard Planet",
+    "summary": "Play to Earn NFT-based card game",
+    "grant": 25e3
+  },
+  {
+    "grantee": "Aurora",
+    "summary": "Decentralized sound installation",
+    "grant": 25e3
+  },
+  {
+    "grantee": "CantorSpace TeamUp",
+    "summary": "Matchmaking platform for filmmaking community",
+    "grant": 25e3
+  },
+  {
+    "grantee": "Kontribute",
+    "summary": "Interactive storymaking dapp with NFTs",
+    "grant": 25e3
+  },
+  {
+    "grantee": "Bitcoin-related integrations in Motoko",
+    "summary": "Various crypto libraries in Motoko to support native Bitcoin integration",
+    "grant": 25e3
+  },
+  {
+    "grantee": "Prixelart",
+    "summary": "Decentralized photography hub",
+    "grant": 25e3
+  },
+  {
+    "grantee": "BitKeep",
+    "summary": "ICP integration as well as support for NFTs and Internet Computer dapps",
+    "grant": 5e4
+  },
+  {
+    "grantee": "IC Vault",
+    "summary": "Decentralized password and secret manager",
+    "grant": 25e3
+  },
+  {
+    "grantee": "Cramium",
+    "summary": "Decentralized, consumer-first digital advertising",
+    "grant": 25e3
+  },
+  {
+    "grantee": "NFT Karts",
+    "summary": "Play2Earn racing game",
+    "grant": 25e3
+  },
+  {
+    "grantee": "ICEvent",
+    "summary": "Calendar dapp and NFT-based event ticketing.",
+    "grant": 5e3
+  },
+  {
+    "grantee": "icNotes",
+    "summary": "Secure note-taking dapp",
+    "grant": 5e3
+  },
+  {
+    "grantee": "DFusion",
+    "summary": "Web3 blogging platform with NFTs",
+    "grant": 25e3
+  },
+  {
+    "grantee": "Kryptonic",
+    "summary": "Video storage and streaming API",
+    "grant": 5e3
+  },
+  {
+    "grantee": "BluepintJS module for the Internet Computer",
+    "summary": "Framework for authoring APIs in NodeJS",
+    "grant": 25e3
+  },
+  {
+    "grantee": "SimplifireIC",
+    "summary": "Decentralized contract management",
+    "grant": 25e3
+  },
+  {
+    "grantee": "Videate",
+    "summary": "Engagement and monetization platform for video creators",
+    "grant": 25e3
+  },
+  {
+    "grantee": "ViewAR by WEARFITS",
+    "summary": "AR-ready 3D assets for the fashion industry",
+    "grant": 25e3
+  },
+  {
+    "grantee": "Shōbai Global",
+    "summary": "Decentralized marketplace for new and used clothing",
+    "grant": 25e3
   }
 ]
