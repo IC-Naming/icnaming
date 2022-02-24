@@ -344,7 +344,7 @@
         "title": "",
         "summary": "",
         "grant": "",
-        "icnaming": "binance",
+        "icnaming": "skip",
         "type": "reserved",
         "url": "",
         "recommend_url": "binance"
@@ -384,7 +384,7 @@
         "title": "",
         "summary": "",
         "grant": "",
-        "icnaming": "bitflyer",
+        "icnaming": "skip",
         "type": "reserved",
         "url": "",
         "recommend_url": "bitflyer"
@@ -754,7 +754,7 @@
         "title": "",
         "summary": "",
         "grant": "",
-        "icnaming": "coinbase",
+        "icnaming": "skip",
         "type": "reserved",
         "url": "",
         "recommend_url": "coinbase"
@@ -764,7 +764,7 @@
         "title": "",
         "summary": "",
         "grant": "",
-        "icnaming": "connect",
+        "icnaming": "skip",
         "type": "reserved",
         "url": "",
         "recommend_url": "connect"
@@ -3011,21 +3011,21 @@
     },
     {
         "id": "icpics",
-        "title": "ICPics",
-        "summary": "",
-        "grant": "",
-        "icnaming": "skip",
-        "type": "icapp",
-        "url": "",
-        "recommend_url": "icpics"
-    },
-    {
-        "id": "icpics",
         "title": "",
         "summary": "",
         "grant": "",
         "icnaming": "icpics",
         "type": "reserved",
+        "url": "",
+        "recommend_url": "icpics"
+    },
+    {
+        "id": "icpics",
+        "title": "ICPics",
+        "summary": "",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icapp",
         "url": "",
         "recommend_url": "icpics"
     },
@@ -3874,7 +3874,7 @@
         "title": "",
         "summary": "",
         "grant": "",
-        "icnaming": "metabox",
+        "icnaming": "skip",
         "type": "reserved",
         "url": "",
         "recommend_url": "metabox"
@@ -3964,7 +3964,7 @@
         "title": "",
         "summary": "",
         "grant": "",
-        "icnaming": "michael",
+        "icnaming": "skip",
         "type": "reserved",
         "url": "",
         "recommend_url": "michael"
@@ -4194,7 +4194,7 @@
         "title": "",
         "summary": "",
         "grant": "",
-        "icnaming": "network",
+        "icnaming": "skip",
         "type": "reserved",
         "url": "",
         "recommend_url": "network"
@@ -4644,7 +4644,7 @@
         "title": "",
         "summary": "",
         "grant": "",
-        "icnaming": "payments",
+        "icnaming": "skip",
         "type": "reserved",
         "url": "",
         "recommend_url": "payments"
@@ -4654,7 +4654,7 @@
         "title": "",
         "summary": "",
         "grant": "",
-        "icnaming": "peacock",
+        "icnaming": "skip",
         "type": "reserved",
         "url": "",
         "recommend_url": "peacock"
@@ -4751,21 +4751,21 @@
     },
     {
         "id": "prixelart",
-        "title": "Prixelart",
-        "summary": "Decentralized photography hub",
-        "grant": "25000.0",
-        "icnaming": "skip",
-        "type": "grant",
-        "url": "",
-        "recommend_url": "prixelart"
-    },
-    {
-        "id": "prixelart",
         "title": "",
         "summary": "",
         "grant": "",
         "icnaming": "prixelart",
         "type": "reserved",
+        "url": "",
+        "recommend_url": "prixelart"
+    },
+    {
+        "id": "prixelart",
+        "title": "Prixelart",
+        "summary": "Decentralized photography hub",
+        "grant": "25000.0",
+        "icnaming": "skip",
+        "type": "grant",
         "url": "",
         "recommend_url": "prixelart"
     },
@@ -5714,7 +5714,7 @@
         "title": "",
         "summary": "",
         "grant": "",
-        "icnaming": "village",
+        "icnaming": "skip",
         "type": "reserved",
         "url": "",
         "recommend_url": "village"

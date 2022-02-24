@@ -429,6 +429,7 @@ impl RegistrarService {
     }
 
     pub fn has_pending_order(&self, caller: Principal) -> ICNSResult<bool> {
+        must_not_anonymous(&caller)?;
         Ok(STATE.with(|s| {
             let name_order_store = s.name_order_store.borrow();
             name_order_store.has_name_order(&caller)
@@ -439,6 +440,7 @@ impl RegistrarService {
         &self,
         caller: &Principal,
     ) -> ICNSResult<Option<GetNameOrderResponse>> {
+        must_not_anonymous(caller)?;
         Ok(STATE.with(|s| {
             let name_order_store = s.name_order_store.borrow();
             name_order_store.get_order(caller).map(|order| order.into())

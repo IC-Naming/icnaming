@@ -218,8 +218,22 @@ def create_reserved_list():
     print(f"reserved list created")
 
 
+def report_conflict():
+    # load items from reserved.txt and astrox_me_reserved.txt, and print those that are in both
+    reserved_path = 'reserved.txt'
+    astrox_me_reserved_path = 'astrox_me_reserved.txt'
+    with open(reserved_path, 'r', encoding='utf8') as f:
+        reserved = set(f.read().splitlines())
+    with open(astrox_me_reserved_path, 'r', encoding='utf8') as f:
+        astrox_me_reserved = set(f.read().splitlines())
+    result = reserved.intersection(astrox_me_reserved)
+    if len(result) > 0:
+        print(result)
+
+
 if __name__ == "__main__":
     # run main to create a csv
     main()
     # run csv to json to persist icnaming column in csv
     # csv_to_json()
+    # report_conflict()
