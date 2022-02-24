@@ -1,14 +1,17 @@
 {
   "registry": {
-    "ic": "chqy6-eiaaa-aaaak-qabja-cai"
+    "ic": "c7nxw-iiaaa-aaaam-aacaq-cai"
   },
   "registrar": {
-    "ic": "j6dzz-gaaaa-aaaak-aab3q-cai"
+    "ic": "cymrc-fqaaa-aaaam-aacaa-cai"
   },
   "resolver": {
-    "ic": "uzy66-pqaaa-aaaal-qaalq-cai"
+    "ic": "cwo4k-6aaaa-aaaam-aacba-cai"
   },
   "favorites": {
-    "ic": "gfftf-pqaaa-aaaaj-aadza-cai "
+    "ic": "crp26-tyaaa-aaaam-aacbq-cai"
+  },
+  "icnaming_ledger": {
+    "ic": "ceilt-sqaaa-aaaam-aacca-cai"
   }
 }

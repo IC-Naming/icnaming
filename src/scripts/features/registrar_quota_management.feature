@@ -42,14 +42,6 @@ Feature: Quota Management
       | 64l4r-aaaaa-aaaah-aaklq-cai | LenGte      | 7           | 1600  |
       | 64l4r-aaaaa-aaaah-aaklq-cai | LenGte      | 8           | 660   |
 
-  Scenario: Import large file
-    When admin import quota file "20220223_twitter_retweet.zlib"
-    Then Last quota import status "true"
-    Then User quota status should be as below
-      | user                                                            | quota_type1 | quota_type2 | value |
-      | qhl7u-fzmv5-2znja-t4zlh-lcde7-rbvbo-fqtlu-izncn-6f6gm-6gg52-vae | LenGte      | 7           | 2     |
-      | hnja5-kwd4y-azcdv-fzsd2-rounm-myhqo-cedgb-ne5e6-jpk7q-ymkec-7ae | LenGte      | 7           | 1     |
-
   Scenario: Import illegal data
     When admin import quota file "illegal.zlib"
     Then Last quota import status "false"
