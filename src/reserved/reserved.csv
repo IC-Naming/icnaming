@@ -1,28 +1,65 @@
 id,title,summary,grant,icnaming,recommend_url,type,url
+a16z,,,,a16z,a16z,reserved,
+a3capas,,,,a3capas,a3capas,reserved,
 aedile,Aedile,Project management dapp,25000.0,aedile,aedile,grant,
 agryo,Agryo,Global risk intelligence for agriculture,25000.0,agryo,agryo,grant,
 aikin,AIKIN,We are blockchain software development company building on the Internet Computer by Dfinity.,,aikin,aikin,icapp,https://www.aikin.io/
+alexa,,,,alexa,alexa,reserved,
+amber,,,,amber,amber,reserved,
+ambergroup,,,,ambergroup,ambergroup,reserved,
+animal-guardians,Animal Guardians,,,animal-guardians,animal-guardians,icapp,
+anmi,,,,anmi,anmi,reserved,
+anmicapital,,,,anmicapital,anmicapital,reserved,
+anthonymq,,,,anthonymq,anthonymq,reserved,
+arkstream,,,,arkstream,arkstream,reserved,
+arkstreamcapital,,,,arkstreamcapital,arkstreamcapital,reserved,
+art,,,,art,art,reserved,
+aspect,,,,aspect,aspect,reserved,
+aspectventures,,,,aspectventures,aspectventures,reserved,
 astrome,ME,A self-sovereign identity protocol on Internet Computer,,astrome,astrome,icp123,http://beta.astrox.me/
 astrox,AstroX,"Dart developer tools and ""mini apps"" framework",25000.0,astrox,astrox,grant,
+atcapital,,,,atcapital,atcapital,reserved,
+aurora,Aurora,Decentralized sound installation,25000.0,aurora,aurora,grant,
 avatar,,,,avatar,avatar,reserved,
 aviate-labs,Aviate Labs,A Web3 Construction Lab.,,aviate-labs,aviate-labs,icapp,https://aviate-labs.com/
+avocado-research,Avocado Research,,,avocado-research,avocado-research,icapp,
 axon,Axon,A community-built neuron management solution for the Internet Computer.,,axon,axon,icp123,https://axon.ooo/
 b9 labs,B9 Labs,Developer onboarding documentation,25000.0,b9-labs,b9-labs,grant,
 b9lab,B9 Labs,"Successful teams focus on code quality, usefulness and adoption to make sure their technology is core to the ecosystem.",,skip,b9lab,icp123,https://b9lab.com/
 badge,,,,badge,badge,reserved,
+bartlett,,,,bartlett,bartlett,reserved,
 bauction,Bauction,Decentralized and transparent auction platform,25000.0,bauction,bauction,grant,
+bauction (follow-on),Bauction (Follow-On),Extension of Bauction features and SDK in PHP and NodeJS,25000.0,skip,bauction-(follow-on),grant,
+beacon,,,,beacon,beacon,reserved,
 bebenture,Bebenture,Decentralized derivatives issuance and transaction protocol,5000.0,bebenture,bebenture,grant,
+bigbuy,,,,bigbuy,bigbuy,reserved,
+binance,,,,skip,binance,reserved,
+bitcastle,,,,bitcastle,bitcastle,reserved,
+bitcoin-related integrations in motoko,Bitcoin-related integrations in Motoko,Various crypto libraries in Motoko to support native Bitcoin integration,25000.0,skip,bitcoin-related-integrations-in-motoko,grant,
+bitfinex,,,,bitfinex,bitfinex,reserved,
+bitflyer,,,,skip,bitflyer,reserved,
+bithumb,,,,bithumb,bithumb,reserved,
+bitkeep,BitKeep,ICP integration as well as support for NFTs and Internet Computer dapps,50000.0,bitkeep,bitkeep,grant,
+bittrex,,,,bittrex,bittrex,reserved,
 blockchain at berkeley,Blockchain at Berkeley,DAO prototype that allows participants to nominate developers for grant funding,25000.0,berkeley,blockchain-at-berkeley,grant,
 blockchain heroes,Blockchain Heroes,"<p>The best-selling Blockchain Heroes series has been brought to the Internet Computer! Originally presented on the WAX blockchain in Summer of 2020 (selling out in minutes), Blockchain Heroes is a set of 50 super heroes inspired by real-world blockchain and crypto personalities. Now the original 50 heroes are being issued on ICP with all NEW variations. Booster packs with $0 gas fees. </p>",,blockchain-heroes,blockchain-heroes,showcase,https://entrepot.app/marketplace/blockchain-heroes
 blockchain-heroes,Blockchain Heroes,The world's top collectible digital trading card set. Join the battle for freedom and decentralization!,,skip,blockchain-heroes,icapp,https://bcheroes.com/
 blockchainatberkeley,Blockchain at Berkeley,Building people and a blockchain community,,skip,blockchainatberkeley,icp123,https://blockchain.berkeley.edu/
 blocks,Blocks,Visual editor for Motoko with 3D and gaming elements,25000.0,blocks,blocks,grant,
+blocks.,Blocks.,An online visual smart contract builder for the Internet Computer,25000.0,skip,blocks.,grant,
 bluebird,BlueBird,On chain transformation of user generated rich media content,25000.0,bluebird,bluebird,grant,
+bluepintjs module for the internet computer,BluepintJS module for the Internet Computer,Framework for authoring APIs in NodeJS,25000.0,skip,bluepintjs-module-for-the-internet-computer,grant,
+bob,,,,bob,bob,reserved,
 btc-flower,BTC Flower,BTC Flower is the digital version of the R.I.P Banking System art piece by Ludo. BTC Flower is a purely artistic expression that expands on the chimera archetype Ludo has dedicated his life to exploring.,,btc-flower,btc-flower,icapp,https://btcflower.xyz/
+btcflower,,,,btcflower,btcflower,reserved,
 bunchd,Bunchd,"Create, Collaborate, and Earn on the Subscription Platform controlled by Creators.",,bunchd,bunchd,icapp,
+bybit,,,,bybit,bybit,reserved,
 candid-convert,candid-convert,Developer tools for parsing Candid to TypeScript,5000.0,candid-convert,candid-convert,grant,
+canister-tip-jar,Canister Tip Jar,,,canister-tip-jar,canister-tip-jar,icapp,
+canistergeek,Canistergeek,,,canistergeek,canistergeek,icapp,
 canistore,Canistore,"Simplify the storing, selling, and sharing of your photos, music, and videos… forever!",,canistore,canistore,icp123,https://canistore.io/
 canlista,Canlista,"Canister directory to find, publish, and extend applications with the goal of aiding in composability",25000.0,canlista,canlista,grant,
+cantorspace teamup,CantorSpace TeamUp,Matchmaking platform for filmmaking community,25000.0,cantorspace-teamup,cantorspace-teamup,grant,
 cap,CAP,"CAP is an open internet service providing transaction history & asset provenance for NFT’s & Tokens on the Internet Computer.It solves the huge IC problem that assets don’t have native transaction history, and does so in a scalable, trustless and seamless way so any NFT/Token can integrate with one line of code.",,cap,cap,icapp,https://cap.ooo/
 catalyze,Catalyze,The premier Web 3 platform for community development & social impact. The WeAct tool set moved to blockchain + so much more!,,catalyze,catalyze,icapp,https://www.weact.chat/
 cbd,,,,cbd,cbd,reserved,
@@ -31,22 +68,34 @@ cetoswap,CetoSwap,CetoSwap ∞ is a fungible and non-fungible asset management p
 chain-cloud,CHAIN-CLOUD,Dapp to auto-deploy and manage canisters,25000.0,chain-cloud,chain-cloud,grant,
 chainide,ChainIDE,Motoko IDE with sample dapps,25000.0,chainide,chainide,grant,
 checkrr,Checkrr,Decentralized fact checking protocol,25000.0,checkrr,checkrr,grant,
+cheersland,CheersLand,Play2Earn Game,5000.0,cheersland,cheersland,grant,
 cipherproxy,CipherProxy,CipherProxy is a research and development foundation.,,cipherproxy,cipherproxy,icp123,https://www.cipherproxy.com/
 civol,Civol,"Asynchronous video conversation platform enabling decentralized discourse, debate, and collective decision-making",25000.0,civol,civol,grant,
+cleverland,,,,cleverland,cleverland,reserved,
 codebase,,,,codebase,codebase,reserved,
 coin-flipper,Coin Flipper,Simple app that flips a coin.,,coin-flipper,coin-flipper,icapp,
+coinbase,,,,skip,coinbase,reserved,
+connect,,,,skip,connect,reserved,
 content fly,Content Fly,Content marketplace connecting high quality creators with brands,25000.0,content-fly,content-fly,grant,
+content fly (follow-on),Content Fly (Follow-On),Decentralized creator marketplace,100000.0,skip,content-fly-(follow-on),grant,
 contentfly,ContentFly,"Marketplace app connecting high quality Content Creators to Brands, running on Dfinity Internet Computer",,skip,contentfly,icp123,https://contentfly.app/
 contentfly-app,ContentFly.app,"Marketplace app connecting high quality Content Creators to Brands, running on Dfinity Internet Computer.",,skip,contentfly-app,icapp,https://contentfly.app/
 cosmicrafts,Cosmicrafts,Multiplayer HTML5/WebGL game with NFTs,25000.0,cosmicrafts,cosmicrafts,grant,
 cover,Cover,"Code Verification 🟢 open internet service for canisters on the #InternetComputer, to reduce risks & increase trust on the IC!",,cover,cover,icapp,https://covercode.ooo/
+cramium,Cramium,"Decentralized, consumer-first digital advertising",25000.0,cramium,cramium,grant,
 cronic,Cronic,"Cronics is a Play-to-earn NFT game being developed by ToniqLabs for the Internet Computer. Cronics incorporates breeding mechanics, wearable NFTs and a p2e minigame ecosystem and more.",,cronic,cronic,icapp,https://cronic.toniqlabs.com/
 cronicnfts,Cronic NFTs,Cronics play-to-earn ecosystem on the $ICP blockchain. ,,cronicnfts,cronicnfts,icp123,https://cronic.toniqlabs.com/
 crowd-created-canvas,Crowd Created Canvas,"CCC(Crowd Created Canvas) is the first product of C3 Protocol and the first truly decentralized creation project of NFT in blockchain field. The products realized on CCC Dfinity (Internet Computer) really make NFT creation decentralized in all aspects. Its outstanding points are: users create canvases through decentralization and collaboration, and the creation and transaction data of paintings are stored in IC Canister.",,skip,crowd-created-canvas,icapp,
 crowdeats,crowdEats,Restrauant review dapp with social and reward components,5000.0,crowdeats,crowdeats,grant,
+crowdfund-nft,Crowdfund NFT,,,crowdfund-nft,crowdfund-nft,icapp,
 crowdrecords,Crowd Records,"Decentralized Song Rights Economy where musical ideas become songs, almost magically",,crowdrecords,crowdrecords,icp123,https://crowdrecords.com/
 crowdrecords.com,CrowdRecords.com,Decentralized economy for creating music,5000.0,skip,crowdrecords.com,grant,
 crowns,Crowns,"Crowns are a collection of 10,000 uniquely generated NFTs on the Internet Computer. With a mix of traditional and psychedelic materials, and a CAP-powered transaction history for full provenance.",,crowns,crowns,icapp,https://crowns.ooo/
+crypto90s,,,,crypto90s,crypto90s,reserved,
+cryptoculturist,,,,cryptoculturist,cryptoculturist,reserved,
+cryptojian,,,,cryptojian,cryptojian,reserved,
+cryptospells・nftstudio,CryptoSpells・NFTStudio,"NFT issurance service""",5000.0,cryptospells,cryptospells・nftstudio,grant,
+cryptoworld,,,,cryptoworld,cryptoworld,reserved,
 cube run,Cube Run,"<p>The classic game, ""Cube Run"" gets an update by having a new graphic interface and being hosted completely on-chain. The decentralized version of this game lets you keep your high-score running in your browser through persistent memory. </p>",,cube-run,cube-run,showcase,https://7qx3n-ziaaa-aaaad-qaqca-cai.raw.ic0.app/
 cuberun,Cube Run,"The classic game, “Cube Run” gets an update by having a new graphic interface and being hosted completely on-chain. ",,skip,cuberun,icp123,https://7qx3n-ziaaa-aaaad-qaqca-cai.raw.ic0.app/
 cubic,Cubic,Cubic is a generative art project. Data such as ownership history and transaction history are used in different ways to generate unique canvases in a variety of styles.,,cubic,cubic,icapp,https://cubic.place/
@@ -57,7 +106,9 @@ cycles-bet,Cycles Bet,Provably secure & fair games.,,cycles-bet,cycles-bet,icapp
 cyman,CYMAN,"10,000 randomly generated cybernetic humanoid's from 550,000,000 BCE built on the Internet Computer. ",,cyman,cyman,icp123,https://www.cyman.live/
 dab,DAB,DAB provides seamless access to #InternetComputer data that many apps/UI’s need to surface.,,dab,dab,icp123,https://dab.ooo/
 dank,Dank,"Dank is the first Decentralized Bank built on the Internet Computer, developed by Fleek. ",,dank,dank,icp123,https://dank.ooo/
+dapp man's switch,dApp Man's Switch,Decentralized dead man's switch on the Internet Computer,25000.0,dapp-man,dapp-man's-switch,grant,
 data app development platform,Data App Development Platform,Low code platform that enables engineering teams build data apps and workflows,25000.0,data-app-development-platform,data-app-development-platform,grant,
+databox,DataBox,Service for users to store and govern their asset data and personal information,25000.0,databox,databox,grant,
 dbox,dbox,Spam free inbox for IC dapp developers to communicate directly with their users,25000.0,dbox,dbox,grant,
 dbox-foundation,DBOX Foundation,The decentralized inbox built on Dfinity's  #internetcomputer.,,skip,dbox-foundation,icapp,https://www.dbox.foundation/
 deckdeckgo,DeckDeckGo,Open source tools for creating presentations on the Internet Computer,25000.0,deckdeckgo,deckdeckgo,grant,
@@ -73,12 +124,15 @@ dfinity,,,,dfinity,dfinity,reserved,
 dfinity,DFINITY,The DFINITY Foundation is a major contributor to the Internet Computer.,,skip,dfinity,icp123,https://dfinity.org/
 dfinity explorer,DFINITY Explorer,"<p>DFINITY Explorer, a project started in 2018, is an open-source, community-built dashboard and explorer for the Internet Computer, providing live information and statistics about the network, governance, and the ICP utility token, including account and transaction information.</p>",,dfinity-explorer,dfinity-explorer,showcase,https://www.dfinityexplorer.org/#/datacenters
 dfinity-academy-ru,Internet Computer Академия DFINITY,Educational materials on the technical features of the Internet Computer blockchain in Russian.,,dfinity-academy-ru,dfinity-academy-ru,icapp,
+dfinity-alliance,Dfinity Alliance,,,dfinity-alliance,dfinity-alliance,icapp,
 dfinity-bulls,Dfinity Bulls,"8,888 Awesome Badass Bulls will ever be minted! Exclusively on ICP!",,dfinity-bulls,dfinity-bulls,icp123,https://twitter.com/DBulls_NFT
 dfinity-bulls-nft,Dfinity Bulls NFT,"8,888 Awesome Badass Bulls will ever be minted! Exclusively on ICP!",,skip,dfinity-bulls-nft,icapp,
 dfinity-club,DfinityClub,The world's most influential Dfinity community - building a new world of decentralized InternetComputer blockchain.,,dfinity-club,dfinity-club,icp123,https://t.me/DfinityClub_Chat
 dfinity-community,DfinityCommunity,The Extraordinary Community Behind The Internet Computer.,,dfinity-community,dfinity-community,icp123,https://www.dfinitycommunity.com/
+dfinity-donkeys,Dfinity Donkeys,,,dfinity-donkeys,dfinity-donkeys,icapp,
 dfinity-en-espanol,DFINITY en Español,#InternetComputer reinventando la internet pública como una computadora blockchain. Noticias sobre #InternetComputer en español.,,dfinity-en-espanol,dfinity-en-espanol,icapp,
 dfinity-explorer,Dfinity Explorer,"DFINITY Explorer is an open-source project under the MIT license, providing transparency, reliability, and security.",,dfinity-explorer,dfinity-explorer,icp123,https://www.dfinityexplorer.org/
+dfinity-nuclear-sheep,Dfinity Nuclear Sheep,,,dfinity-nuclear-sheep,dfinity-nuclear-sheep,icapp,
 dfinity-scan,DFINITY SCAN,The Internet Computer is a public blockchain network .,,dfinity-scan,dfinity-scan,icp123,https://www.icp.report/
 dfinity-space-apes,Dfinity Space Apes,"10,000 Space Apes on the Internet Computer.",,skip,dfinity-space-apes,icapp,
 dfinity-sz,Dfinity SZ,DfinitySZ is the leading Dfinity Chinese community in China. ,,dfinity-sz,dfinity-sz,icp123,https://dfisz.com/
@@ -86,23 +140,35 @@ dfinity-vietnam,Dfinity Vietnam,Founded in June 2021 we are a group of people pa
 dfinitynft,DfinityNFT,NFT standard with metadata focus,5000.0,skip,dfinitynft,grant,
 dfinitynodes,DFINITYNodes,"Crowd-funded nodes, powering the #IC developing, more info soon.",,skip,dfinitynodes,icapp,
 dfinitysz,DfinitySZ中文社区,Dfinity中国社区，立足于中国前沿城市深圳，专注于Dfinity生态技术发展交流与优质项目挖掘分析。,,skip,dfinitysz,icapp,https://dfisz.com/
+dfinityvietnam,,,,dfinityvietnam,dfinityvietnam,reserved,
 dfinityvietnam,Dfinity Vietnam,Founded in June 2021 we are a group of people passionate about learning about Internet Computer. ,,skip,dfinityvietnam,icp123,https://dfinityvietnam.com/
+dfinityvn,,,,dfinityvn,dfinityvn,reserved,
 dfistarter,Dfistarter,DfiStarter is the first project accelerator for Dfinity.,,dfistarter,dfistarter,icp123,https://dfistarter.io/
 dflow,dFlow,Decentralized workflows for B2B collaboration,25000.0,dflow,dflow,grant,
 dft,,,,dft,dft,reserved,
+dfusion,DFusion,Web3 blogging platform with NFTs,25000.0,dfusion,dfusion,grant,
 dgdg,DGDG (dgastonia),"The most comprehensive browsing experience for NFTs on The Internet Computer. Sort and filter by price & rarity, expose floors, ... more to come!",,dgdg,dgdg,icapp,https://www.dgastonia.com/nfts/collections/
 difibase,Difibase,"""Database"" solution for the Internet Computer",5000.0,difibase,difibase,grant,
+disto,,,,disto,disto,reserved,
 distrikt,Distrikt,"Distrikt is a completely decentralized, community-owned professional network. ",,distrikt,distrikt,icp123,https://az5sd-cqaaa-aaaae-aaarq-cai.ic0.app/
+dlotto,DLotto,Lottery sample application using ICP in canisters and randomness,25000.0,dlotto,dlotto,grant,
 dmail,Dmail Network ,Dmail is the first mail application based on Web3.0 and Dfinity technology .,,dmail,dmail,icp123,http://dmail.ai/
+dmail network,Dmail Network,Decentralized email that integrates NFTs and distributed storage,25000.0,dmail-network,dmail-network,grant,
+documentingtheic,,,,documentingtheic,documentingtheic,reserved,
 dom,,,,dom,dom,reserved,
 doocoins,DooCoins,A task-based rewards platform for kids,5000.0,doocoins,doocoins,grant,
 dots,Dots,"This is a hackathon project, build in less than 1 day.",,dots,dots,icp123,https://2kvgp-zyaaa-aaaai-aappq-cai.raw.ic0.app/
+dport,DPort,"Identity service for data ownership""",25000.0,dport,dport,grant,
 drake,,,,drake,drake,reserved,
+draperdragon,,,,draperdragon,draperdragon,reserved,
 drip-land,Drip.Land,The home of the IC Drip universe. Is your outfit drippin?,,drip-land,drip-land,icapp,https://drip.land/
+dripland,,,,dripland,dripland,reserved,
 dscvr,DSCVR,A completely decentralized social content platform running on the #InternetComputer beta preview started!,,dscvr,dscvr,icp123,https://h5aet-waaaa-aaaab-qaamq-cai.raw.ic0.app/
 dservice,dService,Next-generation decentralized Service Management Application,25000.0,dservice,dservice,grant,
+dsign,,,,dsign,dsign,reserved,
 dsocial,DSocial,Decentralized & censorship resistant 📺 built on the Internet Computer & ARWeave.,,dsocial,dsocial,icapp,http://dsocial.app/
 dstar,Dstar,This is a technical test of dstar.,,dstar,dstar,icp123,https://II.dstar.app
+dwitter,Dwitter,Decentralized microblogging and social networking service,25000.0,dwitter,dwitter,grant,
 dws (dfinity web services),DWS (Dfinity Web Services),Data management tools for developers,5000.0,dfinity-web-services,dws-(dfinity-web-services),grant,
 earth,,,,earth,earth,reserved,
 earth wallet,Earth Wallet,Security audit support for non-custodial wallet,25000.0,earth-wallet,earth-wallet,grant,
@@ -113,14 +179,25 @@ eimolad,Eimolad,Eimolad is a fantasy world full of adventures and populated by t
 elementum,Elementum,"Elementum focuses on delivering products and services, games more specifically. With our core being a Trading Card Game in IC.",,elementum,elementum,icapp,https://elementum.one/
 ensofinance,EnsoFinance,Discover and create open DeFi metastrategies.,,ensofinance,ensofinance,icp123,https://www.enso.finance/
 entrepot,Entrepot,"By definition, an entrepôt is a port, city, or trading post where merchandise may be imported, stored or traded. ",,entrepot,entrepot,icp123,https://entrepot.app/
+epic nfts + exponent,Epic NFTs + Exponent,"Exponent infrastructure work and Epic NFTs prototype""",100000.0,epic-nfts-exponent,epic-nfts-+-exponent,grant,
 eria,Eria,CoreWeave API for generative art on the IC,5000.0,eria,eria,grant,
 evm on icp,EVM on ICP,"<p>An Ethereum Virtual Machine (EVM) demo built and hosted on the Internet Computer blockchain. ""The Ethereum protocol itself exists solely for the purpose of keeping the continuous, uninterrupted, and immutable operation of this special state machine; It's the environment in which all Ethereum accounts and smart contracts live. At any given block in the chain, Ethereum has one and only one 'canonical' state, and the EVM is what defines the rules for computing a new valid state from block to block."" - Ethereum.org P.S. there is a hidden game in the demo. </p>",,evm-on-icp,evm-on-icp,showcase,https://fxa77-fiaaa-aaaae-aaana-cai.raw.ic0.app/evm/
 ex3,,,,ex3,ex3,reserved,
 exponent,Exponent,EXT Token Standard and DEX prototype,25000.0,exponent,exponent,grant,
+fallingstars-nft,FallingStars NFT ,,,fallingstars-nft,fallingstars-nft,icapp,
+fbg,,,,fbg,fbg,reserved,
+fbgcapital,,,,fbgcapital,fbgcapital,reserved,
+fenbushi,,,,fenbushi,fenbushi,reserved,
+fiona,,,,fiona,fiona,reserved,
 fleek,Fleek,Fleek brings decentralized web-hosting to the Internet Computer. ,,fleek,fleek,icp123,https://fleek.co/
 fleek-co,Fleek.co,"Effortlessly build Open Web sites & apps. Hosting, ENS, Storage, Pinning! Built on the Internet Computer, IPFS, Ethereum, Filecoin, etc.",,fleek-co,fleek-co,icapp,https://fleek.co/
 fleek-ooo,Fleek.ooo,"Easily build, deploy, and manage canisters, cycles, apps, & infrastructure on DFINITY's Internet Computer.",,fleek-ooo,fleek-ooo,icapp,https://fleek.ooo/
+freedom,Freedom,,,skip,freedom,icapp,
 freeos,Freeos,Proton <> Internet Computer integration and oracle prototype,25000.0,freeos,freeos,grant,
+frog-nation-2-0-2d,Frog Nation 2.0 2D,,,frog-nation,frog-nation-2-0-2d,icapp,
+frog-nation-2-0-3d,Frog Nation 2.0 3D Assassins,,,skip,frog-nation-2-0-3d,icapp,
+frog-nation-2-0-voxels,Frog Nation 2.0 Voxels,,,skip,frog-nation-2-0-voxels,icapp,
+frontliners-nft,frontliners.nft,,,skip,frontliners-nft,icapp,
 functionland,Functionland,Blockchain-Attached Storage (BAS) and the Borg Protocol. Rewarding OS devs for their contributions to a thriving #dApp ecosystem.,,functionland,functionland,icapp,https://fx.land/
 gauzs,Gauzs,Social network for academics,25000.0,gauzs,gauzs,grant,
 get-impact-now,GET.IMPACT.NOW,get.impact.now wants to cive everyone the ability to collaborate on answers to the small questions of your village as well as the big questions of our civilization.,,get-impact-now,get-impact-now,icp123,https://getimpactnow.org/
@@ -129,18 +206,27 @@ gigaverse-labs,Gigaverse Labs,"We believe that the Internet Computer is the best
 gobazzinga,GoBazzinga,Challenge-based social spectulation platform,25000.0,gobazzinga,gobazzinga,grant,
 golang developer tools,Golang Developer Tools,Candid implementation and Golang agent,25000.0,golang-developer-tools,golang-developer-tools,grant,
 gpad,,,,gpad,gpad,reserved,
+hashkey,,,,hashkey,hashkey,reserved,
+hashkeycapital,,,,hashkeycapital,hashkeycapital,reserved,
 haundet-hamsters,Haundet Hamsters,"Haunted Hamsters are 3333 hamsters, who have been haunted on the hill of Hamsterville.",,haundet-hamsters,haundet-hamsters,icp123,https://www.hauntedhamsters.io/
 haunted-hamsters,Haunted Hamsters,"Haunted Hamsters are 3,333 hamsters, who have been haunted on the hill of Hamsterville.",,skip,haunted-hamsters,icapp,https://www.hauntedhamsters.io/
 herbert,,,,herbert,herbert,reserved,
 hexgl,HexGL,HexGL is a futuristic racing game .,,hexgl,hexgl,icp123,https://neqb2-dyaaa-aaaad-qameq-cai.raw.ic0.app/
+holon,,,,holon,holon,reserved,
+huobi,,,,huobi,huobi,reserved,
+hyuna,,,,hyuna,hyuna,reserved,
+iaf,,,,iaf,iaf,reserved,
 ibridge,iBridge,Become the bridge between Dfinity and other public chain ecosystem,,ibridge,ibridge,icp123,https://www.ibridge.pro/
 ic,,,,ic,ic,reserved,
+ic cards,ic cards,"NFT minting, leveling and crafting game",25000.0,ic-cards,ic-cards,grant,
 ic drive,IC Drive,Decentralized file storage and sharing,25000.0,ic-drive,ic-drive,grant,
 ic drive (follow-on),IC Drive (Follow-On),Analysis of cycles for storage,5000.0,skip,ic-drive-(follow-on),grant,
 ic gallery,IC Gallery,"<p>The IC Gallery is an interoperable 3D metaverse blending GameFi and DeFi, where users can play, mint, and trade all their existing NFTs through various immersive 3D experiences on the Internet Computer and Ethereum. Hosted completely on-chain, the IC Gallery is the ultimate 3D NFT metaverse experience.</p>",,ic-gallery,ic-gallery,showcase,https://ic.gallery/
 ic rocks,IC Rocks,"<p>IC.Rocks is a complete ""block explorer"" for the Internet Computer – built by the community. Tracking everything from transactions, to network upgrades, to cycles, IC.Rocks enables anyone to explore the inner-workings of the Internet Computer. </p>",,ic-rocks,ic-rocks,showcase,https://ic.rocks/
+ic vault,IC Vault,Decentralized password and secret manager,25000.0,ic-vault,ic-vault,grant,
 ic video,IC Video,Decentralized video conferencing,25000.0,ic-video,ic-video,grant,
 ic-ape-ventures,IC Ape Ventures,"10,000 Unique Apes are getting ready to take their first steps in to the #ICP ecosystem.",,ic-ape-ventures,ic-ape-ventures,icapp,https://icapeventures.com/
+ic-birds,IC Birds,,,ic-birds,ic-birds,icapp,
 ic-canvas,IC Canvas,This is an experimental project from the Dfinity Foundation 2021 hackathon. ,,ic-canvas,ic-canvas,icp123,https://rdbii-uiaaa-aaaab-qadva-cai.raw.ic0.app/
 ic-cards,IC Cards,"IC Cards is an NFT-based game on the IC Protocol. Gather, craft, level, and prepare yourself for a world full of monsters and villains.",,ic-cards,ic-cards,icapp,
 ic-dashboard,IC Dashboard,The Internet Computer Association (ICA) is a Geneva-based independent members organization.,,ic-dashboard,ic-dashboard,icp123,https://dashboard.internetcomputer.org/
@@ -152,32 +238,48 @@ ic-naming,IC Naming,"ICNaming is a Decentralized Domain Name Server based on Dfi
 ic-notes,IC Notes,An app that stores your notes on the IC. Therefore your notes are highly private and no intermediary may reveal any information.,,ic-notes,ic-notes,icapp,
 ic-rocks,ic.rocks,IC.Rocks is a complete block explorer for the Internet Computer.,,ic-rocks,ic-rocks,icp123,https://ic.rocks/
 ic-turtles,IC Turtles,IC Turtles is a collection of 10000 algorithmically generated turtles (AND ACCESSORIES) on the IC. ,,ic-turtles,ic-turtles,icp123,
+ic-whiskers,IC Whiskers,https://6hsbt-vqaaa-aaaaf-aaafq-cai.ic0.app/#/b5zxk-saaaa-aaaaf-aacmq-cai,,ic-whiskers,ic-whiskers,icapp,
 ic.rocks,ic.rocks,A collection of developer tools for understanding activity and transactions on the Internet Computer,25000.0,skip,ic.rocks,grant,
+ic8,IC8 Infinity Space Station,,,ic8,ic8,icapp,
 ic_tools_dart,ic_tools_dart,Dart agent to help support Flutter dapps on the Internet Computer,5000.0,ic-tools-dart,ic_tools_dart,grant,
 ica,Internet Computer Association,The Internet Computer Association (ICA) is a Geneva-based independent members organization.,,skip,ica,icp123,https://internetcomputer.org/
 ica dashboard,ICA Dashboard,"<p>The Internet Computer Association maintains a public dashboard where anyone can track the latest statistics for the Internet Computer blockchain. Tracking everything from blocks per second, to NNS proposals and their information and voting record, as well the latest state of the network, and transaction data. </p>",,ica-dashboard,ica-dashboard,showcase,https://dashboard.internetcomputer.org/
+icaliens,ICAliens,,,icaliens,icaliens,icapp,
 icape-ventures,IC Ape Ventures,"We make sure that every emerging product looks realistic, charismatic, strong and intelligent. ",,icape-ventures,icape-ventures,icp123,https://icapeventures.com/
 icapps,icApps,IC dapps directory and developer portal,25000.0,icapps,icapps,grant,
 icats,ICats,"ICats are companions to ICPunks, the most popular Internet Computer NFT collection. ICats were airdropped to ICPunk holders as a thank you note and a sign of what is coming from Gigaverse Labs. There are exactly 10,000 unique ICats in the collection.",,icats,icats,icapp,
 icbunny,ICPBunny,Yieldable #NFT & Breedable #NFT Powered by Dfinity,,icbunny,icbunny,icp123,https://linktr.ee/icpbunny
 iccomics,ICComics,The First Procedural Community Driven Web Comic On The Internet Computer.,,iccomics,iccomics,icapp,
 icdevs,,,,icdevs,icdevs,reserved,
+icdevs-org,ICDevs.org,,,skip,icdevs-org,icapp,
+icdevs.org bounty acceleration,ICDevs.org Bounty Acceleration,"Support for developer bounties""",25000.0,skip,icdevs.org-bounty-acceleration,grant,
 icdrip,ICDrip,"IC Drip are randomly generated meta-commerce shopping carts for outfits and personas stored on chain. Stats, images, and other functionality are intentionally omitted for others to interpret. Feel free to use IC Drip in any way you want.",,icdrip,icdrip,icapp,http://icdrip.io/
 ices,ICES,a storage and analysis service for canister's event logs on Dfinity.,,ices,ices,icp123,https://www.ices.one/
 icevent,ICEvent,"An open event service built on Internet Computer. Manage and share calendars, events, todo list...",,icevent,icevent,icp123,https://znisf-eqaaa-aaaaj-aabta-cai.raw.ic0.app/
+icgiraffes,ICGiraffes,,,icgiraffes,icgiraffes,icapp,
 icircle nft,iCircle NFT,"<p>The first generative NFT project hosted on the Internet Computer blockchain – iCircle had their inaugural collection sell out in under 6 minutes. The iCircle project consists of generative art NFTs, hosted on the Internet Computer, as well as NFT holders having governance rights in the newly announced iCircle DAO. More releases and minting tools for generative artists are on the way. </p>",,icircle-nft,icircle-nft,showcase,https://entrepot.app/marketplace/icircle
 icircle-nft,ICircle NFT,"8,888 Generative Art NFTs Launch Soon in #InternetComputer | Math + Art = Beautiful | Join our discord today! 500 free mint roles available | #8YearGang",,skip,icircle-nft,icapp,
 icity,,,,icity,icity,reserved,
+ickitsune,ICKitsune,,,ickitsune,ickitsune,icapp,
 ickitties,ICKitties,"10,000 8-bit kitties living on the #InternetComputer. Join us as we explore the 7 Kingdoms!",,ickitties,ickitties,icapp,https://ickitties.com/
+ickoalas,ICKoalas,,,ickoalas,ickoalas,icapp,
+iclight,ICLight.house,"ICLight wallet for ICP, Cycles, and Tokens",,iclight,iclight,icp123,http://iclight.house
 iclighthouse,ICLight.house,ICLighthouse: Blockchain drives value creation.,,iclighthouse,iclighthouse,icapp,https://iclight.house/login
 icme,ICME,No code website builder,25000.0,icme,icme,grant,
+icme (follow-on),ICME (Follow-On),No-code infrastructure for NFT minting and marketplaces,25000.0,skip,icme-(follow-on),grant,
 icmoji,ICMoji Origins,ICMoji Origins is an NFT-based multiplayer game built end-to-end on-chain on the Internet Computer.,,icmoji,icmoji,icp123,https://icmojis.com/
 icmoji origins,ICmoji Origins,"DSCVR Hackathon Season 2 Winner, NFT-based game",25000.0,icmoji-origins,icmoji-origins,grant,
+icmoji-legends,ICmoji Legends,,,icmoji-legends,icmoji-legends,icapp,
 icmoji-origins,ICmoji Origins,NFT game powered by Internet Computer. Winner of the DSCVR Hackathon Season 2.,,skip,icmoji-origins,icapp,https://icmoji.com/
 icname,IC naming,Name service on IC ,,tbd,icname,icp123,https://icnaming.com
 icnaming,,,,icnaming,icnaming,reserved,
 icnaming,ICNaming,"<p>ICNaming is a testnet that is enabling the Internet Computer ecosystem to register domain names on the Internet Computer Name Service. Similar to the Ethereum Name Servce (ENS), ICNaming aims to offer a decentralized name service for users to pseudonomize their wallet addresses on ICP, as well as domain names, and canister smart contract IDs. </p>",,skip,icnaming,showcase,https://app-testnet.icnaming.com/
+icnotes,icNotes,Secure note-taking dapp,5000.0,icnotes,icnotes,grant,
+icns,icns,,,icnotes,icns,icapp,
+icnsid,,,,icnsid,icnsid,reserved,
 icp,,,,icp,icp,reserved,
+icp birds,ICP Birds,"NFT-based, Play2Earn version of ""Flappy Bird""",25000.0,icp-birds,icp-birds,grant,
+icp squad,ICP Squad,Engage2Earn NFT Game,25000.0,icp-squad,icp-squad,grant,
 icp squad nft,ICP Squad NFT,"<p>ICP Squad NFT is the world's first Engage 2 Earn NFT. ICP Squad is a community-focused group that wanted to reward the Internet Computer ecosystem for using different dapps. Using the Internet Computer blockchain to create the build-your-own minting engine for avatars, as well as the storage of the assets. In addition, users can add accessories and much more to their avatars. By using different dapps across the ICP ecosystem such as Distrikt and DSCVR, users are issued rewards on their NFT. </p>",,icp-squad-nft,icp-squad-nft,showcase,https://p3z4x-vaaaa-aaaaj-qaixq-cai.raw.ic0.app/#/
 icp-art,ICP Art,"Exclusive Hand-Crafted Art Collections, Brought to You by the IC.",,icp-art,icp-art,icapp,
 icp-dog,ICP.Dog,The most profitable GameFi on IC. Join Dog and reap your wealth.,,icp-dog,icp-dog,icapp,http://icp.dog/
@@ -192,19 +294,26 @@ icp123,ICP123,Ecosystem page built on the Internet Computer,5000.0,icp123,icp123
 icpad,,,,icpad,icpad,reserved,
 icpart,ICP Art,Exclusive Hand-Crafted Art Collections,,icpart,icpart,icp123,https://linktr.ee/ICPArt
 icpbunny,ICPBunny,Yieldable #NFT & Breedable #NFT Power by Dfinity.,,icpbunny,icpbunny,icapp,
+icpcs,ICPCS,,,icpcs,icpcs,icapp,
 icpdog,ICP.Dog,The most profitable GameFi on IC. Join Dog and reap your wealth,,icpdog,icpdog,icp123,http://icp.dog/
 icpets,ICPets,ICPets is Community Revenue Focused NFT Project,,icpets,icpets,icp123,https://icpets.io/
 icpfans,ICPFans,ICPFans is committed to building the most developer-friendly Dfinity Chinese technology community.,,icpfans,icpfans,icp123,https://icpfans.xyz/
+icpflower,,,,icpflower,icpflower,reserved,
 icphotographers,IC Photographers,"At IC photographers, the aim is to bring both creator and collector together.",,icphotographers,icphotographers,icp123,https://www.icphotographers.com/
+icpics,,,,icpics,icpics,reserved,
+icpics,ICPics,,,skip,icpics,icapp,
 icpipeline,ICPipeline,Developer tools to bring SDLC best practices to the IC,25000.0,icpipeline,icpipeline,grant,
+icpis,,,,icpis,icpis,reserved,
 icpl,,,,icpl,icpl,reserved,
 icpl-community,ICPL Community,ICPL(Internet Computer Protocol Lab) Community is the Extraordinary Community behind the #InternetComputer,,icpl-community,icpl-community,icapp,https://icpl.online/
 icplaces,ICPlaces,Virtual reality prototype,5000.0,icplaces,icplaces,grant,
 icplaunchpad,ICPLaunchPad,IC dapp statistics and user rewards platform,25000.0,icplaunchpad,icplaunchpad,grant,
 icpmaps,ICPmaps,"Open Maps, GIS data on the IC",25000.0,icpmaps,icpmaps,grant,
+icpmaps (follow-on),ICPMAPS (Follow-On),"Open Maps, GIS data on the IC""",100000.0,skip,icpmaps-(follow-on),grant,
 icpmeet,ICPmeet,Decentralized dating app,25000.0,icpmeet,icpmeet,grant,
 icport,,,,icport,icport,reserved,
 icprime8s,ICPrime8s,"5 releases of Prime8 focused, randomly generated NFTs on the #InternetComputer 1st Release: PROSIMIANS - Available on http://entrepot.app on Dec 17th.",,icprime8s,icprime8s,icapp,
+icproject,,,,icproject,icproject,reserved,
 icproject_nft,Infinite Charity Project ,A fine art photography NFT sale to benefit a forever home for rescued chimps.,,icproject-nft,icproject_nft,icp123,https://chimps.icproject.org/
 icpscan,Icpscan,Network and dapp ecosystem explorer,5000.0,icpscan,icpscan,grant,
 icpsquad,ICP Squad,First Engage To Earn #NFTs Game. Powered by @dfinity,,icpsquad,icpsquad,icp123,https://upf6d-saaaa-aaaah-aauwa-cai.ic0.app/#/
@@ -214,31 +323,54 @@ icpumpkin,ICPumpkin,"Limited collection of 2,222 unique pumpkins, consisting of 
 icpunks,ICPunks,"CryptoPunks clone on the Internet Computer, cross-chain NFT infrastructure",25000.0,icpunks,icpunks,grant,
 icpunks (follow-on),ICPunks (Follow-On),Cross-chain NFT infrastructure and open source marketplace,100000.0,skip,icpunks-(follow-on),grant,
 icpuppies,ICPuppies,"ICPuppies is the first animal NFT collection deployed on the Internet Computer and also one of the earliest released on Entrepot, a marketplace where you can collect and trade them.",,icpuppies,icpuppies,icp123,https://icpuppies.io/
+icpverse,ICPverse,,,skip,icpverse,icapp,
+icpxy,ICPxy,,,icpxy,icpxy,icapp,
 icsnakes,ICSnakes,"A collection of 10,000 randomly generated Snake NFTs on #ICP blockchain hunting for food.",,icsnakes,icsnakes,icp123,https://xn--4n8h7h.ws/
+icspliffsters,ICSpliffsters,,,icspliffsters,icspliffsters,icapp,
 ictexas,ICTexas, IC Texas Hold’em is a dapp hosted completely on-chain on the Internet Computer. ,,ictexas,ictexas,icp123,https://lm5fh-ayaaa-aaaah-aafua-cai.ic0.app/
+icturtles,ICTurtles,Play2Earn NFT game and DAO,25000.0,icturtles,icturtles,grant,
+icvibesters,ICVibesters,,,icvibesters,icvibesters,icapp,
 icwallet,IC Wallet,Asset Management ICP Wallet,,icwallet,icwallet,icp123,http://icwallet.org/
+icwave,ICWave,,,icwave,icwave,icapp,
 identity labs,Identity Labs,React authentication plug-in,25000.0,identity-labs,identity-labs,grant,
 identity-labs,Identity Labs,React authentication plug-in.,,skip,identity-labs,icapp,
+igf,,,,igf,igf,reserved,
+igor,,,,igor,igor,reserved,
 infernal-vampire-colony,Infernal Vampire Colony,"Two generations of randomly generated vampires on the Internet Computer. There are 666 vampires in the first generation and 6,000 in the second.",,infernal-vampire-colony,infernal-vampire-colony,icapp,https://www.infernalvampires.com/
 infinite-chimp-nft-collection,Infinity Chimp NFT Collection,The heart of the ICP ecosystem. NFT releases coming soon! A nonprofit corporation and charitable org providing non-commercial fundraising for 501(c)3 charities.,,infinite-chimp-nft-collection,infinite-chimp-nft-collection,icapp,https://chimps.icproject.org/nft-collection
 infinity swap,Infinity Swap,"<p>InfinitySwap is a platform to create, stake, and swap tokens on the Internet Computer. Backed by Polychain Capital and 9YardsCapital (amongst others) –– InfinitySwap offers users the ability to swap tokens cheaply with their novel technology build on the ICP blockchain. They are also planning to release their own token standard IS20 to support these initiatives. </p>",,infinity-swap,infinity-swap,showcase,https://infinityswap.one/
 infinity-swap,InfinitySwap,"A platform to create, stake and swap Dfinity Tokens.",,skip,infinity-swap,icp123,https://infinityswap.one/
 infinityswap,InfinitySwap,Atomicity research study and prototype,25000.0,skip,infinityswap,grant,
+intelligent nft framework,intelligent NFT framework,"Framework for integrating AI technology with 2D/3D NFT avatars""",100000.0,intelligent-nft-framework,intelligent-nft-framework,grant,
 interconnect-network,interconnect.network,become mutually connected ∞ built on Dfinity The Internet Computer.,,interconnect-network,interconnect-network,icapp,https://interconnect.network/
 internet astronauts,Internet Astronauts,"<p>Internet Astronauts are a set of 10,000 limited edition, uniquely minted astronaut-themed NFTs. These end-to-end on-chain NFTs will be up for grabs to the community through the Entrepot.app marketplace. They are only possible through the Internet Computer blockchain.</p>",,internet-astronauts,internet-astronauts,showcase,https://interastrosc.com/
 internet computer based blogs/news/cms site,Internet Computer Based Blogs/News/CMS Site,Internet Computer Based Blogs/News/CMS Site,5000.0,internet-computer-based-blogs,internet-computer-based-blogs/news/cms-site,grant,
+internet computer event system (ices),Internet Computer Event System (ICES),Custom canister event log storage and analysis service,25000.0,ices,internet-computer-event-system-(ices),grant,
 internet identity,Internet Identity,"<p>Internet Identity guarantees that your data isn’t visible, tracked, or mined. The blockchain authentication system enables users to sign in to dapps on the Internet Computer and sites across the web anonymously and securely. </p>",,internet-identity,internet-identity,showcase,https://identity.ic0.app/
 internet-astronauts,Internet Astronauts,"Internet Astronauts is a collection of 10,000 unique digital NFT collectibles only found on the Internet Computer!",,internet-astronauts,internet-astronauts,icapp,https://interastrosc.com/
 internet-computer-dashboard,Internet Computer Dashboard,Internet Computer Association.,,internet-computer-dashboard,internet-computer-dashboard,icapp,https://dashboard.internetcomputer.org/
 internet-computer-event-system,Internet Computer Event System,"ICES (Internet Computer Event System) is a canister custom event log storage and analysis service on Dfinity. It mainly solves the problem that canister's interaction records cannot be publicly queried. Any canister can access ICES without permission, store the interactive data permanently, and query it through the public API and dashboard provided by ICES.",,internet-computer-event-system,internet-computer-event-system,icapp,https://www.ices.one/
+internet-computer-wiki,Internet Computer Wiki,,,internet-computer-wiki,internet-computer-wiki,icapp,
+internet-humans,Internet Humans,,,internet-humans,internet-humans,icapp,
 internet-identity,Internet Identity,Internet Identity is a smart contract implemented on the Internet Computer blockchain.,,internet-identity,internet-identity,icp123,https://identity.ic0.app/
 internetastronauts,Internet Astronauts,"Internet Astronauts is a collection of 10,000 unique digital NFT collectibles only found on the Internet Computer!",,internetastronauts,internetastronauts,icp123,https://interastrosc.com/
 internetcomputer,,,,internetcomputer,internetcomputer,reserved,
+iosg,,,,iosg,iosg,reserved,
+irving,,,,irving,irving,reserved,
+isea,Isea,NFT issuance and trading platform,25000.0,isea,isea,grant,
+itoka,Itoka,"Decentralized ecosystem for music creation, management, and consumption""",25000.0,itoka,itoka,grant,
 jan,,,,jan,jan,reserved,
 japan-dao-association,Japan DAO Association,Japan DAO Association -LIFE with DAO- ,,japan-dao-association,japan-dao-association,icapp,
 java agent,Java Agent ,<p>Java Agent for the Internet Computer is an open source library. This developer tool enables Java applications to connect remotely to any Canister smart contract on the Internet Computer and execute query and update calls.</p>,,java-agent,java-agent,showcase,https://github.com/rdobrik/dfinity-agent
+java agent for the internet computer,Java Agent for the Internet Computer,"Set of native Java libraries for the Internet Computer""",25000.0,skip,java-agent-for-the-internet-computer,grant,
 javaagent,Java Agent,Java Agent for the Internet Computer is an open source library.,,skip,javaagent,icp123,https://github.com/rdobrik/dfinity-agent
+juicy-kicks,Juicy Kicks,,,juicy-kicks,juicy-kicks,icapp,
+kawak,Kawak,Meritocratic writing platform,25000.0,kawak,kawak,grant,
 klever.io,Klever.io,Klever.io non-custodial wallet support of ICP,25000.0,klever,klever.io,grant,
+kontribute,Kontribute,Interactive storymaking dapp with NFTs,25000.0,kontribute,kontribute,grant,
+kr1,,,,kr1,kr1,reserved,
+kryptonic,Kryptonic,Video storage and streaming API,5000.0,kryptonic,kryptonic,grant,
+kucoin,,,,kucoin,kucoin,reserved,
 learnd,LEARND,Learning and rewards platform with Internet Computer courses and content,5000.0,skip,learnd,grant,
 learned,Learned, LEARND is a community driven educationnal platform running on Internet Computer. ,,learned,learned,icp123,https://learnd.dedn.eu/
 light-wallet,Light Wallet,Make your ICP transaction to be easier.,,light-wallet,light-wallet,icapp,
@@ -247,38 +379,62 @@ liquid-icp,Liquid ICP,Liquid ICP DAO (Frog Nation 2.0!!!). DEX&Bridge (under con
 liquidicp,Liquid ICP, Liquid ICP is world’s first s-Bridge where bridged and staked assets remain liquid. ,,skip,liquidicp,icp123,ttps://www.icp-20.com/
 lo-fi player,Lo-Fi Player,"<p>Lo-Fi Player is a dapp hosted on the Internet Computer that lets users listen to relaxing beats delivered by blockchain. The back-end is using machine learning to build and develop the AI produced tunes, and users can interact within the player to change the sound to their liking. </p>",,lo-fi-player,lo-fi-player,showcase,https://hl2zz-gyaaa-aaaad-qas3a-cai.raw.ic0.app/
 lofiplayer,Lo-Fi Player, Lo-Fi Player is a dapp hosted on the Internet Computer that lets users listen to relaxing beats delivered by blockchain. ,,skip,lofiplayer,icp123, https://hl2zz-gyaaa-aaaad-qas3a-cai.raw.ic0.app/
+lomesh,,,,lomesh,lomesh,reserved,
 marspool,MarsPool,"MarsPool believes all project stakeholders are as important as each other. Investment funds and communities should work side by side on projects, on the same terms, towards the same goals.",,marspool,marspool,icapp,https://marspool.xyz/
 matoken,Matoken,NFT access control and storage,5000.0,matoken,matoken,grant,
+meldd,Meldd,Transaction-based multi-party consensus system,5000.0,meldd,meldd,grant,
 meme-cake,Meme Cake,Meme Cake is the world's first decentralized comedy platform. Think of it as a 9GAG but decentralized.,,memecake,meme-cake,icapp,https://memecake.io/
 memecake,Meme Cake,Meme Cake is the world's first decentralized comedy platform. Think of it as a 9GAG but decentralized.,,skip,memecake,icp123,https://memecake.io/
+messity,,,,messity,messity,reserved,
+metabox,,,,skip,metabox,reserved,
 metascore,METASCORE,Leaderboards and prizes for the DSCVR Season 2 Gaming Hackathon. ,,metascore,metascore,icp123,https://t6ury-eiaaa-aaaaj-qabgq-cai.raw.ic0.app/
+metasports,,,,metasports,metasports,reserved,
 metasports basketball,MetaSports Basketball,"<p>MetaSports Basketball is an open basketball metaverse, built on the Ethereum &#x26; Internet Computer blockchains, where NFT players of all shapes, species, and origin can compete to become basketball superstars on teams owned and managed by the players. Developed by Psychedelic, and Featured in Yahoo and many major media publications, the game allows users to create and mint characters, as well as bring in NFTs from their collection to play on their MBA team. </p>",,metasports-basketball,metasports-basketball,showcase,https://metasportsbball.xyz/
 metasports-basketball,MetaSports Basketball,Own a basketball team. Build your dream #NFT team and become a legend in the MBA.,,skip,metasports-basketball,icapp,https://metasportsbball.xyz/
 metaverse,Welcome Into the Metaverse,This game brings digital community into a unified virtual space. ,,skip,metaverse,icp123,https://lc7ip-3iaaa-aaaah-aafva-cai.ic0.app/
+metaverse ai,Metaverse AI,Avatar NFTs on the Internet Computer,25000.0,skip,metaverse-ai,grant,
 metaverse-ai,Metaverse AI,Digital human and virtual idol on IC,,metaverse-ai,metaverse-ai,icp123,https://www.metaverseai.org/
 metaverseai,MetaverseAI,Open source metaverse frameworks,25000.0,metaverseai,metaverseai,grant,
+michael,,,,skip,michael,reserved,
+michaelhunte,,,,michaelhunte,michaelhunte,reserved,
+michaellee,,,,michaellee,michaellee,reserved,
+mind bank ai - personal digital twin platform,Mind Bank Ai - Personal digital twin platform,"Structured learning algorithms on the IC""",25000.0,skip,mind-bank-ai---personal-digital-twin-platform,grant,
+mishicat,,,,mishicat,mishicat,reserved,
 mission,Mission Is Possible,NFT-powered Play-to-Earn PvP shooter 🎮🔫 being built 100% on the #InternetCompute,,mission,mission,icp123,https://to3ja-iyaaa-aaaai-qapsq-cai.raw.ic0.app/
 mission is possible,Mission is Possible,PvP shooter game built with Unity 3D Game Engine,25000.0,mission-is-possible,mission-is-possible,grant,
 mission-is-possible,Mission is Possible,NFT-powered Play-to-Earn PvP shooter.,,skip,mission-is-possible,icapp,
 modclub,ModClub,"Decentralized user generated content (UGC) moderation service, to integrate with existing IC dapps",25000.0,modclub,modclub,grant,
 modeclub,ModClub,A central place to moderate content,,modeclub,modeclub,icp123,https://ljyte-qiaaa-aaaah-qaiva-cai.raw.ic0.app/
+motoko library,Motoko Library,"Motoko library development including sha224, base32, hex, base64, crc32fast",5000.0,motoko-library,motoko-library,grant,
 motoko playground,Motoko Playground,Community-driven UI / UX enhancements,5000.0,motoko-playground,motoko-playground,grant,
 motoko school,Motoko School,Internet Computer learning and rewards platform,5000.0,motoko-school,motoko-school,grant,
 motoko-day-drop,Motoko Day Drop,"10,000 Motoko Ghosts designed by Jon Ball of Pokedstudios were distributed to the community on the 1 year birthday of the Motoko Programming language. 7,000 airdropped to DSCVR users and 3,000 distributed to in-person attendees of NFT.NYC 2021.",,motoko-day-drop,motoko-day-drop,icapp,https://entrepot.app/marketplace/motoko
 motoko-playground,Motoko Playground,A playground for the Internet Computer's native Motoko language.,,motoko-playground,motoko-playground,icp123,https://m7sm4-2iaaa-aaaab-qabra-cai.raw.ic0.app/
 motoko-school,Motoko School,"Motoko School is the first public school for the Metaverse, only on the Internet Computer.",,motoko-school,motoko-school,icp123,https://linktr.ee/MotokoSchool
 mugatunes,MugaTunes,Music curation and NFT platform,5000.0,mugatunes,mugatunes,grant,
+multcoin,,,,multcoin,multcoin,reserved,
+multicoincapital,,,,multicoincapital,multicoincapital,reserved,
 my status,My Status,Social media dapp for sharing short daily status updates,5000.0,my-status,my-status,grant,
+near-future,,,,near-future,near-future,reserved,
+nebulas,,,,nebulas,nebulas,reserved,
+neo,,,,neo,neo,reserved,
+network,,,,skip,network,reserved,
 newsie,Newsie,Comic Book and NFT Collection On The Internet Computer,,newsie,newsie,icp123,https://gh2ig-jqaaa-aaaai-aaslq-cai.raw.ic0.app/
+nfcity,NFciTy,,,nfcity,nfcity,icapp,
 nft english auction,NFT English Auction,English auction canister and developer tools,25000.0,nft-english-auction,nft-english-auction,grant,
+nft karts,NFT Karts,Play2Earn racing game,25000.0,nft-karts,nft-karts,grant,
 nft studio,NFT Studio,"<p>NFT Studio is the first to develop 3D NFTs. This means that the NFTs themselves are living 3D code, as opposed to a .GIF recording of a 3D rendered image. This is only possible thanks to the ICP blockchain as NFTs can run code, not just link to an image. NFT Studio has had features in major media for the 3D NFT minting tools that are being built for global creators.</p>",,nft-studio,nft-studio,showcase,https://7xw5z-uqaaa-aaaad-qaqcq-cai.raw.ic0.app/
+nft studio and qr gallery (follow-on),NFT Studio And QR Gallery (Follow-On),"3D NFT minting engine, marketplace, and bridge infrastructure""",25000.0,skip,nft-studio-and-qr-gallery-(follow-on),grant,
 nft studio marketplace,NFT Studio Marketplace,"<p>NFT Studio launches their first marketplace featuring 3D NFTs (not .GIF recordings, but actual 3D code as the NFT), purchasable with ICP. Additional innovations include interactive NFTs, as well as entire games as NFTs playable from the marketplace or from within your wallet. These NFTs are all made possible due to the Internet Computer blockchain's scalability, low-costs, and innovations in smart contract technology. </p>",,nft-studio-marketplace,nft-studio-marketplace,showcase,https://marketplacebuild-nftstudio.vercel.app/
 nft studio minting engine,NFT Studio Minting Engine,"<p>NFT Studio launches their public minting engine for 3D NFTs, hosted completely on the Internet Computer. Connect your Plug wallet to automatically mint your NFT without any need for coding – all for less than .05 ICP. NFT Studio enables the previously impossible, possible, using the unique scalability, storage, and ""code as smart contracts"" capabilities of the Internet Computer blockchain. </p>",,nft-studio-minting-engine,nft-studio-minting-engine,showcase,https://iiibs-tqaaa-aaaak-aab6q-cai.ic0.app/
 nft village,NFT Village,"<p>Look up the attributes, NRI %, rarity, and other information about Internet Computer NFTs. Simply input the URL of your ICPunks and Cronics NFTs or any other NFT minted on the Internet Computer blockchain and learn all of the details that make the NFT unique.</p>",,nft-village,nft-village,showcase,http://nftvillage.ai/
 nft-studio,NFT Studio,"NFT Studio allows users to Mint, Buy, Sell and Stake 3DWASM NFTs on the Internet Computer - Revolutionary.",,skip,nft-studio,icapp,http://nftstudio.biz/
+nftanvil,NFTAnvil,NFT tooling and infrastructure,25000.0,nftanvil,nftanvil,grant,
 nftgaga,,,,nftgaga,nftgaga,reserved,
 nftstudio,NFT Studio,"NFT Studio allows users to Mint, Buy, Sell and Stake 3DWASM NFTs on the Internet Computer",,skip,nftstudio,icp123,https://7xw5z-uqaaa-aaaad-qaqcq-cai.raw.ic0.app/
 nftvillage,NFT Village,A friendly place for all of your favorite NFTs on the Internet Computer,,skip,nftvillage,icp123,https://nntkg-vqaaa-aaaad-qamfa-cai.ic.fleek.co/
+nftweb3,,,,nftweb3,nftweb3,reserved,
+nick,,,,nick,nick,reserved,
 nns,,,,nns,nns,reserved,
 nns calculator,NNS Calculator,"<p>The Network Nervous System Calculator is a calculator that allows anyone to edit variables and estimate voting rewards based on number of proposals voted on, length of stake, accumulated maturity, and more. </p>",,nns-calculator,nns-calculator,showcase,https://networknervoussystem.com/
 nns front-end dapp,NNS Front-End Dapp,"<p>The NNS front-end dapp allows anyone to interact with the Internet Computer's Network Nervous System with a user-friendly UI. Served completely end-to-end through blockchain, this dapp allows you to manage ICP, stake neurons, participate in voting, and earn rewards.</p>",,nns-front-end-dapp,nns-front-end-dapp,showcase,https://nns.ic0.app
@@ -286,6 +442,9 @@ nns-dapp,NNS Dapp,"The NNS front-end dapp allows anyone to interact with the Int
 nnsdao,NnsDAO,The boundaryless autonomous organization.,,nnsdao,nnsdao,icp123,https://www.nnsdao.org/
 ns,,,,ns,ns,reserved,
 nuance,Nuance,Decentralized blogging platform,25000.0,nuance,nuance,grant,
+og-medals,OG Medals,,,og-medals,og-medals,icapp,
+okex,,,,okex,okex,reserved,
+okx,,,,okx,okx,reserved,
 open assessment platform,Open Assessment Platform,Open source question editor and renderer for in-dapp assessments,5000.0,open-assessment-platform,open-assessment-platform,grant,
 openchat,OpenChat,Real-time messaging is now possible on a blockchain.,,openchat,openchat,icp123,https://7e6iv-biaaa-aaaaf-aaada-cai.ic0.app/
 optex,ClinTex CTi,Optex is a powerful data visualisation tool designed to provide seamless insights into complex data. ,,optex,optex,icp123,https://www.clinicaltrialsintelligence.org/
@@ -294,58 +453,104 @@ orderswap,OrderSwap,Open Order Protocol and AMM infrastructure,25000.0,orderswap
 origyn,Origyn,"<p>The Origyn Foundation is blending luxury goods, with NFTs by providing digital verifications for physical objects. Only possible on the Internet Computer. </p>",,origyn,origyn,showcase,https://www.origyn.ch/
 origyn-foundation,ORIGYN Foundation,"We are on a mission to identify, authenticate and unlock the powers of ownership for objects of value.",,skip,origyn-foundation,icp123,https://www.origyn.ch/
 osmosis,Osmosis,"<p>Osmosis is an ""Interchain Automated Market Maker (AMM)"". As a Web3 solution, now by having the front-end of their swap solution hosted on the Internet Computer blockchain, the full-stack is truly decentralized. This minimizes risks of centralization which include wrongful takedowns, censorship, and more. </p>",,osmosis,osmosis,showcase,https://ate7l-riaaa-aaaaf-qae3q-cai.raw.ic0.app/
+outliers,,,,outliers,outliers,reserved,
+outliersfund,,,,outliersfund,outliersfund,reserved,
 overchute,Overchute,Blind crowdsale protocol for intellectual property,25000.0,overchute,overchute,grant,
+paka,,,,paka,paka,reserved,
+parallel,,,,parallel,parallel,reserved,
+parallelventures,,,,parallelventures,parallelventures,reserved,
 party board,Party Board,"Decentralized, topic-based social networking",25000.0,party-board,party-board,grant,
 partyboard,PartyBoard,"Metaverse Social Platform, Meta-Social Network, SocialFi.",,skip,partyboard,icapp,https://www.partyboard.org/
+paul,,,,paul,paul,reserved,
+paulyoung,,,,paulyoung,paulyoung,reserved,
+payments,,,,skip,payments,reserved,
+peacock,,,,skip,peacock,reserved,
 perun channels on the internet computer,Perun Channels on the Internet Computer,Perun state channels on the Internet Computer,25000.0,perun-channels,perun-channels-on-the-internet-computer,grant,
 photos,Photos,Photo sharing and storage dapp,25000.0,photos,photos,grant,
 plug,Plug Wallet,"Plug Wallet, built and open sourced by Fleek, is a browser extension.",,plug,plug,icp123,https://plugwallet.ooo/
 pocket4d,Pocket 4D,"A framework container runs Mini-Apps or Mini-Programs, using enhanced Canister of cross-platform.",,pocket4d,pocket4d,icp123,https://github.com/Pocket4D/Pocket4D-Wiki
 poked-bots,Poked Bots,"A collection of 10,000 individual ROBOTS, designed by Cardiff based creative agency - Poked Studio.",,poked-bots,poked-bots,icapp,https://www.pokedstudiobotsnft.co.uk/
 pokedstudio bots,PokedStudio Bots,"<p>PokedStudio Bots are a collection of 10,000 unique bots designed by acclaimed digital artist, Jonathan Ball. The Ultimate Master” Bot which sold for 3,000 ICP (~$172,140), marks the largest single NFT purchase on the Internet Computer, and is one of the largest across all blockchain projects to date. The Bots collection generated nearly $1M in NFT marketplace trading volume in less than 36 hours from public launch. The NFT Bots are all unique and possess differing rarities and attributes that will transfer into a future metaverse gaming experience in beautiful technicolor.</p>",,pokedstudio-bots,pokedstudio-bots,showcase,https://entrepot.app/marketplace/poked
+polychain,,,,polychain,polychain,reserved,
 portal,PORTAL,Live streaming app with WebRTC,25000.0,portal,portal,grant,
+preangle,,,,preangle,preangle,reserved,
+prixelart,,,,prixelart,prixelart,reserved,
+prixelart,Prixelart,Decentralized photography hub,25000.0,skip,prixelart,grant,
+prixers,,,,prixers,prixers,reserved,
 project-txa,Project TXA,Building the #TXA Decentralized Settlement Layer for Tacen's #hDEX architecture @tacen_app.,,project-txa,project-txa,icp123,https://www.txa.app/
 psychedelic,Psychedelic,A decentralized venture studio focused on building products on the Internet Computer.,,psychedelic,psychedelic,icapp,https://psychedelic.ooo/
 puzzle,PUZZLE,Collaborative NFT platform,25000.0,puzzle,puzzle,grant,
+pythiania,,,,pythiania,pythiania,reserved,
 python agent,Python Agent,"<p>This Python Agent built for the Internet Computer opens the door for Python developers to more easily become Web3 builders. Featuring basic modules to interact with canisters on the Internet Computer, this Agent, still under development, was a prize winner at the Warpspeed Internet Computer ecosystem hackathon in China.</p>",,python-agent,python-agent,showcase,https://github.com/rocklabs-io/ic-py
 qr gallery,QR Gallery,Connected NFT experiences with a Poland-based art gallery,5000.0,qr-gallery,qr-gallery,grant,
+quark,Quark,"Open internet service facilitating payments on the Internet Computer""",25000.0,quark,quark,grant,
+radius,Radius,Decentralized physical community organizing and moderation,5000.0,radius,radius,grant,
+raisinrank,raisinrank,,,raisinrank,raisinrank,icapp,
 ratels,Ratels,The most personalized crypto wallet on the Internet Computer.,,ratels,ratels,icp123,https://Ratels.app/
+raver,Raver,Decentralized social network and DAO,25000.0,raver,raver,grant,
 relation,,,,relation,relation,reserved,
 reversi,Reversi,Reversi is one of the first Canister and a completely decentralized multiplayer game. ,,reversi,reversi,icp123,https://ivg37-qiaaa-aaaab-aaaga-cai.ic0.app/
 rise of the magni,Rise of the Magni,"<p>Rise of the Magni, built by Toniq Labs, winner of the DSCVR hackathon for games on the Internet Computer. Buy, earn, and trade collectibles, compete in tactical battles online to earn in-game tokens, and venture through story mode to experience one of the first games built on the Internet Computer.</p>",,rise-of-the-magni,rise-of-the-magni,showcase,https://riseofthemagni.com/
 rise-of-the-magni,Rise of the Magni,It is a game that is experienced through story mode adventure.,,skip,rise-of-the-magni,icp123,https://riseofthemagni.com/
 rocklabs,Rocklabs,Building Web3 on the Internet Computer.,,rocklabs,rocklabs,icapp,http://www.rocklabs.io/
+rust libraries for ic devs,Rust libraries for IC Devs,"Stable memory collections, task scheduler, and event-based pub/sub",50000.0,rust-libraries-for-ic-devs,rust-libraries-for-ic-devs,grant,
 saga,Saga,"The Legends Series of NFTs goes beyond aesthetics and status, confering lasting benefits and power in the Saga Tarot economy. The series is comprised of one limited edition release for each of the 21 Major Arcana in the traditional Tarot deck. One hundred cards with exclusive art will be minted for each public release, and releases will occur every two weeks.",,saga,saga,icapp,https://legends.saga.cards/
 saga tarot,Saga Tarot,"Tarot game on the IC, with the goal of becoming like Hearthstone or MTG Arena",25000.0,saga-tarot,saga-tarot,grant,
 saga-tarot,Saga Tarot,Have your fortune told on the Internet Computer. ,,skip,saga-tarot,icp123,https://5nl7c-zqaaa-aaaah-qaa7a-cai.ic0.app/
 sailfish,Sailfish,The gateway to open financial services on the Internet Computer.,,sailfish,sailfish,icp123,https://sailfish.app/
+sauveur publishing,Sauveur Publishing,Decentralized writing platform,5000.0,sauveur,sauveur-publishing,grant,
+savior,,,,savior,savior,reserved,
+scalar,,,,scalar,scalar,reserved,
+scalarcapital,,,,scalarcapital,scalarcapital,reserved,
+scinet,SCINET,Decentralized life sciences research and investment platform,25000.0,scinet,scinet,grant,
+secrets of the midgaard planet,Secrets of the Midgaard Planet,Play to Earn NFT-based card game,25000.0,secrets-of-the-midgaard-planet,secrets-of-the-midgaard-planet,grant,
 shelf,SHELF,"""Phygital"" streaming service using NFTs",25000.0,shelf,shelf,grant,
+shelf (follow-on),SHELF (Follow-On),"""Phygital"" streaming service using NFTs",100000.0,skip,shelf-(follow-on),grant,
+shine,,,,shine,shine,reserved,
+shinemine,,,,shinemine,shinemine,reserved,
+shōbai global,Shōbai Global,Decentralized marketplace for new and used clothing,25000.0,shobai-global,shōbai-global,grant,
+simdi,,,,simdi,simdi,reserved,
+simplifireic,SimplifireIC,Decentralized contract management,25000.0,simplifireic,simplifireic,grant,
 skydocs,SkyDocs,Real-time document collaboration and storage,25000.0,skydocs,skydocs,grant,
+sling,Sling,"Secure, decentralised personal data store and utiliser",5000.0,sling,sling,grant,
 sly,SLY,"SLY is an open source, collaborative, & friendly CLI for the Internet Computer  Providing abstractions, templates, and tools to streamline development.",,sly,sly,icapp,https://sly.ooo/
 smart contract assets within the metaverse,Smart Contract Assets Within the Metaverse,Integration of canister smart contracts into existing enterprise metaverse platform,25000.0,smart-contract-assets-within-the-metaverse,smart-contract-assets-within-the-metaverse,grant,
 smartpiggies,SmartPiggies,NFTs as digital risk transfer products,25000.0,smartpiggies,smartpiggies,grant,
 sns,,,,sns,sns,reserved,
+snz,,,,snz,snz,reserved,
 sonic,Sonic,"Swap tokens, earn fees as a liquidity provider, & build on the Internet Computer’s AMM.",,sonic,sonic,icp123,https://sonic.ooo/
+spare,,,,spare,spare,reserved,
+sparebytes,,,,sparebytes,sparebytes,reserved,
+spark,,,,spark,spark,reserved,
+sparkcapital,,,,sparkcapital,sparkcapital,reserved,
+sparkdigitalcapital,,,,sparkdigitalcapital,sparkdigitalcapital,reserved,
 speeqo,SPEEQO,Voice-based machine learning and voice analysis,25000.0,speeqo,speeqo,grant,
+springwind,,,,springwind,springwind,reserved,
 stoic wallet,Stoic Wallet,"<p>Stoic Wallet by Toniq Labs allows anyone to create a digital wallet, authenticating users through a variety of methods, one of those being Internet Identity. Create accounts, keep an address book, and more. </p>",,stoic-wallet,stoic-wallet,showcase,https://www.stoicwallet.com/
 stoic-wallet,Stoic Wallet,Stoic Wallet allows anyone to create a digital wallet.,,skip,stoic-wallet,icp123,https://www.stoicwallet.com/
 sudograph,Sudograph,Sudograph is a GraphQL database for the Internet Computer. ,,sudograph,sudograph,icp123,https://i67uk-hiaaa-aaaae-qaaka-cai.raw.ic0.app/
 supra-oracles,Supra-Oracles,Oracle prototype on the Internet Computer,5000.0,supra-oracles,supra-oracles,grant,
 sushiswap front-end,SushiSwap Front-End,"<p>Sushi Swap is a Decentralized Exchange, which enables users to ""swap"" ERC20 Ethereum tokens. The back-end logic and token-standard are decentralized, but the front-end has traditionally been hosted using Web2 services (similar to other ETH ""dapps"") and as a result has experienced outages, censorship and more. This is a front-end for Sushi Swap hosted 100% on-chain, completely decentralized, using the Internet Computer in order to have a complete Web3 stack. This was a result of a community bounty -- inspect the code below. </p>",,sushiswap-front-end,sushiswap-front-end,showcase,https://aufz7-4qaaa-aaaaf-qae3a-cai.raw.ic0.app/swap
+svangel,,,,svangel,svangel,reserved,
+synths,,,,synths,synths,reserved,
 tacen,Tacen,Building the next generation of crypto exchanges.,,tacen,tacen,icp123,https://tacen.com/
 taggr,Taggr,Taggr is an experimental social network on the Internet Computer.,,taggr,taggr,icapp,http://taggr.top/
+team-bonsai,Team Bonsai,,,team-bonsai,team-bonsai,icapp,
 terabethia,Terabethia,"Terabethia is a bridge between Ethereum & the Internet Computer  that contracts in both chains can use to message each other, and that Ethereum assets (ERC20, ERC721, & ERC1155) can use to be automatically mirrored & used on the IC.",,terabethia,terabethia,icapp,https://terabethia.ooo/
 texas,Texas,Suite of card games,5000.0,texas,texas,grant,
 texas hold'em,Texas Hold'em,"<p>IC Texas Hold'em is a dapp hosted completely on-chain on the Internet Computer. 2nd place winner of the DSCVR Hackathon Season 2 – play against real people across the globe live and challenge them to the classic game of Texas Holdem Poker. Mint GFT (a game token built on the Internet Computer) and use it to play cards instantly from any browser, also send messages and authenticate with Internet Identity or Stoic Wallet. </p>",,skip,texas-hold'em,showcase,https://lm5fh-ayaaa-aaaah-aafua-cai.ic0.app/
 texas-poker,Texas Poker,Texas poker.,,texas-poker,texas-poker,icapp,
+the island collective,The Island Collective,Immersive VR spaces on the Internet Computer,100000.0,the-island-collective,the-island-collective,grant,
 the video canister,The video canister,Video streaming infrastructure for developers,25000.0,the-video-canister,the-video-canister,grant,
 the wall,The Wall,Ethereum x Internet Computer dapp,5000.0,the-wall,the-wall,grant,
 the-ic-gallery,The IC Gallery,A creative metaverse to gather all NFT enthusiasts and enjoy arts on the Internet Computer.,,the-ic-gallery,the-ic-gallery,icapp,
+the-island-collective,The Island Collective,,,skip,the-island-collective,icapp,
 the-nft-village,The NFT Village,A friendly place for all of your favorite NFTs on the Internet Computer,,the-nft-village,the-nft-village,icapp,
 the-sword-nft,The Sword NFT,"An ICP exclusive. Follow for updates and airdrop information. Series 1: Little Ninjas. Only 10K Unique Ninjas will be Minted, ever.",,the-sword-nft,the-sword-nft,icapp,https://theswordnft.com/
 the-wall,The Wall,The Wall is a dapp built on the Internet Computer blockchain.,,the-wall,the-wall,icp123,https://rivyl-6aaaa-aaaaf-qaapq-cai.raw.ic0.app/
 thespiderdao,theSpiderDAO,Official account for the SpiderDAO.,,thespiderdao,thespiderdao,icapp,
 theswordnft,The Sword NFT, Follow for updates and airdrop information.,,theswordnft,theswordnft,icp123,https://theswordnft.com/
+threearrows,,,,threearrows,threearrows,reserved,
 thuba,THUBA Education,THUBA Education is an education platform supported by Tsinghua University student Blockchain Association.,,thuba,thuba,icp123,https://thublockchain.org/
 thuba education,Thuba Education,Beginner resources for building on the IC,5000.0,skip,thuba-education,grant,
 tingram,TinGram,Tokenized dating app,25000.0,tingram,tingram,grant,
@@ -358,18 +563,35 @@ triip,Triip,"A decentralized, sustainable travel co-op",25000.0,triip,triip,gran
 uniswap,Uniswap Front End,Uniswap front end hosted on the Internet Computer through Fleek.,,uniswap,uniswap,icp123,https://lqku6-wqaaa-aaaad-qalmq-cai.ic.fleek.co/
 uniswap front end on the ic,Uniswap Front End on the IC,<p>Uniswap front end hosted on the Internet Computer through Fleek. Showing how traditional DeFi solutions can now be hosted completely on-chain by using the Internet Computer blockchain. Another use case of completely decentralizing a service which currently has a centralized front end.</p>,,uniswap-front-end-on-the-ic,uniswap-front-end-on-the-ic,showcase,https://lqku6-wqaaa-aaaad-qalmq-cai.ic.fleek.co/#/swap
 unite,Unite,Community organizing dapp,5000.0,unite,unite,grant,
+unity,,,,unity,unity,reserved,
+unity3d,,,,unity3d,unity3d,reserved,
+unreal,,,,unreal,unreal,reserved,
 usergeek,Usergeek,Product analytics tool for IC dapp developers,25000.0,usergeek,usergeek,grant,
+verific,Verific,Discord bot for NFT projects,5000.0,verific,verific,grant,
+videate,Videate,Engagement and monetization platform for video creators,25000.0,videate,videate,grant,
+viewar by wearfits,ViewAR by WEARFITS,AR-ready 3D assets for the fashion industry,25000.0,viewar-by-wearfits,viewar-by-wearfits,grant,
+village,,,,skip,village,reserved,
+villageglobal,,,,villageglobal,villageglobal,reserved,
+vincrypto,,,,vincrypto,vincrypto,reserved,
 waterslide,Waterslide,Building the first Liquity front-end on the Internet Computer,5000.0,waterslide,waterslide,grant,
 waterslide-app,waterslide.app,Frontend to interact with the Liquity Protocol. Powered by @dfinity,,skip,waterslide-app,icapp,https://waterslide.app/
 weact,WeAct.chat,"The app made for groups of advocates, activists, and change makers working to better the world",,weact,weact,icp123,https://www.weact.chat/dfinity
 weact.chat,WeAct.chat,"Social activism dapp designed to support communication, collaboration, and crowdsourcing of work  ",25000.0,skip,weact.chat,grant,
+weave,,,,weave,weave,reserved,
+weavers,,,,weavers,weavers,reserved,
+web3r.chat,web3r.chat,Rasa chatbots on the IC,25000.0,web3r-chat,web3r.chat,grant,
 webi-ai,Webi Ai,We make decentralized technological solutions for a decentralized technological world.,,webi-ai,webi-ai,icapp,https://webi.ai/
 week-in-dfinity-news,Week in Dfinity News,Week in Dfinity News.,,week-in-dfinity-news,week-in-dfinity-news,icapp,https://www.weekindfinity.com/
 weekindfinity,,,,weekindfinity,weekindfinity,reserved,
 welcome into the metaverse,Welcome Into the Metaverse,"<p>Prize winner of the DSCVR hackathon for the Internet Computer – this game brings digital community into a unified virtual space. Find anecdotes from founding ecosystem members, and go through a series of quests.</p>",,welcome-into-the-metaverse,welcome-into-the-metaverse,showcase,https://lc7ip-3iaaa-aaaah-aafva-cai.ic0.app/
+wicp,,,,wicp,wicp,reserved,
 wild and west,Wild and West,"<p>Wild and West NFTs were featured at the 2021 NFT NYC event, as well as showcased at the ICONIC NFT Art Gallery hosted by the DFINITY Foundation and Toniq Labs. Wild and West NFTs are the backbone of a few different cross-blockchain projects being led by the creative studio. Bridging native components of the Ethereum and Internet Computer blockchains to make an immersive experience for NFT holders. </p>",,wild-and-west,wild-and-west,showcase,https://entrepot.app/marketplace/wildwest
 wild-and-west-nft,Wild and West NFT,NFT project by Wild and West creative studio.,,skip,wild-and-west-nft,icapp,https://wildandwest.com/
+wind,,,,wind,wind,reserved,
 wrapped-trillion-cycles,Wrapped Trillion Cycles,The stablecoin backed by computation. WTC utilize our Extendable Token Standard to wrap native computation “cycles”. Powered by @ExponentPLTF | From @toniqlabs.,,wrapped-trillion-cycles,wrapped-trillion-cycles,icapp,
 xrfoundation,XR Foundation,an open source zero-profit collective building metaverse technologies.,,xr-foundation,xrfoundation,icp123,https://www.xrfoundation.io/
 "xrfoundation - xrengine, blockchain-in-a-box, digital beings","XRFoundation - XREngine, Blockchain-in-a-Box, Digital Beings",Open source tools and infrastructure for metaverse building,100000.0,skip,"xrfoundation---xrengine,-blockchain-in-a-box,-digital-beings",grant,
+xtc,,,,xtc,xtc,reserved,
+ygg,,,,ygg,ygg,reserved,
 yolo-club,Yolo Club,#YoloOctopus is collection of 8888 Intelligently generated NFTs on the Internet Computer blockchain.,,yolo-club,yolo-club,icp123,https://enteryoloclub.com/
+young,,,,young,young,reserved,

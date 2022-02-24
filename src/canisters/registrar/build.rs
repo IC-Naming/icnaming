@@ -1,6 +1,7 @@
-use flate2::write::ZlibEncoder;
-use std::io::{Read, Write};
 use std::{fs, io};
+use std::io::{Read, Write};
+
+use flate2::write::ZlibEncoder;
 
 fn main() {
     // create zlib encode bytes for each txt file in ../../quota_import_data/

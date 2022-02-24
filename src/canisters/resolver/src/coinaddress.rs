@@ -5,7 +5,7 @@
 use ic_crypto_sha256::Sha256;
 use num_bigint::BigUint;
 use num_integer::Integer;
-use num_traits::{Num, ToPrimitive, Zero};
+use num_traits::{ToPrimitive, Zero};
 
 #[derive(PartialEq, Debug)]
 pub enum ValidationError {

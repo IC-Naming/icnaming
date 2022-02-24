@@ -2,7 +2,7 @@ use candid::{CandidType, Deserialize, Principal};
 use ic_cdk::api;
 
 use common::constants::{MAX_COUNT_USER_FAVORITES, MAX_LENGTH_USER_FAVORITES};
-use common::errors::ICNSError::{InvalidName, TooManyFavorites, Unauthorized, ValueMaxLengthError};
+use common::errors::ICNSError::{InvalidName, TooManyFavorites, ValueMaxLengthError};
 use common::errors::ICNSResult;
 use common::metrics_encoder::MetricsEncoder;
 use common::naming::{normalize_name, parse_name};

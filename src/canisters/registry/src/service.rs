@@ -1,9 +1,10 @@
+use std::collections::HashMap;
+use std::sync::Arc;
+
 use candid::Principal;
 use candid::{CandidType, Deserialize};
 use ic_cdk::api;
 use log::{debug, info};
-use std::collections::HashMap;
-use std::sync::Arc;
 
 use common::canister_api::ic_impl::ResolverApi;
 use common::canister_api::IResolverApi;

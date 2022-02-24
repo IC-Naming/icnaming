@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use candid::{decode_args, encode_args, CandidType, Deserialize, Nat, Principal};
+use candid::{CandidType, decode_args, Deserialize, encode_args, Nat, Principal};
 use getset::{Getters, Setters};
 use log::debug;
 
@@ -150,7 +150,7 @@ impl StableState for NameOrderStore {
 
     fn decode(bytes: Vec<u8>) -> Result<Self, String> {
         #[allow(clippy::type_complexity)]
-        let (name_orders, name_orders_payment_id_map): (
+            let (name_orders, name_orders_payment_id_map): (
             HashMap<Principal, NameOrder>,
             HashMap<PaymentId, Principal>,
         ) = decode_args(&bytes).unwrap();

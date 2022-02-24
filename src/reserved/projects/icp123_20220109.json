@@ -2271,6 +2271,22 @@
         "canister": "",
         "medium": "",
         "update-date": "2021-12-28"
+      },
+      {
+        "id": "iclight",
+        "title": "ICLight.house",
+        "summary": "ICLight wallet for ICP, Cycles, and Tokens",
+        "about": "ICLight wallet for ICP, Cycles, and Tokens.Support internet identity authentication",
+        "url": "http://iclight.house",
+        "tags": "DeFi, Wallet",
+        "website": "http://iclight.house",
+        "github": "https://github.com/iclighthouse/Cycles.Finance",
+        "twitter": "https://twitter.com/ICLighthouse",
+        "discord": "https://discord.gg/FQZFGGq7zv",
+        "telegram": "",
+        "canister": "",
+        "medium": "https://medium.com/@ICLighthouse",
+        "update-date": "2022-1-13"
       }
     ],
     "menuKey": "all"

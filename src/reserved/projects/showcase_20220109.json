@@ -3,7 +3,7 @@
   "path": "/showcase/",
   "result": {
     "data": {
-        "page": {
+      "page": {
         "metaTitle": "The Internet Computer Ecosystem Showcase",
         "metaDescription": "Explore a showcase of curated projects built by the Internet Computer ecosystem. This continually growing list features the newest projects, all built with blockchain. Try out decentralized social media, dapps and more. Only possible on the IC. ",
         "heroTitle": "Explore the Internet Computer Ecosystem",
@@ -1860,62 +1860,6 @@
             "screenshots": null
           },
           {
-            "name": "DFinance",
-            "website": "https://dfinance.ai/",
-            "stats": null,
-            "github": "https://github.com/dfinance-tech",
-            "usesInternetIdentity": true,
-            "tags": [
-              "DeFi",
-              "Dapp",
-              "Wallet",
-              "ETH",
-              "Swap"
-            ],
-            "display": "Large",
-            "logo": {
-              "fixed": {
-                "src": "//images.ctfassets.net/ywqk17d3hsnp/5X87wmpnqI4A6fPF9K1Qxo/0062767ec2bd660b3a0d5bfa667c3abf/DFINANCE_1.png?w=220&h=220&q=50&fit=fill"
-              },
-              "file": {
-                "url": "//images.ctfassets.net/ywqk17d3hsnp/5X87wmpnqI4A6fPF9K1Qxo/0062767ec2bd660b3a0d5bfa667c3abf/DFINANCE_1.png"
-              }
-            },
-            "description": {
-              "childMarkdownRemark": {
-                "html": "<p>DFinance is building open financial infrastructure on the Internet Computer. With DeFi products, swaps, unified token standards, token issuance, and token management DFinance is one of the first open and decentralized financial solutions on the Internet Computer.</p>"
-              }
-            },
-            "video": {
-              "file": {
-                "url": "//videos.ctfassets.net/ywqk17d3hsnp/4gRznS6DRiV8X0YicrVAGq/19111d1daf13ffc2dae53bde37efbbde/DFInance_Screenrecord.mp4",
-                "contentType": "video/mp4"
-              }
-            },
-            "screenshots": [
-              {
-                "fixed": {
-                  "src": "//images.ctfassets.net/ywqk17d3hsnp/1YFKofkmSUp4ZeyFheKz1q/5fc646d5cefd3b5f5bbfa3f23ce501b1/Screen_Shot_2021-08-26_at_9.08.55_AM.png?w=340&q=50&fm=png",
-                  "srcSet": "//images.ctfassets.net/ywqk17d3hsnp/1YFKofkmSUp4ZeyFheKz1q/5fc646d5cefd3b5f5bbfa3f23ce501b1/Screen_Shot_2021-08-26_at_9.08.55_AM.png?w=340&h=159&q=50&fm=png 1x,\n//images.ctfassets.net/ywqk17d3hsnp/1YFKofkmSUp4ZeyFheKz1q/5fc646d5cefd3b5f5bbfa3f23ce501b1/Screen_Shot_2021-08-26_at_9.08.55_AM.png?w=510&h=238&q=50&fm=png 1.5x,\n//images.ctfassets.net/ywqk17d3hsnp/1YFKofkmSUp4ZeyFheKz1q/5fc646d5cefd3b5f5bbfa3f23ce501b1/Screen_Shot_2021-08-26_at_9.08.55_AM.png?w=680&h=318&q=50&fm=png 2x,\n//images.ctfassets.net/ywqk17d3hsnp/1YFKofkmSUp4ZeyFheKz1q/5fc646d5cefd3b5f5bbfa3f23ce501b1/Screen_Shot_2021-08-26_at_9.08.55_AM.png?w=1020&h=476&q=50&fm=png 3x",
-                  "srcWebp": "//images.ctfassets.net/ywqk17d3hsnp/1YFKofkmSUp4ZeyFheKz1q/5fc646d5cefd3b5f5bbfa3f23ce501b1/Screen_Shot_2021-08-26_at_9.08.55_AM.png?w=340&q=50&fm=webp",
-                  "srcSetWebp": "//images.ctfassets.net/ywqk17d3hsnp/1YFKofkmSUp4ZeyFheKz1q/5fc646d5cefd3b5f5bbfa3f23ce501b1/Screen_Shot_2021-08-26_at_9.08.55_AM.png?w=340&h=159&q=50&fm=webp 1x,\n//images.ctfassets.net/ywqk17d3hsnp/1YFKofkmSUp4ZeyFheKz1q/5fc646d5cefd3b5f5bbfa3f23ce501b1/Screen_Shot_2021-08-26_at_9.08.55_AM.png?w=510&h=238&q=50&fm=webp 1.5x,\n//images.ctfassets.net/ywqk17d3hsnp/1YFKofkmSUp4ZeyFheKz1q/5fc646d5cefd3b5f5bbfa3f23ce501b1/Screen_Shot_2021-08-26_at_9.08.55_AM.png?w=680&h=318&q=50&fm=webp 2x,\n//images.ctfassets.net/ywqk17d3hsnp/1YFKofkmSUp4ZeyFheKz1q/5fc646d5cefd3b5f5bbfa3f23ce501b1/Screen_Shot_2021-08-26_at_9.08.55_AM.png?w=1020&h=476&q=50&fm=webp 3x",
-                  "width": 340,
-                  "height": 159,
-                  "aspectRatio": 2.141566265060241
-                },
-                "wide": {
-                  "src": "//images.ctfassets.net/ywqk17d3hsnp/1YFKofkmSUp4ZeyFheKz1q/5fc646d5cefd3b5f5bbfa3f23ce501b1/Screen_Shot_2021-08-26_at_9.08.55_AM.png?w=740&q=50&fm=png",
-                  "srcSet": "//images.ctfassets.net/ywqk17d3hsnp/1YFKofkmSUp4ZeyFheKz1q/5fc646d5cefd3b5f5bbfa3f23ce501b1/Screen_Shot_2021-08-26_at_9.08.55_AM.png?w=740&h=346&q=50&fm=png 1x,\n//images.ctfassets.net/ywqk17d3hsnp/1YFKofkmSUp4ZeyFheKz1q/5fc646d5cefd3b5f5bbfa3f23ce501b1/Screen_Shot_2021-08-26_at_9.08.55_AM.png?w=1110&h=518&q=50&fm=png 1.5x,\n//images.ctfassets.net/ywqk17d3hsnp/1YFKofkmSUp4ZeyFheKz1q/5fc646d5cefd3b5f5bbfa3f23ce501b1/Screen_Shot_2021-08-26_at_9.08.55_AM.png?w=1480&h=691&q=50&fm=png 2x,\n//images.ctfassets.net/ywqk17d3hsnp/1YFKofkmSUp4ZeyFheKz1q/5fc646d5cefd3b5f5bbfa3f23ce501b1/Screen_Shot_2021-08-26_at_9.08.55_AM.png?w=2220&h=1037&q=50&fm=png 3x",
-                  "srcWebp": "//images.ctfassets.net/ywqk17d3hsnp/1YFKofkmSUp4ZeyFheKz1q/5fc646d5cefd3b5f5bbfa3f23ce501b1/Screen_Shot_2021-08-26_at_9.08.55_AM.png?w=740&q=50&fm=webp",
-                  "srcSetWebp": "//images.ctfassets.net/ywqk17d3hsnp/1YFKofkmSUp4ZeyFheKz1q/5fc646d5cefd3b5f5bbfa3f23ce501b1/Screen_Shot_2021-08-26_at_9.08.55_AM.png?w=740&h=346&q=50&fm=webp 1x,\n//images.ctfassets.net/ywqk17d3hsnp/1YFKofkmSUp4ZeyFheKz1q/5fc646d5cefd3b5f5bbfa3f23ce501b1/Screen_Shot_2021-08-26_at_9.08.55_AM.png?w=1110&h=518&q=50&fm=webp 1.5x,\n//images.ctfassets.net/ywqk17d3hsnp/1YFKofkmSUp4ZeyFheKz1q/5fc646d5cefd3b5f5bbfa3f23ce501b1/Screen_Shot_2021-08-26_at_9.08.55_AM.png?w=1480&h=691&q=50&fm=webp 2x,\n//images.ctfassets.net/ywqk17d3hsnp/1YFKofkmSUp4ZeyFheKz1q/5fc646d5cefd3b5f5bbfa3f23ce501b1/Screen_Shot_2021-08-26_at_9.08.55_AM.png?w=2220&h=1037&q=50&fm=webp 3x",
-                  "width": 740,
-                  "height": 346,
-                  "aspectRatio": 2.141566265060241
-                }
-              }
-            ]
-          },
-          {
             "name": "NFT Village",
             "website": "http://nftvillage.ai/",
             "stats": null,
@@ -2450,7 +2394,7 @@
             },
             "description": {
               "childMarkdownRemark": {
-                "html": "<p>InfinitySwap is a platform to create, stake, and swap tokens on the Internet Computer. Backed by Polychain Capital and 9YardsCapital (amongst others) –– InfinitySwap offers users the ability to swap tokens cheaply with their novel technology build on the ICP blockchain. They are also planning to release their own token standard IS20 to support these initiatives. </p>"
+                "html": "<p>InfinitySwap is a platform to create, stake, and swap tokens on the Internet Computer. Backed by Polychain Capital and 9YardsCapital (amongst others) –– InfinitySwap offers users the ability to swap tokens cheaply with their novel technology build on the ICP blockchain. They are also planning to release their own token standard IS20 to support these initiatives. </p>"
               }
             },
             "video": null,

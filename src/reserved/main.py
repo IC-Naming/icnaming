@@ -208,6 +208,10 @@ def create_reserved_list():
         for k, v in result:
             writer.writerow([k, v])
 
+    # write result to reserved_list.txt
+    with open('reserved_list.txt', 'w', encoding='utf8') as f:
+        f.writelines([f"{k}\n" for k, v in result])
+
     # write keys to rs file
     with open('../canisters/registrar/src/reserved_list.rs', 'w', encoding='utf8') as f:
         f.write("pub const RESERVED_NAMES: &[&str] = &[\n")
@@ -218,6 +222,24 @@ def create_reserved_list():
     print(f"reserved list created")
 
 
+def report_conflict():
+    # load items from reserved.txt and astrox_me_reserved.txt, and print those that are in both
+    reserved_path = 'reserved_list.txt'
+    astrox_me_reserved_path = 'astrox_me_reserved.txt'
+    with open(reserved_path, 'r', encoding='utf8') as f:
+        reserved = set(f.read().splitlines())
+    with open(astrox_me_reserved_path, 'r', encoding='utf8') as f:
+        astrox_me_reserved = set(f.read().splitlines())
+    result = reserved.intersection(astrox_me_reserved)
+    if len(result) > 0:
+        print(result)
+    else:
+        print("no conflict")
+
+
 if __name__ == "__main__":
+    # run main to create a csv
     main()
+    # run csv to json to persist icnaming column in csv
     # csv_to_json()
+    # report_conflict()

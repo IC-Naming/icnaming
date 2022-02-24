@@ -1,5 +1,25 @@
 [
     {
+        "id": "a16z",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "a16z",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "a16z"
+    },
+    {
+        "id": "a3capas",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "a3capas",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "a3capas"
+    },
+    {
         "id": "aedile",
         "title": "Aedile",
         "summary": "Project management dapp",
@@ -30,6 +50,126 @@
         "recommend_url": "aikin"
     },
     {
+        "id": "alexa",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "alexa",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "alexa"
+    },
+    {
+        "id": "amber",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "amber",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "amber"
+    },
+    {
+        "id": "ambergroup",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "ambergroup",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "ambergroup"
+    },
+    {
+        "id": "animal-guardians",
+        "title": "Animal Guardians",
+        "summary": "",
+        "grant": "",
+        "icnaming": "animal-guardians",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "animal-guardians"
+    },
+    {
+        "id": "anmi",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "anmi",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "anmi"
+    },
+    {
+        "id": "anmicapital",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "anmicapital",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "anmicapital"
+    },
+    {
+        "id": "anthonymq",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "anthonymq",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "anthonymq"
+    },
+    {
+        "id": "arkstream",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "arkstream",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "arkstream"
+    },
+    {
+        "id": "arkstreamcapital",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "arkstreamcapital",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "arkstreamcapital"
+    },
+    {
+        "id": "art",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "art",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "art"
+    },
+    {
+        "id": "aspect",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "aspect",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "aspect"
+    },
+    {
+        "id": "aspectventures",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "aspectventures",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "aspectventures"
+    },
+    {
         "id": "astrome",
         "title": "ME",
         "summary": "A self-sovereign identity protocol on Internet Computer",
@@ -50,6 +190,36 @@
         "recommend_url": "astrox"
     },
     {
+        "id": "atcapital",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "atcapital",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "atcapital"
+    },
+    {
+        "id": "aurora",
+        "title": "Aurora",
+        "summary": "Decentralized sound installation",
+        "grant": "25000.0",
+        "icnaming": "aurora",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "aurora"
+    },
+    {
+        "id": "avatar",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "avatar",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "avatar"
+    },
+    {
         "id": "aviate-labs",
         "title": "Aviate Labs",
         "summary": "A Web3 Construction Lab.",
@@ -58,6 +228,16 @@
         "type": "icapp",
         "url": "https://aviate-labs.com/",
         "recommend_url": "aviate-labs"
+    },
+    {
+        "id": "avocado-research",
+        "title": "Avocado Research",
+        "summary": "",
+        "grant": "",
+        "icnaming": "avocado-research",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "avocado-research"
     },
     {
         "id": "axon",
@@ -90,6 +270,26 @@
         "recommend_url": "b9lab"
     },
     {
+        "id": "badge",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "badge",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "badge"
+    },
+    {
+        "id": "bartlett",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "bartlett",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "bartlett"
+    },
+    {
         "id": "bauction",
         "title": "Bauction",
         "summary": "Decentralized and transparent auction platform",
@@ -100,6 +300,26 @@
         "recommend_url": "bauction"
     },
     {
+        "id": "bauction (follow-on)",
+        "title": "Bauction (Follow-On)",
+        "summary": "Extension of Bauction features and SDK in PHP and NodeJS",
+        "grant": "25000.0",
+        "icnaming": "skip",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "bauction-(follow-on)"
+    },
+    {
+        "id": "beacon",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "beacon",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "beacon"
+    },
+    {
         "id": "bebenture",
         "title": "Bebenture",
         "summary": "Decentralized derivatives issuance and transaction protocol",
@@ -108,6 +328,96 @@
         "type": "grant",
         "url": "",
         "recommend_url": "bebenture"
+    },
+    {
+        "id": "bigbuy",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "bigbuy",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "bigbuy"
+    },
+    {
+        "id": "binance",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "binance"
+    },
+    {
+        "id": "bitcastle",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "bitcastle",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "bitcastle"
+    },
+    {
+        "id": "bitcoin-related integrations in motoko",
+        "title": "Bitcoin-related integrations in Motoko",
+        "summary": "Various crypto libraries in Motoko to support native Bitcoin integration",
+        "grant": "25000.0",
+        "icnaming": "skip",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "bitcoin-related-integrations-in-motoko"
+    },
+    {
+        "id": "bitfinex",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "bitfinex",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "bitfinex"
+    },
+    {
+        "id": "bitflyer",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "bitflyer"
+    },
+    {
+        "id": "bithumb",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "bithumb",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "bithumb"
+    },
+    {
+        "id": "bitkeep",
+        "title": "BitKeep",
+        "summary": "ICP integration as well as support for NFTs and Internet Computer dapps",
+        "grant": "50000.0",
+        "icnaming": "bitkeep",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "bitkeep"
+    },
+    {
+        "id": "bittrex",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "bittrex",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "bittrex"
     },
     {
         "id": "blockchain at berkeley",
@@ -160,6 +470,16 @@
         "recommend_url": "blocks"
     },
     {
+        "id": "blocks.",
+        "title": "Blocks.",
+        "summary": "An online visual smart contract builder for the Internet Computer",
+        "grant": "25000.0",
+        "icnaming": "skip",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "blocks."
+    },
+    {
         "id": "bluebird",
         "title": "BlueBird",
         "summary": "On chain transformation of user generated rich media content",
@@ -168,6 +488,26 @@
         "type": "grant",
         "url": "",
         "recommend_url": "bluebird"
+    },
+    {
+        "id": "bluepintjs module for the internet computer",
+        "title": "BluepintJS module for the Internet Computer",
+        "summary": "Framework for authoring APIs in NodeJS",
+        "grant": "25000.0",
+        "icnaming": "skip",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "bluepintjs-module-for-the-internet-computer"
+    },
+    {
+        "id": "bob",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "bob",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "bob"
     },
     {
         "id": "btc-flower",
@@ -180,6 +520,16 @@
         "recommend_url": "btc-flower"
     },
     {
+        "id": "btcflower",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "btcflower",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "btcflower"
+    },
+    {
         "id": "bunchd",
         "title": "Bunchd",
         "summary": "Create, Collaborate, and Earn on the Subscription Platform controlled by Creators.",
@@ -190,6 +540,16 @@
         "recommend_url": "bunchd"
     },
     {
+        "id": "bybit",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "bybit",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "bybit"
+    },
+    {
         "id": "candid-convert",
         "title": "candid-convert",
         "summary": "Developer tools for parsing Candid to TypeScript",
@@ -198,6 +558,26 @@
         "type": "grant",
         "url": "",
         "recommend_url": "candid-convert"
+    },
+    {
+        "id": "canister-tip-jar",
+        "title": "Canister Tip Jar",
+        "summary": "",
+        "grant": "",
+        "icnaming": "canister-tip-jar",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "canister-tip-jar"
+    },
+    {
+        "id": "canistergeek",
+        "title": "Canistergeek",
+        "summary": "",
+        "grant": "",
+        "icnaming": "canistergeek",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "canistergeek"
     },
     {
         "id": "canistore",
@@ -218,6 +598,16 @@
         "type": "grant",
         "url": "",
         "recommend_url": "canlista"
+    },
+    {
+        "id": "cantorspace teamup",
+        "title": "CantorSpace TeamUp",
+        "summary": "Matchmaking platform for filmmaking community",
+        "grant": "25000.0",
+        "icnaming": "cantorspace-teamup",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "cantorspace-teamup"
     },
     {
         "id": "cap",
@@ -300,6 +690,16 @@
         "recommend_url": "checkrr"
     },
     {
+        "id": "cheersland",
+        "title": "CheersLand",
+        "summary": "Play2Earn Game",
+        "grant": "5000.0",
+        "icnaming": "cheersland",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "cheersland"
+    },
+    {
         "id": "cipherproxy",
         "title": "CipherProxy",
         "summary": "CipherProxy is a research and development foundation.",
@@ -320,6 +720,26 @@
         "recommend_url": "civol"
     },
     {
+        "id": "cleverland",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "cleverland",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "cleverland"
+    },
+    {
+        "id": "codebase",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "codebase",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "codebase"
+    },
+    {
         "id": "coin-flipper",
         "title": "Coin Flipper",
         "summary": "Simple app that flips a coin.",
@@ -330,6 +750,26 @@
         "recommend_url": "coin-flipper"
     },
     {
+        "id": "coinbase",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "coinbase"
+    },
+    {
+        "id": "connect",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "connect"
+    },
+    {
         "id": "content fly",
         "title": "Content Fly",
         "summary": "Content marketplace connecting high quality creators with brands",
@@ -338,6 +778,16 @@
         "type": "grant",
         "url": "",
         "recommend_url": "content-fly"
+    },
+    {
+        "id": "content fly (follow-on)",
+        "title": "Content Fly (Follow-On)",
+        "summary": "Decentralized creator marketplace",
+        "grant": "100000.0",
+        "icnaming": "skip",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "content-fly-(follow-on)"
     },
     {
         "id": "contentfly",
@@ -380,6 +830,16 @@
         "recommend_url": "cover"
     },
     {
+        "id": "cramium",
+        "title": "Cramium",
+        "summary": "Decentralized, consumer-first digital advertising",
+        "grant": "25000.0",
+        "icnaming": "cramium",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "cramium"
+    },
+    {
         "id": "cronic",
         "title": "Cronic",
         "summary": "Cronics is a Play-to-earn NFT game being developed by ToniqLabs for the Internet Computer. Cronics incorporates breeding mechanics, wearable NFTs and a p2e minigame ecosystem and more.",
@@ -420,6 +880,16 @@
         "recommend_url": "crowdeats"
     },
     {
+        "id": "crowdfund-nft",
+        "title": "Crowdfund NFT",
+        "summary": "",
+        "grant": "",
+        "icnaming": "crowdfund-nft",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "crowdfund-nft"
+    },
+    {
         "id": "crowdrecords",
         "title": "Crowd Records",
         "summary": "Decentralized Song Rights Economy where musical ideas become songs, almost magically",
@@ -448,6 +918,56 @@
         "type": "icapp",
         "url": "https://crowns.ooo/",
         "recommend_url": "crowns"
+    },
+    {
+        "id": "crypto90s",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "crypto90s",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "crypto90s"
+    },
+    {
+        "id": "cryptoculturist",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "cryptoculturist",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "cryptoculturist"
+    },
+    {
+        "id": "cryptojian",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "cryptojian",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "cryptojian"
+    },
+    {
+        "id": "cryptospells\u30fbnftstudio",
+        "title": "CryptoSpells\u30fbNFTStudio",
+        "summary": "NFT issurance service\"",
+        "grant": "5000.0",
+        "icnaming": "cryptospells",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "cryptospells\u30fbnftstudio"
+    },
+    {
+        "id": "cryptoworld",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "cryptoworld",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "cryptoworld"
     },
     {
         "id": "cube run",
@@ -550,6 +1070,16 @@
         "recommend_url": "dank"
     },
     {
+        "id": "dapp man's switch",
+        "title": "dApp Man's Switch",
+        "summary": "Decentralized dead man's switch on the Internet Computer",
+        "grant": "25000.0",
+        "icnaming": "dapp-man",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "dapp-man's-switch"
+    },
+    {
         "id": "data app development platform",
         "title": "Data App Development Platform",
         "summary": "Low code platform that enables engineering teams build data apps and workflows",
@@ -558,6 +1088,16 @@
         "type": "grant",
         "url": "",
         "recommend_url": "data-app-development-platform"
+    },
+    {
+        "id": "databox",
+        "title": "DataBox",
+        "summary": "Service for users to store and govern their asset data and personal information",
+        "grant": "25000.0",
+        "icnaming": "databox",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "databox"
     },
     {
         "id": "dbox",
@@ -710,6 +1250,16 @@
         "recommend_url": "dfinity-academy-ru"
     },
     {
+        "id": "dfinity-alliance",
+        "title": "Dfinity Alliance",
+        "summary": "",
+        "grant": "",
+        "icnaming": "dfinity-alliance",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "dfinity-alliance"
+    },
+    {
         "id": "dfinity-bulls",
         "title": "Dfinity Bulls",
         "summary": "8,888 Awesome Badass Bulls will ever be minted! Exclusively on ICP!",
@@ -750,6 +1300,16 @@
         "recommend_url": "dfinity-community"
     },
     {
+        "id": "dfinity-donkeys",
+        "title": "Dfinity Donkeys",
+        "summary": "",
+        "grant": "",
+        "icnaming": "dfinity-donkeys",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "dfinity-donkeys"
+    },
+    {
         "id": "dfinity-en-espanol",
         "title": "DFINITY en Espa\u00f1ol",
         "summary": "#InternetComputer reinventando la internet p\u00fablica como una computadora blockchain. Noticias sobre #InternetComputer en espa\u00f1ol.",
@@ -768,6 +1328,16 @@
         "type": "icp123",
         "url": "https://www.dfinityexplorer.org/",
         "recommend_url": "dfinity-explorer"
+    },
+    {
+        "id": "dfinity-nuclear-sheep",
+        "title": "Dfinity Nuclear Sheep",
+        "summary": "",
+        "grant": "",
+        "icnaming": "dfinity-nuclear-sheep",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "dfinity-nuclear-sheep"
     },
     {
         "id": "dfinity-scan",
@@ -841,6 +1411,16 @@
     },
     {
         "id": "dfinityvietnam",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "dfinityvietnam",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "dfinityvietnam"
+    },
+    {
+        "id": "dfinityvietnam",
         "title": "Dfinity Vietnam",
         "summary": "Founded in June 2021 we are a group of people passionate about learning about Internet Computer. ",
         "grant": "",
@@ -848,6 +1428,16 @@
         "type": "icp123",
         "url": "https://dfinityvietnam.com/",
         "recommend_url": "dfinityvietnam"
+    },
+    {
+        "id": "dfinityvn",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "dfinityvn",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "dfinityvn"
     },
     {
         "id": "dfistarter",
@@ -870,6 +1460,26 @@
         "recommend_url": "dflow"
     },
     {
+        "id": "dft",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "dft",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "dft"
+    },
+    {
+        "id": "dfusion",
+        "title": "DFusion",
+        "summary": "Web3 blogging platform with NFTs",
+        "grant": "25000.0",
+        "icnaming": "dfusion",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "dfusion"
+    },
+    {
         "id": "dgdg",
         "title": "DGDG (dgastonia)",
         "summary": "The most comprehensive browsing experience for NFTs on The Internet Computer. Sort and filter by price & rarity, expose floors, ... more to come!",
@@ -890,6 +1500,16 @@
         "recommend_url": "difibase"
     },
     {
+        "id": "disto",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "disto",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "disto"
+    },
+    {
         "id": "distrikt",
         "title": "Distrikt",
         "summary": "Distrikt is a completely decentralized, community-owned professional network. ",
@@ -900,6 +1520,16 @@
         "recommend_url": "distrikt"
     },
     {
+        "id": "dlotto",
+        "title": "DLotto",
+        "summary": "Lottery sample application using ICP in canisters and randomness",
+        "grant": "25000.0",
+        "icnaming": "dlotto",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "dlotto"
+    },
+    {
         "id": "dmail",
         "title": "Dmail Network ",
         "summary": "Dmail is the first mail application based on Web3.0 and Dfinity technology .",
@@ -908,6 +1538,26 @@
         "type": "icp123",
         "url": "http://dmail.ai/",
         "recommend_url": "dmail"
+    },
+    {
+        "id": "dmail network",
+        "title": "Dmail Network",
+        "summary": "Decentralized email that integrates NFTs and distributed storage",
+        "grant": "25000.0",
+        "icnaming": "dmail-network",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "dmail-network"
+    },
+    {
+        "id": "documentingtheic",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "documentingtheic",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "documentingtheic"
     },
     {
         "id": "dom",
@@ -940,6 +1590,16 @@
         "recommend_url": "dots"
     },
     {
+        "id": "dport",
+        "title": "DPort",
+        "summary": "Identity service for data ownership\"",
+        "grant": "25000.0",
+        "icnaming": "dport",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "dport"
+    },
+    {
         "id": "drake",
         "title": "",
         "summary": "",
@@ -950,6 +1610,16 @@
         "recommend_url": "drake"
     },
     {
+        "id": "draperdragon",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "draperdragon",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "draperdragon"
+    },
+    {
         "id": "drip-land",
         "title": "Drip.Land",
         "summary": "The home of the IC Drip universe. Is your outfit drippin?",
@@ -958,6 +1628,16 @@
         "type": "icapp",
         "url": "https://drip.land/",
         "recommend_url": "drip-land"
+    },
+    {
+        "id": "dripland",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "dripland",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "dripland"
     },
     {
         "id": "dscvr",
@@ -980,6 +1660,16 @@
         "recommend_url": "dservice"
     },
     {
+        "id": "dsign",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "dsign",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "dsign"
+    },
+    {
         "id": "dsocial",
         "title": "DSocial",
         "summary": "Decentralized & censorship resistant \ud83d\udcfa built on the Internet Computer & ARWeave.",
@@ -1000,6 +1690,16 @@
         "recommend_url": "dstar"
     },
     {
+        "id": "dwitter",
+        "title": "Dwitter",
+        "summary": "Decentralized microblogging and social networking service",
+        "grant": "25000.0",
+        "icnaming": "dwitter",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "dwitter"
+    },
+    {
         "id": "dws (dfinity web services)",
         "title": "DWS (Dfinity Web Services)",
         "summary": "Data management tools for developers",
@@ -1008,6 +1708,16 @@
         "type": "grant",
         "url": "",
         "recommend_url": "dws-(dfinity-web-services)"
+    },
+    {
+        "id": "earth",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "earth",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "earth"
     },
     {
         "id": "earth wallet",
@@ -1028,6 +1738,16 @@
         "type": "icp123",
         "url": "https://www.earthwallet.io/",
         "recommend_url": "earth-wallet"
+    },
+    {
+        "id": "earthdao",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "earthdao",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "earthdao"
     },
     {
         "id": "economia",
@@ -1080,6 +1800,16 @@
         "recommend_url": "entrepot"
     },
     {
+        "id": "epic nfts + exponent",
+        "title": "Epic NFTs + Exponent",
+        "summary": "Exponent infrastructure work and Epic NFTs prototype\"",
+        "grant": "100000.0",
+        "icnaming": "epic-nfts-exponent",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "epic-nfts-+-exponent"
+    },
+    {
         "id": "eria",
         "title": "Eria",
         "summary": "CoreWeave API for generative art on the IC",
@@ -1100,6 +1830,16 @@
         "recommend_url": "evm-on-icp"
     },
     {
+        "id": "ex3",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "ex3",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "ex3"
+    },
+    {
         "id": "exponent",
         "title": "Exponent",
         "summary": "EXT Token Standard and DEX prototype",
@@ -1108,6 +1848,56 @@
         "type": "grant",
         "url": "",
         "recommend_url": "exponent"
+    },
+    {
+        "id": "fallingstars-nft",
+        "title": "FallingStars NFT ",
+        "summary": "",
+        "grant": "",
+        "icnaming": "fallingstars-nft",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "fallingstars-nft"
+    },
+    {
+        "id": "fbg",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "fbg",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "fbg"
+    },
+    {
+        "id": "fbgcapital",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "fbgcapital",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "fbgcapital"
+    },
+    {
+        "id": "fenbushi",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "fenbushi",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "fenbushi"
+    },
+    {
+        "id": "fiona",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "fiona",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "fiona"
     },
     {
         "id": "fleek",
@@ -1140,6 +1930,16 @@
         "recommend_url": "fleek-ooo"
     },
     {
+        "id": "freedom",
+        "title": "Freedom",
+        "summary": "",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "freedom"
+    },
+    {
         "id": "freeos",
         "title": "Freeos",
         "summary": "Proton <> Internet Computer integration and oracle prototype",
@@ -1148,6 +1948,46 @@
         "type": "grant",
         "url": "",
         "recommend_url": "freeos"
+    },
+    {
+        "id": "frog-nation-2-0-2d",
+        "title": "Frog Nation 2.0 2D",
+        "summary": "",
+        "grant": "",
+        "icnaming": "frog-nation",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "frog-nation-2-0-2d"
+    },
+    {
+        "id": "frog-nation-2-0-3d",
+        "title": "Frog Nation 2.0 3D Assassins",
+        "summary": "",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "frog-nation-2-0-3d"
+    },
+    {
+        "id": "frog-nation-2-0-voxels",
+        "title": "Frog Nation 2.0 Voxels",
+        "summary": "",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "frog-nation-2-0-voxels"
+    },
+    {
+        "id": "frontliners-nft",
+        "title": "frontliners.nft",
+        "summary": "",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "frontliners-nft"
     },
     {
         "id": "functionland",
@@ -1220,6 +2060,36 @@
         "recommend_url": "golang-developer-tools"
     },
     {
+        "id": "gpad",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "gpad",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "gpad"
+    },
+    {
+        "id": "hashkey",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "hashkey",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "hashkey"
+    },
+    {
+        "id": "hashkeycapital",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "hashkeycapital",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "hashkeycapital"
+    },
+    {
         "id": "haundet-hamsters",
         "title": "Haundet Hamsters",
         "summary": "Haunted Hamsters are 3333 hamsters, who have been haunted on the hill of Hamsterville.",
@@ -1260,6 +2130,46 @@
         "recommend_url": "hexgl"
     },
     {
+        "id": "holon",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "holon",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "holon"
+    },
+    {
+        "id": "huobi",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "huobi",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "huobi"
+    },
+    {
+        "id": "hyuna",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "hyuna",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "hyuna"
+    },
+    {
+        "id": "iaf",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "iaf",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "iaf"
+    },
+    {
         "id": "ibridge",
         "title": "iBridge",
         "summary": "Become the bridge between Dfinity and other public chain ecosystem",
@@ -1278,6 +2188,16 @@
         "type": "reserved",
         "url": "",
         "recommend_url": "ic"
+    },
+    {
+        "id": "ic cards",
+        "title": "ic cards",
+        "summary": "NFT minting, leveling and crafting game",
+        "grant": "25000.0",
+        "icnaming": "ic-cards",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "ic-cards"
     },
     {
         "id": "ic drive",
@@ -1320,6 +2240,16 @@
         "recommend_url": "ic-rocks"
     },
     {
+        "id": "ic vault",
+        "title": "IC Vault",
+        "summary": "Decentralized password and secret manager",
+        "grant": "25000.0",
+        "icnaming": "ic-vault",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "ic-vault"
+    },
+    {
         "id": "ic video",
         "title": "IC Video",
         "summary": "Decentralized video conferencing",
@@ -1338,6 +2268,16 @@
         "type": "icapp",
         "url": "https://icapeventures.com/",
         "recommend_url": "ic-ape-ventures"
+    },
+    {
+        "id": "ic-birds",
+        "title": "IC Birds",
+        "summary": "",
+        "grant": "",
+        "icnaming": "ic-birds",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "ic-birds"
     },
     {
         "id": "ic-canvas",
@@ -1450,6 +2390,16 @@
         "recommend_url": "ic-turtles"
     },
     {
+        "id": "ic-whiskers",
+        "title": "IC Whiskers",
+        "summary": "https://6hsbt-vqaaa-aaaaf-aaafq-cai.ic0.app/#/b5zxk-saaaa-aaaaf-aacmq-cai",
+        "grant": "",
+        "icnaming": "ic-whiskers",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "ic-whiskers"
+    },
+    {
         "id": "ic.rocks",
         "title": "ic.rocks",
         "summary": "A collection of developer tools for understanding activity and transactions on the Internet Computer",
@@ -1458,6 +2408,16 @@
         "type": "grant",
         "url": "",
         "recommend_url": "ic.rocks"
+    },
+    {
+        "id": "ic8",
+        "title": "IC8 Infinity Space Station",
+        "summary": "",
+        "grant": "",
+        "icnaming": "ic8",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "ic8"
     },
     {
         "id": "ic_tools_dart",
@@ -1488,6 +2448,16 @@
         "type": "showcase",
         "url": "https://dashboard.internetcomputer.org/",
         "recommend_url": "ica-dashboard"
+    },
+    {
+        "id": "icaliens",
+        "title": "ICAliens",
+        "summary": "",
+        "grant": "",
+        "icnaming": "icaliens",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "icaliens"
     },
     {
         "id": "icape-ventures",
@@ -1540,6 +2510,36 @@
         "recommend_url": "iccomics"
     },
     {
+        "id": "icdevs",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "icdevs",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "icdevs"
+    },
+    {
+        "id": "icdevs-org",
+        "title": "ICDevs.org",
+        "summary": "",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "icdevs-org"
+    },
+    {
+        "id": "icdevs.org bounty acceleration",
+        "title": "ICDevs.org Bounty Acceleration",
+        "summary": "Support for developer bounties\"",
+        "grant": "25000.0",
+        "icnaming": "skip",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "icdevs.org-bounty-acceleration"
+    },
+    {
         "id": "icdrip",
         "title": "ICDrip",
         "summary": "IC Drip are randomly generated meta-commerce shopping carts for outfits and personas stored on chain. Stats, images, and other functionality are intentionally omitted for others to interpret. Feel free to use IC Drip in any way you want.",
@@ -1570,6 +2570,16 @@
         "recommend_url": "icevent"
     },
     {
+        "id": "icgiraffes",
+        "title": "ICGiraffes",
+        "summary": "",
+        "grant": "",
+        "icnaming": "icgiraffes",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "icgiraffes"
+    },
+    {
         "id": "icircle nft",
         "title": "iCircle NFT",
         "summary": "<p>The first generative NFT project hosted on the Internet Computer blockchain \u2013 iCircle had their inaugural collection sell out in under 6 minutes. The iCircle project consists of generative art NFTs, hosted on the Internet Computer, as well as NFT holders having governance rights in the newly announced iCircle DAO. More releases and minting tools for generative artists are on the way. </p>",
@@ -1590,6 +2600,26 @@
         "recommend_url": "icircle-nft"
     },
     {
+        "id": "icity",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "icity",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "icity"
+    },
+    {
+        "id": "ickitsune",
+        "title": "ICKitsune",
+        "summary": "",
+        "grant": "",
+        "icnaming": "ickitsune",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "ickitsune"
+    },
+    {
         "id": "ickitties",
         "title": "ICKitties",
         "summary": "10,000 8-bit kitties living on the #InternetComputer. Join us as we explore the 7 Kingdoms!",
@@ -1598,6 +2628,26 @@
         "type": "icapp",
         "url": "https://ickitties.com/",
         "recommend_url": "ickitties"
+    },
+    {
+        "id": "ickoalas",
+        "title": "ICKoalas",
+        "summary": "",
+        "grant": "",
+        "icnaming": "ickoalas",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "ickoalas"
+    },
+    {
+        "id": "iclight",
+        "title": "ICLight.house",
+        "summary": "ICLight wallet for ICP, Cycles, and Tokens",
+        "grant": "",
+        "icnaming": "iclight",
+        "type": "icp123",
+        "url": "http://iclight.house",
+        "recommend_url": "iclight"
     },
     {
         "id": "iclighthouse",
@@ -1620,6 +2670,16 @@
         "recommend_url": "icme"
     },
     {
+        "id": "icme (follow-on)",
+        "title": "ICME (Follow-On)",
+        "summary": "No-code infrastructure for NFT minting and marketplaces",
+        "grant": "25000.0",
+        "icnaming": "skip",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "icme-(follow-on)"
+    },
+    {
         "id": "icmoji",
         "title": "ICMoji Origins",
         "summary": "ICMoji Origins is an NFT-based multiplayer game built end-to-end on-chain on the Internet Computer.",
@@ -1638,6 +2698,16 @@
         "type": "grant",
         "url": "",
         "recommend_url": "icmoji-origins"
+    },
+    {
+        "id": "icmoji-legends",
+        "title": "ICmoji Legends",
+        "summary": "",
+        "grant": "",
+        "icnaming": "icmoji-legends",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "icmoji-legends"
     },
     {
         "id": "icmoji-origins",
@@ -1680,6 +2750,36 @@
         "recommend_url": "icnaming"
     },
     {
+        "id": "icnotes",
+        "title": "icNotes",
+        "summary": "Secure note-taking dapp",
+        "grant": "5000.0",
+        "icnaming": "icnotes",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "icnotes"
+    },
+    {
+        "id": "icns",
+        "title": "icns",
+        "summary": "",
+        "grant": "",
+        "icnaming": "icnotes",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "icns"
+    },
+    {
+        "id": "icnsid",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "icnsid",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "icnsid"
+    },
+    {
         "id": "icp",
         "title": "",
         "summary": "",
@@ -1688,6 +2788,26 @@
         "type": "reserved",
         "url": "",
         "recommend_url": "icp"
+    },
+    {
+        "id": "icp birds",
+        "title": "ICP Birds",
+        "summary": "NFT-based, Play2Earn version of \"Flappy Bird\"",
+        "grant": "25000.0",
+        "icnaming": "icp-birds",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "icp-birds"
+    },
+    {
+        "id": "icp squad",
+        "title": "ICP Squad",
+        "summary": "Engage2Earn NFT Game",
+        "grant": "25000.0",
+        "icnaming": "icp-squad",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "icp-squad"
     },
     {
         "id": "icp squad nft",
@@ -1830,6 +2950,16 @@
         "recommend_url": "icpbunny"
     },
     {
+        "id": "icpcs",
+        "title": "ICPCS",
+        "summary": "",
+        "grant": "",
+        "icnaming": "icpcs",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "icpcs"
+    },
+    {
         "id": "icpdog",
         "title": "ICP.Dog",
         "summary": "The most profitable GameFi on IC. Join Dog and reap your wealth",
@@ -1860,6 +2990,16 @@
         "recommend_url": "icpfans"
     },
     {
+        "id": "icpflower",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "icpflower",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "icpflower"
+    },
+    {
         "id": "icphotographers",
         "title": "IC Photographers",
         "summary": "At IC photographers, the aim is to bring both creator and collector together.",
@@ -1870,6 +3010,26 @@
         "recommend_url": "icphotographers"
     },
     {
+        "id": "icpics",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "icpics",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "icpics"
+    },
+    {
+        "id": "icpics",
+        "title": "ICPics",
+        "summary": "",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "icpics"
+    },
+    {
         "id": "icpipeline",
         "title": "ICPipeline",
         "summary": "Developer tools to bring SDLC best practices to the IC",
@@ -1878,6 +3038,26 @@
         "type": "grant",
         "url": "",
         "recommend_url": "icpipeline"
+    },
+    {
+        "id": "icpis",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "icpis",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "icpis"
+    },
+    {
+        "id": "icpl",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "icpl",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "icpl"
     },
     {
         "id": "icpl-community",
@@ -1920,6 +3100,16 @@
         "recommend_url": "icpmaps"
     },
     {
+        "id": "icpmaps (follow-on)",
+        "title": "ICPMAPS (Follow-On)",
+        "summary": "Open Maps, GIS data on the IC\"",
+        "grant": "100000.0",
+        "icnaming": "skip",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "icpmaps-(follow-on)"
+    },
+    {
         "id": "icpmeet",
         "title": "ICPmeet",
         "summary": "Decentralized dating app",
@@ -1948,6 +3138,16 @@
         "type": "icapp",
         "url": "",
         "recommend_url": "icprime8s"
+    },
+    {
+        "id": "icproject",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "icproject",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "icproject"
     },
     {
         "id": "icproject_nft",
@@ -2040,6 +3240,26 @@
         "recommend_url": "icpuppies"
     },
     {
+        "id": "icpverse",
+        "title": "ICPverse",
+        "summary": "",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "icpverse"
+    },
+    {
+        "id": "icpxy",
+        "title": "ICPxy",
+        "summary": "",
+        "grant": "",
+        "icnaming": "icpxy",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "icpxy"
+    },
+    {
         "id": "icsnakes",
         "title": "ICSnakes",
         "summary": "A collection of 10,000 randomly generated Snake NFTs on #ICP blockchain hunting for food.",
@@ -2048,6 +3268,16 @@
         "type": "icp123",
         "url": "https://xn--4n8h7h.ws/",
         "recommend_url": "icsnakes"
+    },
+    {
+        "id": "icspliffsters",
+        "title": "ICSpliffsters",
+        "summary": "",
+        "grant": "",
+        "icnaming": "icspliffsters",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "icspliffsters"
     },
     {
         "id": "ictexas",
@@ -2060,6 +3290,26 @@
         "recommend_url": "ictexas"
     },
     {
+        "id": "icturtles",
+        "title": "ICTurtles",
+        "summary": "Play2Earn NFT game and DAO",
+        "grant": "25000.0",
+        "icnaming": "icturtles",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "icturtles"
+    },
+    {
+        "id": "icvibesters",
+        "title": "ICVibesters",
+        "summary": "",
+        "grant": "",
+        "icnaming": "icvibesters",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "icvibesters"
+    },
+    {
         "id": "icwallet",
         "title": "IC Wallet",
         "summary": "Asset Management ICP Wallet",
@@ -2068,6 +3318,16 @@
         "type": "icp123",
         "url": "http://icwallet.org/",
         "recommend_url": "icwallet"
+    },
+    {
+        "id": "icwave",
+        "title": "ICWave",
+        "summary": "",
+        "grant": "",
+        "icnaming": "icwave",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "icwave"
     },
     {
         "id": "identity labs",
@@ -2088,6 +3348,26 @@
         "type": "icapp",
         "url": "",
         "recommend_url": "identity-labs"
+    },
+    {
+        "id": "igf",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "igf",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "igf"
+    },
+    {
+        "id": "igor",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "igor",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "igor"
     },
     {
         "id": "infernal-vampire-colony",
@@ -2140,6 +3420,16 @@
         "recommend_url": "infinityswap"
     },
     {
+        "id": "intelligent nft framework",
+        "title": "intelligent NFT framework",
+        "summary": "Framework for integrating AI technology with 2D/3D NFT avatars\"",
+        "grant": "100000.0",
+        "icnaming": "intelligent-nft-framework",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "intelligent-nft-framework"
+    },
+    {
         "id": "interconnect-network",
         "title": "interconnect.network",
         "summary": "become mutually connected \u221e built on Dfinity The Internet Computer.",
@@ -2168,6 +3458,16 @@
         "type": "grant",
         "url": "",
         "recommend_url": "internet-computer-based-blogs/news/cms-site"
+    },
+    {
+        "id": "internet computer event system (ices)",
+        "title": "Internet Computer Event System (ICES)",
+        "summary": "Custom canister event log storage and analysis service",
+        "grant": "25000.0",
+        "icnaming": "ices",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "internet-computer-event-system-(ices)"
     },
     {
         "id": "internet identity",
@@ -2210,6 +3510,26 @@
         "recommend_url": "internet-computer-event-system"
     },
     {
+        "id": "internet-computer-wiki",
+        "title": "Internet Computer Wiki",
+        "summary": "",
+        "grant": "",
+        "icnaming": "internet-computer-wiki",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "internet-computer-wiki"
+    },
+    {
+        "id": "internet-humans",
+        "title": "Internet Humans",
+        "summary": "",
+        "grant": "",
+        "icnaming": "internet-humans",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "internet-humans"
+    },
+    {
         "id": "internet-identity",
         "title": "Internet Identity",
         "summary": "Internet Identity is a smart contract implemented on the Internet Computer blockchain.",
@@ -2238,6 +3558,46 @@
         "type": "reserved",
         "url": "",
         "recommend_url": "internetcomputer"
+    },
+    {
+        "id": "iosg",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "iosg",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "iosg"
+    },
+    {
+        "id": "irving",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "irving",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "irving"
+    },
+    {
+        "id": "isea",
+        "title": "Isea",
+        "summary": "NFT issuance and trading platform",
+        "grant": "25000.0",
+        "icnaming": "isea",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "isea"
+    },
+    {
+        "id": "itoka",
+        "title": "Itoka",
+        "summary": "Decentralized ecosystem for music creation, management, and consumption\"",
+        "grant": "25000.0",
+        "icnaming": "itoka",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "itoka"
     },
     {
         "id": "jan",
@@ -2270,6 +3630,16 @@
         "recommend_url": "java-agent"
     },
     {
+        "id": "java agent for the internet computer",
+        "title": "Java Agent for the Internet Computer",
+        "summary": "Set of native Java libraries for the Internet Computer\"",
+        "grant": "25000.0",
+        "icnaming": "skip",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "java-agent-for-the-internet-computer"
+    },
+    {
         "id": "javaagent",
         "title": "Java Agent",
         "summary": "Java Agent for the Internet Computer is an open source library.",
@@ -2280,6 +3650,26 @@
         "recommend_url": "javaagent"
     },
     {
+        "id": "juicy-kicks",
+        "title": "Juicy Kicks",
+        "summary": "",
+        "grant": "",
+        "icnaming": "juicy-kicks",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "juicy-kicks"
+    },
+    {
+        "id": "kawak",
+        "title": "Kawak",
+        "summary": "Meritocratic writing platform",
+        "grant": "25000.0",
+        "icnaming": "kawak",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "kawak"
+    },
+    {
         "id": "klever.io",
         "title": "Klever.io",
         "summary": "Klever.io non-custodial wallet support of ICP",
@@ -2288,6 +3678,46 @@
         "type": "grant",
         "url": "",
         "recommend_url": "klever.io"
+    },
+    {
+        "id": "kontribute",
+        "title": "Kontribute",
+        "summary": "Interactive storymaking dapp with NFTs",
+        "grant": "25000.0",
+        "icnaming": "kontribute",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "kontribute"
+    },
+    {
+        "id": "kr1",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "kr1",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "kr1"
+    },
+    {
+        "id": "kryptonic",
+        "title": "Kryptonic",
+        "summary": "Video storage and streaming API",
+        "grant": "5000.0",
+        "icnaming": "kryptonic",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "kryptonic"
+    },
+    {
+        "id": "kucoin",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "kucoin",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "kucoin"
     },
     {
         "id": "learnd",
@@ -2370,6 +3800,16 @@
         "recommend_url": "lofiplayer"
     },
     {
+        "id": "lomesh",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "lomesh",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "lomesh"
+    },
+    {
         "id": "marspool",
         "title": "MarsPool",
         "summary": "MarsPool believes all project stakeholders are as important as each other. Investment funds and communities should work side by side on projects, on the same terms, towards the same goals.",
@@ -2388,6 +3828,16 @@
         "type": "grant",
         "url": "",
         "recommend_url": "matoken"
+    },
+    {
+        "id": "meldd",
+        "title": "Meldd",
+        "summary": "Transaction-based multi-party consensus system",
+        "grant": "5000.0",
+        "icnaming": "meldd",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "meldd"
     },
     {
         "id": "meme-cake",
@@ -2410,6 +3860,26 @@
         "recommend_url": "memecake"
     },
     {
+        "id": "messity",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "messity",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "messity"
+    },
+    {
+        "id": "metabox",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "metabox"
+    },
+    {
         "id": "metascore",
         "title": "METASCORE",
         "summary": "Leaderboards and prizes for the DSCVR Season 2 Gaming Hackathon. ",
@@ -2418,6 +3888,16 @@
         "type": "icp123",
         "url": "https://t6ury-eiaaa-aaaaj-qabgq-cai.raw.ic0.app/",
         "recommend_url": "metascore"
+    },
+    {
+        "id": "metasports",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "metasports",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "metasports"
     },
     {
         "id": "metasports basketball",
@@ -2450,6 +3930,16 @@
         "recommend_url": "metaverse"
     },
     {
+        "id": "metaverse ai",
+        "title": "Metaverse AI",
+        "summary": "Avatar NFTs on the Internet Computer",
+        "grant": "25000.0",
+        "icnaming": "skip",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "metaverse-ai"
+    },
+    {
         "id": "metaverse-ai",
         "title": "Metaverse AI",
         "summary": "Digital human and virtual idol on IC",
@@ -2468,6 +3958,56 @@
         "type": "grant",
         "url": "",
         "recommend_url": "metaverseai"
+    },
+    {
+        "id": "michael",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "michael"
+    },
+    {
+        "id": "michaelhunte",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "michaelhunte",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "michaelhunte"
+    },
+    {
+        "id": "michaellee",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "michaellee",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "michaellee"
+    },
+    {
+        "id": "mind bank ai - personal digital twin platform",
+        "title": "Mind Bank Ai - Personal digital twin platform",
+        "summary": "Structured learning algorithms on the IC\"",
+        "grant": "25000.0",
+        "icnaming": "skip",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "mind-bank-ai---personal-digital-twin-platform"
+    },
+    {
+        "id": "mishicat",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "mishicat",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "mishicat"
     },
     {
         "id": "mission",
@@ -2518,6 +4058,16 @@
         "type": "icp123",
         "url": "https://ljyte-qiaaa-aaaah-qaiva-cai.raw.ic0.app/",
         "recommend_url": "modeclub"
+    },
+    {
+        "id": "motoko library",
+        "title": "Motoko Library",
+        "summary": "Motoko library development including sha224, base32, hex, base64, crc32fast",
+        "grant": "5000.0",
+        "icnaming": "motoko-library",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "motoko-library"
     },
     {
         "id": "motoko playground",
@@ -2580,6 +4130,26 @@
         "recommend_url": "mugatunes"
     },
     {
+        "id": "multcoin",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "multcoin",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "multcoin"
+    },
+    {
+        "id": "multicoincapital",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "multicoincapital",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "multicoincapital"
+    },
+    {
         "id": "my status",
         "title": "My Status",
         "summary": "Social media dapp for sharing short daily status updates",
@@ -2588,6 +4158,46 @@
         "type": "grant",
         "url": "",
         "recommend_url": "my-status"
+    },
+    {
+        "id": "near-future",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "near-future",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "near-future"
+    },
+    {
+        "id": "nebulas",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "nebulas",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "nebulas"
+    },
+    {
+        "id": "neo",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "neo",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "neo"
+    },
+    {
+        "id": "network",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "network"
     },
     {
         "id": "newsie",
@@ -2600,6 +4210,16 @@
         "recommend_url": "newsie"
     },
     {
+        "id": "nfcity",
+        "title": "NFciTy",
+        "summary": "",
+        "grant": "",
+        "icnaming": "nfcity",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "nfcity"
+    },
+    {
         "id": "nft english auction",
         "title": "NFT English Auction",
         "summary": "English auction canister and developer tools",
@@ -2610,6 +4230,16 @@
         "recommend_url": "nft-english-auction"
     },
     {
+        "id": "nft karts",
+        "title": "NFT Karts",
+        "summary": "Play2Earn racing game",
+        "grant": "25000.0",
+        "icnaming": "nft-karts",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "nft-karts"
+    },
+    {
         "id": "nft studio",
         "title": "NFT Studio",
         "summary": "<p>NFT Studio is the first to develop 3D NFTs. This means that the NFTs themselves are living 3D code, as opposed to a .GIF recording of a 3D rendered image. This is only possible thanks to the ICP blockchain as NFTs can run code, not just link to an image. NFT Studio has had features in major media for the 3D NFT minting tools that are being built for global creators.</p>",
@@ -2618,6 +4248,16 @@
         "type": "showcase",
         "url": "https://7xw5z-uqaaa-aaaad-qaqcq-cai.raw.ic0.app/",
         "recommend_url": "nft-studio"
+    },
+    {
+        "id": "nft studio and qr gallery (follow-on)",
+        "title": "NFT Studio And QR Gallery (Follow-On)",
+        "summary": "3D NFT minting engine, marketplace, and bridge infrastructure\"",
+        "grant": "25000.0",
+        "icnaming": "skip",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "nft-studio-and-qr-gallery-(follow-on)"
     },
     {
         "id": "nft studio marketplace",
@@ -2660,6 +4300,26 @@
         "recommend_url": "nft-studio"
     },
     {
+        "id": "nftanvil",
+        "title": "NFTAnvil",
+        "summary": "NFT tooling and infrastructure",
+        "grant": "25000.0",
+        "icnaming": "nftanvil",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "nftanvil"
+    },
+    {
+        "id": "nftgaga",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "nftgaga",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "nftgaga"
+    },
+    {
         "id": "nftstudio",
         "title": "NFT Studio",
         "summary": "NFT Studio allows users to Mint, Buy, Sell and Stake 3DWASM NFTs on the Internet Computer",
@@ -2678,6 +4338,26 @@
         "type": "icp123",
         "url": "https://nntkg-vqaaa-aaaad-qamfa-cai.ic.fleek.co/",
         "recommend_url": "nftvillage"
+    },
+    {
+        "id": "nftweb3",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "nftweb3",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "nftweb3"
+    },
+    {
+        "id": "nick",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "nick",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "nick"
     },
     {
         "id": "nns",
@@ -2748,6 +4428,36 @@
         "type": "grant",
         "url": "",
         "recommend_url": "nuance"
+    },
+    {
+        "id": "og-medals",
+        "title": "OG Medals",
+        "summary": "",
+        "grant": "",
+        "icnaming": "og-medals",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "og-medals"
+    },
+    {
+        "id": "okex",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "okex",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "okex"
+    },
+    {
+        "id": "okx",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "okx",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "okx"
     },
     {
         "id": "open assessment platform",
@@ -2830,6 +4540,26 @@
         "recommend_url": "osmosis"
     },
     {
+        "id": "outliers",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "outliers",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "outliers"
+    },
+    {
+        "id": "outliersfund",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "outliersfund",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "outliersfund"
+    },
+    {
         "id": "overchute",
         "title": "Overchute",
         "summary": "Blind crowdsale protocol for intellectual property",
@@ -2838,6 +4568,36 @@
         "type": "grant",
         "url": "",
         "recommend_url": "overchute"
+    },
+    {
+        "id": "paka",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "paka",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "paka"
+    },
+    {
+        "id": "parallel",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "parallel",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "parallel"
+    },
+    {
+        "id": "parallelventures",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "parallelventures",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "parallelventures"
     },
     {
         "id": "party board",
@@ -2858,6 +4618,46 @@
         "type": "icapp",
         "url": "https://www.partyboard.org/",
         "recommend_url": "partyboard"
+    },
+    {
+        "id": "paul",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "paul",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "paul"
+    },
+    {
+        "id": "paulyoung",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "paulyoung",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "paulyoung"
+    },
+    {
+        "id": "payments",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "payments"
+    },
+    {
+        "id": "peacock",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "peacock"
     },
     {
         "id": "perun channels on the internet computer",
@@ -2920,6 +4720,16 @@
         "recommend_url": "pokedstudio-bots"
     },
     {
+        "id": "polychain",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "polychain",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "polychain"
+    },
+    {
         "id": "portal",
         "title": "PORTAL",
         "summary": "Live streaming app with WebRTC",
@@ -2928,6 +4738,46 @@
         "type": "grant",
         "url": "",
         "recommend_url": "portal"
+    },
+    {
+        "id": "preangle",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "preangle",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "preangle"
+    },
+    {
+        "id": "prixelart",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "prixelart",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "prixelart"
+    },
+    {
+        "id": "prixelart",
+        "title": "Prixelart",
+        "summary": "Decentralized photography hub",
+        "grant": "25000.0",
+        "icnaming": "skip",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "prixelart"
+    },
+    {
+        "id": "prixers",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "prixers",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "prixers"
     },
     {
         "id": "project-txa",
@@ -2960,6 +4810,16 @@
         "recommend_url": "puzzle"
     },
     {
+        "id": "pythiania",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "pythiania",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "pythiania"
+    },
+    {
         "id": "python agent",
         "title": "Python Agent",
         "summary": "<p>This Python Agent built for the Internet Computer opens the door for Python developers to more easily become Web3 builders. Featuring basic modules to interact with canisters on the Internet Computer, this Agent, still under development, was a prize winner at the Warpspeed Internet Computer ecosystem hackathon in China.</p>",
@@ -2980,6 +4840,36 @@
         "recommend_url": "qr-gallery"
     },
     {
+        "id": "quark",
+        "title": "Quark",
+        "summary": "Open internet service facilitating payments on the Internet Computer\"",
+        "grant": "25000.0",
+        "icnaming": "quark",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "quark"
+    },
+    {
+        "id": "radius",
+        "title": "Radius",
+        "summary": "Decentralized physical community organizing and moderation",
+        "grant": "5000.0",
+        "icnaming": "radius",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "radius"
+    },
+    {
+        "id": "raisinrank",
+        "title": "raisinrank",
+        "summary": "",
+        "grant": "",
+        "icnaming": "raisinrank",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "raisinrank"
+    },
+    {
         "id": "ratels",
         "title": "Ratels",
         "summary": "The most personalized crypto wallet on the Internet Computer.",
@@ -2988,6 +4878,16 @@
         "type": "icp123",
         "url": "https://Ratels.app/",
         "recommend_url": "ratels"
+    },
+    {
+        "id": "raver",
+        "title": "Raver",
+        "summary": "Decentralized social network and DAO",
+        "grant": "25000.0",
+        "icnaming": "raver",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "raver"
     },
     {
         "id": "relation",
@@ -3040,6 +4940,16 @@
         "recommend_url": "rocklabs"
     },
     {
+        "id": "rust libraries for ic devs",
+        "title": "Rust libraries for IC Devs",
+        "summary": "Stable memory collections, task scheduler, and event-based pub/sub",
+        "grant": "50000.0",
+        "icnaming": "rust-libraries-for-ic-devs",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "rust-libraries-for-ic-devs"
+    },
+    {
         "id": "saga",
         "title": "Saga",
         "summary": "The Legends Series of NFTs goes beyond aesthetics and status, confering lasting benefits and power in the Saga Tarot economy. The series is comprised of one limited edition release for each of the 21 Major Arcana in the traditional Tarot deck. One hundred cards with exclusive art will be minted for each public release, and releases will occur every two weeks.",
@@ -3080,6 +4990,66 @@
         "recommend_url": "sailfish"
     },
     {
+        "id": "sauveur publishing",
+        "title": "Sauveur Publishing",
+        "summary": "Decentralized writing platform",
+        "grant": "5000.0",
+        "icnaming": "sauveur",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "sauveur-publishing"
+    },
+    {
+        "id": "savior",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "savior",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "savior"
+    },
+    {
+        "id": "scalar",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "scalar",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "scalar"
+    },
+    {
+        "id": "scalarcapital",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "scalarcapital",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "scalarcapital"
+    },
+    {
+        "id": "scinet",
+        "title": "SCINET",
+        "summary": "Decentralized life sciences research and investment platform",
+        "grant": "25000.0",
+        "icnaming": "scinet",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "scinet"
+    },
+    {
+        "id": "secrets of the midgaard planet",
+        "title": "Secrets of the Midgaard Planet",
+        "summary": "Play to Earn NFT-based card game",
+        "grant": "25000.0",
+        "icnaming": "secrets-of-the-midgaard-planet",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "secrets-of-the-midgaard-planet"
+    },
+    {
         "id": "shelf",
         "title": "SHELF",
         "summary": "\"Phygital\" streaming service using NFTs",
@@ -3090,6 +5060,66 @@
         "recommend_url": "shelf"
     },
     {
+        "id": "shelf (follow-on)",
+        "title": "SHELF (Follow-On)",
+        "summary": "\"Phygital\" streaming service using NFTs",
+        "grant": "100000.0",
+        "icnaming": "skip",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "shelf-(follow-on)"
+    },
+    {
+        "id": "shine",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "shine",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "shine"
+    },
+    {
+        "id": "shinemine",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "shinemine",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "shinemine"
+    },
+    {
+        "id": "sh\u014dbai global",
+        "title": "Sh\u014dbai Global",
+        "summary": "Decentralized marketplace for new and used clothing",
+        "grant": "25000.0",
+        "icnaming": "shobai-global",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "sh\u014dbai-global"
+    },
+    {
+        "id": "simdi",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "simdi",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "simdi"
+    },
+    {
+        "id": "simplifireic",
+        "title": "SimplifireIC",
+        "summary": "Decentralized contract management",
+        "grant": "25000.0",
+        "icnaming": "simplifireic",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "simplifireic"
+    },
+    {
         "id": "skydocs",
         "title": "SkyDocs",
         "summary": "Real-time document collaboration and storage",
@@ -3098,6 +5128,16 @@
         "type": "grant",
         "url": "",
         "recommend_url": "skydocs"
+    },
+    {
+        "id": "sling",
+        "title": "Sling",
+        "summary": "Secure, decentralised personal data store and utiliser",
+        "grant": "5000.0",
+        "icnaming": "sling",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "sling"
     },
     {
         "id": "sly",
@@ -3140,6 +5180,16 @@
         "recommend_url": "sns"
     },
     {
+        "id": "snz",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "snz",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "snz"
+    },
+    {
         "id": "sonic",
         "title": "Sonic",
         "summary": "Swap tokens, earn fees as a liquidity provider, & build on the Internet Computer\u2019s AMM.",
@@ -3150,6 +5200,56 @@
         "recommend_url": "sonic"
     },
     {
+        "id": "spare",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "spare",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "spare"
+    },
+    {
+        "id": "sparebytes",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "sparebytes",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "sparebytes"
+    },
+    {
+        "id": "spark",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "spark",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "spark"
+    },
+    {
+        "id": "sparkcapital",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "sparkcapital",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "sparkcapital"
+    },
+    {
+        "id": "sparkdigitalcapital",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "sparkdigitalcapital",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "sparkdigitalcapital"
+    },
+    {
         "id": "speeqo",
         "title": "SPEEQO",
         "summary": "Voice-based machine learning and voice analysis",
@@ -3158,6 +5258,16 @@
         "type": "grant",
         "url": "",
         "recommend_url": "speeqo"
+    },
+    {
+        "id": "springwind",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "springwind",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "springwind"
     },
     {
         "id": "stoic wallet",
@@ -3210,6 +5320,26 @@
         "recommend_url": "sushiswap-front-end"
     },
     {
+        "id": "svangel",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "svangel",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "svangel"
+    },
+    {
+        "id": "synths",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "synths",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "synths"
+    },
+    {
         "id": "tacen",
         "title": "Tacen",
         "summary": "Building the next generation of crypto exchanges.",
@@ -3228,6 +5358,16 @@
         "type": "icapp",
         "url": "http://taggr.top/",
         "recommend_url": "taggr"
+    },
+    {
+        "id": "team-bonsai",
+        "title": "Team Bonsai",
+        "summary": "",
+        "grant": "",
+        "icnaming": "team-bonsai",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "team-bonsai"
     },
     {
         "id": "terabethia",
@@ -3270,6 +5410,16 @@
         "recommend_url": "texas-poker"
     },
     {
+        "id": "the island collective",
+        "title": "The Island Collective",
+        "summary": "Immersive VR spaces on the Internet Computer",
+        "grant": "100000.0",
+        "icnaming": "the-island-collective",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "the-island-collective"
+    },
+    {
         "id": "the video canister",
         "title": "The video canister",
         "summary": "Video streaming infrastructure for developers",
@@ -3298,6 +5448,16 @@
         "type": "icapp",
         "url": "",
         "recommend_url": "the-ic-gallery"
+    },
+    {
+        "id": "the-island-collective",
+        "title": "The Island Collective",
+        "summary": "",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "icapp",
+        "url": "",
+        "recommend_url": "the-island-collective"
     },
     {
         "id": "the-nft-village",
@@ -3348,6 +5508,16 @@
         "type": "icp123",
         "url": "https://theswordnft.com/",
         "recommend_url": "theswordnft"
+    },
+    {
+        "id": "threearrows",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "threearrows",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "threearrows"
     },
     {
         "id": "thuba",
@@ -3470,6 +5640,36 @@
         "recommend_url": "unite"
     },
     {
+        "id": "unity",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "unity",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "unity"
+    },
+    {
+        "id": "unity3d",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "unity3d",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "unity3d"
+    },
+    {
+        "id": "unreal",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "unreal",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "unreal"
+    },
+    {
         "id": "usergeek",
         "title": "Usergeek",
         "summary": "Product analytics tool for IC dapp developers",
@@ -3478,6 +5678,66 @@
         "type": "grant",
         "url": "",
         "recommend_url": "usergeek"
+    },
+    {
+        "id": "verific",
+        "title": "Verific",
+        "summary": "Discord bot for NFT projects",
+        "grant": "5000.0",
+        "icnaming": "verific",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "verific"
+    },
+    {
+        "id": "videate",
+        "title": "Videate",
+        "summary": "Engagement and monetization platform for video creators",
+        "grant": "25000.0",
+        "icnaming": "videate",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "videate"
+    },
+    {
+        "id": "viewar by wearfits",
+        "title": "ViewAR by WEARFITS",
+        "summary": "AR-ready 3D assets for the fashion industry",
+        "grant": "25000.0",
+        "icnaming": "viewar-by-wearfits",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "viewar-by-wearfits"
+    },
+    {
+        "id": "village",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "skip",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "village"
+    },
+    {
+        "id": "villageglobal",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "villageglobal",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "villageglobal"
+    },
+    {
+        "id": "vincrypto",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "vincrypto",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "vincrypto"
     },
     {
         "id": "waterslide",
@@ -3520,6 +5780,36 @@
         "recommend_url": "weact.chat"
     },
     {
+        "id": "weave",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "weave",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "weave"
+    },
+    {
+        "id": "weavers",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "weavers",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "weavers"
+    },
+    {
+        "id": "web3r.chat",
+        "title": "web3r.chat",
+        "summary": "Rasa chatbots on the IC",
+        "grant": "25000.0",
+        "icnaming": "web3r-chat",
+        "type": "grant",
+        "url": "",
+        "recommend_url": "web3r.chat"
+    },
+    {
         "id": "webi-ai",
         "title": "Webi Ai",
         "summary": "We make decentralized technological solutions for a decentralized technological world.",
@@ -3560,6 +5850,16 @@
         "recommend_url": "welcome-into-the-metaverse"
     },
     {
+        "id": "wicp",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "wicp",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "wicp"
+    },
+    {
         "id": "wild and west",
         "title": "Wild and West",
         "summary": "<p>Wild and West NFTs were featured at the 2021 NFT NYC event, as well as showcased at the ICONIC NFT Art Gallery hosted by the DFINITY Foundation and Toniq Labs. Wild and West NFTs are the backbone of a few different cross-blockchain projects being led by the creative studio. Bridging native components of the Ethereum and Internet Computer blockchains to make an immersive experience for NFT holders. </p>",
@@ -3578,6 +5878,16 @@
         "type": "icapp",
         "url": "https://wildandwest.com/",
         "recommend_url": "wild-and-west-nft"
+    },
+    {
+        "id": "wind",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "wind",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "wind"
     },
     {
         "id": "wrapped-trillion-cycles",
@@ -3610,6 +5920,26 @@
         "recommend_url": "xrfoundation---xrengine,-blockchain-in-a-box,-digital-beings"
     },
     {
+        "id": "xtc",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "xtc",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "xtc"
+    },
+    {
+        "id": "ygg",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "ygg",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "ygg"
+    },
+    {
         "id": "yolo-club",
         "title": "Yolo Club",
         "summary": "#YoloOctopus is collection of 8888 Intelligently generated NFTs on the Internet Computer blockchain.",
@@ -3618,5 +5948,15 @@
         "type": "icp123",
         "url": "https://enteryoloclub.com/",
         "recommend_url": "yolo-club"
+    },
+    {
+        "id": "young",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "young",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "young"
     }
 ]

@@ -1,4 +1,4 @@
-use candid::{decode_args, encode_args, Principal};
+use candid::{decode_args, encode_args};
 
 use common::constants::{DEFAULT_MAX_REGISTRATION_YEAR, DEFAULT_MIN_REGISTRATION_YEAR};
 use common::state::StableState;

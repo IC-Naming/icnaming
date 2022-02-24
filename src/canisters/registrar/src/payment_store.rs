@@ -37,12 +37,12 @@ impl StableState for PaymentStore {
             &self.payment_version,
             &self.last_ledger_sync_timestamp_nanos,
         ))
-        .unwrap()
+            .unwrap()
     }
 
     fn decode(bytes: Vec<u8>) -> Result<Self, String> {
         #[allow(clippy::type_complexity)]
-        let (payment_version, last_ledger_sync_timestamp_nanos): (Option<u64>, u64) =
+            let (payment_version, last_ledger_sync_timestamp_nanos): (Option<u64>, u64) =
             decode_args(&bytes).unwrap();
 
         Ok(PaymentStore {

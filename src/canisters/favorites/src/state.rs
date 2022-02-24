@@ -3,15 +3,16 @@ use std::cell::RefCell;
 use std::sync::Once;
 
 use candid::{decode_args, encode_args};
-use common::ic_logger::ICLogger;
-use common::named_canister_ids::ensure_current_canister_id_match;
-use common::named_canister_ids::CANISTER_NAME_FAVORITES;
 use ic_cdk::{api, storage};
 use ic_cdk_macros::*;
 use log::info;
 
-use crate::user_favorite_store::UserFavoriteStore;
+use common::ic_logger::ICLogger;
+use common::named_canister_ids::ensure_current_canister_id_match;
+use common::named_canister_ids::CANISTER_NAME_FAVORITES;
 use common::state::StableState;
+
+use crate::user_favorite_store::UserFavoriteStore;
 
 thread_local! {
     pub static STATE : State = State::default();

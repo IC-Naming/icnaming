@@ -1,9 +1,9 @@
 use candid::Principal;
 use rstest::*;
+
 use test_common::ic_api::init_test;
 use test_common::user::*;
 
-use crate::quota_order_store::PaymentMemo::ICP;
 use crate::quota_order_store::{
     ICPMemo, PaymentMemo, PaymentType, QuotaOrderPayment, QuotaOrderStore,
 };
@@ -17,7 +17,7 @@ fn empty_quote_order_manager(_init_test: ()) -> QuotaOrderStore {
 
 #[fixture]
 fn quote_order_manager_with_one_order(
-    empty_quote_order_manager: QuotaOrderStore,
+    _empty_quote_order_manager: QuotaOrderStore,
     mock_user1: Principal,
     mock_user2: Principal,
     mock_user3: Principal,
@@ -107,10 +107,11 @@ fn test_add_order_failed_with_pending(
 }
 
 mod memory {
-    use super::*;
-    use crate::quota_order_store::ICPMemo;
     use log::info;
-    use num_bigint::BigUint;
+
+    use crate::quota_order_store::ICPMemo;
+
+    use super::*;
 
     #[rstest]
     fn test_name_order_many(_init_test: ()) {
@@ -123,7 +124,7 @@ mod memory {
 
             for index in 0..*count {
                 let created_user = mock_user(index);
-                let mut details = HashMap::new();
+                let details = HashMap::new();
                 let created_at = u64::MAX - 1;
                 let payment_id = 123;
                 let payment_type = PaymentType::ICP;

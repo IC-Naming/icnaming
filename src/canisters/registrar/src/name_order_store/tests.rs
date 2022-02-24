@@ -1,13 +1,17 @@
-use super::*;
 use rstest::*;
+
 use test_common::ic_api::init_test;
 use test_common::user::*;
 
+use super::*;
+
 mod memory {
-    use super::*;
-    use crate::quota_order_store::ICPMemo;
     use log::info;
     use num_bigint::BigUint;
+
+    use crate::quota_order_store::ICPMemo;
+
+    use super::*;
 
     #[rstest]
     fn test_name_order_many(_init_test: ()) {

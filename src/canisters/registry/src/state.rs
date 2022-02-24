@@ -3,18 +3,19 @@ use std::cell::RefCell;
 use std::sync::Once;
 
 use candid::{decode_args, encode_args};
+use ic_cdk::{api, storage};
+use ic_cdk_macros::*;
+use log::info;
+
 use common::ic_logger::ICLogger;
 use common::named_canister_ids::{
     ensure_current_canister_id_match, get_named_get_canister_id, CANISTER_NAME_REGISTRAR,
     CANISTER_NAME_REGISTRY,
 };
-use ic_cdk::{api, storage};
-use ic_cdk_macros::*;
-use log::info;
+use common::state::StableState;
 
 use crate::registry_store::RegistryStore;
 use crate::service::RegistriesService;
-use common::state::StableState;
 
 thread_local! {
     pub static STATE : State = State::default();

@@ -13,7 +13,6 @@ use common::dto::IRegistryUsers;
 use common::errors::*;
 use common::ic_api::wrapper::ICStaticApi;
 use common::ic_api::IRequestContext;
-use common::icnaming_ledger_types::PaymentAccountId;
 use common::metrics_encoder::MetricsEncoder;
 
 use crate::coinaddress::{validate_btc_address, validate_ltc_address};

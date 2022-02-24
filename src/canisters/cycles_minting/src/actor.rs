@@ -1,4 +1,4 @@
-use candid::{candid_method};
+use candid::candid_method;
 use ic_cdk::api;
 use ic_cdk_macros::*;
 

@@ -1,13 +1,16 @@
-use crate::user_quota_store::QuotaType;
-use candid::{decode_args, encode_args};
-use common::state::StableState;
-use flate2::read::ZlibDecoder;
-use ic_cdk::export::Principal;
-use ic_crypto_sha256::Sha256;
-use log::{debug, info};
 use std::collections::HashSet;
 use std::io::Read;
 use std::str::FromStr;
+
+use candid::{decode_args, encode_args};
+use flate2::read::ZlibDecoder;
+use ic_cdk::export::Principal;
+use ic_crypto_sha256::Sha256;
+use log::debug;
+
+use common::state::StableState;
+
+use crate::user_quota_store::QuotaType;
 
 #[derive(Default)]
 pub struct QuotaImportStore {
@@ -90,5 +93,9 @@ impl StableState for QuotaImportStore {
 }
 
 // -- auto-generated START ACCEPTABLE_HASHES build.rs --
-pub const ACCEPTABLE_HASHES: &[&str] = &["af7619170a528b2ef642224d133297ce3756da745fa4cd84075b59f224e7ab9b", "64e72c990a42af6aaf4def6d20b04b827bc302c695efff6d101d39576a6e0232", "fdcbd2e084ffc0ad0211bdffa818f3a2d3b70e4652742239e94d6f79c484696e"];
+pub const ACCEPTABLE_HASHES: &[&str] = &[
+    "af7619170a528b2ef642224d133297ce3756da745fa4cd84075b59f224e7ab9b",
+    "64e72c990a42af6aaf4def6d20b04b827bc302c695efff6d101d39576a6e0232",
+    "fdcbd2e084ffc0ad0211bdffa818f3a2d3b70e4652742239e94d6f79c484696e",
+];
 // -- auto-generated END ACCEPTABLE_HASHES build.rs --
