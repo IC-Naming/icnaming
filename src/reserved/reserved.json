@@ -1934,7 +1934,7 @@
         "title": "Freedom",
         "summary": "",
         "grant": "",
-        "icnaming": "freedom",
+        "icnaming": "skip",
         "type": "icapp",
         "url": "",
         "recommend_url": "freedom"
@@ -3244,7 +3244,7 @@
         "title": "ICPverse",
         "summary": "",
         "grant": "",
-        "icnaming": "icpverse",
+        "icnaming": "skip",
         "type": "icapp",
         "url": "",
         "recommend_url": "icpverse"
@@ -3254,7 +3254,7 @@
         "title": "ICPxy",
         "summary": "",
         "grant": "",
-        "icnaming": "icpverse",
+        "icnaming": "icpxy",
         "type": "icapp",
         "url": "",
         "recommend_url": "icpxy"
