@@ -37,6 +37,11 @@ type VerifyPaymentResponse =
         PaymentNotFound;
     };
 
+type SyncICPPaymentRequest =
+    record {
+        block_height: BlockHeight;
+    };
+
 type RefundPaymentRequest =
     record {
         payment_id: PaymentId;
@@ -77,6 +82,7 @@ type Stats =
 service : {
     add_payment: (AddPaymentRequest) -> (AddPaymentResponse);
     verify_payment: (VerifyPaymentRequest) -> (VerifyPaymentResponse) query;
+    sync_icp_payment: (SyncICPPaymentRequest) -> (VerifyPaymentResponse);
     get_stats: () -> (Stats) query;
     refund_payment: (RefundPaymentRequest) -> (RefundPaymentResponse);
     add_stable_asset: (asset: blob) -> ();

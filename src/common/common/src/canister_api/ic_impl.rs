@@ -99,6 +99,18 @@ impl IICNamingLedgerApi for ICNamingLedgerApi {
         )
         .await
     }
+
+    async fn sync_icp_payment(
+        &self,
+        request: SyncICPPaymentRequest,
+    ) -> ICNSActorResult<VerifyPaymentResponse> {
+        call_canister_as_result(
+            CANISTER_NAME_ICNAMING_LEDGER,
+            "sync_icp_payment",
+            (request,),
+        )
+        .await
+    }
 }
 
 pub struct CyclesMintingApi;

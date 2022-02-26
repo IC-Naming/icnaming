@@ -7,7 +7,6 @@ use ic_cdk::call;
 use log::{debug, error};
 use serde::Deserialize;
 
-
 use crate::cycles_minting_types::IcpXdrConversionRateCertifiedResponse;
 use crate::dto::*;
 use crate::errors::{ErrorInfo, ICNSActorResult, ICNSError};
@@ -132,6 +131,10 @@ pub trait IICNamingLedgerApi {
         &self,
         request: RefundPaymentRequest,
     ) -> ICNSActorResult<RefundPaymentResponse>;
+    async fn sync_icp_payment(
+        &self,
+        request: SyncICPPaymentRequest,
+    ) -> ICNSActorResult<VerifyPaymentResponse>;
 }
 
 #[async_trait]

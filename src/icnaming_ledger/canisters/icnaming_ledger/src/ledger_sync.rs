@@ -51,7 +51,7 @@ async fn sync_transactions_within_lock() -> Result<u32, String> {
             let blocks_count = blocks.len() as u32;
             for (block_height, block) in blocks.into_iter() {
                 let transaction = block.transaction().into_owned();
-                let result = store.append_transaction(
+                let result = store.try_sync_transaction(
                     transaction.transfer,
                     transaction.memo,
                     block_height,
@@ -73,7 +73,7 @@ fn get_block_height_synced_up_to() -> Option<BlockHeight> {
     STATE.with(|s| s.payments_store.borrow().get_block_height_synced_up_to())
 }
 
-async fn get_blocks(
+pub async fn get_blocks(
     from: BlockHeight,
     tip_of_chain: BlockHeight,
 ) -> Result<Vec<(BlockHeight, Block)>, String> {

@@ -35,13 +35,14 @@ export const idlFactory = ({ IDL }) => {
     'PaymentNotFound' : IDL.Null,
     'RefundFailed' : IDL.Null,
   });
-  const VerifyPaymentRequest = IDL.Record({ 'payment_id' : PaymentId });
+  const SyncICPPaymentRequest = IDL.Record({ 'block_height' : BlockHeight });
   const Timestamp = IDL.Record({ 'timestamp_nanos' : IDL.Nat64 });
   const VerifyPaymentResponse = IDL.Variant({
     'Paid' : IDL.Record({ 'paid_at' : Timestamp }),
     'PaymentNotFound' : IDL.Null,
     'NeedMore' : IDL.Record({ 'received_amount' : ICPTs, 'amount' : ICPTs }),
   });
+  const VerifyPaymentRequest = IDL.Record({ 'payment_id' : PaymentId });
   return IDL.Service({
     'add_payment' : IDL.Func([AddPaymentRequest], [AddPaymentResponse], []),
     'add_stable_asset' : IDL.Func([IDL.Vec(IDL.Nat8)], [], []),
@@ -49,6 +50,11 @@ export const idlFactory = ({ IDL }) => {
     'refund_payment' : IDL.Func(
         [RefundPaymentRequest],
         [RefundPaymentResponse],
+        [],
+      ),
+    'sync_icp_payment' : IDL.Func(
+        [SyncICPPaymentRequest],
+        [VerifyPaymentResponse],
         [],
       ),
     'verify_payment' : IDL.Func(

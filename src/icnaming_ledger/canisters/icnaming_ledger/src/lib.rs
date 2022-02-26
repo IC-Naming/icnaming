@@ -11,19 +11,20 @@ use dfn_core::stable::get;
 use dfn_core::{api, api::trap_with, over, over_async, over_init, stable};
 use ic_base_types::{CanisterId, PrincipalId};
 use ic_types::messages::RawHttpRequestVal::Array;
-use ledger_canister::{AccountIdentifier, BlockHeight, Subaccount};
+use ledger_canister::{AccountIdentifier, BlockHeight, Subaccount, Transfer};
 use serde::{Deserialize, Serialize};
 
 use crate::canisters::ledger::send;
 use crate::constants::QUOTA_ORDER_RECEIVE_SUBACCOUNT_FIRST_BYTE;
+use crate::ledger_sync::get_blocks;
 use crate::named_canister_ids::{
     ensure_current_canister_id_match, get_named_get_canister_id, CANISTER_NAME_ICNAMING_LEDGER,
     CANISTER_NAME_REGISTRAR,
 };
 use crate::payments_store::{
     get_now, AddPaymentRequest, AddPaymentResponse, GetTipOfLedgerRequest, GetTipOfLedgerResponse,
-    RefundPaymentRequest, RefundPaymentResponse, Stats, VerifyPaymentRequest,
-    VerifyPaymentResponse,
+    RefundPaymentRequest, RefundPaymentResponse, Stats, SyncICPPaymentRequest,
+    VerifyPaymentRequest, VerifyPaymentResponse,
 };
 use crate::periodic_tasks_runner::run_periodic_tasks;
 use crate::state::{StableState, State, STATE};
@@ -144,6 +145,29 @@ fn verify_payment_impl(request: VerifyPaymentRequest) -> VerifyPaymentResponse {
     STATE.with(|s| {
         let s = s.payments_store.borrow();
         s.verify_payment(request)
+    })
+}
+
+#[export_name = "canister_update sync_icp_payment"]
+pub fn sync_icp_payment() {
+    over_async(candid_one, sync_icp_payment_impl);
+}
+
+async fn sync_icp_payment_impl(request: SyncICPPaymentRequest) -> VerifyPaymentResponse {
+    assert!(request.block_height > 0);
+    let blocks = get_blocks(request.block_height, request.block_height)
+        .await
+        .unwrap();
+    let (height, block) = blocks.first().unwrap().clone();
+    STATE.with(|s| {
+        let mut s = s.payments_store.borrow_mut();
+        let result = s.sync_icp_payment(
+            height,
+            block.transaction.transfer,
+            block.transaction.memo,
+            block.transaction.created_at_time,
+        );
+        result
     })
 }
 
