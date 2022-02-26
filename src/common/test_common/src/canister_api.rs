@@ -56,7 +56,7 @@ impl IICNamingLedgerApi for ICNamingLedgerApi {
     async fn verify_payment(&self, request: VerifyPaymentRequest) -> ICNSActorResult<VerifyPaymentResponse>;
     async fn get_tip_of_ledger(&self, request: GetTipOfLedgerRequest) -> ICNSActorResult<GetTipOfLedgerResponse>;
     async fn refund_payment(&self, request: RefundPaymentRequest) -> ICNSActorResult<RefundPaymentResponse>;
-    async fn sync_icp_payment(&self, request: SyncICPPaymentRequest) -> ICNSActorResult<VerifyPaymentResponse>;
+    async fn sync_icp_payment(&self, request: SyncICPPaymentRequest) -> ICNSActorResult<SyncICPPaymentResponse>;
 }
 }
 

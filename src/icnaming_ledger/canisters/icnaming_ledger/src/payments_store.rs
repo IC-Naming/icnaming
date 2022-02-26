@@ -124,6 +124,12 @@ pub struct SyncICPPaymentRequest {
 }
 
 #[derive(CandidType, Deserialize)]
+pub struct SyncICPPaymentResponse {
+    pub payment_id: Option<PaymentId>,
+    pub verify_payment_response: Option<VerifyPaymentResponse>,
+}
+
+#[derive(CandidType, Deserialize)]
 pub struct GetTipOfLedgerRequest;
 
 #[derive(CandidType, Deserialize)]
@@ -216,7 +222,7 @@ impl PaymentsStore {
                         "Transaction {} already exists. skipping transaction",
                         payment_id
                     ));
-                    return false;
+                    return true;
                 }
 
                 if payment.transactions_last5.len() > 5 {
@@ -347,10 +353,22 @@ impl PaymentsStore {
         transfer: Transfer,
         memo: Memo,
         timestamp: TimeStamp,
-    ) -> VerifyPaymentResponse {
+    ) -> SyncICPPaymentResponse {
         let payment_id = memo.0.clone();
-        self.accept_transaction(transfer, memo, block_height, timestamp);
-        self.verify_payment(VerifyPaymentRequest { payment_id })
+        let accepted = self.accept_transaction(transfer, memo, block_height, timestamp);
+        if accepted {
+            SyncICPPaymentResponse {
+                payment_id: Some(payment_id),
+                verify_payment_response: Some(
+                    self.verify_payment(VerifyPaymentRequest { payment_id }),
+                ),
+            }
+        } else {
+            SyncICPPaymentResponse {
+                payment_id: None,
+                verify_payment_response: None,
+            }
+        }
     }
 
     pub fn post_refund_send(&mut self, request: &RefundPaymentRequest) {

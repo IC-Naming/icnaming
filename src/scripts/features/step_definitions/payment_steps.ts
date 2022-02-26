@@ -10,6 +10,7 @@ import {
 import {
     AddPaymentResponse,
     RefundPaymentResponse,
+    SyncICPPaymentResponse,
     VerifyPaymentResponse
 } from "~/declarations/icnaming_ledger/icnaming_ledger.did";
 import {assert, expect} from 'chai';
@@ -23,7 +24,7 @@ import logger from "node-color-log";
 let global_payment_result: AddPaymentResponse;
 let global_verify_payment_response: VerifyPaymentResponse;
 let global_refund_payment_response: RefundPaymentResponse;
-let global_sync_icp_payment_response: VerifyPaymentResponse;
+let global_sync_icp_payment_response: SyncICPPaymentResponse;
 
 
 const quota_order_payment_receiver_account_id = get_quota_order_payment_receiver_subaccount_id();
@@ -164,13 +165,23 @@ Then(/^Sync ICP payment with block height "([^"]*)"$/,
     });
 Then(/^Sync ICP payment status is "([^"]*)"$/,
     function (status: string) {
-        assert.ok(status in global_sync_icp_payment_response, `sync_icp_payment_result is ${JSON.stringify(global_sync_icp_payment_response)}`);
+        if (global_sync_icp_payment_response.verify_payment_response.length > 0) {
+            let resp = global_sync_icp_payment_response.verify_payment_response[0] as VerifyPaymentResponse
+            assert.ok(status in resp, `sync_icp_payment_result is ${JSON.stringify(global_sync_icp_payment_response)}`);
+        } else {
+            expect.fail(`sync_icp_payment_result status is expected, object: ${JSON.stringify(global_sync_icp_payment_response)}`);
+        }
     });
 Then(/^Sync ICP payment received_amount is "([^"]*)"$/,
     function (amount: string) {
-        if ('NeedMore' in global_sync_icp_payment_response) {
-            expect(global_sync_icp_payment_response.NeedMore.received_amount.e8s).to.equal(toICPe8s(amount));
+        if (global_sync_icp_payment_response.verify_payment_response.length > 0) {
+            let resp = global_sync_icp_payment_response.verify_payment_response[0] as VerifyPaymentResponse
+            if ('NeedMore' in resp) {
+                expect(resp.NeedMore.received_amount.e8s).to.equal(toICPe8s(amount));
+            } else {
+                expect.fail(`sync_icp_payment_result is ${JSON.stringify(global_sync_icp_payment_response)}`);
+            }
         } else {
-            assert.fail(`global_verify_payment_response is not a NeedMore object: ${JSON.stringify(global_sync_icp_payment_response)}`);
+            expect.fail(`sync_icp_payment_result is ${JSON.stringify(global_sync_icp_payment_response)}`);
         }
     });

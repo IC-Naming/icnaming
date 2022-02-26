@@ -92,7 +92,13 @@ pub struct VerifyPaymentRequest {
 
 #[derive(CandidType, Deserialize, Serialize, Debug, Eq, PartialEq)]
 pub struct SyncICPPaymentRequest {
-    block_height: BlockHeight,
+    pub block_height: BlockHeight,
+}
+
+#[derive(CandidType, Deserialize, Serialize, Debug, Eq, PartialEq)]
+pub struct SyncICPPaymentResponse {
+    pub payment_id: Option<PaymentId>,
+    pub verify_payment_response: Option<VerifyPaymentResponse>,
 }
 
 #[derive(CandidType, Deserialize)]

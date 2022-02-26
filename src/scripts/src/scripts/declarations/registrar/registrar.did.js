@@ -133,6 +133,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'available' : IDL.Func([IDL.Text], [BooleanActorResponse], ['query']),
     'cancel_order' : IDL.Func([], [BooleanActorResponse], []),
+    'confirm_pay_order' : IDL.Func([IDL.Nat64], [BooleanActorResponse], []),
     'export_state' : IDL.Func([], [StateExportResponse], []),
     'get_all_details' : IDL.Func(
         [GetPageInput],

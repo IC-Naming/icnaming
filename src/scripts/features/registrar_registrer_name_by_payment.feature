@@ -31,11 +31,22 @@ Feature: Register a name with payment
       | 12345678.icp | 3     | 300_000_000      | LenGte(7)  |
       | 1234567.icp  | 3     | 300_000_000      | LenGte(7)  |
 
-
   Scenario: Pay enough to my pending order
     Given I submit a order to register name "what-a-nice-day.icp" for "3" years
     When Pay for my pending order with amount "3 icp"
     And Wait for payment version increased with "1"
+    Then I found there is no pending order
+    And get_details "what-a-nice-day.icp" result is
+      | key        | value               |
+      | owner      | main                |
+      | name       | what-a-nice-day.icp |
+      | expired_at | 3                   |
+      | created_at | 0                   |
+
+  Scenario: Pay enough to my pending order
+    Given I submit a order to register name "what-a-nice-day.icp" for "3" years
+    When Pay for my pending order with amount "3 icp"
+    And User "main" confirm pay order with block height "1"
     Then I found there is no pending order
     And get_details "what-a-nice-day.icp" result is
       | key        | value               |

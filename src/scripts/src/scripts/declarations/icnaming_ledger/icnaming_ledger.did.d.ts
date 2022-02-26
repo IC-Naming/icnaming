@@ -37,6 +37,10 @@ export interface Stats {
 }
 export type SubAccount = Array<number>;
 export interface SyncICPPaymentRequest { 'block_height' : BlockHeight }
+export interface SyncICPPaymentResponse {
+  'verify_payment_response' : [] | [VerifyPaymentResponse],
+  'payment_id' : [] | [PaymentId],
+}
 export interface Timestamp { 'timestamp_nanos' : bigint }
 export interface VerifyPaymentRequest { 'payment_id' : PaymentId }
 export type VerifyPaymentResponse = { 'Paid' : { 'paid_at' : Timestamp } } |
@@ -50,7 +54,7 @@ export interface _SERVICE {
       RefundPaymentResponse
     >,
   'sync_icp_payment' : (arg_0: SyncICPPaymentRequest) => Promise<
-      VerifyPaymentResponse
+      SyncICPPaymentResponse
     >,
   'verify_payment' : (arg_0: VerifyPaymentRequest) => Promise<
       VerifyPaymentResponse

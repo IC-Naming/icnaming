@@ -134,7 +134,7 @@ pub trait IICNamingLedgerApi {
     async fn sync_icp_payment(
         &self,
         request: SyncICPPaymentRequest,
-    ) -> ICNSActorResult<VerifyPaymentResponse>;
+    ) -> ICNSActorResult<SyncICPPaymentResponse>;
 }
 
 #[async_trait]

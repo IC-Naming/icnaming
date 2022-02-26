@@ -93,6 +93,7 @@ service : {
   add_quota : (principal, QuotaType, nat32) -> (BooleanActorResponse);
   available : (text) -> (BooleanActorResponse) query;
   cancel_order : () -> (BooleanActorResponse);
+  confirm_pay_order : (nat64) -> (BooleanActorResponse);
   export_state : () -> (StateExportResponse);
   get_all_details : (GetPageInput) -> (GetAllDetailsActorResponse) query;
   get_astrox_me_name_stats : () -> (GetAstroxMeNameStatsActorResponse) query;

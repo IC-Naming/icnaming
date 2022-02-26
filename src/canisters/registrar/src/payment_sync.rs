@@ -95,7 +95,7 @@ impl SyncTransactionJob {
                             VerifyPaymentResponse::Paid { .. } => {
                                 info!("Payment {} paid", id);
                                 payments_paid_count += 1;
-                                service.paid_order(id.clone(), now_in_ns).await;
+                                service.apply_paid_order(id.clone(), now_in_ns).await;
                             }
                             VerifyPaymentResponse::PaymentNotFound => {
                                 todo!("Payment not found, clean order");

@@ -98,6 +98,7 @@ export interface _SERVICE {
     >,
   'available' : (arg_0: string) => Promise<BooleanActorResponse>,
   'cancel_order' : () => Promise<BooleanActorResponse>,
+  'confirm_pay_order' : (arg_0: bigint) => Promise<BooleanActorResponse>,
   'export_state' : () => Promise<StateExportResponse>,
   'get_all_details' : (arg_0: GetPageInput) => Promise<
       GetAllDetailsActorResponse

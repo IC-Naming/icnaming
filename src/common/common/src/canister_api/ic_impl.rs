@@ -103,7 +103,7 @@ impl IICNamingLedgerApi for ICNamingLedgerApi {
     async fn sync_icp_payment(
         &self,
         request: SyncICPPaymentRequest,
-    ) -> ICNSActorResult<VerifyPaymentResponse> {
+    ) -> ICNSActorResult<SyncICPPaymentResponse> {
         call_canister_as_result(
             CANISTER_NAME_ICNAMING_LEDGER,
             "sync_icp_payment",

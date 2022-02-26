@@ -24,7 +24,7 @@ use crate::named_canister_ids::{
 use crate::payments_store::{
     get_now, AddPaymentRequest, AddPaymentResponse, GetTipOfLedgerRequest, GetTipOfLedgerResponse,
     RefundPaymentRequest, RefundPaymentResponse, Stats, SyncICPPaymentRequest,
-    VerifyPaymentRequest, VerifyPaymentResponse,
+    SyncICPPaymentResponse, VerifyPaymentRequest, VerifyPaymentResponse,
 };
 use crate::periodic_tasks_runner::run_periodic_tasks;
 use crate::state::{StableState, State, STATE};
@@ -153,7 +153,7 @@ pub fn sync_icp_payment() {
     over_async(candid_one, sync_icp_payment_impl);
 }
 
-async fn sync_icp_payment_impl(request: SyncICPPaymentRequest) -> VerifyPaymentResponse {
+async fn sync_icp_payment_impl(request: SyncICPPaymentRequest) -> SyncICPPaymentResponse {
     assert!(request.block_height > 0);
     let blocks = get_blocks(request.block_height, request.block_height)
         .await

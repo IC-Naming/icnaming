@@ -42,6 +42,10 @@ export const idlFactory = ({ IDL }) => {
     'PaymentNotFound' : IDL.Null,
     'NeedMore' : IDL.Record({ 'received_amount' : ICPTs, 'amount' : ICPTs }),
   });
+  const SyncICPPaymentResponse = IDL.Record({
+    'verify_payment_response' : IDL.Opt(VerifyPaymentResponse),
+    'payment_id' : IDL.Opt(PaymentId),
+  });
   const VerifyPaymentRequest = IDL.Record({ 'payment_id' : PaymentId });
   return IDL.Service({
     'add_payment' : IDL.Func([AddPaymentRequest], [AddPaymentResponse], []),
@@ -54,7 +58,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'sync_icp_payment' : IDL.Func(
         [SyncICPPaymentRequest],
-        [VerifyPaymentResponse],
+        [SyncICPPaymentResponse],
         [],
       ),
     'verify_payment' : IDL.Func(
