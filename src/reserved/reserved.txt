@@ -165,3 +165,6 @@ mishicat
 dsign
 bob
 icpbox
+canistergeek
+nftgeek
+configeek
