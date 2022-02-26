@@ -760,6 +760,16 @@
         "recommend_url": "coinbase"
     },
     {
+        "id": "configeek",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "configeek",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "configeek"
+    },
+    {
         "id": "connect",
         "title": "",
         "summary": "",
@@ -1568,6 +1578,16 @@
         "type": "reserved",
         "url": "",
         "recommend_url": "dom"
+    },
+    {
+        "id": "dominic",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "dominic",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "dominic"
     },
     {
         "id": "doocoins",
@@ -2938,6 +2958,16 @@
         "type": "icp123",
         "url": "https://linktr.ee/ICPArt",
         "recommend_url": "icpart"
+    },
+    {
+        "id": "icpbox",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "icpbox",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "icpbox"
     },
     {
         "id": "icpbunny",
@@ -4318,6 +4348,16 @@
         "type": "reserved",
         "url": "",
         "recommend_url": "nftgaga"
+    },
+    {
+        "id": "nftgeek",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "nftgeek",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "nftgeek"
     },
     {
         "id": "nftstudio",
