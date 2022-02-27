@@ -17,6 +17,13 @@ Feature: Register a name with payment
     Given I submit a order to register name "what-a-nice-day.icp" for "3" years
     When I cancel my pending order
     Then I found there is no pending order
+    And I submit a order to register name "what-a-nice-day.icp" for "3" years
+    And I found my pending order as bellow
+      | key              | value               |
+      | name             | what-a-nice-day.icp |
+      | years            | 3                   |
+      | price_icp_in_e8s | 300_000_000         |
+      | quota_type       | LenGte(7)           |
 
   Scenario Outline: Submit a order and waiting for payment
     Given I submit a order to register name "<name>" for "<years>" years
@@ -138,6 +145,8 @@ Feature: Register a name with payment
     Then Last refund response is "Ok"
     And User "user2" found there is no pending order
     And User "user2" balance is "9.9999 icp"
+    And User "user2" submit a order to register name "icnamingtest1.icp" for "3" years
+    And User "user2" found my pending order with "icnamingtest1.icp" for "3" years, status "New"
 
   Scenario: A user is able to refund the pending order when refund subaccount balance is enough
     Given ICNaming ledger refund subaccount balance is set to be "1 icp"

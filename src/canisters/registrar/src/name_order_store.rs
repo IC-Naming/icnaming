@@ -66,7 +66,7 @@ impl From<&NameOrder> for GetNameOrderResponse {
 pub struct NameOrderStore {
     name_orders: HashMap<Principal, NameOrder>,
     name_orders_payment_id_map: HashMap<PaymentId, Principal>,
-    handling_payment_ids: HashSet<PaymentId>,
+    handling_names: HashSet<String>,
 }
 
 impl StableState for NameOrderStore {
@@ -74,22 +74,22 @@ impl StableState for NameOrderStore {
         encode_args((
             &self.name_orders,
             &self.name_orders_payment_id_map,
-            &self.handling_payment_ids,
+            &self.handling_names,
         ))
         .unwrap()
     }
 
     fn decode(bytes: Vec<u8>) -> Result<Self, String> {
-        let (name_orders, name_orders_payment_id_map, handling_payment_ids): (
+        let (name_orders, name_orders_payment_id_map, handling_names): (
             HashMap<Principal, NameOrder>,
             HashMap<PaymentId, Principal>,
-            HashSet<PaymentId>,
+            HashSet<String>,
         ) = decode_args(&bytes).unwrap();
 
         Ok(NameOrderStore {
             name_orders,
             name_orders_payment_id_map,
-            handling_payment_ids,
+            handling_names,
         })
     }
 }
@@ -168,21 +168,21 @@ impl NameOrderStore {
         &self.name_orders
     }
 
-    pub fn add_handling_payment_id(&mut self, payment_id: PaymentId) -> Result<(), String> {
-        if self.handling_payment_ids.contains(&payment_id) {
-            Err(format!("payment_id: {} already exists", payment_id))
+    pub fn add_handling_name(&mut self, name: &str) -> Result<(), String> {
+        if self.handling_names.contains(name) {
+            return Err(format!("name: {} is already handling", name));
         } else {
-            self.handling_payment_ids.insert(payment_id);
+            self.handling_names.insert(name.to_string());
             Ok(())
         }
     }
 
-    pub fn remove_handling_payment_id(&mut self, payment_id: PaymentId) -> Result<(), String> {
-        if !self.handling_payment_ids.contains(&payment_id) {
-            Err(format!("payment_id: {} not exists", payment_id))
-        } else {
-            self.handling_payment_ids.remove(&payment_id);
+    pub fn remove_handling_name(&mut self, name: &str) -> Result<(), String> {
+        if self.handling_names.contains(name) {
+            self.handling_names.remove(name);
             Ok(())
+        } else {
+            Err(format!("name: {} is not handling", name))
         }
     }
 }
