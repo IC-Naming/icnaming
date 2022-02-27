@@ -14,6 +14,18 @@ impl Default for Settings {
     }
 }
 
+impl StableState for Settings {
+    fn encode(&self) -> Vec<u8> {
+        encode_args((&self.min_year, &self.max_year)).unwrap()
+    }
+
+    fn decode(bytes: Vec<u8>) -> Result<Self, String> {
+        let (min_year, max_year): (u32, u32) = decode_args(&bytes).unwrap();
+
+        Ok(Settings { min_year, max_year })
+    }
+}
+
 impl Settings {
     pub fn new() -> Self {
         Self {
@@ -30,18 +42,5 @@ impl Settings {
 
     pub fn is_year_valid(&self, year: u32) -> bool {
         year >= self.min_year && year < self.max_year
-    }
-}
-
-impl StableState for Settings {
-    fn encode(&self) -> Vec<u8> {
-        encode_args((&self.min_year, &self.max_year)).unwrap()
-    }
-
-    fn decode(bytes: Vec<u8>) -> Result<Self, String> {
-        #[allow(clippy::type_complexity)]
-        let (min_year, max_year): (u32, u32) = decode_args(&bytes).unwrap();
-
-        Ok(Settings { min_year, max_year })
     }
 }

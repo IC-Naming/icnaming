@@ -18,6 +18,22 @@ pub struct QuotaImportStore {
     acceptable_file_hashes: HashSet<Vec<u8>>,
 }
 
+impl StableState for QuotaImportStore {
+    fn encode(&self) -> Vec<u8> {
+        encode_args((&self.imported_file_hashes, &self.acceptable_file_hashes)).unwrap()
+    }
+
+    fn decode(bytes: Vec<u8>) -> Result<Self, String> {
+        let (imported_file_hashes, acceptable_file_hashes): (HashSet<Vec<u8>>, HashSet<Vec<u8>>) =
+            decode_args(&bytes).unwrap();
+
+        Ok(QuotaImportStore {
+            imported_file_hashes,
+            acceptable_file_hashes,
+        })
+    }
+}
+
 pub struct ImportQuotaItem {
     pub owner: Principal,
     pub quota_type: QuotaType,
@@ -73,25 +89,10 @@ impl QuotaImportStore {
     }
 }
 
-impl StableState for QuotaImportStore {
-    fn encode(&self) -> Vec<u8> {
-        encode_args((&self.imported_file_hashes, &self.acceptable_file_hashes)).unwrap()
-    }
-
-    fn decode(bytes: Vec<u8>) -> Result<Self, String> {
-        #[allow(clippy::type_complexity)]
-        let (imported_file_hashes, acceptable_file_hashes): (
-            HashSet<Vec<u8>>,
-            HashSet<Vec<u8>>,
-        ) = decode_args(&bytes).unwrap();
-
-        Ok(QuotaImportStore {
-            imported_file_hashes,
-            acceptable_file_hashes,
-        })
-    }
-}
-
 // -- auto-generated START ACCEPTABLE_HASHES build.rs --
-pub const ACCEPTABLE_HASHES: &[&str] = &["af7619170a528b2ef642224d133297ce3756da745fa4cd84075b59f224e7ab9b", "64e72c990a42af6aaf4def6d20b04b827bc302c695efff6d101d39576a6e0232", "fdcbd2e084ffc0ad0211bdffa818f3a2d3b70e4652742239e94d6f79c484696e"];
+pub const ACCEPTABLE_HASHES: &[&str] = &[
+    "af7619170a528b2ef642224d133297ce3756da745fa4cd84075b59f224e7ab9b",
+    "64e72c990a42af6aaf4def6d20b04b827bc302c695efff6d101d39576a6e0232",
+    "fdcbd2e084ffc0ad0211bdffa818f3a2d3b70e4652742239e94d6f79c484696e",
+];
 // -- auto-generated END ACCEPTABLE_HASHES build.rs --

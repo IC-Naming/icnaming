@@ -77,7 +77,6 @@ impl StableState for RegistrationStore {
     }
 
     fn decode(bytes: Vec<u8>) -> Result<Self, String> {
-        #[allow(clippy::type_complexity)]
         let (registrations,): (HashMap<String, Registration>,) = decode_args(&bytes).unwrap();
 
         Ok(RegistrationStore { registrations })

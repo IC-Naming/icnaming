@@ -69,6 +69,31 @@ pub struct NameOrderStore {
     handling_payment_ids: HashSet<PaymentId>,
 }
 
+impl StableState for NameOrderStore {
+    fn encode(&self) -> Vec<u8> {
+        encode_args((
+            &self.name_orders,
+            &self.name_orders_payment_id_map,
+            &self.handling_payment_ids,
+        ))
+        .unwrap()
+    }
+
+    fn decode(bytes: Vec<u8>) -> Result<Self, String> {
+        let (name_orders, name_orders_payment_id_map, handling_payment_ids): (
+            HashMap<Principal, NameOrder>,
+            HashMap<PaymentId, Principal>,
+            HashSet<PaymentId>,
+        ) = decode_args(&bytes).unwrap();
+
+        Ok(NameOrderStore {
+            name_orders,
+            name_orders_payment_id_map,
+            handling_payment_ids,
+        })
+    }
+}
+
 impl NameOrderStore {
     pub fn has_name_order(&self, principal: &Principal) -> bool {
         self.name_orders.contains_key(principal)
@@ -159,32 +184,6 @@ impl NameOrderStore {
             self.handling_payment_ids.remove(&payment_id);
             Ok(())
         }
-    }
-}
-
-impl StableState for NameOrderStore {
-    fn encode(&self) -> Vec<u8> {
-        encode_args((
-            &self.name_orders,
-            &self.name_orders_payment_id_map,
-            &self.handling_payment_ids,
-        ))
-        .unwrap()
-    }
-
-    fn decode(bytes: Vec<u8>) -> Result<Self, String> {
-        #[allow(clippy::type_complexity)]
-        let (name_orders, name_orders_payment_id_map, handling_payment_ids): (
-            HashMap<Principal, NameOrder>,
-            HashMap<PaymentId, Principal>,
-            HashSet<PaymentId>,
-        ) = decode_args(&bytes).unwrap();
-
-        Ok(NameOrderStore {
-            name_orders,
-            name_orders_payment_id_map,
-            handling_payment_ids,
-        })
     }
 }
 

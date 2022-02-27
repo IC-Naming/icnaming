@@ -47,6 +47,48 @@ impl Default for PaymentsStore {
     }
 }
 
+impl StableState for PaymentsStore {
+    fn encode(&self) -> Vec<u8> {
+        Candid((
+            &self.transactions,
+            &self.block_height_synced_up_to,
+            &self.last_ledger_sync_timestamp_nanos,
+            &self.next_payment_id,
+            &self.payments,
+            &self.payments_version,
+        ))
+        .into_bytes()
+        .unwrap()
+    }
+
+    fn decode(bytes: Vec<u8>) -> Result<Self, String> {
+        let (
+            transactions,
+            block_height_synced_up_to,
+            last_ledger_sync_timestamp_nanos,
+            next_payment_id,
+            payments,
+            payments_version,
+        ): (
+            VecDeque<Transaction>,
+            Option<BlockHeight>,
+            u64,
+            PaymentId,
+            HashMap<PaymentId, Payment>,
+            u64,
+        ) = Candid::from_bytes(bytes).map(|c| c.0)?;
+
+        Ok(PaymentsStore {
+            transactions,
+            block_height_synced_up_to,
+            last_ledger_sync_timestamp_nanos,
+            next_payment_id,
+            payments,
+            payments_version,
+        })
+    }
+}
+
 type PaymentId = u64;
 type PaymentAccountId = String;
 
@@ -514,49 +556,6 @@ pub fn get_now() -> TimeStamp {
         .as_nanos() as u64;
     TimeStamp {
         timestamp_nanos: time,
-    }
-}
-
-impl StableState for PaymentsStore {
-    fn encode(&self) -> Vec<u8> {
-        Candid((
-            &self.transactions,
-            &self.block_height_synced_up_to,
-            &self.last_ledger_sync_timestamp_nanos,
-            &self.next_payment_id,
-            &self.payments,
-            &self.payments_version,
-        ))
-        .into_bytes()
-        .unwrap()
-    }
-
-    fn decode(bytes: Vec<u8>) -> Result<Self, String> {
-        #[allow(clippy::type_complexity)]
-        let (
-            transactions,
-            block_height_synced_up_to,
-            last_ledger_sync_timestamp_nanos,
-            next_payment_id,
-            payments,
-            payments_version,
-        ): (
-            VecDeque<Transaction>,
-            Option<BlockHeight>,
-            u64,
-            PaymentId,
-            HashMap<PaymentId, Payment>,
-            u64,
-        ) = Candid::from_bytes(bytes).map(|c| c.0)?;
-
-        Ok(PaymentsStore {
-            transactions,
-            block_height_synced_up_to,
-            last_ledger_sync_timestamp_nanos,
-            next_payment_id,
-            payments,
-            payments_version,
-        })
     }
 }
 

@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use candid::{CandidType, decode_args, Deserialize, encode_args};
+use candid::{decode_args, encode_args, CandidType, Deserialize};
 
 use common::state::StableState;
 
@@ -40,6 +40,18 @@ pub struct ResolverStore {
     resolvers: HashMap<String, Resolver>,
 }
 
+impl StableState for ResolverStore {
+    fn encode(&self) -> Vec<u8> {
+        encode_args((&self.resolvers,)).unwrap()
+    }
+
+    fn decode(bytes: Vec<u8>) -> Result<Self, String> {
+        let (resolvers,): (HashMap<String, Resolver>,) = decode_args(&bytes).unwrap();
+
+        Ok(ResolverStore { resolvers })
+    }
+}
+
 impl ResolverStore {
     pub fn new() -> ResolverStore {
         ResolverStore {
@@ -59,18 +71,5 @@ impl ResolverStore {
             self.resolvers
                 .insert(name.to_string(), Resolver::new(name.to_string()));
         }
-    }
-}
-
-impl StableState for ResolverStore {
-    fn encode(&self) -> Vec<u8> {
-        encode_args((&self.resolvers, )).unwrap()
-    }
-
-    fn decode(bytes: Vec<u8>) -> Result<Self, String> {
-        #[allow(clippy::type_complexity)]
-            let (resolvers, ): (HashMap<String, Resolver>, ) = decode_args(&bytes).unwrap();
-
-        Ok(ResolverStore { resolvers })
     }
 }
