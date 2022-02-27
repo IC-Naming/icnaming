@@ -425,9 +425,19 @@ impl RegistrarService {
         let name = self.normalize_name(name);
         let result = self.validate_name(&name)?;
 
+        // check reserved names
         if RESERVED_NAMES.contains(&result.get_current_level().unwrap().as_str()) {
             return Err(ICNSError::RegistrationHasBeenTaken);
         }
+
+        // check astrox me names
+        ASTROX_ME_NAMES.with(|s| {
+            let names = s.get_names();
+            if names.contains(result.get_name()) {
+                return Err(ICNSError::RegistrationHasBeenTaken);
+            }
+            Ok(())
+        })?;
         STATE.with(|s| {
             let store = s.registration_store.borrow();
             let registrations = store.get_registrations();
@@ -706,18 +716,14 @@ impl RegistrarService {
                     let mut counter = c.borrow_mut();
                     counter.name_order_paid_count += 1;
                 });
-
-                STATE.with(|s| {
-                    let mut name_order_store = s.name_order_store.borrow_mut();
-                    name_order_store.remove_name_order(user);
-                })
             } else {
                 warn!("failed to register name {}", name);
             }
-
+            // always remove name order, if name is not registered, take name, if name is not available, just remove name order and leave quota to user.
             // release payment id
             STATE.with(|s| {
                 let mut store = s.name_order_store.borrow_mut();
+                store.remove_name_order(user);
                 store.remove_handling_payment_id(payment_id).unwrap();
             });
         }
