@@ -233,6 +233,11 @@ mod available {
             let result = service.available(name);
             assert_eq!(result, Err(ICNSError::RegistrationHasBeenTaken));
         }
+        {
+            let name = "tkmszzz.icp";
+            let result = service.available(name);
+            assert_eq!(result, Err(ICNSError::RegistrationHasBeenTaken));
+        }
     }
 }
 
