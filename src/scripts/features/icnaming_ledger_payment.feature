@@ -24,6 +24,19 @@ Feature: ICNaming Ledger Payment
     And Payment status is "NeedMore"
     And Payment received_amount is "0.2 icp"
 
+  Scenario: Payment with one enough transaction with manually sync
+    Given Create a payment with amount "1 icp"
+    When Transfer to icnaming ledger account with memo "1", amount "1 icp"
+    Then Sync ICP payment with block height "1"
+    And Sync ICP payment status is "Paid"
+
+  Scenario: Payment with not enough transaction
+    Given Create a payment with amount "1 icp"
+    When Transfer to icnaming ledger account with memo "1", amount "0.2 icp"
+    Then Sync ICP payment with block height "1"
+    And Sync ICP payment status is "NeedMore"
+    And Sync ICP payment received_amount is "0.2 icp"
+
   Scenario: Payment with multiple transactions
     Given Create a payment with amount "1 icp"
     When Transfer to icnaming ledger account with memo "1", amount "0.2 icp"

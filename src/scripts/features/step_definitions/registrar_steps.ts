@@ -420,3 +420,9 @@ Then(/^Last quota import status "([^"]*)"$/,
             expect.fail(`Last quota import status is not Ok but ${JSON.stringify(global_quota_import_response)}`);
         }
     });
+When(/^User "([^"]*)" confirm pay order with block height "([^"]*)"$/,
+    async function (user:string,block_height:string) {
+        let registrar = createRegistrar(identities.get_identity_info(user));
+        let result = await new Result(registrar.confirm_pay_order(BigInt(parseInt(block_height)))).unwrap();
+        logger.info(`confirm pay order result: ${JSON.stringify(result)}`);
+});

@@ -1,6 +1,6 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
-use candid::{CandidType, decode_args, Deserialize, encode_args, Nat, Principal};
+use candid::{decode_args, encode_args, CandidType, Deserialize, Nat, Principal};
 use getset::{Getters, Setters};
 use log::debug;
 
@@ -66,6 +66,32 @@ impl From<&NameOrder> for GetNameOrderResponse {
 pub struct NameOrderStore {
     name_orders: HashMap<Principal, NameOrder>,
     name_orders_payment_id_map: HashMap<PaymentId, Principal>,
+    handling_payment_ids: HashSet<PaymentId>,
+}
+
+impl StableState for NameOrderStore {
+    fn encode(&self) -> Vec<u8> {
+        encode_args((
+            &self.name_orders,
+            &self.name_orders_payment_id_map,
+            &self.handling_payment_ids,
+        ))
+        .unwrap()
+    }
+
+    fn decode(bytes: Vec<u8>) -> Result<Self, String> {
+        let (name_orders, name_orders_payment_id_map, handling_payment_ids): (
+            HashMap<Principal, NameOrder>,
+            HashMap<PaymentId, Principal>,
+            HashSet<PaymentId>,
+        ) = decode_args(&bytes).unwrap();
+
+        Ok(NameOrderStore {
+            name_orders,
+            name_orders_payment_id_map,
+            handling_payment_ids,
+        })
+    }
 }
 
 impl NameOrderStore {
@@ -141,24 +167,23 @@ impl NameOrderStore {
     pub fn get_all_orders(&self) -> &HashMap<Principal, NameOrder> {
         &self.name_orders
     }
-}
 
-impl StableState for NameOrderStore {
-    fn encode(&self) -> Vec<u8> {
-        encode_args((&self.name_orders, &self.name_orders_payment_id_map)).unwrap()
+    pub fn add_handling_payment_id(&mut self, payment_id: PaymentId) -> Result<(), String> {
+        if self.handling_payment_ids.contains(&payment_id) {
+            Err(format!("payment_id: {} already exists", payment_id))
+        } else {
+            self.handling_payment_ids.insert(payment_id);
+            Ok(())
+        }
     }
 
-    fn decode(bytes: Vec<u8>) -> Result<Self, String> {
-        #[allow(clippy::type_complexity)]
-            let (name_orders, name_orders_payment_id_map): (
-            HashMap<Principal, NameOrder>,
-            HashMap<PaymentId, Principal>,
-        ) = decode_args(&bytes).unwrap();
-
-        Ok(NameOrderStore {
-            name_orders,
-            name_orders_payment_id_map,
-        })
+    pub fn remove_handling_payment_id(&mut self, payment_id: PaymentId) -> Result<(), String> {
+        if !self.handling_payment_ids.contains(&payment_id) {
+            Err(format!("payment_id: {} not exists", payment_id))
+        } else {
+            self.handling_payment_ids.remove(&payment_id);
+            Ok(())
+        }
     }
 }
 

@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use candid::{CandidType, decode_args, Deserialize, encode_args};
+use candid::{decode_args, encode_args, CandidType, Deserialize};
 use ic_cdk::export::Principal;
 use log::debug;
 
@@ -51,6 +51,18 @@ pub(crate) struct UserFavoriteStore {
     user_favorites: HashMap<Principal, UserFavorite>,
 }
 
+impl StableState for UserFavoriteStore {
+    fn encode(&self) -> Vec<u8> {
+        encode_args((&self.user_favorites,)).unwrap()
+    }
+
+    fn decode(bytes: Vec<u8>) -> Result<Self, String> {
+        let (user_favorites,): (HashMap<Principal, UserFavorite>,) = decode_args(&bytes).unwrap();
+
+        Ok(UserFavoriteStore { user_favorites })
+    }
+}
+
 impl UserFavoriteStore {
     pub fn new() -> Self {
         UserFavoriteStore {
@@ -88,18 +100,5 @@ impl UserFavoriteStore {
                 self.user_favorites.remove(&user);
             }
         }
-    }
-}
-
-impl StableState for UserFavoriteStore {
-    fn encode(&self) -> Vec<u8> {
-        encode_args((&self.user_favorites, )).unwrap()
-    }
-
-    fn decode(bytes: Vec<u8>) -> Result<Self, String> {
-        #[allow(clippy::type_complexity)]
-            let (user_favorites, ): (HashMap<Principal, UserFavorite>, ) = decode_args(&bytes).unwrap();
-
-        Ok(UserFavoriteStore { user_favorites })
     }
 }

@@ -73,6 +73,7 @@ cleverland
 codebase
 coin-flipper
 coinflipper
+configeek
 content-fly
 contentfly
 cosmicrafts
@@ -295,6 +296,7 @@ icp123
 icpad
 icpart
 icpbirds
+icpbox
 icpbunny
 icpcs
 icpdog
@@ -445,6 +447,7 @@ nft-village
 nftanvil
 nftenglishauction
 nftgaga
+nftgeek
 nftkarts
 nftstudio
 nftstudiomarketplace

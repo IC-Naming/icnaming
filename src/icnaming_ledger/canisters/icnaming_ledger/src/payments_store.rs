@@ -10,7 +10,7 @@ use ic_base_types::{CanisterId, PrincipalId};
 use ic_nns_constants::GOVERNANCE_CANISTER_ID;
 use itertools::Itertools;
 use ledger_canister::{
-    AccountIdentifier, BlockHeight, ICPTs, Memo, SendArgs, Subaccount, TimeStamp,
+    AccountIdentifier, Block, BlockHeight, ICPTs, Memo, SendArgs, Subaccount, TimeStamp,
     Transfer::{self, Burn, Mint, Send},
 };
 use on_wire::{FromWire, IntoWire};
@@ -18,6 +18,7 @@ use serde::Deserialize;
 
 use crate::canisters::ledger::send;
 use crate::constants::{MAX_PAYMENT_AGE_NANOS, MAX_REMARK_LENGTH, REFUND_MEMO};
+use crate::ledger_sync::get_blocks;
 use crate::metrics_encoder::MetricsEncoder;
 use crate::state::StableState;
 use crate::STATE;
@@ -43,6 +44,48 @@ impl Default for PaymentsStore {
             last_ledger_sync_timestamp_nanos: 0,
             payments_version: 0u64,
         }
+    }
+}
+
+impl StableState for PaymentsStore {
+    fn encode(&self) -> Vec<u8> {
+        Candid((
+            &self.transactions,
+            &self.block_height_synced_up_to,
+            &self.last_ledger_sync_timestamp_nanos,
+            &self.next_payment_id,
+            &self.payments,
+            &self.payments_version,
+        ))
+        .into_bytes()
+        .unwrap()
+    }
+
+    fn decode(bytes: Vec<u8>) -> Result<Self, String> {
+        let (
+            transactions,
+            block_height_synced_up_to,
+            last_ledger_sync_timestamp_nanos,
+            next_payment_id,
+            payments,
+            payments_version,
+        ): (
+            VecDeque<Transaction>,
+            Option<BlockHeight>,
+            u64,
+            PaymentId,
+            HashMap<PaymentId, Payment>,
+            u64,
+        ) = Candid::from_bytes(bytes).map(|c| c.0)?;
+
+        Ok(PaymentsStore {
+            transactions,
+            block_height_synced_up_to,
+            last_ledger_sync_timestamp_nanos,
+            next_payment_id,
+            payments,
+            payments_version,
+        })
     }
 }
 
@@ -118,6 +161,17 @@ pub enum RefundPaymentResponse {
 }
 
 #[derive(CandidType, Deserialize)]
+pub struct SyncICPPaymentRequest {
+    pub block_height: BlockHeight,
+}
+
+#[derive(CandidType, Deserialize)]
+pub struct SyncICPPaymentResponse {
+    pub payment_id: Option<PaymentId>,
+    pub verify_payment_response: Option<VerifyPaymentResponse>,
+}
+
+#[derive(CandidType, Deserialize)]
 pub struct GetTipOfLedgerRequest;
 
 #[derive(CandidType, Deserialize)]
@@ -141,7 +195,7 @@ enum TransactionType {
 }
 
 impl PaymentsStore {
-    pub fn append_transaction(
+    pub fn try_sync_transaction(
         &mut self,
         transfer: Transfer,
         memo: Memo,
@@ -158,19 +212,29 @@ impl PaymentsStore {
             }
         }
 
-        let transaction_index = self.get_next_transaction_index();
         let mut should_store_transaction = false;
-        let mut transaction_type: Option<TransactionType> = None;
-
         match transfer {
             Transfer::Burn { .. } => {}
             Transfer::Mint { .. } => {}
-            Transfer::Send {
-                from,
-                to,
-                amount,
-                fee,
-            } => {
+            Transfer::Send { to, amount, .. } => {
+                should_store_transaction =
+                    self.accept_transaction(transfer, memo, block_height.clone(), timestamp);
+            }
+        }
+
+        self.block_height_synced_up_to = Some(block_height);
+        Ok(should_store_transaction)
+    }
+
+    pub fn accept_transaction(
+        &mut self,
+        transfer: Transfer,
+        memo: Memo,
+        block_height: BlockHeight,
+        timestamp: TimeStamp,
+    ) -> bool {
+        return match transfer {
+            Transfer::Send { to, amount, .. } => {
                 let receivers = STATE.with(|s| {
                     s.settings
                         .borrow()
@@ -181,67 +245,71 @@ impl PaymentsStore {
                 {
                     print(format!("transaction to: {}", to));
                 }
-                if receivers.contains(&to) {
-                    should_store_transaction = true;
-                    transaction_type = Some(TransactionType::Send);
-
-                    // memo as payment id
-                    let payment_id: PaymentId = memo.0;
-                    if !self.payments.contains_key(&payment_id) {
-                        print(format!(
-                            "Payment {} not found. skipping transaction",
-                            payment_id
-                        ));
-                    } else {
-                        let payment = self.payments.get_mut(&payment_id).unwrap();
-                        if payment.transactions_last5.len() > 5 {
-                            payment.transactions_last5.pop_front();
-                        }
-                        payment.transactions_last5.push_back(Transaction {
-                            transaction_index,
-                            block_height,
-                            timestamp,
-                            memo,
-                            transfer: transfer.clone(),
-                            transaction_type,
-                        });
-                        payment.block_heights.push_back(block_height);
-                        payment.received_amount += amount;
-                        payment.payment_status = PaymentStatus::NeedMore;
-
-                        if payment.received_amount >= payment.amount {
-                            print(format!(
-                                "Payment {} received {}. Payment complete",
-                                payment_id, payment.received_amount
-                            ));
-                            payment.paid_at = Some(timestamp);
-                            payment.payment_status = PaymentStatus::Paid;
-                        } else {
-                            print(format!(
-                                "Payment {} received {}. Payment not complete",
-                                payment_id, payment.received_amount
-                            ));
-                        }
-                    }
+                if !(receivers.contains(&to)) {
+                    return false;
                 }
+                // memo as payment id
+                let payment_id: PaymentId = memo.0;
+                if !self.payments.contains_key(&payment_id) {
+                    print(format!(
+                        "Payment {} not found. skipping transaction",
+                        payment_id
+                    ));
+                    return false;
+                }
+                let transaction_index = self.get_next_transaction_index();
+                let payment = self.payments.get_mut(&payment_id).unwrap();
+                if payment.block_heights.contains(&block_height) {
+                    print(format!(
+                        "Transaction {} already exists. skipping transaction",
+                        payment_id
+                    ));
+                    return true;
+                }
+
+                if payment.transactions_last5.len() > 5 {
+                    payment.transactions_last5.pop_front();
+                }
+                let mut transaction_type: Option<TransactionType> = Some(TransactionType::Send);
+                payment.transactions_last5.push_back(Transaction {
+                    transaction_index,
+                    block_height,
+                    timestamp,
+                    memo,
+                    transfer: transfer.clone(),
+                    transaction_type,
+                });
+                payment.block_heights.push_back(block_height);
+                payment.received_amount += amount;
+                payment.payment_status = PaymentStatus::NeedMore;
+
+                if payment.received_amount >= payment.amount {
+                    print(format!(
+                        "Payment {} received {}. Payment complete",
+                        payment_id, payment.received_amount
+                    ));
+                    payment.paid_at = Some(timestamp);
+                    payment.payment_status = PaymentStatus::Paid;
+                } else {
+                    print(format!(
+                        "Payment {} received {}. Payment not complete",
+                        payment_id, payment.received_amount
+                    ));
+                }
+
+                self.transactions.push_back(Transaction::new(
+                    transaction_index,
+                    block_height,
+                    timestamp,
+                    memo,
+                    transfer,
+                    transaction_type,
+                ));
+                self.payments_version += 1;
+                true
             }
-        }
-
-        if should_store_transaction {
-            self.transactions.push_back(Transaction::new(
-                transaction_index,
-                block_height,
-                timestamp,
-                memo,
-                transfer,
-                transaction_type,
-            ));
-            self.payments_version += 1;
-        }
-
-        self.block_height_synced_up_to = Some(block_height);
-
-        Ok(should_store_transaction)
+            _ => false,
+        };
     }
 
     pub fn get_tip_of_ledger(&self, _: GetTipOfLedgerRequest) -> GetTipOfLedgerResponse {
@@ -317,6 +385,30 @@ impl PaymentsStore {
                     received_amount: payment.received_amount,
                     amount: payment.amount,
                 }
+            }
+        }
+    }
+
+    pub fn sync_icp_payment(
+        &mut self,
+        block_height: BlockHeight,
+        transfer: Transfer,
+        memo: Memo,
+        timestamp: TimeStamp,
+    ) -> SyncICPPaymentResponse {
+        let payment_id = memo.0.clone();
+        let accepted = self.accept_transaction(transfer, memo, block_height, timestamp);
+        if accepted {
+            SyncICPPaymentResponse {
+                payment_id: Some(payment_id),
+                verify_payment_response: Some(
+                    self.verify_payment(VerifyPaymentRequest { payment_id }),
+                ),
+            }
+        } else {
+            SyncICPPaymentResponse {
+                payment_id: None,
+                verify_payment_response: None,
             }
         }
     }
@@ -464,49 +556,6 @@ pub fn get_now() -> TimeStamp {
         .as_nanos() as u64;
     TimeStamp {
         timestamp_nanos: time,
-    }
-}
-
-impl StableState for PaymentsStore {
-    fn encode(&self) -> Vec<u8> {
-        Candid((
-            &self.transactions,
-            &self.block_height_synced_up_to,
-            &self.last_ledger_sync_timestamp_nanos,
-            &self.next_payment_id,
-            &self.payments,
-            &self.payments_version,
-        ))
-        .into_bytes()
-        .unwrap()
-    }
-
-    fn decode(bytes: Vec<u8>) -> Result<Self, String> {
-        #[allow(clippy::type_complexity)]
-        let (
-            transactions,
-            block_height_synced_up_to,
-            last_ledger_sync_timestamp_nanos,
-            next_payment_id,
-            payments,
-            payments_version,
-        ): (
-            VecDeque<Transaction>,
-            Option<BlockHeight>,
-            u64,
-            PaymentId,
-            HashMap<PaymentId, Payment>,
-            u64,
-        ) = Candid::from_bytes(bytes).map(|c| c.0)?;
-
-        Ok(PaymentsStore {
-            transactions,
-            block_height_synced_up_to,
-            last_ledger_sync_timestamp_nanos,
-            next_payment_id,
-            payments,
-            payments_version,
-        })
     }
 }
 

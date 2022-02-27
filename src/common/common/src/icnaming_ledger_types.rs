@@ -31,6 +31,7 @@ impl ICPTs {
     Serialize, Deserialize, CandidType, Clone, Copy, Hash, Debug, PartialEq, Eq, PartialOrd, Ord,
 )]
 pub struct Memo(pub u64);
+pub type BlockHeight = u64;
 
 impl Default for Memo {
     fn default() -> Memo {
@@ -87,6 +88,17 @@ pub enum VerifyPaymentResponse {
 #[derive(CandidType, Deserialize, Serialize, Debug, Eq, PartialEq)]
 pub struct VerifyPaymentRequest {
     pub payment_id: PaymentId,
+}
+
+#[derive(CandidType, Deserialize, Serialize, Debug, Eq, PartialEq)]
+pub struct SyncICPPaymentRequest {
+    pub block_height: BlockHeight,
+}
+
+#[derive(CandidType, Deserialize, Serialize, Debug, Eq, PartialEq)]
+pub struct SyncICPPaymentResponse {
+    pub payment_id: Option<PaymentId>,
+    pub verify_payment_response: Option<VerifyPaymentResponse>,
 }
 
 #[derive(CandidType, Deserialize)]

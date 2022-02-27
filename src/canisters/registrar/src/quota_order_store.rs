@@ -167,6 +167,40 @@ pub struct QuotaOrderStore {
     next_id: QuotaOrderId,
 }
 
+impl StableState for QuotaOrderStore {
+    fn encode(&self) -> Vec<u8> {
+        let orders: Vec<(QuotaOrderId, QuotaOrder)> = self
+            .all_orders
+            .iter()
+            .map(|(id, order)| (id.clone(), order.borrow().clone()))
+            .collect();
+        encode_args((&orders, &self.next_id)).unwrap()
+    }
+
+    fn decode(bytes: Vec<u8>) -> Result<Self, String> {
+        let (orders, next_id): (Vec<(QuotaOrderId, QuotaOrder)>, QuotaOrderId) =
+            decode_args(&bytes).unwrap();
+
+        let mut user_orders = HashMap::new();
+        let mut all_orders = HashMap::new();
+        let mut payment_orders = HashMap::new();
+        for (order_id, order) in orders {
+            let payment_id = order.payment.payment_id.clone();
+            let create_user = order.created_user.clone();
+            let order_ref = Rc::new(RefCell::new(order));
+            user_orders.insert(create_user, order_ref.clone());
+            all_orders.insert(order_id.clone(), order_ref.clone());
+            payment_orders.insert(payment_id, order_ref);
+        }
+        Ok(QuotaOrderStore {
+            user_orders,
+            all_orders,
+            payment_orders,
+            next_id,
+        })
+    }
+}
+
 impl QuotaOrderStore {
     pub fn new() -> QuotaOrderStore {
         QuotaOrderStore {
@@ -234,41 +268,6 @@ impl QuotaOrderStore {
 
     pub fn get_all_orders(&self) -> &HashMap<QuotaOrderId, QuotaOrderRef> {
         &self.all_orders
-    }
-}
-
-impl StableState for QuotaOrderStore {
-    fn encode(&self) -> Vec<u8> {
-        let orders: Vec<(QuotaOrderId, QuotaOrder)> = self
-            .all_orders
-            .iter()
-            .map(|(id, order)| (id.clone(), order.borrow().clone()))
-            .collect();
-        encode_args((&orders, &self.next_id)).unwrap()
-    }
-
-    fn decode(bytes: Vec<u8>) -> Result<Self, String> {
-        #[allow(clippy::type_complexity)]
-        let (orders, next_id): (Vec<(QuotaOrderId, QuotaOrder)>, QuotaOrderId) =
-            decode_args(&bytes).unwrap();
-
-        let mut user_orders = HashMap::new();
-        let mut all_orders = HashMap::new();
-        let mut payment_orders = HashMap::new();
-        for (order_id, order) in orders {
-            let payment_id = order.payment.payment_id.clone();
-            let create_user = order.created_user.clone();
-            let order_ref = Rc::new(RefCell::new(order));
-            user_orders.insert(create_user, order_ref.clone());
-            all_orders.insert(order_id.clone(), order_ref.clone());
-            payment_orders.insert(payment_id, order_ref);
-        }
-        Ok(QuotaOrderStore {
-            user_orders,
-            all_orders,
-            payment_orders,
-            next_id,
-        })
     }
 }
 

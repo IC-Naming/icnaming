@@ -325,7 +325,15 @@ mod register {
     ) {
         let name = "www.nice.icp";
         let result = service
-            .register(name, &owner, register_years, 0, &quota_owner, TEST_QUOTA)
+            .register(
+                name,
+                &owner,
+                register_years,
+                0,
+                &quota_owner,
+                TEST_QUOTA,
+                false,
+            )
             .await;
         assert_quota_count(&quota_owner, register_years);
         assert_eq!(
@@ -345,7 +353,15 @@ mod register {
         let owner = Principal::anonymous();
         let name = "nice.icp";
         let result = service
-            .register(name, &owner, register_years, 0, &quota_owner, TEST_QUOTA)
+            .register(
+                name,
+                &owner,
+                register_years,
+                0,
+                &quota_owner,
+                TEST_QUOTA,
+                false,
+            )
             .await;
         assert_quota_count(&quota_owner, register_years);
         assert_eq!(result, Err(ICNSError::Unauthorized));
@@ -366,7 +382,15 @@ mod register {
 
         // act
         let result = service
-            .register(name, &owner, register_years, 0, &quota_owner, TEST_QUOTA)
+            .register(
+                name,
+                &owner,
+                register_years,
+                0,
+                &quota_owner,
+                TEST_QUOTA,
+                false,
+            )
             .await;
         assert_quota_count(&quota_owner, 1);
         assert_eq!(
@@ -386,7 +410,7 @@ mod register {
     ) {
         let name = "nice.icp";
         let result = service
-            .register(name, &owner, 15, 0, &quota_owner, TEST_QUOTA)
+            .register(name, &owner, 15, 0, &quota_owner, TEST_QUOTA, false)
             .await;
         assert_quota_count(&quota_owner, register_years);
         assert_eq!(
@@ -412,7 +436,15 @@ mod register {
             store.add_registration(registration);
         });
         let result = service
-            .register(name, &owner, register_years, 0, &quota_owner, TEST_QUOTA)
+            .register(
+                name,
+                &owner,
+                register_years,
+                0,
+                &quota_owner,
+                TEST_QUOTA,
+                false,
+            )
             .await;
         assert_quota_count(&quota_owner, register_years);
         assert_eq!(result, Err(ICNSError::RegistrationHasBeenTaken));
@@ -427,7 +459,38 @@ mod register {
     ) {
         let name = "icnaming.icp";
         let result = service
-            .register(name, &owner, register_years, 0, &quota_owner, TEST_QUOTA)
+            .register(
+                name,
+                &owner,
+                register_years,
+                0,
+                &quota_owner,
+                TEST_QUOTA,
+                false,
+            )
+            .await;
+        assert_quota_count(&quota_owner, register_years);
+        assert_eq!(result, Err(ICNSError::RegistrationHasBeenTaken));
+    }
+
+    #[rstest]
+    async fn test_register_err_axtrome(
+        mut service: RegistrarService,
+        owner: Principal,
+        quota_owner: Principal,
+        register_years: u32,
+    ) {
+        let name = "tkmszzz.icp";
+        let result = service
+            .register(
+                name,
+                &owner,
+                register_years,
+                0,
+                &quota_owner,
+                TEST_QUOTA,
+                false,
+            )
             .await;
         assert_quota_count(&quota_owner, register_years);
         assert_eq!(result, Err(ICNSError::RegistrationHasBeenTaken));
@@ -459,7 +522,15 @@ mod register {
 
         // act
         let result = service
-            .register(name, &owner, register_years, now, &quota_owner, TEST_QUOTA)
+            .register(
+                name,
+                &owner,
+                register_years,
+                now,
+                &quota_owner,
+                TEST_QUOTA,
+                false,
+            )
             .await;
 
         // assert
@@ -505,7 +576,15 @@ mod register {
 
         // act
         let result = service
-            .register(name, &owner, register_years, now, &quota_owner, TEST_QUOTA)
+            .register(
+                name,
+                &owner,
+                register_years,
+                now,
+                &quota_owner,
+                TEST_QUOTA,
+                false,
+            )
             .await;
 
         // assert

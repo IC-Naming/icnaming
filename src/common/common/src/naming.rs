@@ -1,5 +1,3 @@
-
-
 pub fn normalize_name(name: &str) -> String {
     name.trim().to_ascii_lowercase()
 }
@@ -7,6 +5,7 @@ pub fn normalize_name(name: &str) -> String {
 #[derive(Eq, PartialEq, Debug)]
 pub struct NameParseResult {
     labels: Vec<String>,
+    name: String,
 }
 
 impl NameParseResult {
@@ -19,7 +18,10 @@ impl NameParseResult {
         while let Some(part) = parts.next() {
             labels.push(part.trim().to_string());
         }
-        NameParseResult { labels }
+        NameParseResult {
+            labels,
+            name: name.to_string(),
+        }
     }
 
     pub fn is_top_level(&self) -> bool {
@@ -38,6 +40,9 @@ impl NameParseResult {
     }
     pub fn get_level_count(&self) -> usize {
         self.labels.len()
+    }
+    pub fn get_name(&self) -> &String {
+        &self.name
     }
 }
 

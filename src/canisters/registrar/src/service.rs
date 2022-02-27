@@ -19,7 +19,8 @@ use common::errors::{ICNSError, ICNSResult};
 use common::ic_api::wrapper::ICStaticApi;
 use common::ic_api::IClock;
 use common::icnaming_ledger_types::{
-    AddPaymentRequest, ICPTs, PaymentId, RefundPaymentRequest, RefundPaymentResponse,
+    AddPaymentRequest, BlockHeight, ICPTs, PaymentId, RefundPaymentRequest, RefundPaymentResponse,
+    SyncICPPaymentRequest, VerifyPaymentResponse,
 };
 use common::metrics_encoder::MetricsEncoder;
 use common::named_canister_ids::{get_named_get_canister_id, CANISTER_NAME_RESOLVER};
@@ -326,6 +327,7 @@ impl RegistrarService {
         now: u64,
         quota_owner: &Principal,
         quota_type: QuotaType,
+        admin_import: bool,
     ) -> ICNSResult<bool> {
         let name = self.normalize_name(&name);
 
@@ -349,9 +351,21 @@ impl RegistrarService {
             });
         }
 
-        // check reserved names
-        if RESERVED_NAMES.contains(&name_result.get_current_level().unwrap().as_str()) {
-            return Err(ICNSError::RegistrationHasBeenTaken);
+        // check reservation if not admin import
+        if !admin_import {
+            // check reserved names
+            if RESERVED_NAMES.contains(&name_result.get_current_level().unwrap().as_str()) {
+                return Err(ICNSError::RegistrationHasBeenTaken);
+            }
+
+            // check astrox me names
+            ASTROX_ME_NAMES.with(|s| {
+                let names = s.get_names();
+                if names.contains(name_result.get_name()) {
+                    return Err(ICNSError::RegistrationHasBeenTaken);
+                }
+                Ok(())
+            })?;
         }
 
         STATE.with(|s| {
@@ -428,11 +442,11 @@ impl RegistrarService {
         todo!("clean up")
     }
 
-    pub fn has_pending_order(&self, caller: Principal) -> ICNSResult<bool> {
-        must_not_anonymous(&caller)?;
+    pub fn has_pending_order(&self, caller: &Principal) -> ICNSResult<bool> {
+        must_not_anonymous(caller)?;
         Ok(STATE.with(|s| {
             let name_order_store = s.name_order_store.borrow();
-            name_order_store.has_name_order(&caller)
+            name_order_store.has_name_order(caller)
         }))
     }
 
@@ -584,19 +598,87 @@ impl RegistrarService {
         }
     }
 
-    pub async fn paid_order(&mut self, payment_id: PaymentId, now_in_ns: u64) {
+    pub async fn confirm_pay_order(
+        &mut self,
+        now: u64,
+        caller: &Principal,
+        block_height: BlockHeight,
+    ) -> ICNSResult<bool> {
+        self.has_pending_order(caller)?;
+
+        let sync_result = self
+            .icnaming_ledger_api
+            .sync_icp_payment(SyncICPPaymentRequest { block_height })
+            .await?;
+
+        if let Some(payment_id) = sync_result.payment_id {
+            let verify_result = sync_result.verify_payment_response.unwrap();
+            match verify_result {
+                VerifyPaymentResponse::NeedMore { .. } => {
+                    trace!("Need more payment data for payment id {}", payment_id);
+                    Ok(false)
+                }
+                VerifyPaymentResponse::Paid { .. } => {
+                    info!("Payment {} paid", payment_id);
+                    self.apply_paid_order(payment_id, now).await;
+                    Ok(true)
+                }
+                VerifyPaymentResponse::PaymentNotFound => {
+                    todo!("Payment not found, clean order");
+                    Ok(false)
+                }
+            }
+        } else {
+            Ok(false)
+        }
+    }
+
+    pub async fn apply_paid_order(&mut self, payment_id: PaymentId, now_in_ns: u64) {
         let order = STATE.with(|s| {
-            let name_order_store = s.name_order_store.borrow_mut();
-            let order = name_order_store
-                .get_order_by_payment_id(&payment_id)
-                .unwrap();
-            order.clone()
+            let mut name_order_store = s.name_order_store.borrow_mut();
+            let order = name_order_store.get_order_by_payment_id(&payment_id);
+            if order.is_none() {
+                debug!(
+                    "order not found for payment id {}, it should be handle before",
+                    payment_id
+                );
+                return None;
+            }
+
+            let order = order.unwrap();
+            let order = order.clone();
+
+            // lock payment id
+            let handling_result = name_order_store.add_handling_payment_id(payment_id);
+            if handling_result.is_err() {
+                error!("failed to add handling payment id {}", payment_id);
+                handling_result.unwrap();
+            }
+
+            Some(order)
         });
+        if order.is_none() {
+            return;
+        }
+        let order = order.unwrap();
 
         let user: &Principal = order.created_user();
         let name: &str = order.name().as_str();
         assert!(order.order_status() == &NameOrderStatus::New);
-        if self.available(name).is_ok() {
+        if self.available(name).is_err() {
+            // go to refund
+
+            STATE.with(|s| {
+                let mut name_order_store = s.name_order_store.borrow_mut();
+
+                name_order_store.waiting_to_refund(user);
+
+                // release payment id
+                name_order_store
+                    .remove_handling_payment_id(payment_id)
+                    .unwrap();
+            })
+        } else {
             if self.exits_by_payment_id(payment_id) {
                 // complete quota order to claim name
                 self.paid_quota_order(payment_id, now_in_ns);
@@ -616,6 +698,7 @@ impl RegistrarService {
                     now_in_ns,
                     order.created_user(),
                     order.quota_type().clone(),
+                    false,
                 )
                 .await;
             if result.is_ok() {
@@ -631,13 +714,12 @@ impl RegistrarService {
             } else {
                 warn!("failed to register name {}", name);
             }
-        } else {
-            // go to refund
 
+            // release payment id
             STATE.with(|s| {
-                let mut name_order_store = s.name_order_store.borrow_mut();
-                name_order_store.waiting_to_refund(user);
-            })
+                let mut store = s.name_order_store.borrow_mut();
+                store.remove_handling_payment_id(payment_id).unwrap();
+            });
         }
     }
 
@@ -886,6 +968,7 @@ impl RegistrarService {
                 now,
                 astrox_me_names.get_owner_canister_id(),
                 quota_type,
+                true,
             )
             .await?;
         }

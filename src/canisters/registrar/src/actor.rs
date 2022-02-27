@@ -7,6 +7,7 @@ use log::debug;
 
 use common::dto::{to_state_export_data, GetPageInput, GetPageOutput, StateExportResponse};
 use common::errors::{BooleanActorResponse, ErrorInfo, ICNSResult};
+use common::icnaming_ledger_types::BlockHeight;
 use common::permissions::must_be_system_owner;
 use common::state::StableState;
 
@@ -141,6 +142,7 @@ pub async fn register_for(name: String, owner: Principal, years: u64) -> Boolean
             api::time(),
             caller,
             QuotaType::LenGte(4),
+            false,
         )
         .await;
     BooleanActorResponse::new(result)
@@ -160,7 +162,15 @@ pub async fn register_with_quota(name: String, quota_type: QuotaType) -> Boolean
     let mut service = RegistrarService::new();
     let years = 1;
     let result = service
-        .register(&name, &caller, years, api::time(), &caller, quota_type)
+        .register(
+            &name,
+            &caller,
+            years,
+            api::time(),
+            &caller,
+            quota_type,
+            false,
+        )
         .await;
     BooleanActorResponse::new(result)
 }
@@ -434,6 +444,18 @@ pub async fn refund_order() -> BooleanActorResponse {
 
     let service = RegistrarService::new();
     let result = service.refund_order(caller, now).await;
+    BooleanActorResponse::new(result)
+}
+
+#[update(name = "confirm_pay_order")]
+#[candid_method(update, rename = "confirm_pay_order")]
+pub async fn confirm_pay_order(block_height: BlockHeight) -> BooleanActorResponse {
+    let caller = &api::caller();
+    debug!("refund_order: caller: {}", caller);
+    let now = api::time();
+
+    let mut service = RegistrarService::new();
+    let result = service.confirm_pay_order(now, caller, block_height).await;
     BooleanActorResponse::new(result)
 }
 

@@ -49,6 +49,19 @@ pub struct UserQuotaStore {
     user_quotas: HashMap<Principal, HashMap<QuotaType, u32>>,
 }
 
+impl StableState for UserQuotaStore {
+    fn encode(&self) -> Vec<u8> {
+        encode_args((&self.user_quotas,)).unwrap()
+    }
+
+    fn decode(bytes: Vec<u8>) -> Result<Self, String> {
+        let (user_quotas,): (HashMap<Principal, HashMap<QuotaType, u32>>,) =
+            decode_args(&bytes).unwrap();
+
+        Ok(UserQuotaStore { user_quotas })
+    }
+}
+
 impl UserQuotaStore {
     pub fn new() -> UserQuotaStore {
         UserQuotaStore {
@@ -93,20 +106,6 @@ impl UserQuotaStore {
         } else {
             false
         }
-    }
-}
-
-impl StableState for UserQuotaStore {
-    fn encode(&self) -> Vec<u8> {
-        encode_args((&self.user_quotas,)).unwrap()
-    }
-
-    fn decode(bytes: Vec<u8>) -> Result<Self, String> {
-        #[allow(clippy::type_complexity)]
-        let (user_quotas,): (HashMap<Principal, HashMap<QuotaType, u32>>,) =
-            decode_args(&bytes).unwrap();
-
-        Ok(UserQuotaStore { user_quotas })
     }
 }
 

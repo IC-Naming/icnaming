@@ -43,7 +43,6 @@ impl StableState for Settings {
     }
 
     fn decode(bytes: Vec<u8>) -> Result<Self, String> {
-        #[allow(clippy::type_complexity)]
         let (
             allow_caller_ids,
             receiver_icnaming_ledger_account_ids,

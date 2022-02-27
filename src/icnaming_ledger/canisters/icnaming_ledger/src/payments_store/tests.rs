@@ -1,6 +1,7 @@
 use std::collections::HashSet;
 use std::str::FromStr;
 
+use crate::{get_named_get_canister_id, CANISTER_NAME_REGISTRAR};
 use ledger_canister::ICPTs;
 use maplit::hashset;
 
@@ -33,7 +34,7 @@ mod add_payment {
         let result = store.add_payment(request.clone(), caller.clone(), now);
 
         // assert
-        assert_eq!(result.payment_id, 1u64);
+        assert_eq!(result.payment_id, 2u64);
         assert_eq!(result.payment_id, result.memo.0);
         assert_eq!(store.next_payment_id, result.payment_id + 1);
 
@@ -140,7 +141,7 @@ mod verify_payment {
                 amount: ICPTs::from_icpts(1).unwrap(),
                 to: get_icnaming_ledger_account_id(),
             };
-            let re = store.append_transaction(transfer, result.memo, 4u64, now);
+            let re = store.try_sync_transaction(transfer, result.memo, 4u64, now);
             assert_eq!(re.is_ok(), true);
         }
 
@@ -184,7 +185,7 @@ mod verify_payment {
                 amount: ICPTs::from_icpts(10).unwrap(),
                 to: get_icnaming_ledger_account_id(),
             };
-            let re = store.append_transaction(transfer, result.memo, 4u64, now);
+            let re = store.try_sync_transaction(transfer, result.memo, 4u64, now);
             assert_eq!(re.is_ok(), true);
         }
 
@@ -230,11 +231,11 @@ mod verify_payment {
     }
 }
 
-mod append_transaction {
+mod try_sync_transaction {
     use super::*;
 
     #[test]
-    fn append_transaction_success_some_paid() {
+    fn try_sync_transaction_success_some_paid() {
         let mut store = setup_test_store();
         let now = TimeStamp {
             timestamp_nanos: 100,
@@ -253,7 +254,7 @@ mod append_transaction {
         };
 
         // act
-        let result = store.append_transaction(transfer, payment_result.memo, 4u64, now);
+        let result = store.try_sync_transaction(transfer, payment_result.memo, 4u64, now);
 
         // assert
         assert_eq!(result.is_ok(), true);
@@ -266,7 +267,7 @@ mod append_transaction {
     }
 
     #[test]
-    fn append_transaction_success_some_all_paid() {
+    fn try_sync_transaction_success_some_all_paid() {
         let mut store = setup_test_store();
         let request = AddPaymentRequest {
             amount: ICPTs::from_icpts(10).unwrap(),
@@ -285,7 +286,7 @@ mod append_transaction {
         };
 
         // act
-        let result = store.append_transaction(transfer, payment_result.memo, 4u64, now);
+        let result = store.try_sync_transaction(transfer, payment_result.memo, 4u64, now);
 
         // assert
         assert_eq!(result.is_ok(), true);
@@ -298,7 +299,7 @@ mod append_transaction {
     }
 
     #[test]
-    fn append_transaction_failed_memo_not_found() {
+    fn try_sync_transaction_failed_memo_not_found() {
         let mut store = setup_test_store();
         let request = AddPaymentRequest {
             amount: ICPTs::from_icpts(10).unwrap(),
@@ -317,7 +318,8 @@ mod append_transaction {
         };
 
         // act
-        let result = store.append_transaction(transfer, Memo(payment_result.memo.0 + 1), 4u64, now);
+        let result =
+            store.try_sync_transaction(transfer, Memo(payment_result.memo.0 + 1), 4u64, now);
 
         // assert
         assert_eq!(result.is_ok(), true);
@@ -330,7 +332,7 @@ mod append_transaction {
     }
 
     #[test]
-    fn append_transaction_failed_target_id_wrong() {
+    fn try_sync_transaction_failed_target_id_wrong() {
         let mut store = setup_test_store();
         let request = AddPaymentRequest {
             amount: ICPTs::from_icpts(10).unwrap(),
@@ -349,10 +351,76 @@ mod append_transaction {
         };
 
         // act
-        let result = store.append_transaction(transfer, payment_result.memo, 4u64, now);
+        let result = store.try_sync_transaction(transfer, payment_result.memo, 4u64, now);
 
         // assert
         assert_eq!(result.is_ok(), true);
+        let payment = store.payments.get(&payment_result.payment_id).unwrap();
+        assert_eq!(payment.transactions_last5.len(), 0);
+        assert_eq!(payment.block_heights.len(), 0);
+        assert_eq!(payment.received_amount, ICPTs::from_icpts(0).unwrap());
+        assert_eq!(payment.amount, ICPTs::from_icpts(10).unwrap());
+        assert_eq!(payment.paid_at, None);
+    }
+}
+
+mod sync_icp_payment {
+    use super::*;
+
+    #[test]
+    fn sync_icp_payment_success_some_all_paid() {
+        let mut store = setup_test_store();
+        let request = AddPaymentRequest {
+            amount: ICPTs::from_icpts(10).unwrap(),
+            created_remark: "test remark".to_string(),
+        };
+        let now = TimeStamp {
+            timestamp_nanos: 100,
+        };
+        let payment_result =
+            store.add_payment(request.clone(), get_allow_add_payment_principal(), now);
+        let transfer = Send {
+            from: get_some_user_account_id(),
+            fee: ICPTs::from_icpts(1).unwrap(),
+            amount: ICPTs::from_icpts(10).unwrap(),
+            to: get_icnaming_ledger_account_id(),
+        };
+
+        // act
+        let result = store.sync_icp_payment(4u64, transfer, payment_result.memo, now);
+
+        // assert
+        let payment = store.payments.get(&payment_result.payment_id).unwrap();
+        assert_eq!(payment.transactions_last5.len(), 1);
+        assert_eq!(payment.block_heights.len(), 1);
+        assert_eq!(payment.received_amount, ICPTs::from_icpts(10).unwrap());
+        assert_eq!(payment.amount, ICPTs::from_icpts(10).unwrap());
+        assert_eq!(payment.paid_at, Some(now));
+    }
+
+    #[test]
+    fn sync_icp_payment_failed_memo_not_found() {
+        let mut store = setup_test_store();
+        let request = AddPaymentRequest {
+            amount: ICPTs::from_icpts(10).unwrap(),
+            created_remark: "test remark".to_string(),
+        };
+        let now = TimeStamp {
+            timestamp_nanos: 100,
+        };
+        let payment_result =
+            store.add_payment(request.clone(), get_allow_add_payment_principal(), now);
+        let transfer = Send {
+            from: get_some_user_account_id(),
+            fee: ICPTs::from_icpts(1).unwrap(),
+            amount: ICPTs::from_icpts(10).unwrap(),
+            to: get_icnaming_ledger_account_id(),
+        };
+
+        // act
+        let result = store.sync_icp_payment(4u64, transfer, Memo(payment_result.memo.0 + 1), now);
+
+        // assert
         let payment = store.payments.get(&payment_result.payment_id).unwrap();
         assert_eq!(payment.transactions_last5.len(), 0);
         assert_eq!(payment.block_heights.len(), 0);
@@ -453,6 +521,16 @@ fn setup_test_store() -> PaymentsStore {
     });
 
     let mut store = PaymentsStore::default();
+    store.add_payment(
+        AddPaymentRequest {
+            amount: ICPTs::from_icpts(10).unwrap(),
+            created_remark: "test remark".to_string(),
+        },
+        get_allow_add_payment_principal(),
+        TimeStamp {
+            timestamp_nanos: TEST_NOW_TIMESTAMP_NANOS,
+        },
+    );
 
     let timestamp = TimeStamp {
         timestamp_nanos: TEST_NOW_TIMESTAMP_NANOS,
@@ -463,7 +541,7 @@ fn setup_test_store() -> PaymentsStore {
             to: account_identifier1,
         };
         store
-            .append_transaction(transfer, Memo(0), 0, timestamp)
+            .try_sync_transaction(transfer, Memo(1), 0, timestamp)
             .unwrap();
     }
     {
@@ -472,7 +550,7 @@ fn setup_test_store() -> PaymentsStore {
             to: account_identifier1,
         };
         store
-            .append_transaction(transfer, Memo(0), 1, timestamp)
+            .try_sync_transaction(transfer, Memo(1), 1, timestamp)
             .unwrap();
     }
     {
@@ -481,7 +559,7 @@ fn setup_test_store() -> PaymentsStore {
             from: account_identifier1,
         };
         store
-            .append_transaction(transfer, Memo(0), 2, timestamp)
+            .try_sync_transaction(transfer, Memo(1), 2, timestamp)
             .unwrap();
     }
     {
@@ -492,7 +570,7 @@ fn setup_test_store() -> PaymentsStore {
             to: icnaming_ledger_receiver_account_id,
         };
         store
-            .append_transaction(transfer.clone(), Memo(0), 3, timestamp)
+            .try_sync_transaction(transfer.clone(), Memo(1), 3, timestamp)
             .unwrap();
     }
     store
