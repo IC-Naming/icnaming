@@ -142,6 +142,7 @@ pub async fn register_for(name: String, owner: Principal, years: u64) -> Boolean
             api::time(),
             caller,
             QuotaType::LenGte(4),
+            false,
         )
         .await;
     BooleanActorResponse::new(result)
@@ -161,7 +162,15 @@ pub async fn register_with_quota(name: String, quota_type: QuotaType) -> Boolean
     let mut service = RegistrarService::new();
     let years = 1;
     let result = service
-        .register(&name, &caller, years, api::time(), &caller, quota_type)
+        .register(
+            &name,
+            &caller,
+            years,
+            api::time(),
+            &caller,
+            quota_type,
+            false,
+        )
         .await;
     BooleanActorResponse::new(result)
 }

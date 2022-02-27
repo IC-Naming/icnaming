@@ -327,6 +327,7 @@ impl RegistrarService {
         now: u64,
         quota_owner: &Principal,
         quota_type: QuotaType,
+        admin_import: bool,
     ) -> ICNSResult<bool> {
         let name = self.normalize_name(&name);
 
@@ -350,9 +351,21 @@ impl RegistrarService {
             });
         }
 
-        // check reserved names
-        if RESERVED_NAMES.contains(&name_result.get_current_level().unwrap().as_str()) {
-            return Err(ICNSError::RegistrationHasBeenTaken);
+        // check reservation if not admin import
+        if !admin_import {
+            // check reserved names
+            if RESERVED_NAMES.contains(&name_result.get_current_level().unwrap().as_str()) {
+                return Err(ICNSError::RegistrationHasBeenTaken);
+            }
+
+            // check astrox me names
+            ASTROX_ME_NAMES.with(|s| {
+                let names = s.get_names();
+                if names.contains(name_result.get_name()) {
+                    return Err(ICNSError::RegistrationHasBeenTaken);
+                }
+                Ok(())
+            })?;
         }
 
         STATE.with(|s| {
@@ -685,6 +698,7 @@ impl RegistrarService {
                     now_in_ns,
                     order.created_user(),
                     order.quota_type().clone(),
+                    false,
                 )
                 .await;
             if result.is_ok() {
@@ -954,6 +968,7 @@ impl RegistrarService {
                 now,
                 astrox_me_names.get_owner_canister_id(),
                 quota_type,
+                true,
             )
             .await?;
         }
