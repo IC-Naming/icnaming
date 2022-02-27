@@ -161,7 +161,6 @@ pub const RESERVED_NAMES: &[&str] = &[
     "dmailnetwork",
     "documentingtheic",
     "dom",
-    "dominic",
     "doocoins",
     "dots",
     "dport",
