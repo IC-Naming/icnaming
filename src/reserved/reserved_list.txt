@@ -29,6 +29,7 @@ axon
 b9-labs
 b9labs
 badge
+banklessdao
 bartlett
 bauction
 beacon
@@ -49,6 +50,7 @@ btc-flower
 btcflower
 bunchd
 bybit
+c98
 candid-convert
 candidconvert
 canister-tip-jar
@@ -520,6 +522,7 @@ reversi
 rise-of-the-magni
 riseofthemagni
 rocklabs
+rss3
 rust-libraries-for-ic-devs
 rustlibrariesforicdevs
 saga
@@ -620,6 +623,7 @@ weekindfinity
 weekindfinitynews
 welcome-into-the-metaverse
 welcomeintothemetaverse
+wenchfinance
 wicp
 wild-and-west
 wildandwest

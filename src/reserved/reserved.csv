@@ -27,6 +27,7 @@ axon,Axon,A community-built neuron management solution for the Internet Computer
 b9 labs,B9 Labs,Developer onboarding documentation,25000.0,b9-labs,b9-labs,grant,
 b9lab,B9 Labs,"Successful teams focus on code quality, usefulness and adoption to make sure their technology is core to the ecosystem.",,skip,b9lab,icp123,https://b9lab.com/
 badge,,,,badge,badge,reserved,
+banklessdao,,,,banklessdao,banklessdao,reserved,
 bartlett,,,,bartlett,bartlett,reserved,
 bauction,Bauction,Decentralized and transparent auction platform,25000.0,bauction,bauction,grant,
 bauction (follow-on),Bauction (Follow-On),Extension of Bauction features and SDK in PHP and NodeJS,25000.0,skip,bauction-(follow-on),grant,
@@ -54,6 +55,7 @@ btc-flower,BTC Flower,BTC Flower is the digital version of the R.I.P Banking Sys
 btcflower,,,,btcflower,btcflower,reserved,
 bunchd,Bunchd,"Create, Collaborate, and Earn on the Subscription Platform controlled by Creators.",,bunchd,bunchd,icapp,
 bybit,,,,bybit,bybit,reserved,
+c98,,,,c98,c98,reserved,
 candid-convert,candid-convert,Developer tools for parsing Candid to TypeScript,5000.0,candid-convert,candid-convert,grant,
 canister-tip-jar,Canister Tip Jar,,,canister-tip-jar,canister-tip-jar,icapp,
 canistergeek,Canistergeek,,,canistergeek,canistergeek,icapp,
@@ -497,6 +499,7 @@ reversi,Reversi,Reversi is one of the first Canister and a completely decentrali
 rise of the magni,Rise of the Magni,"<p>Rise of the Magni, built by Toniq Labs, winner of the DSCVR hackathon for games on the Internet Computer. Buy, earn, and trade collectibles, compete in tactical battles online to earn in-game tokens, and venture through story mode to experience one of the first games built on the Internet Computer.</p>",,rise-of-the-magni,rise-of-the-magni,showcase,https://riseofthemagni.com/
 rise-of-the-magni,Rise of the Magni,It is a game that is experienced through story mode adventure.,,skip,rise-of-the-magni,icp123,https://riseofthemagni.com/
 rocklabs,Rocklabs,Building Web3 on the Internet Computer.,,rocklabs,rocklabs,icapp,http://www.rocklabs.io/
+rss3,,,,rss3,rss3,reserved,
 rust libraries for ic devs,Rust libraries for IC Devs,"Stable memory collections, task scheduler, and event-based pub/sub",50000.0,rust-libraries-for-ic-devs,rust-libraries-for-ic-devs,grant,
 saga,Saga,"The Legends Series of NFTs goes beyond aesthetics and status, confering lasting benefits and power in the Saga Tarot economy. The series is comprised of one limited edition release for each of the 21 Major Arcana in the traditional Tarot deck. One hundred cards with exclusive art will be minted for each public release, and releases will occur every two weeks.",,saga,saga,icapp,https://legends.saga.cards/
 saga tarot,Saga Tarot,"Tarot game on the IC, with the goal of becoming like Hearthstone or MTG Arena",25000.0,saga-tarot,saga-tarot,grant,
@@ -588,6 +591,7 @@ webi-ai,Webi Ai,We make decentralized technological solutions for a decentralize
 week-in-dfinity-news,Week in Dfinity News,Week in Dfinity News.,,week-in-dfinity-news,week-in-dfinity-news,icapp,https://www.weekindfinity.com/
 weekindfinity,,,,weekindfinity,weekindfinity,reserved,
 welcome into the metaverse,Welcome Into the Metaverse,"<p>Prize winner of the DSCVR hackathon for the Internet Computer – this game brings digital community into a unified virtual space. Find anecdotes from founding ecosystem members, and go through a series of quests.</p>",,welcome-into-the-metaverse,welcome-into-the-metaverse,showcase,https://lc7ip-3iaaa-aaaah-aafva-cai.ic0.app/
+wenchfinance,,,,wenchfinance,wenchfinance,reserved,
 wicp,,,,wicp,wicp,reserved,
 wild and west,Wild and West,"<p>Wild and West NFTs were featured at the 2021 NFT NYC event, as well as showcased at the ICONIC NFT Art Gallery hosted by the DFINITY Foundation and Toniq Labs. Wild and West NFTs are the backbone of a few different cross-blockchain projects being led by the creative studio. Bridging native components of the Ethereum and Internet Computer blockchains to make an immersive experience for NFT holders. </p>",,wild-and-west,wild-and-west,showcase,https://entrepot.app/marketplace/wildwest
 wild-and-west-nft,Wild and West NFT,NFT project by Wild and West creative studio.,,skip,wild-and-west-nft,icapp,https://wildandwest.com/
