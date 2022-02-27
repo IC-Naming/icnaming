@@ -29,7 +29,7 @@ use common::permissions::must_not_anonymous;
 use common::permissions::{is_admin, must_be_system_owner};
 
 use crate::astrox_me_name::{ImportedStats, ASTROX_ME_NAME_IMPORT_LIMIT_TIME};
-use crate::name_order_store::{GetNameOrderResponse, NameOrderStatus};
+use crate::name_order_store::{GetNameOrderResponse, NameOrder, NameOrderStatus};
 use crate::quota_order_store::{
     GetOrderOutput, ICPMemo, PaymentMemo, PaymentType, PlaceOrderOutput, QuotaOrderDetails,
     QuotaOrderPayment, QuotaOrderStatus,
@@ -567,7 +567,7 @@ impl RegistrarService {
         })
     }
 
-    pub async fn refund_order(&self, caller: &Principal, _now: u64) -> ICNSResult<bool> {
+    pub async fn refund_order(&self, caller: &Principal, now: u64) -> ICNSResult<bool> {
         must_not_anonymous(caller)?;
         let payment_id: PaymentId = STATE.with(|s| {
             let name_order_store = s.name_order_store.borrow_mut();
@@ -592,6 +592,7 @@ impl RegistrarService {
 
         match refund_payment_response {
             RefundPaymentResponse::Refunded { .. } => {
+                self.cancel_quota_order(caller, now)?;
                 STATE.with(|s| {
                     let mut name_order_store = s.name_order_store.borrow_mut();
                     let order = name_order_store.get_order(caller).unwrap();
@@ -630,8 +631,8 @@ impl RegistrarService {
                 }
                 VerifyPaymentResponse::Paid { .. } => {
                     info!("Payment {} paid", payment_id);
-                    self.apply_paid_order(payment_id, now).await;
-                    Ok(true)
+                    let result = self.apply_paid_order(payment_id, now).await;
+                    Ok(result)
                 }
                 VerifyPaymentResponse::PaymentNotFound => {
                     todo!("Payment not found, clean order");
@@ -643,8 +644,13 @@ impl RegistrarService {
         }
     }
 
-    pub async fn apply_paid_order(&mut self, payment_id: PaymentId, now_in_ns: u64) {
-        let order = STATE.with(|s| {
+    pub async fn apply_paid_order(&mut self, payment_id: PaymentId, now_in_ns: u64) -> bool {
+        enum NameOrderHandlingStatus {
+            NeedToHandle(NameOrder),
+            AlreadyHandled,
+            Conflicted(NameOrder),
+        }
+        let name_order_handling_status = STATE.with(|s| {
             let mut name_order_store = s.name_order_store.borrow_mut();
             let order = name_order_store.get_order_by_payment_id(&payment_id);
             if order.is_none() {
@@ -652,81 +658,90 @@ impl RegistrarService {
                     "order not found for payment id {}, it should be handle before",
                     payment_id
                 );
-                return None;
+                return NameOrderHandlingStatus::AlreadyHandled;
             }
 
             let order = order.unwrap();
             let order = order.clone();
 
             // lock payment id
-            let handling_result = name_order_store.add_handling_payment_id(payment_id);
+            let handling_result = name_order_store.add_handling_name(order.name().clone().as_str());
             if handling_result.is_err() {
-                error!("failed to add handling payment id {}", payment_id);
-                handling_result.unwrap();
+                error!("failed to add handling name {}", order.name());
+                return NameOrderHandlingStatus::Conflicted(order);
             }
 
-            Some(order)
+            return NameOrderHandlingStatus::NeedToHandle(order);
         });
-        if order.is_none() {
-            return;
-        }
-        let order = order.unwrap();
-
-        let user: &Principal = order.created_user();
-        let name: &str = order.name().as_str();
-        assert!(order.order_status() == &NameOrderStatus::New);
-        if self.available(name).is_err() {
-            // go to refund
-
-            STATE.with(|s| {
-                let mut name_order_store = s.name_order_store.borrow_mut();
-
-                name_order_store.waiting_to_refund(user);
-
-                // release payment id
-                name_order_store
-                    .remove_handling_payment_id(payment_id)
-                    .unwrap();
-            })
-        } else {
-            if self.exits_by_payment_id(payment_id) {
-                // complete quota order to claim name
-                self.paid_quota_order(payment_id, now_in_ns);
-            } else {
-                warn!(
+        let name_claimed = match name_order_handling_status {
+            NameOrderHandlingStatus::NeedToHandle(order) => {
+                let user: &Principal = order.created_user();
+                let name: &str = order.name().as_str();
+                assert!(order.order_status() == &NameOrderStatus::New);
+                // if name is not available or it is claiming by other user, go to refund it
+                if self.available(name).is_err() {
+                    // go to refund
+                    STATE.with(|s| {
+                        let mut name_order_store = s.name_order_store.borrow_mut();
+                        name_order_store.waiting_to_refund(user);
+                    });
+                    return false;
+                } else {
+                    if self.exits_by_payment_id(payment_id) {
+                        // complete quota order to claim name
+                        self.paid_quota_order(payment_id, now_in_ns);
+                    } else {
+                        warn!(
                     "there is no quota order found with payment_id:{}, it is not a common case but leave it pass and try to claim name",
                     name
                 );
-            }
+                    }
 
-            // complete name order
-            let result = self
-                .register(
-                    name,
-                    user,
-                    order.years().clone(),
-                    now_in_ns,
-                    order.created_user(),
-                    order.quota_type().clone(),
-                    false,
-                )
-                .await;
-            if result.is_ok() {
-                MERTRICS_COUNTER.with(|c| {
-                    let mut counter = c.borrow_mut();
-                    counter.name_order_paid_count += 1;
-                });
-            } else {
-                warn!("failed to register name {}", name);
+                    // complete name order
+                    let result = self
+                        .register(
+                            name,
+                            user,
+                            order.years().clone(),
+                            now_in_ns,
+                            order.created_user(),
+                            order.quota_type().clone(),
+                            false,
+                        )
+                        .await;
+                    if result.is_ok() {
+                        MERTRICS_COUNTER.with(|c| {
+                            let mut counter = c.borrow_mut();
+                            counter.name_order_paid_count += 1;
+                        });
+                    } else {
+                        warn!("failed to register name {}", name);
+                    }
+                    // always remove name order, if name is not registered, take name, if name is not available, just remove name order and leave quota to user.
+                    // release payment id
+                    STATE.with(|s| {
+                        let mut store = s.name_order_store.borrow_mut();
+                        store.remove_name_order(user);
+                        store.remove_handling_name(name).unwrap();
+                    });
+
+                    return result.is_ok();
+                }
             }
-            // always remove name order, if name is not registered, take name, if name is not available, just remove name order and leave quota to user.
-            // release payment id
-            STATE.with(|s| {
-                let mut store = s.name_order_store.borrow_mut();
-                store.remove_name_order(user);
-                store.remove_handling_payment_id(payment_id).unwrap();
-            });
-        }
+            NameOrderHandlingStatus::AlreadyHandled => true,
+            NameOrderHandlingStatus::Conflicted(order) => {
+                let user: &Principal = order.created_user();
+
+                // go to refund
+                STATE.with(|s| {
+                    let mut name_order_store = s.name_order_store.borrow_mut();
+                    name_order_store.waiting_to_refund(user);
+                });
+                false
+            }
+        };
+
+        return name_claimed;
     }
 
     pub fn add_quota(

@@ -22,7 +22,6 @@ Feature: Register a name with quota
       | user  | quota_type1 | quota_type2 | value |
       | user1 | LenGte      | 3           | 9     |
 
-
   Scenario: Register a name with not enough quota
     When User "user1" register name "hello1.icp" with quote "LenEq(6)"
     Then Register with quota result in status 'name is invalid, reason: "User has no quota for len_eq(6)"'
