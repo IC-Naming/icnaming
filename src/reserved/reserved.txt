@@ -171,3 +171,5 @@ banklessdao
 rss3
 c98
 wenchfinance
+meta
+metaverse
