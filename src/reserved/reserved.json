@@ -3920,6 +3920,16 @@
         "recommend_url": "messity"
     },
     {
+        "id": "meta",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "meta",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "meta"
+    },
+    {
         "id": "metabox",
         "title": "",
         "summary": "",
@@ -3968,6 +3978,16 @@
         "type": "icapp",
         "url": "https://metasportsbball.xyz/",
         "recommend_url": "metasports-basketball"
+    },
+    {
+        "id": "metaverse",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "metaverse",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "metaverse"
     },
     {
         "id": "metaverse",

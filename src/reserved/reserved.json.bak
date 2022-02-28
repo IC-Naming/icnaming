@@ -280,6 +280,16 @@
         "recommend_url": "badge"
     },
     {
+        "id": "banklessdao",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "banklessdao",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "banklessdao"
+    },
+    {
         "id": "bartlett",
         "title": "",
         "summary": "",
@@ -548,6 +558,16 @@
         "type": "reserved",
         "url": "",
         "recommend_url": "bybit"
+    },
+    {
+        "id": "c98",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "c98",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "c98"
     },
     {
         "id": "candid-convert",
@@ -3900,6 +3920,16 @@
         "recommend_url": "messity"
     },
     {
+        "id": "meta",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "meta",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "meta"
+    },
+    {
         "id": "metabox",
         "title": "",
         "summary": "",
@@ -3948,6 +3978,16 @@
         "type": "icapp",
         "url": "https://metasportsbball.xyz/",
         "recommend_url": "metasports-basketball"
+    },
+    {
+        "id": "metaverse",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "metaverse",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "metaverse"
     },
     {
         "id": "metaverse",
@@ -4980,6 +5020,16 @@
         "recommend_url": "rocklabs"
     },
     {
+        "id": "rss3",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "rss3",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "rss3"
+    },
+    {
         "id": "rust libraries for ic devs",
         "title": "Rust libraries for IC Devs",
         "summary": "Stable memory collections, task scheduler, and event-based pub/sub",
@@ -5888,6 +5938,16 @@
         "type": "showcase",
         "url": "https://lc7ip-3iaaa-aaaah-aafva-cai.ic0.app/",
         "recommend_url": "welcome-into-the-metaverse"
+    },
+    {
+        "id": "wenchfinance",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "wenchfinance",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "wenchfinance"
     },
     {
         "id": "wicp",
