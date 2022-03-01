@@ -186,6 +186,7 @@ export const idlFactory = ({ IDL }) => {
         [BooleanActorResponse],
         [],
       ),
+    'run_tasks' : IDL.Func([], [BooleanActorResponse], []),
     'sub_quota' : IDL.Func(
         [IDL.Principal, QuotaType, IDL.Nat32],
         [BooleanActorResponse],

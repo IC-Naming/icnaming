@@ -47,6 +47,7 @@ impl SyncTransactionJob {
             .get_tip_of_ledger(GetTipOfLedgerRequest {})
             .await;
         if tip_of_ledger.is_err() {
+            error!("Failed to get tip of ledger");
             return Err(tip_of_ledger.err().unwrap().message);
         }
         let tip_of_ledger = tip_of_ledger.unwrap();
@@ -55,6 +56,10 @@ impl SyncTransactionJob {
             // We only reach here on service initialization and we don't care about previous blocks, so
             // we mark that we are synced with the latest tip_of_chain and return so that subsequent
             // syncs will continue from there
+            info!(
+                "Setting payment version synced up to to {}",
+                tip_of_ledger.payments_version
+            );
             STATE.with(|s| {
                 let mut store = s.payment_store.borrow_mut();
                 store.init_payment_version_synced_up_to(tip_of_ledger.payments_version);
@@ -66,10 +71,17 @@ impl SyncTransactionJob {
         let next_payment_version_required = payment_version_synced_up_to.unwrap() + 1;
         if tip_of_ledger.payments_version < next_payment_version_required {
             // There are no new blocks since our last sync, so mark sync complete and return
+            debug!("No new blocks since last sync, marking ledger sync complete");
             STATE.with(|s| s.payment_store.borrow_mut().mark_ledger_sync_complete());
             Ok(0)
         } else {
-            let ids = STATE.with(|s| s.name_order_store.borrow().get_need_verify_payment_ids());
+            debug!(
+                "Syncing payments from {} to {}",
+                payment_version_synced_up_to.unwrap(),
+                tip_of_ledger.payments_version
+            );
+            let mut ids = STATE.with(|s| s.name_order_store.borrow().get_need_verify_payment_ids());
+            ids.sort();
             let mut payments_paid_count = 0;
             if ids.len() > 0 {
                 debug!("sync_transactions_within_lock: {} ids to verify", ids.len());
@@ -103,6 +115,8 @@ impl SyncTransactionJob {
                         }
                     }
                 }
+            } else {
+                debug!("No ids to verify");
             }
             STATE.with(|s| {
                 let mut store = s.payment_store.borrow_mut();

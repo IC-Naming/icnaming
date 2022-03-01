@@ -127,6 +127,7 @@ export interface _SERVICE {
   'register_with_quota' : (arg_0: string, arg_1: QuotaType) => Promise<
       BooleanActorResponse
     >,
+  'run_tasks' : () => Promise<BooleanActorResponse>,
   'sub_quota' : (arg_0: Principal, arg_1: QuotaType, arg_2: number) => Promise<
       BooleanActorResponse
     >,

@@ -13,6 +13,7 @@ use common::state::StableState;
 
 use crate::astrox_me_name::ImportedStats;
 use crate::name_order_store::GetNameOrderResponse;
+use crate::periodic_tasks_runner::{heartbeat, run_periodic_tasks};
 use crate::registration_store::{RegistrationDetails, RegistrationDto};
 use crate::service::{
     PriceTable, RegistrarService, Stats, SubmitOrderRequest, SubmitOrderResponse,
@@ -55,6 +56,18 @@ impl GetStatsActorResponse {
             Err(err) => GetStatsActorResponse::Err(err.into()),
         }
     }
+}
+
+#[update(name = "run_tasks")]
+#[candid_method(update, rename = "run_tasks")]
+pub async fn run_tasks() -> BooleanActorResponse {
+    let caller = &api::caller();
+    let permission_result = must_be_system_owner(caller);
+    if permission_result.is_err() {
+        return BooleanActorResponse::new(Err(permission_result.err().unwrap()));
+    }
+    run_periodic_tasks().await;
+    BooleanActorResponse::new(Ok(true))
 }
 
 #[update(name = "get_price_table")]
