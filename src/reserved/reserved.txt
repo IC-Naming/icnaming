@@ -173,3 +173,6 @@ c98
 wenchfinance
 meta
 metaverse
+phasma
+shiku
+yumi
