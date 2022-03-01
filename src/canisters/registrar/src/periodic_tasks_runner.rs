@@ -3,7 +3,7 @@ use log::error;
 
 use crate::payment_sync;
 
-#[heartbeat]
+// #[heartbeat]
 pub fn heartbeat() {
     let future = run_periodic_tasks();
     ic_cdk::spawn(future);

@@ -110,6 +110,7 @@ service : {
   refund_order : () -> (BooleanActorResponse);
   register_for : (text, principal, nat64) -> (BooleanActorResponse);
   register_with_quota : (text, QuotaType) -> (BooleanActorResponse);
+  run_tasks : () -> (BooleanActorResponse);
   sub_quota : (principal, QuotaType, nat32) -> (BooleanActorResponse);
   submit_order : (SubmitOrderRequest) -> (SubmitOrderActorResponse);
 }
