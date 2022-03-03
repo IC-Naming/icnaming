@@ -6,6 +6,7 @@ use common::state::StableState;
 #[derive(Default)]
 pub struct PaymentStore {
     payment_version: Option<u64>,
+    // obsolete last_ledger_sync_timestamp_nanos
     last_ledger_sync_timestamp_nanos: u64,
 }
 
@@ -34,10 +35,6 @@ impl PaymentStore {
         self.payment_version.clone()
     }
 
-    pub fn get_last_ledger_sync_timestamp_nanos(&self) -> u64 {
-        self.last_ledger_sync_timestamp_nanos
-    }
-
     pub fn init_payment_version_synced_up_to(&mut self, payment_version: u64) {
         self.payment_version = Some(payment_version);
     }
@@ -47,6 +44,6 @@ impl PaymentStore {
     }
 
     pub fn mark_ledger_sync_complete(&mut self) {
-        self.last_ledger_sync_timestamp_nanos = api::time();
+        // do nothing
     }
 }

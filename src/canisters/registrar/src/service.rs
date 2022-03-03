@@ -88,6 +88,51 @@ impl RegistrarService {
         stats.cycles_balance = api::canister_balance();
         STATE.with(|s| {
             {
+                let store = s.registration_store.borrow();
+                // count distinct owners of registered names
+                let mut owners = HashSet::new();
+                for registration in store.get_registrations().values() {
+                    owners.insert(registration.get_owner());
+                }
+                stats.user_count = owners.len() as u64;
+            }
+            {
+                let mut user_quota_count = HashMap::new();
+                let quota_types = vec![
+                    QuotaType::LenGte(1),
+                    QuotaType::LenGte(2),
+                    QuotaType::LenGte(3),
+                    QuotaType::LenGte(4),
+                    QuotaType::LenGte(5),
+                    QuotaType::LenGte(6),
+                    QuotaType::LenGte(7),
+                    QuotaType::LenEq(1),
+                    QuotaType::LenEq(2),
+                    QuotaType::LenEq(3),
+                    QuotaType::LenEq(4),
+                    QuotaType::LenEq(5),
+                    QuotaType::LenEq(6),
+                    QuotaType::LenEq(7),
+                ];
+                for quota_type in quota_types {
+                    user_quota_count.insert(quota_type, 0);
+                }
+                let store = s.user_quota_store.borrow();
+                let quotas = store.get_user_quotas();
+                for user_quota in quotas.values() {
+                    for (t, count) in user_quota {
+                        let count = user_quota_count.entry(*t).or_insert(0);
+                        *count += *count;
+                    }
+                }
+                let mut user_quota_count_stats = HashMap::new();
+                for (quota_type, count) in user_quota_count {
+                    let type_str = quota_type.to_string().replace('(', "").replace(')', "");
+                    user_quota_count_stats.entry(type_str).or_insert(0);
+                }
+                stats.user_quota_count = user_quota_count_stats;
+            }
+            {
                 let manager = s.quota_order_store.borrow();
                 let orders = manager.get_all_orders();
                 let mut count_by_status = HashMap::new();
@@ -141,8 +186,6 @@ impl RegistrarService {
             {
                 let store = s.payment_store.borrow();
                 stats.payment_version = store.get_payment_version_synced_up_to().unwrap_or(0);
-                let nanos_since_last = now - store.get_last_ledger_sync_timestamp_nanos();
-                stats.seconds_since_last_ledger_sync = nanos_since_last / 1_000_000_000;
             }
         });
         MERTRICS_COUNTER.with(|c| {
@@ -1091,6 +1134,20 @@ pub fn encode_metrics(w: &mut MetricsEncoder<Vec<u8>>) -> std::io::Result<()> {
             format!("Number of name orders with status {}", status).as_str(),
         )?;
     }
+    for (t, count) in stats.user_quota_count.iter() {
+        if count > &0u64 {
+            w.encode_gauge(
+                format!("icnaming_registrar_quota_type_{}", t).as_str(),
+                *count as f64,
+                format!("Number of quotas with type {}", t).as_str(),
+            )?;
+        }
+    }
+    w.encode_gauge(
+        "icnaming_registrar_user_count",
+        stats.user_count as f64,
+        "Number of users",
+    )?;
     w.encode_gauge(
         "icnaming_registrar_registrations_count",
         stats.registration_count as f64,
@@ -1132,11 +1189,6 @@ pub fn encode_metrics(w: &mut MetricsEncoder<Vec<u8>>) -> std::io::Result<()> {
         "Payment version synced",
     )?;
     w.encode_gauge(
-        "icnaming_registrar_seconds_since_last_ledger_sync",
-        stats.seconds_since_last_ledger_sync as f64,
-        "Seconds since last ledger sync",
-    )?;
-    w.encode_gauge(
         "icnaming_registrar_cycles_balance",
         stats.cycles_balance as f64,
         "Cycles balance",
@@ -1148,7 +1200,9 @@ pub fn encode_metrics(w: &mut MetricsEncoder<Vec<u8>>) -> std::io::Result<()> {
 #[derive(CandidType, Deserialize, Default)]
 pub struct Stats {
     cycles_balance: u64,
+    user_count: u64,
     user_quota_order_count: HashMap<String, u64>,
+    user_quota_count: HashMap<String, u64>,
     user_name_order_count_by_status: HashMap<String, u64>,
     registration_count: u64,
     last_xdr_permyriad_per_icp: u64,
@@ -1158,7 +1212,6 @@ pub struct Stats {
     name_order_cancelled_count: u64,
     new_registered_name_count: u64,
     payment_version: u64,
-    seconds_since_last_ledger_sync: u64,
 }
 
 #[cfg(test)]

@@ -107,6 +107,10 @@ impl UserQuotaStore {
             false
         }
     }
+
+    pub fn get_user_quotas(&self) -> &HashMap<Principal, HashMap<QuotaType, u32>> {
+        &self.user_quotas
+    }
 }
 
 #[cfg(test)]

@@ -25,6 +25,7 @@ export interface Stats {
   'seconds_since_last_ledger_sync' : bigint,
   'sub_accounts_count' : bigint,
   'neurons_topped_up_count' : bigint,
+  'payments_version' : bigint,
   'transactions_to_process_queue_length' : number,
   'neurons_created_count' : bigint,
   'hardware_wallet_accounts_count' : bigint,

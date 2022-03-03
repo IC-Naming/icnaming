@@ -18,6 +18,7 @@ export const idlFactory = ({ IDL }) => {
     'seconds_since_last_ledger_sync' : IDL.Nat64,
     'sub_accounts_count' : IDL.Nat64,
     'neurons_topped_up_count' : IDL.Nat64,
+    'payments_version' : IDL.Nat64,
     'transactions_to_process_queue_length' : IDL.Nat32,
     'neurons_created_count' : IDL.Nat64,
     'hardware_wallet_accounts_count' : IDL.Nat64,

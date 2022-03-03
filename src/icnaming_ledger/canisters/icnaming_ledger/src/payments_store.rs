@@ -522,6 +522,7 @@ impl PaymentsStore {
             latest_transaction_block_height: latest_transaction.map_or(0, |t| t.block_height),
             seconds_since_last_ledger_sync: duration_since_last_sync.as_secs(),
             count_of_payments_by_status: status_count,
+            payments_version: self.payments_version,
         }
     }
 
@@ -618,6 +619,11 @@ pub fn encode_metrics(w: &mut MetricsEncoder<Vec<u8>>) -> std::io::Result<()> {
             "Block height of the latest transaction processed by the canister.",
         )?;
         w.encode_gauge(
+            "icnaming_ledger_payment_version",
+            stats.payments_version as f64,
+            "Version of the payments store.",
+        )?;
+        w.encode_gauge(
             "icnaming_ledger_seconds_since_last_ledger_sync",
             stats.seconds_since_last_ledger_sync as f64,
             "Number of seconds since last ledger sync.",
@@ -649,6 +655,7 @@ pub struct Stats {
     latest_transaction_block_height: BlockHeight,
     seconds_since_last_ledger_sync: u64,
     count_of_payments_by_status: HashMap<String, u64>,
+    payments_version: u64,
 }
 
 #[cfg(test)]
