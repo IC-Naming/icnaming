@@ -4,8 +4,6 @@ export type BooleanActorResponse = { 'Ok' : boolean } |
 export interface ErrorInfo { 'code' : number, 'message' : string }
 export type GetAllDetailsActorResponse = { 'Ok' : Array<RegistrationDetails> } |
   { 'Err' : ErrorInfo };
-export type GetAstroxMeNameStatsActorResponse = { 'Ok' : ImportedStats } |
-  { 'Err' : ErrorInfo };
 export type GetDetailsActorResponse = { 'Ok' : RegistrationDetails } |
   { 'Err' : ErrorInfo };
 export type GetNameExpiresActorResponse = { 'Ok' : bigint } |
@@ -37,13 +35,6 @@ export type GetQuotaActorResponse = { 'Ok' : number } |
   { 'Err' : ErrorInfo };
 export type GetStatsActorResponse = { 'Ok' : Stats } |
   { 'Err' : ErrorInfo };
-export type ImportAstroxMeNamesActorResponse = { 'Ok' : ImportedStats } |
-  { 'Err' : ErrorInfo };
-export interface ImportedStats {
-  'total' : number,
-  'imported' : number,
-  'not_imported' : number,
-}
 export type NameOrderStatus = { 'New' : null } |
   { 'WaitingToRefund' : null } |
   { 'Done' : null } |
@@ -103,7 +94,6 @@ export interface _SERVICE {
   'get_all_details' : (arg_0: GetPageInput) => Promise<
       GetAllDetailsActorResponse
     >,
-  'get_astrox_me_name_stats' : () => Promise<GetAstroxMeNameStatsActorResponse>,
   'get_details' : (arg_0: string) => Promise<GetDetailsActorResponse>,
   'get_name_expires' : (arg_0: string) => Promise<GetNameExpiresActorResponse>,
   'get_names' : (arg_0: Principal, arg_1: GetPageInput) => Promise<
@@ -116,9 +106,6 @@ export interface _SERVICE {
       GetQuotaActorResponse
     >,
   'get_stats' : () => Promise<GetStatsActorResponse>,
-  'import_astrox_me_names' : (arg_0: Array<string>) => Promise<
-      ImportAstroxMeNamesActorResponse
-    >,
   'import_quota' : (arg_0: Array<number>) => Promise<BooleanActorResponse>,
   'refund_order' : () => Promise<BooleanActorResponse>,
   'register_for' : (arg_0: string, arg_1: Principal, arg_2: bigint) => Promise<

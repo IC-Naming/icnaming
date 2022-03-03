@@ -7,15 +7,14 @@ use ic_cdk_macros::*;
 use log::info;
 
 use common::ic_logger::ICLogger;
-use common::named_canister_ids::CANISTER_NAME_REGISTRAR;
 use common::named_canister_ids::ensure_current_canister_id_match;
+use common::named_canister_ids::CANISTER_NAME_REGISTRAR;
 use common::permissions::get_admin_principal;
 use common::state::StableState;
 
-use crate::astrox_me_name::AstroXMeName;
 use crate::name_order_store::NameOrderStore;
 use crate::payment_store::PaymentStore;
-use crate::quota_import_store::{ACCEPTABLE_HASHES, QuotaImportStore};
+use crate::quota_import_store::{QuotaImportStore, ACCEPTABLE_HASHES};
 use crate::quota_order_store::QuotaOrderStore;
 use crate::registration_store::RegistrationStore;
 use crate::settings::Settings;
@@ -24,7 +23,6 @@ use crate::user_quota_store::UserQuotaStore;
 thread_local! {
     pub static STATE : State = State::default();
     pub static MERTRICS_COUNTER: RefCell<MetricsCounter> = RefCell::new(MetricsCounter::default());
-    pub static ASTROX_ME_NAMES: AstroXMeName = AstroXMeName::default();
 }
 
 #[derive(Default)]
@@ -78,7 +76,7 @@ impl StableState for State {
             self.quota_order_store.borrow().encode(),
             self.quota_import_store.borrow().encode(),
         ))
-            .unwrap()
+        .unwrap()
     }
 
     fn decode(bytes: Vec<u8>) -> Result<Self, String> {
@@ -138,7 +136,7 @@ fn init_function() {
 fn pre_upgrade() {
     STATE.with(|s| {
         let bytes = s.encode();
-        match storage::stable_save((&bytes, )) {
+        match storage::stable_save((&bytes,)) {
             Ok(_) => {
                 info!("Saved state before upgrade");
                 ()
@@ -150,7 +148,7 @@ fn pre_upgrade() {
 
 #[post_upgrade]
 fn post_upgrade() {
-    STATE.with(|s| match storage::stable_restore::<(Vec<u8>, )>() {
+    STATE.with(|s| match storage::stable_restore::<(Vec<u8>,)>() {
         Ok(bytes) => {
             let new_state = State::decode(bytes.0).expect("Decoding stable memory failed");
 

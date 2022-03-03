@@ -28,7 +28,6 @@ use common::naming::{normalize_name, NameParseResult};
 use common::permissions::must_not_anonymous;
 use common::permissions::{is_admin, must_be_system_owner};
 
-use crate::astrox_me_name::{ImportedStats, ASTROX_ME_NAME_IMPORT_LIMIT_TIME};
 use crate::name_order_store::{GetNameOrderResponse, NameOrder, NameOrderStatus};
 use crate::quota_order_store::{
     GetOrderOutput, ICPMemo, PaymentMemo, PaymentType, PlaceOrderOutput, QuotaOrderDetails,
@@ -357,15 +356,6 @@ impl RegistrarService {
             if RESERVED_NAMES.contains(&name_result.get_current_level().unwrap().as_str()) {
                 return Err(ICNSError::RegistrationHasBeenTaken);
             }
-
-            // check astrox me names
-            ASTROX_ME_NAMES.with(|s| {
-                let names = s.get_names();
-                if names.contains(name_result.get_name()) {
-                    return Err(ICNSError::RegistrationHasBeenTaken);
-                }
-                Ok(())
-            })?;
         }
 
         STATE.with(|s| {
@@ -430,14 +420,6 @@ impl RegistrarService {
             return Err(ICNSError::RegistrationHasBeenTaken);
         }
 
-        // check astrox me names
-        ASTROX_ME_NAMES.with(|s| {
-            let names = s.get_names();
-            if names.contains(result.get_name()) {
-                return Err(ICNSError::RegistrationHasBeenTaken);
-            }
-            Ok(())
-        })?;
         STATE.with(|s| {
             let store = s.registration_store.borrow();
             let registrations = store.get_registrations();
@@ -916,85 +898,6 @@ impl RegistrarService {
             let order_ref = manager.get_order_by_payment_id(&payment_id);
             order_ref.is_some()
         })
-    }
-
-    pub fn get_astrox_me_name_stats(&self) -> ICNSResult<ImportedStats> {
-        STATE.with(|s| {
-            let store = s.registration_store.borrow();
-
-            let registrations = store.get_registrations();
-            let mut total = 0;
-            let mut imported = 0;
-            // count imported
-            ASTROX_ME_NAMES.with(|s| {
-                let names = s.get_names();
-                total = names.len() as u32;
-                for name in names.iter() {
-                    if registrations.get(name).is_some() {
-                        imported += 1;
-                    }
-                }
-            });
-            Ok(ImportedStats {
-                total,
-                imported,
-                not_imported: total - imported,
-            })
-        })
-    }
-
-    pub async fn import_astrox_me_names(
-        &mut self,
-        caller: &Principal,
-        now: u64,
-        mut names: HashSet<String>,
-    ) -> ICNSResult<ImportedStats> {
-        must_be_system_owner(caller)?;
-        if now > ASTROX_ME_NAME_IMPORT_LIMIT_TIME {
-            return Err(ICNSError::ValueShouldBeInRangeError {
-                field: "now".to_string(),
-                min: 0,
-                max: ASTROX_ME_NAME_IMPORT_LIMIT_TIME as usize,
-            });
-        }
-        let astrox_me_names = ASTROX_ME_NAMES.with(|s| s.clone());
-        let allow_names = astrox_me_names.get_names();
-        // assert the names are in the allow list
-        for name in names.iter() {
-            if !allow_names.contains(name) {
-                return Err(ICNSError::Unknown);
-            }
-        }
-
-        STATE.with(|s| {
-            let store = s.registration_store.borrow();
-            let keys = store.get_registrations().keys();
-            for key in keys {
-                if names.contains(key) {
-                    debug!("{} is already registered, remove from import list", key);
-                    names.remove(key);
-                }
-            }
-        });
-
-        for name in names.iter() {
-            let result = NameParseResult::parse(name);
-            let current_level = result.get_current_level().unwrap();
-            let length = current_level.chars().count();
-            let quota_type = QuotaType::LenGte(length as u8);
-            self.register(
-                name.as_str(),
-                astrox_me_names.get_owner_canister_id(),
-                1,
-                now,
-                astrox_me_names.get_owner_canister_id(),
-                quota_type,
-                true,
-            )
-            .await?;
-        }
-
-        self.get_astrox_me_name_stats()
     }
 
     pub async fn get_price_table(&self) -> ICNSResult<PriceTable> {

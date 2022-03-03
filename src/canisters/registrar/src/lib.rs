@@ -1,5 +1,4 @@
 pub mod actor;
-mod astrox_me_name;
 mod http;
 mod name_order_store;
 mod payment_store;
