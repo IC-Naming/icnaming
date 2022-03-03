@@ -11,7 +11,6 @@ use common::icnaming_ledger_types::BlockHeight;
 use common::permissions::must_be_system_owner;
 use common::state::StableState;
 
-use crate::astrox_me_name::ImportedStats;
 use crate::name_order_store::GetNameOrderResponse;
 use crate::periodic_tasks_runner::{heartbeat, run_periodic_tasks};
 use crate::registration_store::{RegistrationDetails, RegistrationDto};
@@ -470,56 +469,6 @@ pub async fn confirm_pay_order(block_height: BlockHeight) -> BooleanActorRespons
     let mut service = RegistrarService::new();
     let result = service.confirm_pay_order(now, caller, block_height).await;
     BooleanActorResponse::new(result)
-}
-
-#[query(name = "get_astrox_me_name_stats")]
-#[candid_method(query, rename = "get_astrox_me_name_stats")]
-pub fn get_astrox_me_name_stats() -> GetAstroxMeNameStatsActorResponse {
-    let service = RegistrarService::new();
-    let result = service.get_astrox_me_name_stats();
-    GetAstroxMeNameStatsActorResponse::new(result)
-}
-
-#[derive(CandidType)]
-pub enum GetAstroxMeNameStatsActorResponse {
-    Ok(ImportedStats),
-    Err(ErrorInfo),
-}
-
-impl GetAstroxMeNameStatsActorResponse {
-    pub fn new(result: ICNSResult<ImportedStats>) -> GetAstroxMeNameStatsActorResponse {
-        match result {
-            Ok(stats) => GetAstroxMeNameStatsActorResponse::Ok(stats),
-            Err(err) => GetAstroxMeNameStatsActorResponse::Err(err.into()),
-        }
-    }
-}
-
-#[update(name = "import_astrox_me_names")]
-#[candid_method(update, rename = "import_astrox_me_names")]
-pub async fn import_astrox_me_names(names: HashSet<String>) -> ImportAstroxMeNamesActorResponse {
-    let caller = &api::caller();
-    debug!("import_astrox_me_names: caller: {}", caller);
-    let now = api::time();
-
-    let mut service = RegistrarService::new();
-    let result = service.import_astrox_me_names(caller, now, names).await;
-    ImportAstroxMeNamesActorResponse::new(result)
-}
-
-#[derive(CandidType)]
-pub enum ImportAstroxMeNamesActorResponse {
-    Ok(ImportedStats),
-    Err(ErrorInfo),
-}
-
-impl ImportAstroxMeNamesActorResponse {
-    pub fn new(result: ICNSResult<ImportedStats>) -> ImportAstroxMeNamesActorResponse {
-        match result {
-            Ok(stats) => ImportAstroxMeNamesActorResponse::Ok(stats),
-            Err(err) => ImportAstroxMeNamesActorResponse::Err(err.into()),
-        }
-    }
 }
 
 candid::export_service!();

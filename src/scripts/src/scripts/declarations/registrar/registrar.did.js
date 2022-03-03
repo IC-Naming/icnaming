@@ -24,15 +24,6 @@ export const idlFactory = ({ IDL }) => {
     'Ok' : IDL.Vec(RegistrationDetails),
     'Err' : ErrorInfo,
   });
-  const ImportedStats = IDL.Record({
-    'total' : IDL.Nat32,
-    'imported' : IDL.Nat32,
-    'not_imported' : IDL.Nat32,
-  });
-  const GetAstroxMeNameStatsActorResponse = IDL.Variant({
-    'Ok' : ImportedStats,
-    'Err' : ErrorInfo,
-  });
   const GetDetailsActorResponse = IDL.Variant({
     'Ok' : RegistrationDetails,
     'Err' : ErrorInfo,
@@ -112,10 +103,6 @@ export const idlFactory = ({ IDL }) => {
     'Ok' : Stats,
     'Err' : ErrorInfo,
   });
-  const ImportAstroxMeNamesActorResponse = IDL.Variant({
-    'Ok' : ImportedStats,
-    'Err' : ErrorInfo,
-  });
   const SubmitOrderRequest = IDL.Record({
     'name' : IDL.Text,
     'years' : IDL.Nat32,
@@ -138,11 +125,6 @@ export const idlFactory = ({ IDL }) => {
     'get_all_details' : IDL.Func(
         [GetPageInput],
         [GetAllDetailsActorResponse],
-        ['query'],
-      ),
-    'get_astrox_me_name_stats' : IDL.Func(
-        [],
-        [GetAstroxMeNameStatsActorResponse],
         ['query'],
       ),
     'get_details' : IDL.Func([IDL.Text], [GetDetailsActorResponse], ['query']),
@@ -169,11 +151,6 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'get_stats' : IDL.Func([], [GetStatsActorResponse], ['query']),
-    'import_astrox_me_names' : IDL.Func(
-        [IDL.Vec(IDL.Text)],
-        [ImportAstroxMeNamesActorResponse],
-        [],
-      ),
     'import_quota' : IDL.Func([IDL.Vec(IDL.Nat8)], [BooleanActorResponse], []),
     'refund_order' : IDL.Func([], [BooleanActorResponse], []),
     'register_for' : IDL.Func(

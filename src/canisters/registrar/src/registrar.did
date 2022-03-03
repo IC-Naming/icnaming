@@ -4,10 +4,6 @@ type GetAllDetailsActorResponse = variant {
   Ok : vec RegistrationDetails;
   Err : ErrorInfo;
 };
-type GetAstroxMeNameStatsActorResponse = variant {
-  Ok : ImportedStats;
-  Err : ErrorInfo;
-};
 type GetDetailsActorResponse = variant {
   Ok : RegistrationDetails;
   Err : ErrorInfo;
@@ -35,15 +31,6 @@ type GetPendingOrderActorResponse = variant {
 type GetPriceTableResponse = variant { Ok : PriceTable; Err : ErrorInfo };
 type GetQuotaActorResponse = variant { Ok : nat32; Err : ErrorInfo };
 type GetStatsActorResponse = variant { Ok : Stats; Err : ErrorInfo };
-type ImportAstroxMeNamesActorResponse = variant {
-  Ok : ImportedStats;
-  Err : ErrorInfo;
-};
-type ImportedStats = record {
-  total : nat32;
-  imported : nat32;
-  not_imported : nat32;
-};
 type NameOrderStatus = variant { New; WaitingToRefund; Done; Canceled };
 type PaymentMemo = variant { ICP : nat64 };
 type PriceTable = record {
@@ -96,7 +83,6 @@ service : {
   confirm_pay_order : (nat64) -> (BooleanActorResponse);
   export_state : () -> (StateExportResponse);
   get_all_details : (GetPageInput) -> (GetAllDetailsActorResponse) query;
-  get_astrox_me_name_stats : () -> (GetAstroxMeNameStatsActorResponse) query;
   get_details : (text) -> (GetDetailsActorResponse) query;
   get_name_expires : (text) -> (GetNameExpiresActorResponse) query;
   get_names : (principal, GetPageInput) -> (GetNamesActorResponse) query;
@@ -105,7 +91,6 @@ service : {
   get_price_table : () -> (GetPriceTableResponse);
   get_quota : (principal, QuotaType) -> (GetQuotaActorResponse) query;
   get_stats : () -> (GetStatsActorResponse) query;
-  import_astrox_me_names : (vec text) -> (ImportAstroxMeNamesActorResponse);
   import_quota : (vec nat8) -> (BooleanActorResponse);
   refund_order : () -> (BooleanActorResponse);
   register_for : (text, principal, nat64) -> (BooleanActorResponse);
