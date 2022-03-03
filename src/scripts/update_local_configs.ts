@@ -6,10 +6,15 @@ import logger from "node-color-log";
 (async () => {
     await canister.create_all();
     const names = ["registrar", "resolver", "registry", "icnaming_ledger", "cycles_minting", "favorites", "ledger"]
+    let dir = `./configs/dev`;
+    // create dir if not exists
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, {recursive: true});
+    }
+
     for (let name of names) {
         let id = canister.get_id(name);
-        let file = `./configs/dev/canister_ids_${name}.in`;
-        // create file if it doesn't exist
+        let file = `${dir}/canister_ids_${name}.in`;
         fs.writeFileSync(file, id);
     }
 
