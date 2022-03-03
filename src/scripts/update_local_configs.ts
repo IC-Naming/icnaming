@@ -8,7 +8,9 @@ import logger from "node-color-log";
     const names = ["registrar", "resolver", "registry", "icnaming_ledger", "cycles_minting", "favorites", "ledger"]
     for (let name of names) {
         let id = canister.get_id(name);
-        fs.writeFileSync(`./configs/dev/canister_ids_${name}.in`, id);
+        let file = `./configs/dev/canister_ids_${name}.in`;
+        // create file if it doesn't exist
+        fs.writeFileSync(file, id);
     }
 
     logger.debug("local canister ids updated");
