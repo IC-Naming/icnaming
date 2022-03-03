@@ -73,10 +73,13 @@ fn main_impl() {
 
         #[cfg(feature = "dev_canister")]
         {
-            let local_test_user =
-                include_str!("../../../../configs/dev/principal_registrar_admin.in");
-            s.allow_caller_ids
-                .insert(PrincipalId::from_str(local_test_user).unwrap());
+            let users = include_str!("../../../../configs/dev/principal_registrar_admin.in");
+            let set = users
+                .lines()
+                .filter(|l| !l.starts_with("#"))
+                .map(|s| PrincipalId::from_str(s).unwrap())
+                .collect::<HashSet<PrincipalId>>();
+            s.allow_caller_ids.extend(set);
         }
 
         assert!(s.allow_caller_ids.len() > 0);

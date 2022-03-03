@@ -1,8 +1,10 @@
 use std::collections::HashMap;
+use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 
 use candid::Principal;
 use ic_cdk::api;
+use log::info;
 
 thread_local! {
     pub static NAMED_CANISTER_IDS :NamedCanisterIds = NamedCanisterIds::new();
@@ -10,6 +12,15 @@ thread_local! {
 
 pub struct NamedCanisterIds {
     pub canisters: HashMap<&'static str, Principal>,
+}
+
+impl Display for NamedCanisterIds {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        for (name, canister) in self.canisters.iter() {
+            write!(f, "{} = {}\n", name, canister)?;
+        }
+        Ok(())
+    }
 }
 
 impl NamedCanisterIds {
@@ -79,7 +90,9 @@ impl NamedCanisterIds {
         );
         map.insert(CANISTER_NAME_LEDGER, Principal::from_str(ledger).unwrap());
 
-        NamedCanisterIds { canisters: map }
+        let result = NamedCanisterIds { canisters: map };
+        info!("named canister ids: {}", &result);
+        result
     }
 
     pub fn get_canister_id(&self, name: &str) -> Principal {

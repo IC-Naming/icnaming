@@ -7,7 +7,8 @@ use common::errors::{BooleanActorResponse, ErrorInfo, ICNSError, ICNSResult};
 use common::ic_api::ic_caller;
 use common::named_canister_ids::get_named_get_canister_id;
 use common::named_canister_ids::CANISTER_NAME_REGISTRAR;
-use common::permissions::must_be_system_owner;
+use common::named_principals::PRINCIPAL_NAME_STATE_EXPORTER;
+use common::permissions::{must_be_named_principal, must_be_system_owner};
 use common::state::StableState;
 
 use crate::service::{RegistriesService, Stats};
@@ -40,7 +41,7 @@ impl GetStatsResponse {
 #[candid_method(update, rename = "export_state")]
 pub async fn export_state() -> StateExportResponse {
     let caller = &api::caller();
-    let permission_result = must_be_system_owner(caller);
+    let permission_result = must_be_named_principal(caller, PRINCIPAL_NAME_STATE_EXPORTER);
     if permission_result.is_err() {
         return StateExportResponse::new(Err(permission_result.err().unwrap()));
     }

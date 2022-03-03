@@ -1,28 +1,15 @@
 import {exec} from "shelljs";
-import {Principal} from "@dfinity/principal";
 import {Identity} from "@dfinity/agent";
 import fs from "fs";
 import {Secp256k1KeyIdentity} from "@dfinity/identity";
 import sha256 from "sha256";
 import {principalToAccountIDInBytes, toHexString} from "./convert";
 
-
-export function get_dfx_current(): Principal {
-    const getDfxPrincipal = exec("dfx identity get-principal", {silent: true});
-    return Principal.fromText(getDfxPrincipal.stdout.trim());
-}
-
-export function get_dfx_account_id(): string {
-    const getDfxPrincipal = exec("dfx ledger account-id", {silent: true});
-    return getDfxPrincipal.stdout.trim();
-}
-
 export function load(name: string): Identity {
     new_dfx_identity(name);
-    let pem_path = `/github/home/.config/dfx/identity/${name}/identity.pem`;
-    if (!fs.existsSync(pem_path)) {
-        pem_path = `/root/.config/dfx/identity/${name}/identity.pem`;
-    }
+    // get current home directory
+    const home = process.env.HOME;
+    let pem_path = `${home}/.config/dfx/identity/${name}/identity.pem`;
     const rawKey = fs
         .readFileSync(pem_path)
         .toString()
@@ -76,6 +63,8 @@ export interface IdentityCollection {
     user1: IdentityInfo,
     user2: IdentityInfo,
     user3: IdentityInfo,
+    state_exporter: IdentityInfo,
+    timer_trigger: IdentityInfo,
     subaccount1: Array<number>,
     subaccount2: Array<number>,
     subaccount3: Array<number>,
@@ -93,6 +82,8 @@ export const create_identities = () => {
     new_dfx_identity("icnaming_user1");
     new_dfx_identity("icnaming_user2");
     new_dfx_identity("icnaming_user3");
+    new_dfx_identity("icnaming_state_exporter");
+    new_dfx_identity("icnaming_timer_trigger");
 }
 
 export const identities = ((): IdentityCollection => {
@@ -128,6 +119,8 @@ export const identities = ((): IdentityCollection => {
     const user1_identities = create_identities("icnaming_user1");
     const user2_identities = create_identities("icnaming_user2");
     const user3_identities = create_identities("icnaming_user3");
+    const state_exporter_identities = create_identities("icnaming_state_exporter");
+    const timer_trigger_identities = create_identities("icnaming_timer_trigger");
 
     // reset to default in the end
     use_dfx_identity("icnaming_main");
@@ -138,6 +131,8 @@ export const identities = ((): IdentityCollection => {
         user1: user1_identities,
         user2: user2_identities,
         user3: user3_identities,
+        state_exporter: state_exporter_identities,
+        timer_trigger: timer_trigger_identities,
         subaccount1: Array.from(get_subaccount(1)),
         subaccount2: Array.from(get_subaccount(2)),
         subaccount3: Array.from(get_subaccount(3)),

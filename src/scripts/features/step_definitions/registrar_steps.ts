@@ -386,18 +386,20 @@ Then(/^I found my pending order as bellow$/,
     });
 Given(/^Record payment version$/,
     async function () {
-        await registrar.run_tasks();
+        let timer_target = createRegistrar(identities.timer_trigger);
+        await timer_target.run_tasks();
         global_stats_result = await new Result(registrar.get_stats()).unwrap();
         console.info(`Record payment version: ${global_stats_result.payment_version}`);
     });
 When(/^Wait for payment version increased with "([^"]*)"$/,
     async function (version_change: string) {
+        let timer_target = createRegistrar(identities.timer_trigger);
 
         let max_retry = 20;
         let version_add = BigInt(parseInt(version_change));
         let target_version = global_stats_result.payment_version + version_add;
         for (let i = 0; i < max_retry; i++) {
-            await registrar.run_tasks();
+            await timer_target.run_tasks();
             let stats = await new Result(registrar.get_stats()).unwrap();
             if (stats.payment_version >= target_version) {
                 console.info(`Payment version increased to ${target_version}, now is ${stats.payment_version}`);
