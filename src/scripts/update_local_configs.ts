@@ -20,6 +20,10 @@ import logger from "node-color-log";
 
     logger.debug("local canister ids updated");
 
-    // out identities.main.principal_text to principal_registrar_admin.in
-    fs.writeFileSync(`./configs/dev/principal_registrar_admin.in`, identities.main.principal_text);
+    let registrar_admin = `# main node\n${identities.main.principal_text}`;
+    fs.writeFileSync(`./configs/dev/principal_registrar_admin.in`, registrar_admin);
+    let state_exporter = `${registrar_admin}\n# state exporter node \n${identities.state_exporter.principal_text}`;
+    fs.writeFileSync(`./configs/dev/principal_state_exporter.in`, state_exporter);
+    let timer_trigger = `${registrar_admin}\n# timer_trigger node\n${identities.timer_trigger.principal_text}`;
+    fs.writeFileSync(`./configs/dev/principal_timer_trigger.in`, timer_trigger);
 })();

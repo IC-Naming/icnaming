@@ -22,3 +22,5 @@ cucumber-report.json
 /src/configs/dev/canister_ids_registry.in
 /src/configs/dev/canister_ids_resolver.in
 /src/configs/dev/principal_registrar_admin.in
+/src/configs/dev/principal_state_exporter.in
+/src/configs/dev/principal_timer_trigger.in

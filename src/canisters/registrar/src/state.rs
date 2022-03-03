@@ -9,7 +9,6 @@ use log::info;
 use common::ic_logger::ICLogger;
 use common::named_canister_ids::ensure_current_canister_id_match;
 use common::named_canister_ids::CANISTER_NAME_REGISTRAR;
-use common::permissions::get_admin_principal;
 use common::state::StableState;
 
 use crate::name_order_store::NameOrderStore;
@@ -109,9 +108,6 @@ pub(crate) fn canister_module_init() {
         ICLogger::init();
     });
     ensure_current_canister_id_match(CANISTER_NAME_REGISTRAR);
-
-    let principal = get_admin_principal();
-    info!("Admin principal: {}", principal);
 
     STATE.with(|s| {
         let mut store = s.quota_import_store.borrow_mut();

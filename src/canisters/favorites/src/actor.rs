@@ -5,7 +5,8 @@ use ic_cdk_macros::*;
 
 use common::dto::{to_state_export_data, StateExportResponse};
 use common::errors::{BooleanActorResponse, ErrorInfo, ICNSResult};
-use common::permissions::must_be_system_owner;
+use common::named_principals::PRINCIPAL_NAME_STATE_EXPORTER;
+use common::permissions::{must_be_named_principal, must_be_system_owner};
 use common::state::StableState;
 
 use crate::service::{ManagerService, Stats};
@@ -38,7 +39,7 @@ impl GetStatsResponse {
 #[candid_method(update, rename = "export_state")]
 pub async fn export_state() -> StateExportResponse {
     let caller = &api::caller();
-    let permission_result = must_be_system_owner(caller);
+    let permission_result = must_be_named_principal(caller, PRINCIPAL_NAME_STATE_EXPORTER);
     if permission_result.is_err() {
         return StateExportResponse::new(Err(permission_result.err().unwrap()));
     }
