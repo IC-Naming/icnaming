@@ -9,7 +9,7 @@ edition = "2018"
 crate-type = ["cdylib"]
 
 [dependencies]
-serde = "1.0.119"
+serde = "1.0.136"
 itertools = "0.10.3"
 serde_bytes = "0.11"
 lazy_static = "1.4.0"
