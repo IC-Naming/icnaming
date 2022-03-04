@@ -15,6 +15,7 @@ Feature: Query Api
       | icp                                                                             | name is invalid, reason: "it must be second level name"                      |
       | hello.com                                                                       | name is invalid, reason: "top level of name must be icp"                     |
       | hel!lo.icp                                                                      | name is invalid, reason: "name must be alphanumeric or -"                    |
+      | hello .icp                                                                      | name is invalid, reason: "name must be alphanumeric or -"                    |
       | 你好.icp                                                                          | name is invalid, reason: "name must be alphanumeric or -"                    |
       | icp.icp                                                                         | Registration has been taken                                                  |
 

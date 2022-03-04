@@ -124,6 +124,9 @@ mod validate_name {
     #[case("你好.icp",
     Err("name must be alphanumeric or -".to_string()),
     )]
+    #[case("n1-e .icp",
+    Err("name must be alphanumeric or -".to_string()),
+    )]
     fn test_validate_name(
         service: RegistrarService,
         #[case] input: &str,

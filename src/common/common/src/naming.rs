@@ -16,7 +16,7 @@ impl NameParseResult {
         // split
         let mut parts = name.split('.');
         while let Some(part) = parts.next() {
-            labels.push(part.trim().to_string());
+            labels.push(part.to_string());
         }
         NameParseResult {
             labels,
