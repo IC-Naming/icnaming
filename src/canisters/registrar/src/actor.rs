@@ -5,9 +5,13 @@ use ic_cdk::api;
 use ic_cdk_macros::*;
 use log::debug;
 
-use common::dto::{to_state_export_data, GetPageInput, GetPageOutput, StateExportResponse};
+use common::dto::{
+    to_state_export_data, GetPageInput, GetPageOutput, ImportQuotaRequest, ImportQuotaStatus,
+    StateExportResponse,
+};
 use common::errors::{BooleanActorResponse, ErrorInfo, ICNSResult};
 use common::icnaming_ledger_types::BlockHeight;
+use common::named_canister_ids::CANISTER_NAME_REGISTRAR_CONTROL_GATEWAY;
 use common::named_principals::{PRINCIPAL_NAME_STATE_EXPORTER, PRINCIPAL_NAME_TIMER_TRIGGER};
 use common::permissions::{must_be_named_principal, must_be_system_owner};
 use common::state::StableState;
@@ -188,6 +192,19 @@ pub async fn register_with_quota(name: String, quota_type: QuotaType) -> Boolean
     BooleanActorResponse::new(result)
 }
 
+#[update(name = "register_from_gateway")]
+#[candid_method(update, rename = "register_from_gateway")]
+pub async fn register_from_gateway(name: String, owner: Principal) -> BooleanActorResponse {
+    let caller = &api::caller();
+    debug!("register_from_gateway: caller: {}", caller);
+
+    let mut service = RegistrarService::new();
+    let result = service
+        .register_from_gateway(&caller, &name, &owner, api::time())
+        .await;
+    BooleanActorResponse::new(result)
+}
+
 /// Get names for a owner.
 /// Returns names for a owner.
 ///
@@ -326,13 +343,28 @@ pub fn add_quota(quota_owner: Principal, quota_type: QuotaType, diff: u32) -> Bo
 
 #[update(name = "import_quota")]
 #[candid_method(update, rename = "import_quota")]
-pub fn import_quota(file_content: Vec<u8>) -> BooleanActorResponse {
+pub fn import_quota(request: ImportQuotaRequest) -> ImportQuotaResponse {
     let caller = &api::caller();
     debug!("import_quota: caller: {}", caller);
 
     let service = RegistrarService::new();
-    let result = service.import_quota(caller, file_content);
-    BooleanActorResponse::new(result)
+    let result = service.import_quota(caller, request);
+    ImportQuotaResponse::new(result)
+}
+
+#[derive(CandidType)]
+pub enum ImportQuotaResponse {
+    Ok(ImportQuotaStatus),
+    Err(ErrorInfo),
+}
+
+impl ImportQuotaResponse {
+    pub fn new(result: ICNSResult<ImportQuotaStatus>) -> ImportQuotaResponse {
+        match result {
+            Ok(status) => ImportQuotaResponse::Ok(status),
+            Err(err) => ImportQuotaResponse::Err(err.into()),
+        }
+    }
 }
 
 /// Remove quotas from a quota owner.

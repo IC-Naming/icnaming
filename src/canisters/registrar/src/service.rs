@@ -2,6 +2,7 @@ use std::cmp::min;
 use std::collections::{HashMap, HashSet};
 use std::fmt::{Debug, Formatter};
 use std::ops::Deref;
+use std::str::FromStr;
 use std::sync::Arc;
 
 use candid::{CandidType, Deserialize, Nat, Principal};
@@ -13,7 +14,7 @@ use num_traits::ToPrimitive;
 use common::canister_api::ic_impl::{CyclesMintingApi, ICNamingLedgerApi, RegistryApi};
 use common::canister_api::{ICyclesMintingApi, IICNamingLedgerApi, IRegistryApi};
 use common::constants::*;
-use common::dto::{GetPageInput, GetPageOutput};
+use common::dto::{GetPageInput, GetPageOutput, ImportQuotaRequest, ImportQuotaStatus};
 use common::errors::ICNSError::RemoteError;
 use common::errors::{ICNSError, ICNSResult};
 use common::ic_api::wrapper::ICStaticApi;
@@ -23,10 +24,12 @@ use common::icnaming_ledger_types::{
     SyncICPPaymentRequest, VerifyPaymentResponse,
 };
 use common::metrics_encoder::MetricsEncoder;
-use common::named_canister_ids::{get_named_get_canister_id, CANISTER_NAME_RESOLVER};
+use common::named_canister_ids::{
+    get_named_get_canister_id, CANISTER_NAME_REGISTRAR_CONTROL_GATEWAY, CANISTER_NAME_RESOLVER,
+};
 use common::naming::{normalize_name, NameParseResult};
-use common::permissions::must_not_anonymous;
-use common::permissions::{is_admin, must_be_system_owner};
+use common::permissions::{is_admin, must_be_named_canister, must_be_system_owner};
+use common::permissions::{must_be_named_principal, must_not_anonymous};
 
 use crate::name_order_store::{GetNameOrderResponse, NameOrder, NameOrderStatus};
 use crate::quota_order_store::{
@@ -359,6 +362,30 @@ impl RegistrarService {
             }
             Ok(())
         })
+    }
+
+    pub async fn register_from_gateway(
+        &mut self,
+        caller: &Principal,
+        name: &str,
+        owner: &Principal,
+        now: u64,
+    ) -> ICNSResult<bool> {
+        must_be_named_canister(caller, CANISTER_NAME_REGISTRAR_CONTROL_GATEWAY)?;
+        let years = 1;
+        let admin_import = true;
+        let quota_owner = &get_named_get_canister_id(CANISTER_NAME_REGISTRAR_CONTROL_GATEWAY);
+        let quota_type = QuotaType::LenGte(1);
+        self.register(
+            name,
+            owner,
+            years,
+            now,
+            quota_owner,
+            quota_type,
+            admin_import,
+        )
+        .await
     }
 
     pub async fn register(
@@ -965,30 +992,37 @@ impl RegistrarService {
         })
     }
 
-    pub fn import_quota(&self, caller: &Principal, file_content: Vec<u8>) -> ICNSResult<bool> {
-        must_be_system_owner(caller)?;
-        let parse_result = STATE.with(|s| {
+    pub fn import_quota(
+        &self,
+        caller: &Principal,
+        request: ImportQuotaRequest,
+    ) -> ICNSResult<ImportQuotaStatus> {
+        must_be_named_canister(caller, CANISTER_NAME_REGISTRAR_CONTROL_GATEWAY)?;
+        let result = STATE.with(|s| {
             let store = s.quota_import_store.borrow();
-            store.verify_and_parse(file_content.as_slice())
+            store.verify_hash(&request.hash)
         });
-        if parse_result.is_err() {
-            error!("{:?}", parse_result.err().unwrap());
-            return Ok(false);
+        if result.is_err() {
+            return Ok(ImportQuotaStatus::AlreadyExists);
         }
-        let (items, hashes) = parse_result.unwrap();
-        info!("{} items to import", items.len());
 
+        let items = request.items;
         // apply items and save hashes
         STATE.with(|s| {
             let mut store = s.user_quota_store.borrow_mut();
             for item in items.iter() {
-                store.add_quota(item.owner, item.quota_type, item.diff);
+                store.add_quota(
+                    item.owner,
+                    QuotaType::from_str(item.quota_type.as_str()).unwrap(),
+                    item.diff,
+                );
             }
 
+            let hash = request.hash;
             let mut import_quota_store = s.quota_import_store.borrow_mut();
-            info!("file imported, save hashes: {}", hex::encode(&hashes));
-            import_quota_store.add_imported_file_hash(hashes);
-            Ok(true)
+            info!("file imported, save hashes: {}", hex::encode(&hash));
+            import_quota_store.add_imported_file_hash(hash);
+            Ok(ImportQuotaStatus::Ok)
         })
     }
 }

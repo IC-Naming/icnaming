@@ -9,6 +9,7 @@ import logger from "node-color-log";
         canisters: {
             ledger: true,
             registrar: true,
+            registrar_control_gateway: true,
             icnaming_ledger: true,
             registry: true,
             resolver: true,

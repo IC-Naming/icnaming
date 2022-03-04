@@ -95,6 +95,25 @@ pub struct RegistryDto {
     pub resolver: Principal,
 }
 
+#[derive(Debug, Clone, CandidType, Deserialize)]
+pub struct ImportQuotaItem {
+    pub owner: Principal,
+    pub quota_type: String,
+    pub diff: u32,
+}
+
+#[derive(Debug, Clone, CandidType, Deserialize)]
+pub struct ImportQuotaRequest {
+    pub items: Vec<ImportQuotaItem>,
+    pub hash: Vec<u8>,
+}
+
+#[derive(Debug, Clone, CandidType, Deserialize)]
+pub enum ImportQuotaStatus {
+    Ok,
+    AlreadyExists,
+}
+
 #[derive(CandidType)]
 pub struct StateExportData {
     pub state_data: Vec<u8>,

@@ -78,3 +78,19 @@ impl ICyclesMintingApi for CyclesMintingApi {
 pub fn mock_cycles_minting_api() -> MockCyclesMintingApi {
     MockCyclesMintingApi::new()
 }
+
+mock! {
+    pub RegistrarApi {
+    }
+    #[async_trait]
+impl IRegistrarApi for RegistrarApi {
+    async fn import_quota(&self, request: ImportQuotaRequest)
+        -> ICNSActorResult<ImportQuotaStatus>;
+    async fn register_from_gateway(&self, name: String, owner: Principal) -> ICNSActorResult<bool>;
+}
+}
+
+#[fixture]
+pub fn mock_registrar_api() -> MockRegistrarApi {
+    MockRegistrarApi::new()
+}

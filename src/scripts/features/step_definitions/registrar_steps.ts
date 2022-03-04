@@ -1,11 +1,11 @@
 import "~/setup";
 import {DataTable, Given, Then, When} from "@cucumber/cucumber";
 import {createRegistrar, registrar} from "~/declarations/registrar";
+import {registrar_control_gateway} from "~/declarations/registrar_control_gateway";
 import {createLedger, ledger} from "~/declarations/ledger";
 import {assert, expect} from 'chai';
 import {reinstall_all} from "~/../tasks"
 import {
-    BooleanActorResponse,
     BooleanActorResponse as RefundResult,
     BooleanActorResponse as AvailableResult,
     BooleanActorResponse as RegisterWithQuotaResult,
@@ -21,13 +21,18 @@ import {assert_remote_result} from "./utils";
 import logger from "node-color-log";
 import fs from "fs";
 import {Principal} from "@dfinity/principal";
+import {
+    AssignNameResponse,
+    ImportQuotaResponse
+} from "~/declarations/registrar_control_gateway/registrar_control_gateway.did";
 
 let global_submit_order_result: SubmitOrderResult;
 let global_refund_response: RefundResult;
 let global_available_response: AvailableResult;
 let global_register_with_quota_response: RegisterWithQuotaResult;
-let global_quota_import_response: BooleanActorResponse;
+let global_quota_import_response: ImportQuotaResponse;
 let global_stats_result: Stats;
+let global_assign_name_result: AssignNameResponse;
 
 async function submit_order(user: string | null, name: string, years: string) {
     let actor;
@@ -141,6 +146,7 @@ Given(/^Reinstall registrar related canisters$/,
                 registry: true,
                 resolver: true,
                 cycles_minting: true,
+                registrar_control_gateway: true,
             }
         });
     });
@@ -273,7 +279,7 @@ When(/^Update quota as follow operations$/,
         for (const op of operations) {
             let quota_type = {};
             quota_type[op.quota_type1] = parseInt(op.quota_type2);
-            let user_principal = identities.get_identity_info(op.user).identity.getPrincipal();
+            let user_principal = identities.get_principal(op.user);
             if (op.operation === "add") {
                 await new Result(registrar.add_quota(user_principal, quota_type as QuotaType, parseInt(op.value))).unwrap();
             } else {
@@ -292,14 +298,7 @@ Then(/^User quota status should be as below$/,
         for (const item of items) {
             let quota_type = {};
             quota_type[item.quota_type1] = parseInt(item.quota_type2);
-            let identityInfo = identities.get_identity_info(item.user);
-            let user_principal:Principal;
-            if (identityInfo == null) {
-                user_principal = Principal.fromText(item.user);
-            }else{
-                user_principal = identityInfo.identity.getPrincipal();
-            }
-
+            let user_principal = identities.get_principal(item.user)
             let quota_value = await new Result(registrar.get_quota(user_principal, quota_type as QuotaType)).unwrap();
             expect(quota_value).to.equal(parseInt(item.value));
         }
@@ -415,19 +414,35 @@ When(/^admin import quota file "([^"]*)"$/,
     async function (filename: string) {
         // read file from ../../quota_import_data/filename as bytes
         let content = fs.readFileSync(`quota_import_data/${filename}`);
-        global_quota_import_response = await registrar.import_quota(Array.from(content));
+        global_quota_import_response = await registrar_control_gateway.import_quota(Array.from(content));
     });
 Then(/^Last quota import status "([^"]*)"$/,
     function (status) {
         if ('Ok' in global_quota_import_response) {
-            expect(global_quota_import_response.Ok.toString()).to.equal(status);
+            if (!(status in global_quota_import_response.Ok)) {
+                expect.fail(`Last quota import status is not ${status} but ${JSON.stringify(global_quota_import_response.Ok)}`);
+            }
         } else {
             expect.fail(`Last quota import status is not Ok but ${JSON.stringify(global_quota_import_response)}`);
         }
     });
 When(/^User "([^"]*)" confirm pay order with block height "([^"]*)"$/,
-    async function (user:string,block_height:string) {
+    async function (user: string, block_height: string) {
         let registrar = createRegistrar(identities.get_identity_info(user));
         let result = await new Result(registrar.confirm_pay_order(BigInt(parseInt(block_height)))).unwrap();
         logger.info(`confirm pay order result: ${JSON.stringify(result)}`);
-});
+    });
+Given(/^admin assign name "([^"]*)" to user "([^"]*)"$/,
+    async function (name: string, user: string) {
+        global_assign_name_result = await registrar_control_gateway.assign_name(name, identities.get_identity_info(user).identity.getPrincipal());
+    });
+Then(/^last assign name status is "([^"]*)"$/,
+    function (status: string) {
+        if ('Ok' in global_assign_name_result) {
+            if (!(status in global_assign_name_result.Ok)) {
+                expect.fail(`last assign name status is not ${status} but ${JSON.stringify(global_assign_name_result.Ok)}`);
+            }
+        } else {
+            expect.fail(`last assign name status is not Ok but ${JSON.stringify(global_assign_name_result)}`);
+        }
+    });

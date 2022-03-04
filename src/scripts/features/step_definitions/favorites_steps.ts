@@ -5,7 +5,6 @@ import {createFavorites} from "~/declarations/favorites";
 import {Result} from "~/utils/Result";
 import {expect} from "chai";
 
-
 When(/^User "([^"]*)" add some favorites$/,
     async function (user: string, data) {
         let identityInfo = identities.get_identity_info(user);

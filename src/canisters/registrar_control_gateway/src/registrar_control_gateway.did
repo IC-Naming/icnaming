@@ -1,0 +1,12 @@
+type AssignNameResponse = variant { Ok : AssignNameResult; Err : ErrorInfo };
+type AssignNameResult = variant { Ok; AlreadyAssigned; FailFromRegistrar };
+type ErrorInfo = record { code : nat32; message : text };
+type ImportQuotaResponse = variant { Ok : ImportQuotaResult; Err : ErrorInfo };
+type ImportQuotaResult = variant { Ok; AlreadyExists; InvalidRequest };
+type StateExportData = record { state_data : vec nat8 };
+type StateExportResponse = variant { Ok : StateExportData; Err : ErrorInfo };
+service : {
+  assign_name : (text, principal) -> (AssignNameResponse);
+  export_state : () -> (StateExportResponse);
+  import_quota : (vec nat8) -> (ImportQuotaResponse);
+}

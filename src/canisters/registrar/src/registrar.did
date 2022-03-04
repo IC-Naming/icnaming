@@ -31,6 +31,17 @@ type GetPendingOrderActorResponse = variant {
 type GetPriceTableResponse = variant { Ok : PriceTable; Err : ErrorInfo };
 type GetQuotaActorResponse = variant { Ok : nat32; Err : ErrorInfo };
 type GetStatsActorResponse = variant { Ok : Stats; Err : ErrorInfo };
+type ImportQuotaItem = record {
+  owner : principal;
+  diff : nat32;
+  quota_type : text;
+};
+type ImportQuotaRequest = record {
+  hash : vec nat8;
+  items : vec ImportQuotaItem;
+};
+type ImportQuotaResponse = variant { Ok : ImportQuotaStatus; Err : ErrorInfo };
+type ImportQuotaStatus = variant { Ok; AlreadyExists };
 type NameOrderStatus = variant { New; WaitingToRefund; Done; Canceled };
 type PaymentMemo = variant { ICP : nat64 };
 type PriceTable = record {
@@ -92,9 +103,10 @@ service : {
   get_price_table : () -> (GetPriceTableResponse);
   get_quota : (principal, QuotaType) -> (GetQuotaActorResponse) query;
   get_stats : () -> (GetStatsActorResponse) query;
-  import_quota : (vec nat8) -> (BooleanActorResponse);
+  import_quota : (ImportQuotaRequest) -> (ImportQuotaResponse);
   refund_order : () -> (BooleanActorResponse);
   register_for : (text, principal, nat64) -> (BooleanActorResponse);
+  register_from_gateway : (text, principal) -> (BooleanActorResponse);
   register_with_quota : (text, QuotaType) -> (BooleanActorResponse);
   run_tasks : () -> (BooleanActorResponse);
   sub_quota : (principal, QuotaType, nat32) -> (BooleanActorResponse);

@@ -2,8 +2,8 @@ import "~/setup";
 import {Then, When} from "@cucumber/cucumber";
 import {resolver} from "~/declarations/resolver";
 import {
-    Result as EnsureResolverCreatedResult,
-    Result as UpdateRecordValueResult
+    BooleanActorResponse as EnsureResolverCreatedResult,
+    BooleanActorResponse as UpdateRecordValueResult
 } from "~/declarations/resolver/resolver.did";
 import {expect} from "chai";
 import {Result} from "~/utils/Result";

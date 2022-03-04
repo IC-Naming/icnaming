@@ -14,7 +14,7 @@ import logger from "node-color-log";
     // copy files from ./src/declarations/* to ./scripts/src/scripts/declarations/
     await exec(`cp -r ./src/declarations/* ./scripts/src/scripts/declarations/`);
     // remove ./src/declarations/*
-    await exec(`rm -rf ./src/declarations/*`);
+    await exec(`rm -rf ./src`);
 })().then(() => {
     logger.info("Generate complete");
 });
