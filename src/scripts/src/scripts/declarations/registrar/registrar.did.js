@@ -86,11 +86,12 @@ export const idlFactory = ({ IDL }) => {
     'Err' : ErrorInfo,
   });
   const Stats = IDL.Record({
+    'user_count' : IDL.Nat64,
     'new_registered_name_count' : IDL.Nat64,
     'cycles_balance' : IDL.Nat64,
-    'seconds_since_last_ledger_sync' : IDL.Nat64,
     'last_xdr_permyriad_per_icp' : IDL.Nat64,
     'name_order_cancelled_count' : IDL.Nat64,
+    'user_quota_count' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Nat64)),
     'name_order_placed_count' : IDL.Nat64,
     'name_order_paid_count' : IDL.Nat64,
     'user_name_order_count_by_status' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Nat64)),

@@ -66,11 +66,12 @@ export interface StateExportData { 'state_data' : Array<number> }
 export type StateExportResponse = { 'Ok' : StateExportData } |
   { 'Err' : ErrorInfo };
 export interface Stats {
+  'user_count' : bigint,
   'new_registered_name_count' : bigint,
   'cycles_balance' : bigint,
-  'seconds_since_last_ledger_sync' : bigint,
   'last_xdr_permyriad_per_icp' : bigint,
   'name_order_cancelled_count' : bigint,
+  'user_quota_count' : Array<[string, bigint]>,
   'name_order_placed_count' : bigint,
   'name_order_paid_count' : bigint,
   'user_name_order_count_by_status' : Array<[string, bigint]>,

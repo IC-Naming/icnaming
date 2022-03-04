@@ -57,11 +57,12 @@ type RegistrationDto = record {
 type StateExportData = record { state_data : vec nat8 };
 type StateExportResponse = variant { Ok : StateExportData; Err : ErrorInfo };
 type Stats = record {
+  user_count : nat64;
   new_registered_name_count : nat64;
   cycles_balance : nat64;
-  seconds_since_last_ledger_sync : nat64;
   last_xdr_permyriad_per_icp : nat64;
   name_order_cancelled_count : nat64;
+  user_quota_count : vec record { text; nat64 };
   name_order_placed_count : nat64;
   name_order_paid_count : nat64;
   user_name_order_count_by_status : vec record { text; nat64 };
