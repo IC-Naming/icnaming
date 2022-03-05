@@ -1,10 +1,12 @@
-@registrar @registrar_control_gateway
+@registrar @registrar_control_gateway @dev
 Feature: Registrar Control Gateway
 
   Background:
     Given Reinstall canisters
       | name                      |
       | registrar                 |
+      | registry                  |
+      | resolver                  |
       | registrar_control_gateway |
 
   Scenario: Import quota
@@ -46,11 +48,11 @@ Feature: Registrar Control Gateway
       | expired_at | 1            |
       | created_at | 0            |
     And get_details "icp.icp" result is
-      | key        | value        |
-      | owner      | user2        |
+      | key        | value   |
+      | owner      | user2   |
       | name       | icp.icp |
-      | expired_at | 1            |
-      | created_at | 0            |
+      | expired_at | 1       |
+      | created_at | 0       |
     Then User quota status should be as below
       | user                      | quota_type1 | quota_type2 | value |
       | registrar_control_gateway | LenGte      | 1           | 8     |
