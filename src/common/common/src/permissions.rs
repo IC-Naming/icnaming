@@ -4,7 +4,8 @@ use candid::Principal;
 use once_cell::sync::Lazy;
 
 use crate::errors::{ICNSError, ICNSResult};
-use crate::named_principals::{is_named_principal, PRINCIPAL_NAME_ADMIN};
+use crate::named_canister_ids::is_named_canister_id;
+use crate::named_principals::{get_named_principals, is_named_principal, PRINCIPAL_NAME_ADMIN};
 
 pub fn must_be_system_owner(caller: &Principal) -> ICNSResult<()> {
     must_not_anonymous(caller)?;
@@ -22,6 +23,14 @@ pub fn must_be_named_principal(caller: &Principal, name: &str) -> ICNSResult<()>
     Ok(())
 }
 
+pub fn must_be_named_canister(caller: &Principal, name: &str) -> ICNSResult<()> {
+    must_not_anonymous(caller)?;
+    if !is_named_canister_id(name, caller) {
+        return Err(ICNSError::Unauthorized);
+    }
+    Ok(())
+}
+
 pub fn must_not_anonymous(caller: &Principal) -> ICNSResult<()> {
     if *caller == Principal::anonymous() {
         return Err(ICNSError::Unauthorized);
@@ -30,4 +39,11 @@ pub fn must_not_anonymous(caller: &Principal) -> ICNSResult<()> {
 }
 pub fn is_admin(user: &Principal) -> bool {
     is_named_principal(PRINCIPAL_NAME_ADMIN, user)
+}
+
+pub fn get_admin() -> Principal {
+    get_named_principals(PRINCIPAL_NAME_ADMIN)
+        .into_iter()
+        .next()
+        .unwrap()
 }

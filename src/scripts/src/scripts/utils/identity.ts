@@ -4,6 +4,9 @@ import fs from "fs";
 import {Secp256k1KeyIdentity} from "@dfinity/identity";
 import sha256 from "sha256";
 import {principalToAccountIDInBytes, toHexString} from "./convert";
+import {Principal} from "@dfinity/principal";
+import {all_names} from "~/canisters/names";
+import {get_id} from "~/utils/canister";
 
 export function load(name: string): Identity {
     new_dfx_identity(name);
@@ -74,6 +77,8 @@ export interface IdentityCollection {
     registrar_quota_order_refund_subaccount: Array<number>,
 
     get_identity_info(name: string): IdentityInfo;
+
+    get_principal(name: string): Principal
 }
 
 export const create_identities = () => {
@@ -140,6 +145,21 @@ export const identities = ((): IdentityCollection => {
         registrar_quota_order_refund_subaccount: Array.from(get_subaccount(0x12)),
         get_identity_info(name: string): IdentityInfo {
             return this[name]
+        },
+        get_principal(name: string): Principal {
+            let identityInfo = identities.get_identity_info(name);
+            let user_principal: Principal;
+            if (identityInfo == null) {
+                // all_names contains name
+                if (all_names.includes(name)) {
+                    user_principal = Principal.fromText(get_id(name))
+                } else {
+                    user_principal = Principal.fromText(name);
+                }
+            } else {
+                user_principal = identityInfo.identity.getPrincipal();
+            }
+            return user_principal;
         },
     }
 })();

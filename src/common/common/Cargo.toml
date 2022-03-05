@@ -1,7 +1,7 @@
 [package]
 name = "common"
 version = "0.1.0"
-edition = "2018"
+edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -18,7 +18,7 @@ async-trait = "0.1.52"
 url = "2.2.2"
 num-bigint = "0.4.3"
 yansi = "0.5.0"
-once_cell = "1.10"
+once_cell = "1.9"
 flate2 = "1.0"
 
 [dev-dependencies]

@@ -25,11 +25,21 @@ impl Display for NamedCanisterIds {
 
 impl NamedCanisterIds {
     pub fn new() -> NamedCanisterIds {
-        let (registrar, registry, resolver, icnaming_ledger, cycles_minting, favorites, ledger) = {
+        let (
+            registrar,
+            registrar_control_gateway,
+            registry,
+            resolver,
+            icnaming_ledger,
+            cycles_minting,
+            favorites,
+            ledger,
+        ) = {
             #[cfg(feature = "dev_canister")]
             {
                 (
                     include_str!("../../../configs/dev/canister_ids_registrar.in"),
+                    include_str!("../../../configs/dev/canister_ids_registrar_control_gateway.in"),
                     include_str!("../../../configs/dev/canister_ids_registry.in"),
                     include_str!("../../../configs/dev/canister_ids_resolver.in"),
                     include_str!("../../../configs/dev/canister_ids_icnaming_ledger.in"),
@@ -42,6 +52,9 @@ impl NamedCanisterIds {
             {
                 (
                     include_str!("../../../configs/staging/canister_ids_registrar.in"),
+                    include_str!(
+                        "../../../configs/staging/canister_ids_registrar_control_gateway.in"
+                    ),
                     include_str!("../../../configs/staging/canister_ids_registry.in"),
                     include_str!("../../../configs/staging/canister_ids_resolver.in"),
                     include_str!("../../../configs/staging/canister_ids_icnaming_ledger.in"),
@@ -54,6 +67,9 @@ impl NamedCanisterIds {
             {
                 (
                     include_str!("../../../configs/production/canister_ids_registrar.in"),
+                    include_str!(
+                        "../../../configs/production/canister_ids_registrar_control_gateway.in"
+                    ),
                     include_str!("../../../configs/production/canister_ids_registry.in"),
                     include_str!("../../../configs/production/canister_ids_resolver.in"),
                     include_str!("../../../configs/production/canister_ids_icnaming_ledger.in"),
@@ -67,6 +83,10 @@ impl NamedCanisterIds {
         map.insert(
             CANISTER_NAME_REGISTRAR,
             Principal::from_str(registrar).unwrap(),
+        );
+        map.insert(
+            CANISTER_NAME_REGISTRAR_CONTROL_GATEWAY,
+            Principal::from_str(registrar_control_gateway).unwrap(),
         );
         map.insert(
             CANISTER_NAME_REGISTRY,
@@ -108,6 +128,10 @@ pub fn get_named_get_canister_id(name: &str) -> Principal {
     NAMED_CANISTER_IDS.with(|n| n.get_canister_id(name))
 }
 
+pub fn is_named_canister_id(name: &str, id: &Principal) -> bool {
+    NAMED_CANISTER_IDS.with(|n| n.canisters.get(name).map(|x| x == id).unwrap_or(false))
+}
+
 pub fn ensure_current_canister_id_match(name: &str) {
     let current = api::id();
     let expected = get_named_get_canister_id(name);
@@ -118,6 +142,7 @@ pub fn ensure_current_canister_id_match(name: &str) {
 
 pub const CANISTER_NAME_REGISTRY: &str = "registry";
 pub const CANISTER_NAME_REGISTRAR: &str = "registrar";
+pub const CANISTER_NAME_REGISTRAR_CONTROL_GATEWAY: &str = "registrar_control_gateway";
 pub const CANISTER_NAME_RESOLVER: &str = "resolver";
 pub const CANISTER_NAME_FAVORITES: &str = "favorites";
 pub const CANISTER_NAME_ICNAMING_LEDGER: &str = "icnaming_ledger";

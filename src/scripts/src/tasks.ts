@@ -3,6 +3,7 @@ import {reinstall as reinstall_ledger} from "./scripts/canisters/ledger";
 import {reinstall as reinstall_icnaming_ledger} from "./scripts/canisters/icnaming_ledger";
 import {reinstall as reinstall_favorites} from "./scripts/canisters/favorites";
 import {reinstall as reinstall_registrar} from "./scripts/canisters/registrar";
+import {reinstall as reinstall_registrar_control_gateway } from "./scripts/canisters/registrar_control_gateway";
 import {reinstall as reinstall_resolver} from "./scripts/canisters/resolver";
 import {reinstall as reinstall_registry} from "./scripts/canisters/registry";
 import {reinstall as reinstall_cycles_minting} from "./scripts/canisters/cycles_minting";
@@ -33,6 +34,12 @@ export const reinstall_all = async (options?: CanisterReinstallOptions) => {
 
         if (options && options.canisters?.registrar) {
             await reinstall_registrar({
+                ...options,
+            });
+        }
+
+        if (options && options.canisters?.registrar_control_gateway) {
+            await reinstall_registrar_control_gateway({
                 ...options,
             });
         }
@@ -81,6 +88,12 @@ export const reinstall_all = async (options?: CanisterReinstallOptions) => {
             }));
         }
 
+        if (options && options.canisters?.registrar_control_gateway) {
+            jobs.push(reinstall_registrar_control_gateway({
+                ...options,
+            }));
+        }
+
         if (options && options.canisters?.resolver) {
             jobs.push(reinstall_resolver({
                 ...options,
@@ -113,6 +126,7 @@ export interface CanisterReinstallOptionsCanisters {
     icnaming_ledger?: boolean;
     favorites?: boolean;
     registrar?: boolean;
+    registrar_control_gateway?: boolean;
     resolver?: boolean;
     registry?: boolean;
     cycles_minting?: boolean;

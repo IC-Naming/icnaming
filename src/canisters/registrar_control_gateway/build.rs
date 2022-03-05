@@ -1,5 +1,5 @@
-use std::{fs, io};
 use std::io::{Read, Write};
+use std::{fs, io};
 
 use flate2::write::ZlibEncoder;
 
@@ -62,7 +62,7 @@ fn main() {
     );
     let mut content_pushed = false;
 
-    let mut file = fs::File::open("src/quota_import_store.rs").unwrap();
+    let mut file = fs::File::open("src/build_gen.rs").unwrap();
     let mut contents = String::new();
     file.read_to_string(&mut contents).unwrap();
     let mut lines = contents.lines();
@@ -89,6 +89,6 @@ fn main() {
         }
     }
 
-    let mut file = fs::File::create("src/quota_import_store.rs").unwrap();
+    let mut file = fs::File::create("src/build_gen.rs").unwrap();
     file.write_all(new_contents.as_bytes()).unwrap();
 }

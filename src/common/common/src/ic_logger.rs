@@ -28,11 +28,14 @@ impl log::Log for ICLogger {
 
 impl ICLogger {
     pub fn init() {
-        match log::set_logger(&ICLogger) {
-            Ok(_) => {
-                log::set_max_level(LevelFilter::Trace);
-            }
-            Err(_) => {}
-        };
+        #[cfg(feature = "dev_canister")]
+        {
+            match log::set_logger(&ICLogger) {
+                Ok(_) => {
+                    log::set_max_level(LevelFilter::Trace);
+                }
+                Err(_) => {}
+            };
+        }
     }
 }

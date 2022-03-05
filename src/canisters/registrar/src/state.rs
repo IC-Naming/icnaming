@@ -13,7 +13,7 @@ use common::state::StableState;
 
 use crate::name_order_store::NameOrderStore;
 use crate::payment_store::PaymentStore;
-use crate::quota_import_store::{QuotaImportStore, ACCEPTABLE_HASHES};
+use crate::quota_import_store::QuotaImportStore;
 use crate::quota_order_store::QuotaOrderStore;
 use crate::registration_store::RegistrationStore;
 use crate::settings::Settings;
@@ -108,19 +108,6 @@ pub(crate) fn canister_module_init() {
         ICLogger::init();
     });
     ensure_current_canister_id_match(CANISTER_NAME_REGISTRAR);
-
-    STATE.with(|s| {
-        let mut store = s.quota_import_store.borrow_mut();
-        let hashes = ACCEPTABLE_HASHES
-            .iter()
-            .map(|h| {
-                // hex to bytes
-                let bytes = hex::decode(h).unwrap();
-                bytes
-            })
-            .collect();
-        store.add_acceptable_file_hash(hashes);
-    })
 }
 
 #[init]

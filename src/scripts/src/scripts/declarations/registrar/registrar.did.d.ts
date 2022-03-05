@@ -35,6 +35,19 @@ export type GetQuotaActorResponse = { 'Ok' : number } |
   { 'Err' : ErrorInfo };
 export type GetStatsActorResponse = { 'Ok' : Stats } |
   { 'Err' : ErrorInfo };
+export interface ImportQuotaItem {
+  'owner' : Principal,
+  'diff' : number,
+  'quota_type' : string,
+}
+export interface ImportQuotaRequest {
+  'hash' : Array<number>,
+  'items' : Array<ImportQuotaItem>,
+}
+export type ImportQuotaResponse = { 'Ok' : ImportQuotaStatus } |
+  { 'Err' : ErrorInfo };
+export type ImportQuotaStatus = { 'Ok' : null } |
+  { 'AlreadyExists' : null };
 export type NameOrderStatus = { 'New' : null } |
   { 'WaitingToRefund' : null } |
   { 'Done' : null } |
@@ -107,9 +120,12 @@ export interface _SERVICE {
       GetQuotaActorResponse
     >,
   'get_stats' : () => Promise<GetStatsActorResponse>,
-  'import_quota' : (arg_0: Array<number>) => Promise<BooleanActorResponse>,
+  'import_quota' : (arg_0: ImportQuotaRequest) => Promise<ImportQuotaResponse>,
   'refund_order' : () => Promise<BooleanActorResponse>,
   'register_for' : (arg_0: string, arg_1: Principal, arg_2: bigint) => Promise<
+      BooleanActorResponse
+    >,
+  'register_from_gateway' : (arg_0: string, arg_1: Principal) => Promise<
       BooleanActorResponse
     >,
   'register_with_quota' : (arg_0: string, arg_1: QuotaType) => Promise<

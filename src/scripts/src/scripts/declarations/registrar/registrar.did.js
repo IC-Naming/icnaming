@@ -104,6 +104,23 @@ export const idlFactory = ({ IDL }) => {
     'Ok' : Stats,
     'Err' : ErrorInfo,
   });
+  const ImportQuotaItem = IDL.Record({
+    'owner' : IDL.Principal,
+    'diff' : IDL.Nat32,
+    'quota_type' : IDL.Text,
+  });
+  const ImportQuotaRequest = IDL.Record({
+    'hash' : IDL.Vec(IDL.Nat8),
+    'items' : IDL.Vec(ImportQuotaItem),
+  });
+  const ImportQuotaStatus = IDL.Variant({
+    'Ok' : IDL.Null,
+    'AlreadyExists' : IDL.Null,
+  });
+  const ImportQuotaResponse = IDL.Variant({
+    'Ok' : ImportQuotaStatus,
+    'Err' : ErrorInfo,
+  });
   const SubmitOrderRequest = IDL.Record({
     'name' : IDL.Text,
     'years' : IDL.Nat32,
@@ -152,10 +169,15 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'get_stats' : IDL.Func([], [GetStatsActorResponse], ['query']),
-    'import_quota' : IDL.Func([IDL.Vec(IDL.Nat8)], [BooleanActorResponse], []),
+    'import_quota' : IDL.Func([ImportQuotaRequest], [ImportQuotaResponse], []),
     'refund_order' : IDL.Func([], [BooleanActorResponse], []),
     'register_for' : IDL.Func(
         [IDL.Text, IDL.Principal, IDL.Nat64],
+        [BooleanActorResponse],
+        [],
+      ),
+    'register_from_gateway' : IDL.Func(
+        [IDL.Text, IDL.Principal],
         [BooleanActorResponse],
         [],
       ),

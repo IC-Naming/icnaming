@@ -7,9 +7,9 @@ import {resolver} from "~/canisters/names";
 import {Principal} from "@dfinity/principal";
 import {expect} from "chai";
 import {identities} from "~/utils/identity";
-import {RegistryDto, Result_1} from "~/declarations/registry/registry.did";
+import {RegistryDto, GetDetailsResponse} from "~/declarations/registry/registry.did";
 
-let global_set_subdomain_owner_result: Result_1
+let global_set_subdomain_owner_result: GetDetailsResponse
 
 When(/^I call set_subdomain_owner to add a second level name$/,
     async function () {

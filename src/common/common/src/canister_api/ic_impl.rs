@@ -1,8 +1,35 @@
 use super::*;
 use crate::named_canister_ids::{
-    CANISTER_NAME_CYCLES_MINTING, CANISTER_NAME_ICNAMING_LEDGER, CANISTER_NAME_REGISTRY,
-    CANISTER_NAME_RESOLVER,
+    CANISTER_NAME_CYCLES_MINTING, CANISTER_NAME_ICNAMING_LEDGER, CANISTER_NAME_REGISTRAR,
+    CANISTER_NAME_REGISTRY, CANISTER_NAME_RESOLVER,
 };
+
+pub struct RegistrarApi;
+
+impl RegistrarApi {
+    pub fn new() -> Self {
+        RegistrarApi
+    }
+}
+
+#[async_trait]
+impl IRegistrarApi for RegistrarApi {
+    async fn import_quota(
+        &self,
+        request: ImportQuotaRequest,
+    ) -> ICNSActorResult<ImportQuotaStatus> {
+        call_canister_as_icns_result(CANISTER_NAME_REGISTRAR, "import_quota", (request,)).await
+    }
+
+    async fn register_from_gateway(&self, name: String, owner: Principal) -> ICNSActorResult<bool> {
+        call_canister_as_icns_result(
+            CANISTER_NAME_REGISTRAR,
+            "register_from_gateway",
+            (name, owner),
+        )
+        .await
+    }
+}
 
 pub struct RegistryApi;
 

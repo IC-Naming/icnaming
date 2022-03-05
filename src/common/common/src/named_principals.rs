@@ -95,6 +95,10 @@ pub fn is_named_principal(name: &str, principal: &Principal) -> bool {
     result
 }
 
+pub fn get_named_principals(name: &str) -> HashSet<Principal> {
+    NAME_DPRINCIPALS.with(|store| store.principals.get(name).unwrap().clone())
+}
+
 pub const PRINCIPAL_NAME_ADMIN: &str = "user:administrator";
 pub const PRINCIPAL_NAME_STATE_EXPORTER: &str = "app:state_exporter";
 pub const PRINCIPAL_NAME_TIMER_TRIGGER: &str = "app:timer_trigger";

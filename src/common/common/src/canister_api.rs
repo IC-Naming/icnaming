@@ -9,7 +9,7 @@ use serde::Deserialize;
 
 use crate::cycles_minting_types::IcpXdrConversionRateCertifiedResponse;
 use crate::dto::*;
-use crate::errors::{ErrorInfo, ICNSActorResult, ICNSError};
+use crate::errors::{ErrorInfo, ICNSActorResult, ICNSError, ICNSResult};
 use crate::icnaming_ledger_types::*;
 use crate::named_canister_ids::get_named_get_canister_id;
 
@@ -62,10 +62,11 @@ where
     T: candid::utils::ArgumentEncoder,
     TResult: for<'a> Deserialize<'a> + CandidType + Debug,
 {
-    call_core::<T, ICNSActorResult<TResult>>(canister_name, method, args, true)
-        .await
-        .map(|result| result.unwrap())
-        .map_err(ErrorInfo::from)
+    let result = call_core::<T, ICNSActorResult<TResult>>(canister_name, method, args, true).await;
+    match result {
+        Ok(result) => result,
+        Err(error) => Err(ErrorInfo::from(error)),
+    }
 }
 
 async fn call_canister_as_result<T, TResult>(
@@ -114,6 +115,13 @@ pub trait IRegistryApi {
 #[async_trait]
 pub trait IResolverApi {
     async fn ensure_resolver_created(&self, name: String) -> ICNSActorResult<bool>;
+}
+
+#[async_trait]
+pub trait IRegistrarApi {
+    async fn import_quota(&self, request: ImportQuotaRequest)
+        -> ICNSActorResult<ImportQuotaStatus>;
+    async fn register_from_gateway(&self, name: String, owner: Principal) -> ICNSActorResult<bool>;
 }
 
 #[async_trait]

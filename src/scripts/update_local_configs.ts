@@ -5,7 +5,7 @@ import logger from "node-color-log";
 
 (async () => {
     await canister.create_all();
-    const names = ["registrar", "resolver", "registry", "icnaming_ledger", "cycles_minting", "favorites", "ledger"]
+    const names = ["registrar", "resolver", "registry", "icnaming_ledger", "cycles_minting", "favorites", "ledger", "registrar_control_gateway"]
     let dir = `./configs/dev`;
     // create dir if not exists
     if (!fs.existsSync(dir)) {
