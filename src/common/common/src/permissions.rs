@@ -41,7 +41,6 @@ pub fn is_admin(user: &Principal) -> bool {
     is_named_principal(PRINCIPAL_NAME_ADMIN, user)
 }
 
-#[cfg(feature = "dev_canister")]
 pub fn get_admin() -> Principal {
     get_named_principals(PRINCIPAL_NAME_ADMIN)
         .into_iter()
