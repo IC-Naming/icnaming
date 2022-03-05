@@ -5,7 +5,7 @@ use candid::{decode_args, encode_args, CandidType, Deserialize, Principal};
 use common::state::StableState;
 
 #[derive(CandidType, Deserialize)]
-struct AssignmentRecord {
+pub(crate) struct AssignmentRecord {
     owner: Principal,
     assigned_at: u64,
 }
@@ -22,7 +22,6 @@ impl StableState for NameAssignmentStore {
 
     fn decode(bytes: Vec<u8>) -> Result<Self, String> {
         let (assignments,): (HashMap<String, AssignmentRecord>,) = decode_args(&bytes).unwrap();
-
         Ok(NameAssignmentStore { assignments })
     }
 }
@@ -41,5 +40,9 @@ impl NameAssignmentStore {
     pub fn add_assignment(&mut self, name: &str, owner: Principal, assigned_at: u64) {
         self.assignments
             .insert(name.to_string(), AssignmentRecord { owner, assigned_at });
+    }
+
+    pub(crate) fn get_assignments(&self) -> &HashMap<String, AssignmentRecord> {
+        &self.assignments
     }
 }

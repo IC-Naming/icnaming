@@ -3,12 +3,12 @@ use std::io::Read;
 use std::str::FromStr;
 
 use candid::{decode_args, encode_args};
-use common::dto::ImportQuotaItem;
 use flate2::read::ZlibDecoder;
 use ic_cdk::export::Principal;
 use ic_crypto_sha256::Sha256;
 use log::debug;
 
+use common::dto::ImportQuotaItem;
 use common::state::StableState;
 
 #[derive(Default)]
@@ -79,5 +79,13 @@ impl QuotaImportStore {
         for file_hash in file_hashes {
             self.acceptable_file_hashes.insert(file_hash);
         }
+    }
+
+    pub fn get_acceptable_file_hashes(&self) -> &HashSet<Vec<u8>> {
+        &self.acceptable_file_hashes
+    }
+
+    pub fn get_imported_file_hashes(&self) -> &HashSet<Vec<u8>> {
+        &self.imported_file_hashes
     }
 }

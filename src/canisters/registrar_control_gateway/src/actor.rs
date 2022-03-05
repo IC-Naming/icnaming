@@ -12,31 +12,31 @@ use common::named_principals::{PRINCIPAL_NAME_STATE_EXPORTER, PRINCIPAL_NAME_TIM
 use common::permissions::{must_be_named_principal, must_be_system_owner};
 use common::state::StableState;
 
-use crate::service::{AssignNameResult, GatewayService, ImportQuotaResult};
+use crate::service::{AssignNameResult, GatewayService, ImportQuotaResult, Stats};
 use crate::state::STATE;
 
-// #[query(name = "get_stats")]
-// #[candid_method(query, rename = "get_stats")]
-// pub fn get_stats() -> GetStatsActorResponse {
-//     let now = api::time();
-//     let service = RegistrarService::new();
-//     let stats = service.get_stats(now);
-//     GetStatsActorResponse::new(Ok(stats))
-// }
-//
-// #[derive(CandidType)]
-// pub enum GetStatsActorResponse {
-//     Ok(Stats),
-//     Err(ErrorInfo),
-// }
-// impl GetStatsActorResponse {
-//     pub fn new(result: ICNSResult<Stats>) -> GetStatsActorResponse {
-//         match result {
-//             Ok(stats) => GetStatsActorResponse::Ok(stats),
-//             Err(err) => GetStatsActorResponse::Err(err.into()),
-//         }
-//     }
-// }
+#[query(name = "get_stats")]
+#[candid_method(query, rename = "get_stats")]
+pub fn get_stats() -> GetStatsActorResponse {
+    let now = api::time();
+    let service = GatewayService::new();
+    let stats = service.get_stats(now);
+    GetStatsActorResponse::new(Ok(stats))
+}
+
+#[derive(CandidType)]
+pub enum GetStatsActorResponse {
+    Ok(Stats),
+    Err(ErrorInfo),
+}
+impl GetStatsActorResponse {
+    pub fn new(result: ICNSResult<Stats>) -> GetStatsActorResponse {
+        match result {
+            Ok(stats) => GetStatsActorResponse::Ok(stats),
+            Err(err) => GetStatsActorResponse::Err(err.into()),
+        }
+    }
+}
 
 #[update(name = "export_state")]
 #[candid_method(update, rename = "export_state")]
