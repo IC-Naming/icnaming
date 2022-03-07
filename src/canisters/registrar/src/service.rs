@@ -1025,6 +1025,40 @@ impl RegistrarService {
             Ok(ImportQuotaStatus::Ok)
         })
     }
+
+    pub fn cancel_expired_orders(&self, now: u64) -> ICNSResult<bool> {
+        let (need_check_orders, expired_order) = STATE.with(|s| {
+            let store = s.quota_order_store.borrow();
+            (
+                store.get_need_to_be_check_name_availability_principals(now),
+                store.get_expired_quota_order_user_principals(now),
+            )
+        });
+
+        // cancel expired orders
+        for user in expired_order {
+            self.cancel_order(&user, now)?;
+        }
+
+        let mut need_to_be_cancel_users = vec![];
+        // check orders
+        STATE.with(|s| {
+            let store = s.registration_store.borrow();
+            let name_order_store = s.name_order_store.borrow();
+            for user in need_check_orders.iter() {
+                let user_order = name_order_store.get_order(user).unwrap();
+                let name: &String = user_order.name();
+                if store.registrations.contains_key(name.as_str()) {
+                    need_to_be_cancel_users.push(user);
+                }
+            }
+        });
+
+        for user in need_to_be_cancel_users {
+            self.cancel_order(&user, now)?;
+        }
+        Ok(true)
+    }
 }
 
 fn apply_quota_order_details(details: &QuotaOrderDetails) {

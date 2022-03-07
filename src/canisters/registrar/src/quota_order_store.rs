@@ -3,6 +3,9 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 use candid::{decode_args, encode_args, CandidType, Deserialize, Nat, Principal};
+use common::constants::{
+    EXPIRE_TIME_OF_NAME_ORDER_AVAILABILITY_CHECK_IN_NS, EXPIRE_TIME_OF_NAME_ORDER_IN_NS,
+};
 use getset::{Getters, Setters};
 use log::info;
 
@@ -268,6 +271,30 @@ impl QuotaOrderStore {
 
     pub fn get_all_orders(&self) -> &HashMap<QuotaOrderId, QuotaOrderRef> {
         &self.all_orders
+    }
+
+    pub fn get_expired_quota_order_user_principals(&self, now: u64) -> Vec<Principal> {
+        let expired_time = now - EXPIRE_TIME_OF_NAME_ORDER_IN_NS;
+        self.user_orders
+            .iter()
+            .filter(|(_, order)| {
+                let order_ref = order.borrow();
+                order_ref.status == QuotaOrderStatus::New && order_ref.created_at < expired_time
+            })
+            .map(|(user, _)| user.clone())
+            .collect()
+    }
+
+    pub fn get_need_to_be_check_name_availability_principals(&self, now: u64) -> Vec<Principal> {
+        let check_time = now - EXPIRE_TIME_OF_NAME_ORDER_AVAILABILITY_CHECK_IN_NS;
+        self.user_orders
+            .iter()
+            .filter(|(_, order)| {
+                let order_ref = order.borrow();
+                order_ref.status == QuotaOrderStatus::New && order_ref.created_at >= check_time
+            })
+            .map(|(user, _)| user.clone())
+            .collect()
     }
 }
 

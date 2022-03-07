@@ -73,7 +73,7 @@
     "icnaming_ledger": {
       "type": "custom",
       "build": [
-        "cargo +1.58 build --target wasm32-unknown-unknown --package icnaming_ledger --release --no-default-features --features dev_canister --manifest-path icnaming_ledger/Cargo.toml",
+        "cargo +stable build --target wasm32-unknown-unknown --package icnaming_ledger --release --no-default-features --features dev_canister --manifest-path icnaming_ledger/Cargo.toml",
         "ic-cdk-optimizer icnaming_ledger/target/wasm32-unknown-unknown/release/icnaming_ledger.wasm -o icnaming_ledger/target/wasm32-unknown-unknown/release/icnaming_ledger_opt.wasm"
       ],
       "candid": "icnaming_ledger/canisters/icnaming_ledger/icnaming-ledger.did",

@@ -1,6 +1,9 @@
 use std::collections::{HashMap, HashSet};
 
 use candid::{decode_args, encode_args, CandidType, Deserialize, Nat, Principal};
+use common::constants::{
+    EXPIRE_TIME_OF_NAME_ORDER_AVAILABILITY_CHECK_IN_NS, EXPIRE_TIME_OF_NAME_ORDER_IN_NS,
+};
 use getset::{Getters, Setters};
 use log::debug;
 
