@@ -1,5 +1,5 @@
 [toolchain]
-channel = "1.58"
+channel = "stable"
 components = [
     "rustc",
     "rust-std",
