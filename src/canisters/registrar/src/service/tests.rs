@@ -930,3 +930,126 @@ mod get_price_in_icp_e8s {
         assert_eq!(result, expected);
     }
 }
+
+mod cancel_expired_orders {
+    use super::*;
+
+    #[rstest]
+    async fn test_cancel_expired_orders_clean_expired_success(
+        service: RegistrarService,
+        mock_now: u64,
+        mock_user1: Principal,
+        mock_user2: Principal,
+    ) {
+        service.submit_order(
+            &mock_user1,
+            mock_now,
+            SubmitOrderRequest {
+                name: "test-name.icp".to_string(),
+                years: 1,
+            },
+        ).await;
+
+        service.submit_order(
+            &mock_user2,
+            mock_now - EXPIRE_TIME_OF_NAME_ORDER_IN_NS - 1,
+            SubmitOrderRequest {
+                name: "test-name2.icp".to_string(),
+                years: 1,
+            },
+        ).await;
+
+        // act
+        service.cancel_expired_orders(mock_now).unwrap();
+
+        // assert
+        STATE.with(|s| {
+            let store = s.name_order_store.borrow();
+            assert_eq!(store.get_order(&mock_user1).is_some(), true);
+            assert_eq!(store.get_order(&mock_user2).is_none(), true);
+        });
+    }
+
+    #[rstest]
+    async fn test_cancel_expired_orders_availability_check_name_has_been_taken(
+        service: RegistrarService,
+        mock_now: u64,
+        mock_user1: Principal,
+        mock_user2: Principal,
+    ) {
+        service.submit_order(
+            &mock_user1,
+            mock_now,
+            SubmitOrderRequest {
+                name: "test-name.icp".to_string(),
+                years: 1,
+            },
+        ).await;
+
+        service.submit_order(
+            &mock_user2,
+            mock_now - EXPIRE_TIME_OF_NAME_ORDER_AVAILABILITY_CHECK_IN_NS + 1,
+            SubmitOrderRequest {
+                name: "test-name2.icp".to_string(),
+                years: 1,
+            },
+        ).await;
+
+        STATE.with(|s|{
+            let mut store = s.registration_store.borrow_mut();
+            store.add_registration(Registration::new(
+                mock_user2.clone(),
+                "test-name2.icp".to_string(),
+                mock_now + 1111,
+                mock_now
+            ));
+        });
+
+        // act
+        service.cancel_expired_orders(mock_now).unwrap();
+
+        // assert
+        STATE.with(|s| {
+            let store = s.name_order_store.borrow();
+            assert_eq!(store.get_order(&mock_user1).is_some(), true);
+            assert_eq!(store.get_order(&mock_user2).is_none(), true);
+        });
+    }
+
+
+    #[rstest]
+    async fn test_cancel_expired_orders_availability_check_name_is_not_taken(
+        service: RegistrarService,
+        mock_now: u64,
+        mock_user1: Principal,
+        mock_user2: Principal,
+    ) {
+        service.submit_order(
+            &mock_user1,
+            mock_now,
+            SubmitOrderRequest {
+                name: "test-name.icp".to_string(),
+                years: 1,
+            },
+        ).await;
+
+        service.submit_order(
+            &mock_user2,
+            mock_now - EXPIRE_TIME_OF_NAME_ORDER_AVAILABILITY_CHECK_IN_NS + 1,
+            SubmitOrderRequest {
+                name: "test-name2.icp".to_string(),
+                years: 1,
+            },
+        ).await;
+
+        // act
+        service.cancel_expired_orders(mock_now).unwrap();
+
+        // assert
+        STATE.with(|s| {
+            let store = s.name_order_store.borrow();
+            assert_eq!(store.get_order(&mock_user1).is_some(), true);
+            assert_eq!(store.get_order(&mock_user2).is_some(), true);
+        });
+    }
+}
