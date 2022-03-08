@@ -73,10 +73,11 @@ fn service(
                 },
             })
         });
+    service.cycles_minting_api = Arc::new(mock_cycles_minting_api);
     mock_registry_api
         .expect_reclaim_name()
         .returning(|name, owner, resolver| Ok(true));
-    service.cycles_minting_api = Arc::new(mock_cycles_minting_api);
+    service.registry_api = Arc::new(mock_registry_api);
     service
 }
 

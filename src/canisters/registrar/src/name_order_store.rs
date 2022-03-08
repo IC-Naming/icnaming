@@ -189,6 +189,3 @@ impl NameOrderStore {
         }
     }
 }
-
-#[cfg(test)]
-mod tests;
