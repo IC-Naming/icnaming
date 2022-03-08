@@ -50,6 +50,7 @@ fn service(
     register_years: u32,
     mut mock_icnaming_ledger_api: MockICNamingLedgerApi,
     mut mock_cycles_minting_api: MockCyclesMintingApi,
+    mut mock_registry_api: MockRegistryApi,
 ) -> RegistrarService {
     STATE.with(|s| {
         let mut m = s.user_quota_store.borrow_mut();
@@ -73,6 +74,10 @@ fn service(
             })
         });
     service.cycles_minting_api = Arc::new(mock_cycles_minting_api);
+    mock_registry_api
+        .expect_reclaim_name()
+        .returning(|name, owner, resolver| Ok(true));
+    service.registry_api = Arc::new(mock_registry_api);
     service
 }
 
@@ -887,7 +892,7 @@ mod quota_order_manager {
             mock_now: u64,
             mock_details: QuotaOrderDetails,
         ) {
-            service
+            let _ = service
                 .place_quota_order(&mock_user1, mock_now, mock_details.clone())
                 .await;
             // act
@@ -995,13 +1000,13 @@ mod cancel_expired_orders {
             },
         ).await;
 
-        STATE.with(|s|{
+        STATE.with(|s| {
             let mut store = s.registration_store.borrow_mut();
             store.add_registration(Registration::new(
                 mock_user2.clone(),
                 "test-name2.icp".to_string(),
                 mock_now + 1111,
-                mock_now
+                mock_now,
             ));
         });
 
@@ -1051,5 +1056,93 @@ mod cancel_expired_orders {
             assert_eq!(store.get_order(&mock_user1).is_some(), true);
             assert_eq!(store.get_order(&mock_user2).is_some(), true);
         });
+    }
+}
+
+mod reclaim_name {
+    use common::permissions::get_admin;
+    use super::*;
+
+    #[rstest]
+    async fn reclaim_name_success(service: RegistrarService,
+                                  mock_now: u64,
+                                  mock_user1: Principal,
+                                  mock_user2: Principal, ) {
+        STATE.with(|s| {
+            let mut store = s.registration_store.borrow_mut();
+            store.add_registration(Registration::new(
+                mock_user1.clone(),
+                "test-name.icp".to_string(),
+                mock_now + 1111,
+                mock_now,
+            ));
+        });
+
+        // act
+        let reclaim_result = service.reclaim_name(
+            "test-name.icp",
+            &mock_user1).await;
+
+        assert_eq!(reclaim_result.is_ok(), true);
+    }
+
+    #[rstest]
+    async fn reclaim_name_success_admin_request(service: RegistrarService,
+                                                mock_now: u64,
+                                                mock_user1: Principal,
+                                                mock_user2: Principal, ) {
+        STATE.with(|s| {
+            let mut store = s.registration_store.borrow_mut();
+            store.add_registration(Registration::new(
+                mock_user1.clone(),
+                "test-name.icp".to_string(),
+                mock_now + 1111,
+                mock_now,
+            ));
+        });
+
+        // act
+        let reclaim_result = service.reclaim_name(
+            "test-name.icp",
+            &get_admin()).await;
+
+        assert_eq!(reclaim_result.is_ok(), true);
+    }
+
+    #[rstest]
+    async fn reclaim_name_failed_name_not_found(service: RegistrarService,
+                                                mock_user1: Principal, ) {
+
+        // act
+        let reclaim_result = service.reclaim_name(
+            "test-name.icp",
+            &mock_user1).await;
+
+        assert_eq!(reclaim_result.err().unwrap(), ICNSError::RegistrationNotFound);
+    }
+
+
+    #[rstest]
+    async fn reclaim_name_failed_caller_error(service: RegistrarService,
+                                              mock_now: u64,
+                                              mock_user1: Principal,
+                                              mock_user2: Principal, ) {
+        STATE.with(|s| {
+            let mut store = s.registration_store.borrow_mut();
+            store.add_registration(Registration::new(
+                mock_user1.clone(),
+                "test-name.icp".to_string(),
+                mock_now + 1111,
+                mock_now,
+            ));
+        });
+
+        // act
+        let reclaim_result = service.reclaim_name(
+            "test-name.icp",
+            &mock_user2).await;
+
+        // assert
+        assert_eq!(reclaim_result.err().unwrap(), ICNSError::PermissionDenied);
     }
 }

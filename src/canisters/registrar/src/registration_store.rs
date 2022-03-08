@@ -129,5 +129,3 @@ impl From<&Registration> for RegistrationDto {
     }
 }
 
-#[cfg(test)]
-mod tests;

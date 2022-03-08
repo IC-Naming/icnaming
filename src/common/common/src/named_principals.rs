@@ -1,10 +1,8 @@
 use std::collections::{HashMap, HashSet};
 use std::fmt::Display;
-use std::iter::FromIterator;
 use std::str::FromStr;
 
 use candid::Principal;
-use ic_cdk::api;
 use log::{debug, info};
 
 thread_local! {

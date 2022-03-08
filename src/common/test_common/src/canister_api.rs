@@ -23,6 +23,12 @@ impl IRegistryApi for RegistryApi {
         resolver: Principal,
     ) -> ICNSActorResult<RegistryDto>;
 
+    async fn reclaim_name(
+        &self,
+        name: String,
+        owner: Principal,
+        resolver: Principal,
+    ) -> ICNSActorResult<bool>;
     async fn get_resolver(&self, label: &str) -> ICNSActorResult<Principal>;
     async fn get_users(&self, name: &str) -> ICNSActorResult<RegistryUsers>;
 }

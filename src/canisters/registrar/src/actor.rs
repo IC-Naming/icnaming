@@ -504,6 +504,16 @@ pub async fn confirm_pay_order(block_height: BlockHeight) -> BooleanActorRespons
     BooleanActorResponse::new(result)
 }
 
+#[update(name = "reclaim_name")]
+#[candid_method(update, rename = "reclaim_name")]
+async fn reclaim_name(name: String) -> BooleanActorResponse {
+    let caller = &api::caller();
+
+    let mut service = RegistrarService::new();
+    let result = service.reclaim_name(name.as_str(), caller).await;
+    BooleanActorResponse::new(result)
+}
+
 candid::export_service!();
 
 #[query(name = "__get_candid_interface_tmp_hack")]

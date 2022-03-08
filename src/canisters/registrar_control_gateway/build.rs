@@ -1,5 +1,5 @@
 use std::io::{Read, Write};
-use std::{fs, io};
+use std::{fs};
 
 use flate2::write::ZlibEncoder;
 
@@ -20,7 +20,7 @@ fn main() {
 
     for file in files {
         let file_name = file.to_str().unwrap().to_string();
-        let mut data = fs::read(file).unwrap();
+        let data = fs::read(file).unwrap();
         {
             let file_name = file_name.replace(".csv", ".hash");
             let hash = ic_crypto_sha256::Sha256::hash(&data);
@@ -60,7 +60,6 @@ fn main() {
             .collect::<Vec<_>>()
             .join(", ")
     );
-    let mut content_pushed = false;
 
     let mut file = fs::File::open("src/build_gen.rs").unwrap();
     let mut contents = String::new();
