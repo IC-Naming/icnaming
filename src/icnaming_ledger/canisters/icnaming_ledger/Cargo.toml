@@ -13,7 +13,7 @@ serde = "1.0.136"
 itertools = "0.10.3"
 serde_bytes = "0.11"
 lazy_static = "1.4.0"
-candid = "0.7.11"
+candid = "0.7.12"
 ic-types = { git = "https://github.com/dfinity/ic", rev = "89446f5a04f053040b4863eab5458446d925ed0e" }
 dfn_candid = { git = "https://github.com/dfinity/ic", rev = "89446f5a04f053040b4863eab5458446d925ed0e" }
 dfn_core = { git = "https://github.com/dfinity/ic", rev = "89446f5a04f053040b4863eab5458446d925ed0e" }
