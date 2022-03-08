@@ -14,6 +14,7 @@ import logger from "node-color-log";
             registry: true,
             resolver: true,
             favorites: true,
+            cycles_minting: true,
         }
     });
 })().then(() => {

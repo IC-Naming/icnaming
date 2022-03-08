@@ -15,7 +15,7 @@ mod memory {
 
     #[rstest]
     fn test_name_order_many(_init_test: ()) {
-        let counts = vec![1u32, 10, 100, 1_000, 10_000];
+        let counts = vec![1u32, 10, 100, 1_000];
 
         // run each count and record the size of the store
         let mut sizes = vec![];

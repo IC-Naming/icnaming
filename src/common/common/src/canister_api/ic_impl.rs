@@ -18,7 +18,7 @@ impl IRegistrarApi for RegistrarApi {
         &self,
         request: ImportQuotaRequest,
     ) -> ICNSActorResult<ImportQuotaStatus> {
-        call_canister_as_icns_result(CANISTER_NAME_REGISTRAR, "import_quota", (request,)).await
+        call_canister_as_icns_result(CANISTER_NAME_REGISTRAR, "import_quota", (request, )).await
     }
 
     async fn register_from_gateway(&self, name: String, owner: Principal) -> ICNSActorResult<bool> {
@@ -27,7 +27,7 @@ impl IRegistrarApi for RegistrarApi {
             "register_from_gateway",
             (name, owner),
         )
-        .await
+            .await
     }
 }
 
@@ -54,15 +54,19 @@ impl IRegistryApi for RegistryApi {
             "set_subdomain_owner",
             (label, parent_name, sub_owner, ttl, resolver),
         )
-        .await
+            .await
+    }
+
+    async fn reclaim_name(&self, name: String, owner: Principal, resolver: Principal) -> ICNSActorResult<bool> {
+        call_canister_as_icns_result(CANISTER_NAME_RESOLVER, "reclaim_name", (name, owner, resolver)).await
     }
 
     async fn get_resolver(&self, label: &str) -> ICNSActorResult<Principal> {
-        call_canister_as_icns_result(CANISTER_NAME_REGISTRY, "get_resolver", (label,)).await
+        call_canister_as_icns_result(CANISTER_NAME_REGISTRY, "get_resolver", (label, )).await
     }
 
     async fn get_users(&self, name: &str) -> ICNSActorResult<RegistryUsers> {
-        call_canister_as_icns_result(CANISTER_NAME_REGISTRY, "get_users", (name,)).await
+        call_canister_as_icns_result(CANISTER_NAME_REGISTRY, "get_users", (name, )).await
     }
 }
 
@@ -77,7 +81,7 @@ impl ResolverApi {
 #[async_trait]
 impl IResolverApi for ResolverApi {
     async fn ensure_resolver_created(&self, name: String) -> ICNSActorResult<bool> {
-        call_canister_as_icns_result(CANISTER_NAME_RESOLVER, "ensure_resolver_created", (name,))
+        call_canister_as_icns_result(CANISTER_NAME_RESOLVER, "ensure_resolver_created", (name, ))
             .await
     }
 }
@@ -93,14 +97,14 @@ impl ICNamingLedgerApi {
 #[async_trait]
 impl IICNamingLedgerApi for ICNamingLedgerApi {
     async fn add_payment(&self, request: AddPaymentRequest) -> ICNSActorResult<AddPaymentResponse> {
-        call_canister_as_result(CANISTER_NAME_ICNAMING_LEDGER, "add_payment", (request,)).await
+        call_canister_as_result(CANISTER_NAME_ICNAMING_LEDGER, "add_payment", (request, )).await
     }
 
     async fn verify_payment(
         &self,
         request: VerifyPaymentRequest,
     ) -> ICNSActorResult<VerifyPaymentResponse> {
-        call_canister_as_result(CANISTER_NAME_ICNAMING_LEDGER, "verify_payment", (request,)).await
+        call_canister_as_result(CANISTER_NAME_ICNAMING_LEDGER, "verify_payment", (request, )).await
     }
 
     async fn get_tip_of_ledger(
@@ -110,9 +114,9 @@ impl IICNamingLedgerApi for ICNamingLedgerApi {
         call_canister_as_result_no_logging(
             CANISTER_NAME_ICNAMING_LEDGER,
             "get_tip_of_ledger",
-            (request,),
+            (request, ),
         )
-        .await
+            .await
     }
 
     async fn refund_payment(
@@ -122,9 +126,9 @@ impl IICNamingLedgerApi for ICNamingLedgerApi {
         call_canister_as_result_no_logging(
             CANISTER_NAME_ICNAMING_LEDGER,
             "refund_payment",
-            (request,),
+            (request, ),
         )
-        .await
+            .await
     }
 
     async fn sync_icp_payment(
@@ -134,9 +138,9 @@ impl IICNamingLedgerApi for ICNamingLedgerApi {
         call_canister_as_result(
             CANISTER_NAME_ICNAMING_LEDGER,
             "sync_icp_payment",
-            (request,),
+            (request, ),
         )
-        .await
+            .await
     }
 }
 
@@ -158,6 +162,6 @@ impl ICyclesMintingApi for CyclesMintingApi {
             "get_icp_xdr_conversion_rate",
             (),
         )
-        .await
+            .await
     }
 }

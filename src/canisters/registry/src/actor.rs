@@ -287,6 +287,16 @@ impl GetDetailsResponse {
     }
 }
 
+#[update(name = "reclaim_name")]
+#[candid_method(update, rename = "reclaim_name")]
+fn reclaim_name(name: String, owner: Principal, resolver: Principal) -> BooleanActorResponse {
+    let caller = &ic_caller();
+
+    let mut service = RegistriesService::new();
+    let result = service.reclaim_name(name.as_str(), caller, &owner, &resolver);
+    BooleanActorResponse::new(result)
+}
+
 candid::export_service!();
 
 #[query(name = "__get_candid_interface_tmp_hack")]

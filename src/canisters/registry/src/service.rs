@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
 
 use candid::Principal;
@@ -12,6 +12,8 @@ use common::constants::{DEFAULT_TTL, MAX_REGISTRY_OPERATOR_COUNT, TOP_LABEL};
 use common::dto::{GetPageInput, GetPageOutput, IRegistryUsers, RegistryDto, RegistryUsers};
 use common::errors::{ICNSError, ICNSResult};
 use common::metrics_encoder::MetricsEncoder;
+use common::named_canister_ids::CANISTER_NAME_REGISTRAR;
+use common::permissions::must_be_named_canister;
 
 use crate::registry_store::*;
 use crate::state::STATE;
@@ -285,6 +287,32 @@ impl RegistriesService {
             Ok(RegistryDto::from(registry))
         })
     }
+
+    pub fn reclaim_name(&mut self,
+                        name: &str,
+                        caller: &Principal,
+                        new_owner: &Principal,
+                        resolver: &Principal) -> ICNSResult<bool> {
+        must_be_named_canister(caller, CANISTER_NAME_REGISTRAR)?;
+        STATE.with(|s| {
+            let mut store = s.registry_store.borrow_mut();
+            let mut registries = store.get_registries_mut();
+
+            let mut registry = registries.get_mut(name);
+            if registry.is_none() {
+                let registry = Registry::new(name.to_string(), new_owner.to_owned(), DEFAULT_TTL, resolver.clone());
+                registries.insert(name.to_string(), registry);
+            } else {
+                let registry = registry.unwrap();
+                registry.set_owner(new_owner.to_owned());
+                registry.set_ttl(DEFAULT_TTL);
+                registry.set_resolver(resolver.to_owned());
+                registry.set_operators(HashSet::new());
+            }
+        });
+        Ok(true)
+    }
+
 
     pub fn get_stats(&self) -> Stats {
         let mut stats = Stats::default();

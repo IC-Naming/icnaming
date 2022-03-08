@@ -6,7 +6,7 @@ use std::str::FromStr;
 use std::sync::Arc;
 
 use candid::{CandidType, Deserialize, Nat, Principal};
-use ic_cdk::api;
+use ic_cdk::{api, call};
 use log::{debug, error, info, trace, warn};
 use num_bigint::BigUint;
 use num_traits::ToPrimitive;
@@ -61,6 +61,7 @@ pub struct RegistrarService {
     pub icnaming_ledger_api: Arc<dyn IICNamingLedgerApi>,
     pub cycles_minting_api: Arc<dyn ICyclesMintingApi>,
 }
+
 
 impl RegistrarService {}
 
@@ -385,7 +386,7 @@ impl RegistrarService {
             quota_type,
             admin_import,
         )
-        .await
+            .await
     }
 
     pub async fn register(
@@ -1058,6 +1059,50 @@ impl RegistrarService {
             self.cancel_order(&user, now)?;
         }
         Ok(true)
+    }
+
+    pub(crate) async fn reclaim_name(&self, name: &str, caller: &Principal) -> ICNSResult<bool> {
+        let registration_owner = STATE.with(|s| {
+            let store = s.registration_store.borrow();
+            let registrations = store.get_registrations();
+            let registration = registrations.get(name);
+            if registration.is_none() {
+                return Err(ICNSError::RegistrationNotFound);
+            }
+            let registration = registration.unwrap();
+            let owner = registration.get_owner();
+
+            // admin change reclaim any name for users to data fixing.
+            // TODO: remove admin permission in next version when data fixing is done.
+            if !is_admin(caller) {
+                if !owner.eq(caller) {
+                    return Err(ICNSError::PermissionDenied);
+                }
+            }
+
+            Ok(owner)
+        })?;
+
+        debug!("reclaim name: {} to user {}", name,&registration_owner);
+
+        let resolver = get_named_get_canister_id(CANISTER_NAME_RESOLVER);
+        let reclaim_result = self.registry_api
+            .reclaim_name(name.to_string(),
+                          registration_owner.clone(),
+                          resolver)
+            .await;
+
+        let result = match reclaim_result {
+            Ok(result) => {
+                info!("reclaim name: {} to user {} success", name,&registration_owner);
+                Ok(result)
+            }
+            Err(e) => {
+                error!("reclaim name: {} to user {} failed: {}", name,&registration_owner, e.message);
+                Err(RemoteError(e).into())
+            }
+        };
+        result
     }
 }
 
