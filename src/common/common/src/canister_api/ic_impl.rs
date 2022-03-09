@@ -58,7 +58,7 @@ impl IRegistryApi for RegistryApi {
     }
 
     async fn reclaim_name(&self, name: String, owner: Principal, resolver: Principal) -> ICNSActorResult<bool> {
-        call_canister_as_icns_result(CANISTER_NAME_RESOLVER, "reclaim_name", (name, owner, resolver)).await
+        call_canister_as_icns_result(CANISTER_NAME_REGISTRY, "reclaim_name", (name, owner, resolver)).await
     }
 
     async fn get_resolver(&self, label: &str) -> ICNSActorResult<Principal> {

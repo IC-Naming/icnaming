@@ -993,7 +993,7 @@ mod cancel_expired_orders {
 
         service.submit_order(
             &mock_user2,
-            mock_now - EXPIRE_TIME_OF_NAME_ORDER_AVAILABILITY_CHECK_IN_NS + 1,
+            mock_now - EXPIRE_TIME_OF_NAME_ORDER_AVAILABILITY_CHECK_IN_NS - 1,
             SubmitOrderRequest {
                 name: "test-name2.icp".to_string(),
                 years: 1,
@@ -1146,3 +1146,29 @@ mod reclaim_name {
         assert_eq!(reclaim_result.err().unwrap(), ICNSError::PermissionDenied);
     }
 }
+
+// mod load_state {
+//     use std::fs::File;
+//     use std::io::Write;
+//     use common::dto::decode_zlib;
+//     use common::state::StableState;
+//     use super::*;
+//
+//     #[rstest]
+//     fn get_registration_owners(
+//         service: RegistrarService,
+//     ) {
+//         let zlib = include_bytes!("../../../../local_state_data/registrar/latest.zlib");
+//         let candi = decode_zlib(zlib);
+//         let state = State::decode(candi).unwrap();
+//         let store = state.registration_store.borrow();
+//         // out to file registrar.csv
+//         let mut wtr = csv::Writer::from_writer(vec![]);
+//         for (name, registration) in store.get_registrations() {
+//             wtr.serialize((name, registration.get_owner().to_string())).unwrap();
+//         }
+//         wtr.flush().unwrap();
+//         let csv = String::from_utf8(wtr.into_inner().unwrap()).unwrap();
+//         File::create("registrar.csv").unwrap().write_all(csv.as_bytes()).unwrap();
+//     }
+// }

@@ -1,13 +1,9 @@
+use ic_cdk::api;
 use ic_cdk_macros::*;
 use log::error;
 
 use crate::payment_sync;
-
-// #[heartbeat]
-pub fn heartbeat() {
-    let future = run_periodic_tasks();
-    ic_cdk::spawn(future);
-}
+use crate::service::RegistrarService;
 
 pub async fn run_periodic_tasks() {
     let option = payment_sync::sync_transactions().await;
@@ -16,4 +12,8 @@ pub async fn run_periodic_tasks() {
             error!("Error while syncing transactions: {}", e);
         }
     }
+
+    let service = RegistrarService::new();
+    let now = api::time();
+    service.cancel_expired_orders(now);
 }

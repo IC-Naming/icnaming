@@ -1,6 +1,5 @@
 import "~/setup"
 
-import {identity, canister} from "~/utils";
 import fs from "fs";
 import logger from "node-color-log";
 import {registrar} from "~/declarations/registrar";

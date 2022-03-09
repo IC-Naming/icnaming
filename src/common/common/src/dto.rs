@@ -121,7 +121,7 @@ pub struct LoadStateRequest {
     pub state_data: Vec<u8>,
 }
 
-impl Display for LoadStateRequest{
+impl Display for LoadStateRequest {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "LoadStateRequest with {} bytes", self.state_data.len())
     }
@@ -147,16 +147,26 @@ impl StateExportResponse {
     }
 }
 
+pub fn encode_zlib(data: &[u8]) -> Vec<u8> {
+    let mut encoder = ZlibEncoder::new(Vec::new(), Compression::default());
+    encoder.write_all(data).unwrap();
+    let data = encoder.finish().unwrap();
+    data
+}
+
+pub fn decode_zlib(data: &[u8]) -> Vec<u8> {
+    let mut d = ZlibDecoder::new(data);
+    let mut decoded_data = Vec::new();
+    d.read_to_end(&mut decoded_data).unwrap();
+    decoded_data
+}
+
 pub fn to_state_export_data(source_state_data: Vec<u8>) -> StateExportData {
-    let mut e = ZlibEncoder::new(Vec::new(), Compression::default());
-    e.write_all(&source_state_data).unwrap();
-    let data = e.finish().unwrap();
-    StateExportData { state_data: data }
+    StateExportData {
+        state_data: encode_zlib(source_state_data.as_slice()),
+    }
 }
 
 pub fn from_state_export_data(request: LoadStateRequest) -> Vec<u8> {
-    let mut d = ZlibDecoder::new(request.state_data.as_slice());
-    let mut data = Vec::new();
-    d.read_to_end(&mut data).unwrap();
-    data
+    decode_zlib(request.state_data.as_slice())
 }

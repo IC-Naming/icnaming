@@ -14,7 +14,7 @@ use common::permissions::{must_be_named_principal, must_be_system_owner};
 use common::state::StableState;
 
 use crate::name_order_store::GetNameOrderResponse;
-use crate::periodic_tasks_runner::{heartbeat, run_periodic_tasks};
+use crate::periodic_tasks_runner::{run_periodic_tasks};
 use crate::registration_store::{RegistrationDetails, RegistrationDto};
 use crate::service::{
     PriceTable, RegistrarService, Stats, SubmitOrderRequest, SubmitOrderResponse,
