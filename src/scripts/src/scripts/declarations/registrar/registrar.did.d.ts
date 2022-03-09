@@ -121,6 +121,8 @@ export interface _SERVICE {
     >,
   'get_stats' : () => Promise<GetStatsActorResponse>,
   'import_quota' : (arg_0: ImportQuotaRequest) => Promise<ImportQuotaResponse>,
+  'load_state' : (arg_0: StateExportData) => Promise<BooleanActorResponse>,
+  'reclaim_name' : (arg_0: string) => Promise<BooleanActorResponse>,
   'refund_order' : () => Promise<BooleanActorResponse>,
   'register_for' : (arg_0: string, arg_1: Principal, arg_2: bigint) => Promise<
       BooleanActorResponse

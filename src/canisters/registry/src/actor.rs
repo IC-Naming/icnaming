@@ -1,6 +1,7 @@
 use candid::{candid_method, CandidType, Principal};
 use ic_cdk::api;
 use ic_cdk_macros::*;
+use log::{debug, error, info};
 
 use common::dto::*;
 use common::errors::{BooleanActorResponse, ErrorInfo, ICNSError, ICNSResult};
@@ -12,7 +13,7 @@ use common::permissions::{must_be_named_principal, must_be_system_owner};
 use common::state::StableState;
 
 use crate::service::{RegistriesService, Stats};
-use crate::state::STATE;
+use crate::state::{STATE, State};
 
 #[query(name = "get_stats")]
 #[candid_method(query, rename = "get_stats")]
@@ -48,6 +49,30 @@ pub async fn export_state() -> StateExportResponse {
 
     let source_data = STATE.with(|state| to_state_export_data(state.encode()));
     StateExportResponse::new(Ok(source_data))
+}
+
+#[cfg(feature = "dev_canister")]
+#[update(name = "load_state")]
+#[candid_method(update, rename = "load_state")]
+pub async fn load_state(request: LoadStateRequest) -> BooleanActorResponse {
+    debug!("load_state: {}", request);
+    let caller = &api::caller();
+    if must_be_system_owner(caller).is_err() {
+        error!("load_state: caller is not system owner");
+        return BooleanActorResponse::new(Err(ICNSError::PermissionDenied));
+    }
+    STATE.with(|s| {
+        let bytes = from_state_export_data(request);
+        let result = State::decode(bytes);
+        if result.is_err() {
+            error!("Failed to decode state: {:?}", result.err());
+            return BooleanActorResponse::Err(ErrorInfo::from(ICNSError::Unknown));
+        }
+        let new_state = result.unwrap();
+        s.replace(new_state);
+        info!("load_state: success");
+        return BooleanActorResponse::Ok(true);
+    })
 }
 
 /// Set owner of subdomain

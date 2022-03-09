@@ -14,5 +14,6 @@ service : {
   export_state : () -> (StateExportResponse);
   get_favorites : () -> (GetFavoritesResponse) query;
   get_stats : () -> (GetStatsResponse) query;
+  load_state : (StateExportData) -> (BooleanActorResponse);
   remove_favorite : (text) -> (BooleanActorResponse);
 }

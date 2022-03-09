@@ -59,6 +59,12 @@ export const idlFactory = ({ IDL }) => {
     'get_stats' : IDL.Func([], [GetStatsResponse], ['query']),
     'get_ttl' : IDL.Func([IDL.Text], [GetTtlResponse], ['query']),
     'get_users' : IDL.Func([IDL.Text], [GetUsersResponse], ['query']),
+    'load_state' : IDL.Func([StateExportData], [BooleanActorResponse], []),
+    'reclaim_name' : IDL.Func(
+        [IDL.Text, IDL.Principal, IDL.Principal],
+        [BooleanActorResponse],
+        [],
+      ),
     'set_approval' : IDL.Func(
         [IDL.Text, IDL.Principal, IDL.Bool],
         [BooleanActorResponse],

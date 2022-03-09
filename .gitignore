@@ -26,3 +26,5 @@ cucumber-report.json
 /src/configs/dev/principal_timer_trigger.in
 
 /src/configs/dev/canister_ids_registrar_control_gateway.in
+
+/src/latest_state_data/

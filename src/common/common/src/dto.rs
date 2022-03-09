@@ -1,10 +1,12 @@
 use std::collections::HashSet;
+use std::fmt::{Display, Formatter};
 
-use std::io::Write;
+use std::io::{Read, Write};
 
 use candid::{CandidType, Deserialize, Principal};
 use flate2::write::ZlibEncoder;
 use flate2::Compression;
+use flate2::read::ZlibDecoder;
 
 use crate::constants::{
     PAGE_INPUT_MAX_LIMIT, PAGE_INPUT_MAX_OFFSET, PAGE_INPUT_MIN_LIMIT, PAGE_INPUT_MIN_OFFSET,
@@ -114,6 +116,17 @@ pub enum ImportQuotaStatus {
     AlreadyExists,
 }
 
+#[derive(CandidType, Deserialize)]
+pub struct LoadStateRequest {
+    pub state_data: Vec<u8>,
+}
+
+impl Display for LoadStateRequest{
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "LoadStateRequest with {} bytes", self.state_data.len())
+    }
+}
+
 #[derive(CandidType)]
 pub struct StateExportData {
     pub state_data: Vec<u8>,
@@ -139,4 +152,11 @@ pub fn to_state_export_data(source_state_data: Vec<u8>) -> StateExportData {
     e.write_all(&source_state_data).unwrap();
     let data = e.finish().unwrap();
     StateExportData { state_data: data }
+}
+
+pub fn from_state_export_data(request: LoadStateRequest) -> Vec<u8> {
+    let mut d = ZlibDecoder::new(request.state_data.as_slice());
+    let mut data = Vec::new();
+    d.read_to_end(&mut data).unwrap();
+    data
 }

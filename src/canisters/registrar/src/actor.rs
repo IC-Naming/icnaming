@@ -3,13 +3,10 @@ use std::collections::HashSet;
 use candid::{candid_method, CandidType, Principal};
 use ic_cdk::api;
 use ic_cdk_macros::*;
-use log::debug;
+use log::{debug, error, info};
 
-use common::dto::{
-    to_state_export_data, GetPageInput, GetPageOutput, ImportQuotaRequest, ImportQuotaStatus,
-    StateExportResponse,
-};
-use common::errors::{BooleanActorResponse, ErrorInfo, ICNSResult};
+use common::dto::{to_state_export_data, GetPageInput, GetPageOutput, ImportQuotaRequest, ImportQuotaStatus, StateExportResponse, LoadStateRequest, from_state_export_data};
+use common::errors::{BooleanActorResponse, ErrorInfo, ICNSError, ICNSResult};
 use common::icnaming_ledger_types::BlockHeight;
 use common::named_canister_ids::CANISTER_NAME_REGISTRAR_CONTROL_GATEWAY;
 use common::named_principals::{PRINCIPAL_NAME_STATE_EXPORTER, PRINCIPAL_NAME_TIMER_TRIGGER};
@@ -22,7 +19,7 @@ use crate::registration_store::{RegistrationDetails, RegistrationDto};
 use crate::service::{
     PriceTable, RegistrarService, Stats, SubmitOrderRequest, SubmitOrderResponse,
 };
-use crate::state::STATE;
+use crate::state::{STATE, State};
 use crate::user_quota_store::QuotaType;
 
 #[query(name = "get_stats")]
@@ -60,6 +57,30 @@ impl GetStatsActorResponse {
             Err(err) => GetStatsActorResponse::Err(err.into()),
         }
     }
+}
+
+#[cfg(feature = "dev_canister")]
+#[update(name = "load_state")]
+#[candid_method(update, rename = "load_state")]
+pub async fn load_state(request: LoadStateRequest) -> BooleanActorResponse {
+    debug!("load_state: {}", request);
+    let caller = &api::caller();
+    if must_be_system_owner(caller).is_err() {
+        error!("load_state: caller is not system owner");
+        return BooleanActorResponse::new(Err(ICNSError::PermissionDenied));
+    }
+    STATE.with(|s| {
+        let bytes = from_state_export_data(request);
+        let result = State::decode(bytes);
+        if result.is_err() {
+            error!("Failed to decode state: {:?}", result.err());
+            return BooleanActorResponse::Err(ErrorInfo::from(ICNSError::Unknown));
+        }
+        let new_state = result.unwrap();
+        s.replace(new_state);
+        info!("load_state: success");
+        return BooleanActorResponse::Ok(true);
+    })
 }
 
 #[update(name = "run_tasks")]

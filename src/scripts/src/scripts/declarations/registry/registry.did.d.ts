@@ -41,6 +41,12 @@ export interface _SERVICE {
   'get_stats' : () => Promise<GetStatsResponse>,
   'get_ttl' : (arg_0: string) => Promise<GetTtlResponse>,
   'get_users' : (arg_0: string) => Promise<GetUsersResponse>,
+  'load_state' : (arg_0: StateExportData) => Promise<BooleanActorResponse>,
+  'reclaim_name' : (
+      arg_0: string,
+      arg_1: Principal,
+      arg_2: Principal,
+    ) => Promise<BooleanActorResponse>,
   'set_approval' : (arg_0: string, arg_1: Principal, arg_2: boolean) => Promise<
       BooleanActorResponse
     >,
