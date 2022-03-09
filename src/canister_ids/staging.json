@@ -13,5 +13,8 @@
   },
   "icnaming_ledger": {
     "ic": "ra2t7-3aaaa-aaaaj-aahzq-cai"
+  },
+  "registrar_control_gateway": {
+    "ic": "j6dzz-gaaaa-aaaak-aab3q-cai"
   }
 }
