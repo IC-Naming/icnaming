@@ -15,6 +15,7 @@ export interface _SERVICE {
   'export_state' : () => Promise<StateExportResponse>,
   'get_record_value' : (arg_0: string) => Promise<GetRecordValueResponse>,
   'get_stats' : () => Promise<GetStatsResponse>,
+  'load_state' : (arg_0: StateExportData) => Promise<BooleanActorResponse>,
   'set_record_value' : (
       arg_0: string,
       arg_1: Array<[string, string]>,

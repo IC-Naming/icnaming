@@ -1036,6 +1036,9 @@ impl RegistrarService {
             )
         });
 
+        // log count
+        info!("need_check_orders: {}, expired_order: {}", need_check_orders.len(), expired_order.len());
+
         // cancel expired orders
         for user in expired_order {
             self.cancel_order(&user, now)?;
@@ -1055,6 +1058,7 @@ impl RegistrarService {
             }
         });
 
+        info!("need_to_be_cancel_users: {}", need_to_be_cancel_users.len());
         for user in need_to_be_cancel_users {
             self.cancel_order(&user, now)?;
         }
@@ -1074,10 +1078,8 @@ impl RegistrarService {
 
             // admin change reclaim any name for users to data fixing.
             // TODO: remove admin permission in next version when data fixing is done.
-            if !is_admin(caller) {
-                if !owner.eq(caller) {
-                    return Err(ICNSError::PermissionDenied);
-                }
+            if !is_admin(caller) && !owner.eq(caller) {
+                return Err(ICNSError::PermissionDenied);
             }
 
             Ok(owner)

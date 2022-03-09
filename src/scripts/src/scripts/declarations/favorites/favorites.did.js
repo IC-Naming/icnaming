@@ -24,6 +24,7 @@ export const idlFactory = ({ IDL }) => {
     'export_state' : IDL.Func([], [StateExportResponse], []),
     'get_favorites' : IDL.Func([], [GetFavoritesResponse], ['query']),
     'get_stats' : IDL.Func([], [GetStatsResponse], ['query']),
+    'load_state' : IDL.Func([StateExportData], [BooleanActorResponse], []),
     'remove_favorite' : IDL.Func([IDL.Text], [BooleanActorResponse], []),
   });
 };

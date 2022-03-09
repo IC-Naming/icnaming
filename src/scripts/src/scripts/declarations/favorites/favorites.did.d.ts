@@ -19,5 +19,6 @@ export interface _SERVICE {
   'export_state' : () => Promise<StateExportResponse>,
   'get_favorites' : () => Promise<GetFavoritesResponse>,
   'get_stats' : () => Promise<GetStatsResponse>,
+  'load_state' : (arg_0: StateExportData) => Promise<BooleanActorResponse>,
   'remove_favorite' : (arg_0: string) => Promise<BooleanActorResponse>,
 }

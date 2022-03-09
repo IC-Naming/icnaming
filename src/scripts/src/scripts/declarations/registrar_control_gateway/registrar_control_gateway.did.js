@@ -14,6 +14,16 @@ export const idlFactory = ({ IDL }) => {
     'Ok' : StateExportData,
     'Err' : ErrorInfo,
   });
+  const Stats = IDL.Record({
+    'name_assignments_count' : IDL.Nat64,
+    'cycles_balance' : IDL.Nat64,
+    'imported_file_hashes_count' : IDL.Nat64,
+    'acceptable_file_hashes_count' : IDL.Nat64,
+  });
+  const GetStatsActorResponse = IDL.Variant({
+    'Ok' : Stats,
+    'Err' : ErrorInfo,
+  });
   const ImportQuotaResult = IDL.Variant({
     'Ok' : IDL.Null,
     'AlreadyExists' : IDL.Null,
@@ -23,6 +33,10 @@ export const idlFactory = ({ IDL }) => {
     'Ok' : ImportQuotaResult,
     'Err' : ErrorInfo,
   });
+  const BooleanActorResponse = IDL.Variant({
+    'Ok' : IDL.Bool,
+    'Err' : ErrorInfo,
+  });
   return IDL.Service({
     'assign_name' : IDL.Func(
         [IDL.Text, IDL.Principal],
@@ -30,7 +44,9 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'export_state' : IDL.Func([], [StateExportResponse], []),
+    'get_stats' : IDL.Func([], [GetStatsActorResponse], ['query']),
     'import_quota' : IDL.Func([IDL.Vec(IDL.Nat8)], [ImportQuotaResponse], []),
+    'load_state' : IDL.Func([StateExportData], [BooleanActorResponse], []),
   });
 };
 export const init = ({ IDL }) => { return []; };

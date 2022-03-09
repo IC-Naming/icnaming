@@ -1,12 +1,22 @@
 type AssignNameResponse = variant { Ok : AssignNameResult; Err : ErrorInfo };
 type AssignNameResult = variant { Ok; AlreadyAssigned; FailFromRegistrar };
+type BooleanActorResponse = variant { Ok : bool; Err : ErrorInfo };
 type ErrorInfo = record { code : nat32; message : text };
+type GetStatsActorResponse = variant { Ok : Stats; Err : ErrorInfo };
 type ImportQuotaResponse = variant { Ok : ImportQuotaResult; Err : ErrorInfo };
 type ImportQuotaResult = variant { Ok; AlreadyExists; InvalidRequest };
 type StateExportData = record { state_data : vec nat8 };
 type StateExportResponse = variant { Ok : StateExportData; Err : ErrorInfo };
+type Stats = record {
+  name_assignments_count : nat64;
+  cycles_balance : nat64;
+  imported_file_hashes_count : nat64;
+  acceptable_file_hashes_count : nat64;
+};
 service : {
   assign_name : (text, principal) -> (AssignNameResponse);
   export_state : () -> (StateExportResponse);
+  get_stats : () -> (GetStatsActorResponse) query;
   import_quota : (vec nat8) -> (ImportQuotaResponse);
+  load_state : (StateExportData) -> (BooleanActorResponse);
 }

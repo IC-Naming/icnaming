@@ -13,6 +13,7 @@ service : {
   export_state : () -> (StateExportResponse);
   get_record_value : (text) -> (GetRecordValueResponse) query;
   get_stats : () -> (GetStatsResponse) query;
+  load_state : (StateExportData) -> (BooleanActorResponse);
   set_record_value : (text, vec record { text; text }) -> (
       BooleanActorResponse,
     );

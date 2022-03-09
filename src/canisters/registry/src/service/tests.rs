@@ -370,3 +370,30 @@ mod reclaim {
         assert_eq!(result.err().unwrap(), ICNSError::Unauthorized);
     }
 }
+
+// mod load_state {
+//     use std::fs::File;
+//     use std::io::Write;
+//     use common::dto::decode_zlib;
+//     use common::state::StableState;
+//     use crate::state::State;
+//     use super::*;
+//
+//     #[rstest]
+//     fn get_registration_owners(
+//         service: RegistriesService,
+//     ) {
+//         let zlib = include_bytes!("../../../../local_state_data/registry/latest.zlib");
+//         let candi = decode_zlib(zlib);
+//         let state = State::decode(candi).unwrap();
+//         let store = state.registry_store.borrow();
+//         // out to file registrar.csv
+//         let mut wtr = csv::Writer::from_writer(vec![]);
+//         for (name, registration) in store.get_registries() {
+//             wtr.serialize((name, registration.get_owner().to_string())).unwrap();
+//         }
+//         wtr.flush().unwrap();
+//         let csv = String::from_utf8(wtr.into_inner().unwrap()).unwrap();
+//         File::create("registry.csv").unwrap().write_all(csv.as_bytes()).unwrap();
+//     }
+// }

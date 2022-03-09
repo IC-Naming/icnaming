@@ -258,7 +258,7 @@ impl QuotaOrderStore {
         if let Some(order) = self.user_orders.remove(user) {
             let returning = order.clone();
             let order_ref = order.borrow();
-            info!("remove order, user: {:?}", user.clone());
+            info!("remove order, user: {}", user);
             self.all_orders.remove(&order_ref.id).unwrap();
             self.payment_orders
                 .remove(&order_ref.payment.payment_id)
@@ -286,12 +286,14 @@ impl QuotaOrderStore {
     }
 
     pub fn get_need_to_be_check_name_availability_principals(&self, now: u64) -> Vec<Principal> {
-        let check_time = now - EXPIRE_TIME_OF_NAME_ORDER_AVAILABILITY_CHECK_IN_NS;
+        let start_time = now - EXPIRE_TIME_OF_NAME_ORDER_IN_NS;
+        let end_time = now - EXPIRE_TIME_OF_NAME_ORDER_AVAILABILITY_CHECK_IN_NS;
         self.user_orders
             .iter()
             .filter(|(_, order)| {
                 let order_ref = order.borrow();
-                order_ref.status == QuotaOrderStatus::New && order_ref.created_at >= check_time
+                order_ref.status == QuotaOrderStatus::New && order_ref.created_at >= start_time
+                    && order_ref.created_at < end_time
             })
             .map(|(user, _)| user.clone())
             .collect()

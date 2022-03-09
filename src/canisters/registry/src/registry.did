@@ -32,6 +32,8 @@ service : {
   get_stats : () -> (GetStatsResponse) query;
   get_ttl : (text) -> (GetTtlResponse) query;
   get_users : (text) -> (GetUsersResponse) query;
+  load_state : (StateExportData) -> (BooleanActorResponse);
+  reclaim_name : (text, principal, principal) -> (BooleanActorResponse);
   set_approval : (text, principal, bool) -> (BooleanActorResponse);
   set_record : (text, nat64, principal) -> (BooleanActorResponse);
   set_subdomain_owner : (text, text, principal, nat64, principal) -> (

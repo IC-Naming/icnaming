@@ -104,6 +104,8 @@ service : {
   get_quota : (principal, QuotaType) -> (GetQuotaActorResponse) query;
   get_stats : () -> (GetStatsActorResponse) query;
   import_quota : (ImportQuotaRequest) -> (ImportQuotaResponse);
+  load_state : (StateExportData) -> (BooleanActorResponse);
+  reclaim_name : (text) -> (BooleanActorResponse);
   refund_order : () -> (BooleanActorResponse);
   register_for : (text, principal, nat64) -> (BooleanActorResponse);
   register_from_gateway : (text, principal) -> (BooleanActorResponse);
