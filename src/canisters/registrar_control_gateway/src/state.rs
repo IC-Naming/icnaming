@@ -53,7 +53,7 @@ impl StableState for State {
             self.quota_import_store.borrow().encode(),
             self.name_assignment_store.borrow().encode(),
         ))
-        .unwrap()
+            .unwrap()
     }
 
     fn decode(bytes: Vec<u8>) -> Result<Self, String> {
@@ -78,6 +78,8 @@ pub(crate) fn canister_module_init() {
 
     STATE.with(|s| {
         let mut store = s.quota_import_store.borrow_mut();
+
+        // add acceptable hashes to the store
         let hashes = ACCEPTABLE_HASHES
             .iter()
             .map(|h| {
@@ -87,6 +89,26 @@ pub(crate) fn canister_module_init() {
             })
             .collect();
         store.add_acceptable_file_hash(hashes);
+
+        // add imported file hashes to the store
+        let imported_hashes: &[&str] = &[
+            "af7619170a528b2ef642224d133297ce3756da745fa4cd84075b59f224e7ab9b",
+            "64e72c990a42af6aaf4def6d20b04b827bc302c695efff6d101d39576a6e0232",
+            "fdcbd2e084ffc0ad0211bdffa818f3a2d3b70e4652742239e94d6f79c484696e",
+            "1edff629db5e2430de2113c240246024b7adda905a47aaba99ec8d9275f16678",
+            "20f321798a9a3c5e631f773fcd2ce9e2c214464760fd97f060fdb7593dc8b4cb"
+        ];
+        let hashes_vec: Vec<Vec<u8>> = imported_hashes
+            .iter()
+            .map(|h| {
+                // hex to bytes
+                let bytes = hex::decode(h).unwrap();
+                bytes
+            })
+            .collect();
+        for hash in hashes_vec {
+            store.add_imported_file_hash(hash);
+        }
     })
 }
 
@@ -99,7 +121,7 @@ fn init_function() {
 fn pre_upgrade() {
     STATE.with(|s| {
         let bytes = s.encode();
-        match storage::stable_save((&bytes,)) {
+        match storage::stable_save((&bytes, )) {
             Ok(_) => {
                 info!("Saved state before upgrade");
                 ()
@@ -111,7 +133,7 @@ fn pre_upgrade() {
 
 #[post_upgrade]
 fn post_upgrade() {
-    STATE.with(|s| match storage::stable_restore::<(Vec<u8>,)>() {
+    STATE.with(|s| match storage::stable_restore::<(Vec<u8>, )>() {
         Ok(bytes) => {
             let new_state = State::decode(bytes.0).expect("Decoding stable memory failed");
 
