@@ -23,3 +23,53 @@ Quotas to support AstroX ME event.
 Reward
 
 https://twitter.com/ic_naming/status/1498209441342103553
+
+### 20220310_mainnet_enhancement_report.csv
+
+Bonus for users who make a report about mainnet enhancement.
+
+### 20220310_reserved_name_assignment.csv
+
+to assign reserved names to users.
+
+- liquidicp
+- liquid-icp
+- canistore
+- ickoalas
+- icturtles
+- icaliens
+- icspliffsters
+- icturtles
+- icapps
+- icvibesters
+- icevent
+- amazon
+- icpxy
+- dfinity-community
+- dfinitycommunity
+- icwave
+- week-in-dfinity-news
+- weekindfinity
+- weekindfinitynews
+- icpics
+- dmail
+- herbert
+- pulseicans
+- dripland
+- drip-land
+- avocadoresearch
+- avocado-research
+- icpdog
+- icp-dog
+- dfinity-nuclear-sheep
+- dfinitynuclearsheep
+- icpl-community
+- icplcommunity
+- aedile
+- dfinity-vietnam
+- dfinityvietnam
+- icpswap
+- icp-swap
+- icwhiskers
+- ic-whiskers
+- icnaming

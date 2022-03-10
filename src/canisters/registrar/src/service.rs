@@ -132,7 +132,7 @@ impl RegistrarService {
                 let mut user_quota_count_stats = HashMap::new();
                 for (quota_type, count) in user_quota_count {
                     let type_str = quota_type.to_string().replace('(', "").replace(')', "");
-                    user_quota_count_stats.entry(type_str).or_insert(0);
+                    user_quota_count_stats.entry(type_str).or_insert(count);
                 }
                 stats.user_quota_count = user_quota_count_stats;
             }
