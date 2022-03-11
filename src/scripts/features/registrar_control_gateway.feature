@@ -1,4 +1,4 @@
-@registrar @registrar_control_gateway @dev
+@registrar @registrar_control_gateway
 Feature: Registrar Control Gateway
 
   Background:
@@ -10,25 +10,19 @@ Feature: Registrar Control Gateway
       | registrar_control_gateway |
 
   Scenario: Import quota
-    When admin import quota file "20220223_astrox_me_event.zlib"
+    When admin import quota file "20220310_reserved_name_assignment.zlib"
     Then Last quota import status "Ok"
     And User quota status should be as below
       | user                        | quota_type1 | quota_type2 | value |
-      | 64l4r-aaaaa-aaaah-aaklq-cai | LenGte      | 5           | 300   |
-      | 64l4r-aaaaa-aaaah-aaklq-cai | LenGte      | 6           | 400   |
-      | 64l4r-aaaaa-aaaah-aaklq-cai | LenGte      | 7           | 1600  |
-      | 64l4r-aaaaa-aaaah-aaklq-cai | LenGte      | 8           | 660   |
+      | gjzpj-bqaaa-aaaam-aacya-cai | LenGte      | 1           | 41    |
 
   Scenario: Import quota duplicated
-    When admin import quota file "20220223_astrox_me_event.zlib"
-    And admin import quota file "20220223_astrox_me_event.zlib"
+    When admin import quota file "20220310_reserved_name_assignment.zlib"
+    And admin import quota file "20220310_reserved_name_assignment.zlib"
     Then Last quota import status "AlreadyExists"
-    Then User quota status should be as below
+    And User quota status should be as below
       | user                        | quota_type1 | quota_type2 | value |
-      | 64l4r-aaaaa-aaaah-aaklq-cai | LenGte      | 5           | 300   |
-      | 64l4r-aaaaa-aaaah-aaklq-cai | LenGte      | 6           | 400   |
-      | 64l4r-aaaaa-aaaah-aaklq-cai | LenGte      | 7           | 1600  |
-      | 64l4r-aaaaa-aaaah-aaklq-cai | LenGte      | 8           | 660   |
+      | gjzpj-bqaaa-aaaam-aacya-cai | LenGte      | 1           | 41    |
 
   Scenario: Import illegal data
     When admin import quota file "illegal.zlib"
