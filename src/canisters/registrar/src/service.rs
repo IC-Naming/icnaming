@@ -119,14 +119,14 @@ impl RegistrarService {
                     QuotaType::LenEq(7),
                 ];
                 for quota_type in quota_types {
-                    user_quota_count.insert(quota_type, 0);
+                    user_quota_count.insert(quota_type, 0u64);
                 }
                 let store = s.user_quota_store.borrow();
                 let quotas = store.get_user_quotas();
                 for user_quota in quotas.values() {
-                    for (t, count) in user_quota {
+                    for (t, user_count) in user_quota {
                         let count = user_quota_count.entry(*t).or_insert(0);
-                        *count += *count;
+                        *count += *user_count as u64;
                     }
                 }
                 let mut user_quota_count_stats = HashMap::new();
