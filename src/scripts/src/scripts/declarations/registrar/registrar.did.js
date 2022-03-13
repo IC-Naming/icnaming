@@ -205,6 +205,11 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'transfer_from' : IDL.Func([IDL.Text], [BooleanActorResponse], []),
+    'transfer_quota' : IDL.Func(
+        [IDL.Principal, QuotaType, IDL.Nat32],
+        [BooleanActorResponse],
+        [],
+      ),
   });
 };
 export const init = ({ IDL }) => { return []; };

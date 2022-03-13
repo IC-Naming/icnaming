@@ -324,7 +324,6 @@ impl RegistrarService {
     }
 
     fn validate_name(&self, name: &str) -> ICNSResult<NameParseResult> {
-        assert_ne!(name, TOP_LABEL);
         assert!(name.len() > 0);
         let result = NameParseResult::parse(name);
         if result.get_level_count() != 2 {
@@ -1187,6 +1186,23 @@ impl RegistrarService {
         })?;
 
         self.transfer_core(name, caller).await
+    }
+
+    pub fn transfer_quota(
+        &self,
+        caller: &Principal,
+        to: &Principal,
+        quota_type: QuotaType,
+        diff: u32,
+    ) -> ICNSResult<bool> {
+        must_not_anonymous(caller)?;
+        must_not_anonymous(to)?;
+        assert_ne!(caller, to);
+
+        STATE.with(|s| {
+            let mut store = s.user_quota_store.borrow_mut();
+            Ok(store.transfer_quota(caller, to, &quota_type, diff))
+        })
     }
 }
 

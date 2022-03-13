@@ -560,6 +560,16 @@ async fn transfer_from(name: String) -> BooleanActorResponse {
     BooleanActorResponse::new(result)
 }
 
+#[update(name = "transfer_quota")]
+#[candid_method(update, rename = "transfer_quota")]
+async fn transfer_quota(to: Principal, quota_type: QuotaType, diff: u32) -> BooleanActorResponse {
+    let caller = &api::caller();
+
+    let mut service = RegistrarService::new();
+    let result = service.transfer_quota(caller, &to, quota_type, diff);
+    BooleanActorResponse::new(result)
+}
+
 candid::export_service!();
 
 #[query(name = "__get_candid_interface_tmp_hack")]
