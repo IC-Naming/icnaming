@@ -328,13 +328,12 @@ Given(/^Some users already have some quotas$/,
         let identityInfo = identities.main;
         let registrar = createRegistrar(identityInfo);
 
-        await Promise.all(items.map(async (item) => {
+        for (const item of items) {
             let quota_type = {};
             quota_type[item.quota_type1] = parseInt(item.quota_type2);
             let user_principal = identities.get_identity_info(item.user).identity.getPrincipal();
-
             await new Result(registrar.add_quota(user_principal, quota_type as QuotaType, parseInt(item.value))).unwrap();
-        }));
+        }
     });
 
 function to_quota_type(source: string): QuotaType {
