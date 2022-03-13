@@ -8,7 +8,7 @@ on:
         type: string
 
 jobs:
-  integration_test:
+  it:
     runs-on: ubuntu-latest
     strategy:
       matrix:

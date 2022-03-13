@@ -21,15 +21,11 @@ export type RefundPaymentResponse = { 'Refunding' : null } |
   { 'PaymentNotFound' : null } |
   { 'RefundFailed' : null };
 export interface Stats {
+  'cycles_balance' : bigint,
   'latest_transaction_block_height' : BlockHeight,
   'seconds_since_last_ledger_sync' : bigint,
-  'sub_accounts_count' : bigint,
-  'neurons_topped_up_count' : bigint,
   'payments_version' : bigint,
-  'transactions_to_process_queue_length' : number,
-  'neurons_created_count' : bigint,
-  'hardware_wallet_accounts_count' : bigint,
-  'accounts_count' : bigint,
+  'count_of_payments_by_status' : Array<[string, bigint]>,
   'earliest_transaction_block_height' : BlockHeight,
   'transactions_count' : bigint,
   'block_height_synced_up_to' : [] | [bigint],
