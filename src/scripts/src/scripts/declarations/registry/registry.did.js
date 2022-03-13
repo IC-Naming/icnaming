@@ -80,6 +80,11 @@ export const idlFactory = ({ IDL }) => {
         [GetDetailsResponse],
         [],
       ),
+    'transfer' : IDL.Func(
+        [IDL.Text, IDL.Principal, IDL.Principal],
+        [BooleanActorResponse],
+        [],
+      ),
   });
 };
 export const init = ({ IDL }) => { return []; };

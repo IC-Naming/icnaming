@@ -132,4 +132,35 @@ impl RegistryStore {
     pub fn get_registries_mut(&mut self) -> &mut HashMap<String, Registry> {
         &mut self.registries
     }
+
+    pub fn get_sub_names(&self, parent_name: &str) -> Vec<String> {
+        let end_parts = format!(".{}", parent_name);
+        let mut sub_names = vec![];
+        for (name, _) in self.registries.iter() {
+            if name.ends_with(end_parts.as_str()) {
+                sub_names.push(name.to_string());
+            }
+        }
+        sub_names
+    }
+
+    pub fn remove_names(&mut self, names: &Vec<String>) {
+        for name in names {
+            self.registries.remove(name);
+        }
+    }
+
+    pub fn add_registry(&mut self, registry: Registry) {
+        self.registries.insert(registry.name.clone(), registry);
+    }
+
+    pub fn get_registry(&self, name: &str) -> Option<&Registry> {
+        self.registries.get(name)
+    }
+
+    pub fn update_owner(&mut self, name: &str, owner: Principal) {
+        if let Some(registry) = self.registries.get_mut(name) {
+            registry.set_owner(owner);
+        }
+    }
 }

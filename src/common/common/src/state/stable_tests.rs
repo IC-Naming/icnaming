@@ -5,8 +5,6 @@ use std::str::FromStr;
 use candid::{decode_args, encode_args, CandidType, Deserialize, Nat, Principal};
 use rstest::*;
 
-
-
 #[derive(CandidType, Deserialize, Eq, PartialEq, Debug)]
 enum TestOrderStatus {
     New,
@@ -321,4 +319,55 @@ fn test_decode_ok_with_additional_map_required_set(encoded_state_v1: Vec<u8>) {
             }
         )])
     );
+}
+
+#[rstest]
+fn test_encode_decode_option(encoded_state_v1: Vec<u8>) {
+    let (
+        ini_value,
+        string_value,
+        nat_value,
+        order_status,
+        user_count_map,
+        user_info_map,
+        settings,
+        something_option,
+    ): (
+        u32,
+        String,
+        Nat,
+        TestOrderStatus,
+        HashMap<Principal, HashMap<String, u64>>,
+        HashMap<Principal, UserInfo>,
+        TestSettingsV1,
+        Option<TestSettingsV1>,
+    ) = decode_args(&encoded_state_v1).unwrap();
+
+    assert_eq!(ini_value, 123);
+    assert_eq!(string_value, "test");
+    assert_eq!(nat_value, Nat::from(4567));
+    assert_eq!(
+        order_status,
+        TestOrderStatus::Canceled("canceled".to_string())
+    );
+    assert_eq!(
+        user_count_map,
+        HashMap::from_iter(vec![(
+            Principal::from_str("zo36k-iqaaa-aaaaj-qahdq-cai").unwrap(),
+            HashMap::from_iter(vec![("test".to_string(), 1)])
+        )])
+    );
+    assert_eq!(
+        user_info_map,
+        HashMap::from_iter(vec![(
+            Principal::from_str("zo36k-iqaaa-aaaaj-qahdq-cai").unwrap(),
+            UserInfo {
+                name: "test".to_string(),
+                age: 122,
+            }
+        )])
+    );
+    assert_eq!(settings.limit, 12);
+    assert_eq!(settings.create_at, 3456);
+    assert_eq!(something_option.is_none(), true);
 }

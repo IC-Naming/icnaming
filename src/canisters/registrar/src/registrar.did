@@ -105,7 +105,6 @@ service : {
   get_stats : () -> (GetStatsActorResponse) query;
   import_quota : (ImportQuotaRequest) -> (ImportQuotaResponse);
   load_state : (StateExportData) -> (BooleanActorResponse);
-  reclaim_name : (text) -> (BooleanActorResponse);
   refund_order : () -> (BooleanActorResponse);
   register_for : (text, principal, nat64) -> (BooleanActorResponse);
   register_from_gateway : (text, principal) -> (BooleanActorResponse);
@@ -113,4 +112,5 @@ service : {
   run_tasks : () -> (BooleanActorResponse);
   sub_quota : (principal, QuotaType, nat32) -> (BooleanActorResponse);
   submit_order : (SubmitOrderRequest) -> (SubmitOrderActorResponse);
+  transfer : (text, principal) -> (BooleanActorResponse);
 }

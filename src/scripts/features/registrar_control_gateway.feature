@@ -35,13 +35,13 @@ Feature: Registrar Control Gateway
     And admin assign name "icnaming.icp" to user "user1"
     And admin assign name "icp.icp" to user "user2"
     Then last assign name status is "Ok"
-    And get_details "icnaming.icp" result is
+    And registrar get_details "icnaming.icp" result is
       | key        | value        |
       | owner      | user1        |
       | name       | icnaming.icp |
       | expired_at | 1            |
       | created_at | 0            |
-    And get_details "icp.icp" result is
+    And registrar get_details "icp.icp" result is
       | key        | value   |
       | owner      | user2   |
       | name       | icp.icp |
@@ -59,7 +59,7 @@ Feature: Registrar Control Gateway
     And last assign name status is "Ok"
     When admin assign name "icnaming.icp" to user "user2"
     Then last assign name status is "AlreadyAssigned"
-    And get_details "icnaming.icp" result is
+    And registrar get_details "icnaming.icp" result is
       | key        | value        |
       | owner      | user1        |
       | name       | icnaming.icp |

@@ -5,7 +5,10 @@ use ic_cdk::api;
 use ic_cdk_macros::*;
 use log::{debug, error, info};
 
-use common::dto::{to_state_export_data, GetPageInput, GetPageOutput, ImportQuotaRequest, ImportQuotaStatus, StateExportResponse, LoadStateRequest, from_state_export_data};
+use common::dto::{
+    from_state_export_data, to_state_export_data, GetPageInput, GetPageOutput, ImportQuotaRequest,
+    ImportQuotaStatus, LoadStateRequest, StateExportResponse,
+};
 use common::errors::{BooleanActorResponse, ErrorInfo, ICNSError, ICNSResult};
 use common::icnaming_ledger_types::BlockHeight;
 use common::named_canister_ids::CANISTER_NAME_REGISTRAR_CONTROL_GATEWAY;
@@ -14,12 +17,12 @@ use common::permissions::{must_be_named_principal, must_be_system_owner};
 use common::state::StableState;
 
 use crate::name_order_store::GetNameOrderResponse;
-use crate::periodic_tasks_runner::{run_periodic_tasks};
+use crate::periodic_tasks_runner::run_periodic_tasks;
 use crate::registration_store::{RegistrationDetails, RegistrationDto};
 use crate::service::{
     PriceTable, RegistrarService, Stats, SubmitOrderRequest, SubmitOrderResponse,
 };
-use crate::state::{STATE, State};
+use crate::state::{State, STATE};
 use crate::user_quota_store::QuotaType;
 
 #[query(name = "get_stats")]
@@ -525,13 +528,13 @@ pub async fn confirm_pay_order(block_height: BlockHeight) -> BooleanActorRespons
     BooleanActorResponse::new(result)
 }
 
-#[update(name = "reclaim_name")]
-#[candid_method(update, rename = "reclaim_name")]
-async fn reclaim_name(name: String) -> BooleanActorResponse {
+#[update(name = "transfer")]
+#[candid_method(update, rename = "transfer")]
+async fn transfer(name: String, new_owner: Principal) -> BooleanActorResponse {
     let caller = &api::caller();
 
     let mut service = RegistrarService::new();
-    let result = service.reclaim_name(name.as_str(), caller).await;
+    let result = service.transfer(name.as_str(), caller, new_owner).await;
     BooleanActorResponse::new(result)
 }
 

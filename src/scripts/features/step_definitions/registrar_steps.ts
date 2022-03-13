@@ -9,6 +9,7 @@ import {
     BooleanActorResponse as RefundResult,
     BooleanActorResponse as AvailableResult,
     BooleanActorResponse as RegisterWithQuotaResult,
+    BooleanActorResponse as TransferResult,
     GetNameOrderResponse,
     QuotaType,
     Stats,
@@ -20,7 +21,6 @@ import {OptionalResult, Result} from "~/utils/Result";
 import {assert_remote_result} from "./utils";
 import logger from "node-color-log";
 import fs from "fs";
-import {Principal} from "@dfinity/principal";
 import {
     AssignNameResponse,
     ImportQuotaResponse
@@ -33,6 +33,7 @@ let global_register_with_quota_response: RegisterWithQuotaResult;
 let global_quota_import_response: ImportQuotaResponse;
 let global_stats_result: Stats;
 let global_assign_name_result: AssignNameResponse;
+let global_transfer_result: TransferResult;
 
 async function submit_order(user: string | null, name: string, years: string) {
     let actor;
@@ -255,7 +256,7 @@ Then(/^get_owner result "([^"]*)" is the same as "([^"]*)" identity$/,
         expect(owner.toText()).to.equal(identityInfo.principal_text);
     });
 
-Then(/^get_details "([^"]*)" result is$/,
+Then(/^registrar get_details "([^"]*)" result is$/,
     async function (name: string, data) {
         let details = await new Result(registrar.get_details(name)).unwrap();
         let target = data.rowsHash();
@@ -445,4 +446,14 @@ Then(/^last assign name status is "([^"]*)"$/,
         } else {
             expect.fail(`last assign name status is not Ok but ${JSON.stringify(global_assign_name_result)}`);
         }
+    });
+When(/^User "([^"]*)" transfer name "([^"]*)" to User "([^"]*)"$/,
+    async function (user: string, name: string, new_owner: string) {
+        let registrar = createRegistrar(identities.get_identity_info(user));
+        let new_owner_principal = identities.get_principal(new_owner);
+        global_transfer_result = await registrar.transfer(name, new_owner_principal);
+    });
+Then(/^last name transfer result status is "([^"]*)"$/,
+    function (status: string) {
+        assert_remote_result(global_transfer_result, status);
     });

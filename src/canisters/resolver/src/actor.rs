@@ -121,6 +121,18 @@ fn get_record_value(name: String) -> GetRecordValueResponse {
     GetRecordValueResponse::new(result)
 }
 
+#[update(name = "remove_resolvers")]
+#[candid_method(update, rename = "remove_resolvers")]
+fn remove_resolvers(
+    names: Vec<String>
+) -> BooleanActorResponse {
+    let caller = &api::caller();
+    let mut service = ResolverService::new();
+    let result = service.remove_resolvers(caller, names);
+    BooleanActorResponse::new(result)
+}
+
+
 #[derive(CandidType)]
 pub enum GetRecordValueResponse {
     Ok(HashMap<String, String>),

@@ -171,7 +171,6 @@ export const idlFactory = ({ IDL }) => {
     'get_stats' : IDL.Func([], [GetStatsActorResponse], ['query']),
     'import_quota' : IDL.Func([ImportQuotaRequest], [ImportQuotaResponse], []),
     'load_state' : IDL.Func([StateExportData], [BooleanActorResponse], []),
-    'reclaim_name' : IDL.Func([IDL.Text], [BooleanActorResponse], []),
     'refund_order' : IDL.Func([], [BooleanActorResponse], []),
     'register_for' : IDL.Func(
         [IDL.Text, IDL.Principal, IDL.Nat64],
@@ -197,6 +196,11 @@ export const idlFactory = ({ IDL }) => {
     'submit_order' : IDL.Func(
         [SubmitOrderRequest],
         [SubmitOrderActorResponse],
+        [],
+      ),
+    'transfer' : IDL.Func(
+        [IDL.Text, IDL.Principal],
+        [BooleanActorResponse],
         [],
       ),
   });

@@ -62,7 +62,6 @@ pub struct RegistrarService {
     pub cycles_minting_api: Arc<dyn ICyclesMintingApi>,
 }
 
-
 impl RegistrarService {}
 
 impl Debug for RegistrarService {
@@ -386,7 +385,7 @@ impl RegistrarService {
             quota_type,
             admin_import,
         )
-            .await
+        .await
     }
 
     pub async fn register(
@@ -1037,7 +1036,11 @@ impl RegistrarService {
         });
 
         // log count
-        info!("need_check_orders: {}, expired_order: {}", need_check_orders.len(), expired_order.len());
+        info!(
+            "need_check_orders: {}, expired_order: {}",
+            need_check_orders.len(),
+            expired_order.len()
+        );
 
         // cancel expired orders
         for user in expired_order {
@@ -1065,7 +1068,9 @@ impl RegistrarService {
         Ok(true)
     }
 
-    pub(crate) async fn reclaim_name(&self, name: &str, caller: &Principal) -> ICNSResult<bool> {
+    async fn reclaim_name(&self, name: &str, caller: &Principal) -> ICNSResult<bool> {
+        self.validate_name(name)?;
+        must_not_anonymous(caller)?;
         let registration_owner = STATE.with(|s| {
             let store = s.registration_store.borrow();
             let registrations = store.get_registrations();
@@ -1076,35 +1081,83 @@ impl RegistrarService {
             let registration = registration.unwrap();
             let owner = registration.get_owner();
 
-            // admin change reclaim any name for users to data fixing.
-            // TODO: remove admin permission in next version when data fixing is done.
-            if !is_admin(caller) && !owner.eq(caller) {
+            if !owner.eq(caller) {
                 return Err(ICNSError::PermissionDenied);
             }
 
             Ok(owner)
         })?;
 
-        debug!("reclaim name: {} to user {}", name,&registration_owner);
+        debug!("reclaim name: {} to user {}", name, &registration_owner);
 
         let resolver = get_named_get_canister_id(CANISTER_NAME_RESOLVER);
-        let reclaim_result = self.registry_api
-            .reclaim_name(name.to_string(),
-                          registration_owner.clone(),
-                          resolver)
+        let reclaim_result = self
+            .registry_api
+            .reclaim_name(name.to_string(), registration_owner.clone(), resolver)
             .await;
 
         let result = match reclaim_result {
             Ok(result) => {
-                info!("reclaim name: {} to user {} success", name,&registration_owner);
+                info!(
+                    "reclaim name: {} to user {} success",
+                    name, &registration_owner
+                );
                 Ok(result)
             }
             Err(e) => {
-                error!("reclaim name: {} to user {} failed: {}", name,&registration_owner, e.message);
+                error!(
+                    "reclaim name: {} to user {} failed: {}",
+                    name, &registration_owner, e.message
+                );
                 Err(RemoteError(e).into())
             }
         };
         result
+    }
+
+    pub(crate) async fn transfer(
+        &self,
+        name: &str,
+        caller: &Principal,
+        new_owner: Principal,
+    ) -> ICNSResult<bool> {
+        self.validate_name(name)?;
+        must_not_anonymous(caller)?;
+        must_not_anonymous(&new_owner)?;
+        let registration_owner = STATE.with(|s| {
+            let store = s.registration_store.borrow();
+            let registrations = store.get_registrations();
+            let registration = registrations.get(name);
+            if registration.is_none() {
+                return Err(ICNSError::RegistrationNotFound);
+            }
+            let registration = registration.unwrap();
+            let owner = registration.get_owner();
+            Ok(owner)
+        })?;
+        assert!(!registration_owner.eq(&new_owner));
+        if registration_owner != *caller {
+            return Err(ICNSError::PermissionDenied);
+        }
+
+        self.registry_api
+            .transfer(
+                name.to_string(),
+                new_owner.clone(),
+                get_named_get_canister_id(CANISTER_NAME_RESOLVER),
+            )
+            .await?;
+
+        STATE.with(|s| {
+            let mut store = s.registration_store.borrow_mut();
+            store.transfer_registration(name.to_string(), new_owner.clone());
+
+            let mut store = s.registration_approval_store.borrow_mut();
+            store.remove_approval(name);
+
+            info!("transfer name: {} to user {}", name, &new_owner);
+            Ok(true)
+        })
     }
 }
 

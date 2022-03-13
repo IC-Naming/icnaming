@@ -39,4 +39,5 @@ service : {
   set_subdomain_owner : (text, text, principal, nat64, principal) -> (
       GetDetailsResponse,
     );
+  transfer : (text, principal, principal) -> (BooleanActorResponse);
 }

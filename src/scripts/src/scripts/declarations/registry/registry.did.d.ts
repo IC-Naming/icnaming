@@ -60,4 +60,7 @@ export interface _SERVICE {
       arg_3: bigint,
       arg_4: Principal,
     ) => Promise<GetDetailsResponse>,
+  'transfer' : (arg_0: string, arg_1: Principal, arg_2: Principal) => Promise<
+      BooleanActorResponse
+    >,
 }

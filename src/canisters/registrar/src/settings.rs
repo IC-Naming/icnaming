@@ -33,12 +33,6 @@ impl Settings {
             max_year: DEFAULT_MAX_REGISTRATION_YEAR,
         }
     }
-    pub(crate) fn get_min_year(&self) -> u32 {
-        self.min_year
-    }
-    pub(crate) fn get_max_year(&self) -> u32 {
-        self.max_year
-    }
 
     pub fn is_year_valid(&self, year: u32) -> bool {
         year >= self.min_year && year < self.max_year

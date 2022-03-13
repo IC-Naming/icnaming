@@ -12,7 +12,7 @@ Feature: Register a name with quota
 
   Scenario: Register a name with quota
     When User "user1" register name "hello.icp" with quote "LenGte(3)"
-    Then get_details "hello.icp" result is
+    Then registrar get_details "hello.icp" result is
       | key        | value     |
       | owner      | user1     |
       | name       | hello.icp |
@@ -28,7 +28,7 @@ Feature: Register a name with quota
 
   Scenario: Register a name for other user
     When User "user1" register name "hello.icp" with quote "LenGte(4)" for "user2" with "3" years
-    Then get_details "hello.icp" result is
+    Then registrar get_details "hello.icp" result is
       | key        | value     |
       | owner      | user2     |
       | name       | hello.icp |
