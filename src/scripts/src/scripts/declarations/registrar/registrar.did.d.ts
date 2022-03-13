@@ -146,4 +146,9 @@ export interface _SERVICE {
       BooleanActorResponse
     >,
   'transfer_from' : (arg_0: string) => Promise<BooleanActorResponse>,
+  'transfer_quota' : (
+      arg_0: Principal,
+      arg_1: QuotaType,
+      arg_2: number,
+    ) => Promise<BooleanActorResponse>,
 }

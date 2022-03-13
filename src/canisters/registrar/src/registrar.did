@@ -115,4 +115,5 @@ service : {
   submit_order : (SubmitOrderRequest) -> (SubmitOrderActorResponse);
   transfer : (text, principal) -> (BooleanActorResponse);
   transfer_from : (text) -> (BooleanActorResponse);
+  transfer_quota : (principal, QuotaType, nat32) -> (BooleanActorResponse);
 }

@@ -306,6 +306,18 @@ Then(/^User quota status should be as below$/,
             expect(quota_value).to.equal(parseInt(item.value));
         }
     });
+When(/^Do quota transfer as below$/,
+    async function (data: DataTable) {
+        let items: { from: string, to: string, quota_type1: string, quota_type2: string, value: string }[] = data.hashes();
+
+        for (const item of items) {
+            let quota_type = {};
+            quota_type[item.quota_type1] = parseInt(item.quota_type2);
+            let to_principal = get_principal(item.to);
+            let registrar = createRegistrar(identities.get_identity_info(item.from));
+            await registrar.transfer_quota(to_principal, quota_type as QuotaType, parseInt(item.value));
+        }
+    });
 Given(/^Some users already have some quotas$/,
     async function (data) {
         let items: { user: string, quota_type1: string, quota_type2: string, value: string }[] = data.hashes();
