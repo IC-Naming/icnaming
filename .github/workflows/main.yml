@@ -144,12 +144,6 @@ jobs:
       - uses: Swatinem/rust-cache@v1
         with:
           working-directory: "src"
-      - name: setup dev
-        run: |
-          cd $GITHUB_WORKSPACE/src
-          dfx start --background
-          chmod a+x ./sh_setup_dev.sh
-          ./sh_setup_dev.sh
       - name: unit test
         run: |
           cd $GITHUB_WORKSPACE/src
