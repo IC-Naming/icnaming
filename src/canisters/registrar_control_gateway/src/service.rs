@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use candid::{CandidType, Deserialize, Principal};
 use ic_cdk::api;
-use log::{error, info};
+use log::{info};
 
 use common::canister_api::ic_impl::RegistrarApi;
 use common::canister_api::IRegistrarApi;
@@ -38,7 +38,7 @@ impl GatewayService {
             registrar_api: Arc::new(RegistrarApi::new()),
         }
     }
-    pub(crate) fn get_stats(&self, now: u64) -> Stats {
+    pub(crate) fn get_stats(&self, _now: u64) -> Stats {
         let mut stats = Stats::default();
         stats.cycles_balance = api::canister_balance();
         STATE.with(|s| {

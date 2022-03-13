@@ -6,7 +6,7 @@ use std::str::FromStr;
 use std::sync::Arc;
 
 use candid::{CandidType, Deserialize, Nat, Principal};
-use ic_cdk::{api, call};
+use ic_cdk::{api};
 use log::{debug, error, info, trace, warn};
 use num_bigint::BigUint;
 use num_traits::ToPrimitive;
@@ -29,7 +29,7 @@ use common::named_canister_ids::{
 };
 use common::naming::{normalize_name, NameParseResult};
 use common::permissions::{is_admin, must_be_named_canister, must_be_system_owner};
-use common::permissions::{must_be_named_principal, must_not_anonymous};
+use common::permissions::{must_not_anonymous};
 
 use crate::name_order_store::{GetNameOrderResponse, NameOrder, NameOrderStatus};
 use crate::quota_order_store::{
@@ -86,7 +86,7 @@ impl RegistrarService {
         }
     }
 
-    pub(crate) fn get_stats(&self, now: u64) -> Stats {
+    pub(crate) fn get_stats(&self, _now: u64) -> Stats {
         let mut stats = Stats::default();
         stats.cycles_balance = api::canister_balance();
         STATE.with(|s| {
@@ -1202,7 +1202,7 @@ impl RegistrarService {
         self.validate_name(name)?;
         must_not_anonymous(caller)?;
         STATE.with(|s| {
-            let mut store = s.registration_approval_store.borrow_mut();
+            let store = s.registration_approval_store.borrow_mut();
             if !store.is_approved_to(name, caller) {
                 return Err(ICNSError::PermissionDenied);
             }

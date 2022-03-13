@@ -326,7 +326,7 @@ mod reclaim {
         let caller = get_named_get_canister_id(CANISTER_NAME_REGISTRAR);
         STATE.with(|s| {
             let mut store = s.registry_store.borrow_mut();
-            let mut registries = store.get_registries_mut();
+            let registries = store.get_registries_mut();
             registries.insert(
                 "nice.icp".to_string(),
                 Registry::new(
@@ -359,7 +359,7 @@ mod reclaim {
         mock_user1: Principal,
         resolver: Principal,
     ) {
-        let caller = mock_user1;
+        let _caller = mock_user1;
         // act
         let result = service.reclaim_name("nice.icp", &mock_user1, &mock_user1, &resolver);
 

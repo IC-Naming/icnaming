@@ -186,11 +186,10 @@ interface BuildContext {
         logger.info(`Exclude canisters: ${exclude_canisters.join(", ")}`);
     }
 
-    // receive process argv[2], if exists, and value is 'dev_package'
+    // receive process argv includes 'dev_package'
     // e.g. ts-node -r tsconfig-paths/register scripts/create_package.ts dev_package
-    // -r tsconfig-paths/register is not in process.argv
     logger.debug(process.argv);
-    let dev_package = process.argv[2] === 'dev_package';
+    let dev_package = process.argv.includes("dev_package");
     logger.info(`dev_package: ${dev_package}`);
     let envs: DfxPackageEnv[] = dev_package ? [{
         name: "dev",
