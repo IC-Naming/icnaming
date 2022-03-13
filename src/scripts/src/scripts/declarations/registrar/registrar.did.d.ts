@@ -145,6 +145,9 @@ export interface _SERVICE {
   'transfer' : (arg_0: string, arg_1: Principal) => Promise<
       BooleanActorResponse
     >,
+  'transfer_by_admin' : (arg_0: string, arg_1: Principal) => Promise<
+      BooleanActorResponse
+    >,
   'transfer_from' : (arg_0: string) => Promise<BooleanActorResponse>,
   'transfer_quota' : (
       arg_0: Principal,

@@ -114,6 +114,7 @@ service : {
   sub_quota : (principal, QuotaType, nat32) -> (BooleanActorResponse);
   submit_order : (SubmitOrderRequest) -> (SubmitOrderActorResponse);
   transfer : (text, principal) -> (BooleanActorResponse);
+  transfer_by_admin : (text, principal) -> (BooleanActorResponse);
   transfer_from : (text) -> (BooleanActorResponse);
   transfer_quota : (principal, QuotaType, nat32) -> (BooleanActorResponse);
 }

@@ -538,6 +538,18 @@ async fn transfer(name: String, new_owner: Principal) -> BooleanActorResponse {
     BooleanActorResponse::new(result)
 }
 
+#[update(name = "transfer_by_admin")]
+#[candid_method(update, rename = "transfer_by_admin")]
+async fn transfer_by_admin(name: String, new_owner: Principal) -> BooleanActorResponse {
+    let caller = &api::caller();
+
+    let mut service = RegistrarService::new();
+    let result = service
+        .transfer_by_admin(name.as_str(), caller, new_owner)
+        .await;
+    BooleanActorResponse::new(result)
+}
+
 #[update(name = "approve")]
 #[candid_method(update, rename = "approve")]
 fn approve(name: String, to: Principal) -> BooleanActorResponse {

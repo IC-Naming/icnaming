@@ -77,6 +77,10 @@ impl RegistrationStore {
             registration.set_owner(owner);
         });
     }
+
+    pub fn has_registration(&self, name: &str) -> bool {
+        self.registrations.contains_key(name)
+    }
 }
 
 impl StableState for RegistrationStore {

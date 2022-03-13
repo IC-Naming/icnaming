@@ -32,7 +32,7 @@ Feature: Registrar Control Gateway
     Given Update quota as follow operations
       | operation | user                      | quota_type1 | quota_type2 | value |
       | add       | registrar_control_gateway | LenGte      | 1           | 10    |
-    And admin assign name "icnaming.icp" to user "user1"
+    When admin assign name "icnaming.icp" to user "user1"
     And admin assign name "icp.icp" to user "user2"
     Then last assign name status is "Ok"
     And registrar get_details "icnaming.icp" result is
@@ -47,7 +47,7 @@ Feature: Registrar Control Gateway
       | name       | icp.icp |
       | expired_at | 1       |
       | created_at | 0       |
-    Then User quota status should be as below
+    And User quota status should be as below
       | user                      | quota_type1 | quota_type2 | value |
       | registrar_control_gateway | LenGte      | 1           | 8     |
 
@@ -72,3 +72,29 @@ Feature: Registrar Control Gateway
   Scenario: Assign a name without quota result in fail
     Given admin assign name "icnaming.icp" to user "user1"
     And last assign name status is "FailFromRegistrar"
+
+  Scenario: Assign a reserved name success and transfer by admin to another user
+    Given Update quota as follow operations
+      | operation | user                      | quota_type1 | quota_type2 | value |
+      | add       | registrar_control_gateway | LenGte      | 1           | 10    |
+    And admin assign name "icnaming.icp" to user "user1"
+    When User "main" transfer name "icnaming.icp" to user "user3"
+    Then last transfer_by_admin status is "Ok"
+    And registrar get_details "icnaming.icp" result is
+      | key        | value        |
+      | owner      | user3        |
+      | name       | icnaming.icp |
+      | expired_at | 1            |
+      | created_at | 0            |
+
+  Scenario: Failed to transfer_by_admin if name is not assigned
+    When User "main" transfer name "icnaming.icp" to user "user3"
+    Then last transfer_by_admin status is "Registration is not found"
+
+  Scenario: Failed to transfer_by_admin if is not admin
+    Given Update quota as follow operations
+      | operation | user                      | quota_type1 | quota_type2 | value |
+      | add       | registrar_control_gateway | LenGte      | 1           | 10    |
+    And admin assign name "icnaming.icp" to user "user1"
+    When User "user1" transfer name "icnaming.icp" to user "user3"
+    Then last transfer_by_admin status is "Unauthorized, please login first"
