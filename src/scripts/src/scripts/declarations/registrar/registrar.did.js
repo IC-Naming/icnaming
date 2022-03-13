@@ -204,6 +204,11 @@ export const idlFactory = ({ IDL }) => {
         [BooleanActorResponse],
         [],
       ),
+    'transfer_by_admin' : IDL.Func(
+        [IDL.Text, IDL.Principal],
+        [BooleanActorResponse],
+        [],
+      ),
     'transfer_from' : IDL.Func([IDL.Text], [BooleanActorResponse], []),
     'transfer_quota' : IDL.Func(
         [IDL.Principal, QuotaType, IDL.Nat32],

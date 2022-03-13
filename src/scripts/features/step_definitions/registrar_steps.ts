@@ -11,6 +11,7 @@ import {
     BooleanActorResponse as RegisterWithQuotaResult,
     BooleanActorResponse as TransferResult,
     BooleanActorResponse as TransferFromResult,
+    BooleanActorResponse as TransferByAdminResult,
     GetNameOrderResponse,
     QuotaType,
     Stats,
@@ -36,6 +37,7 @@ let global_stats_result: Stats;
 let global_assign_name_result: AssignNameResponse;
 let global_transfer_result: TransferResult;
 let global_transfer_from_result: TransferFromResult;
+let global_transfer_by_admin_result: TransferByAdminResult;
 
 async function submit_order(user: string | null, name: string, years: string) {
     let actor;
@@ -486,4 +488,14 @@ Then(/^last name transfer_from result status is "([^"]*)"$/,
     async function (status: string) {
         assert_remote_result(global_transfer_from_result, status);
 
+    });
+When(/^User "([^"]*)" transfer name "([^"]*)" to user "([^"]*)"$/,
+    async function (user: string, name: string, to: string) {
+        let registrar = createRegistrar(identities.get_identity_info(user));
+        let to_principal = get_principal(to);
+        global_transfer_by_admin_result = await registrar.transfer_by_admin(name, to_principal);
+    });
+Then(/^last transfer_by_admin status is "([^"]*)"$/,
+    function (status: string) {
+        assert_remote_result(global_transfer_by_admin_result, status);
     });

@@ -1119,6 +1119,13 @@ impl RegistrarService {
     }
 
     async fn transfer_core(&self, name: &str, new_owner: &Principal) -> ICNSResult<bool> {
+        STATE.with(|s| {
+            let store = s.registration_store.borrow();
+            if !store.has_registration(name) {
+                return Err(ICNSError::RegistrationNotFound);
+            }
+            Ok(())
+        })?;
         self.registry_api
             .transfer(
                 name.to_string(),
@@ -1150,6 +1157,24 @@ impl RegistrarService {
         must_not_anonymous(&new_owner)?;
         let _ = self.is_name_owner(name, caller)?;
         assert_ne!(caller, &new_owner);
+
+        self.transfer_core(name, &new_owner).await
+    }
+
+    // TODO: remove this function when all assignment is done
+    pub async fn transfer_by_admin(
+        &self,
+        name: &str,
+        caller: &Principal,
+        new_owner: Principal,
+    ) -> ICNSResult<bool> {
+        must_be_system_owner(caller)?;
+        let name_parse_result = self.validate_name(name)?;
+        assert!(RESERVED_NAMES
+            .iter()
+            .find(|n| *n == name_parse_result.get_current_level().unwrap())
+            .is_some());
+        must_not_anonymous(&new_owner)?;
 
         self.transfer_core(name, &new_owner).await
     }

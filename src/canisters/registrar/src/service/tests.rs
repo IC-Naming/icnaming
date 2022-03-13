@@ -1,9 +1,8 @@
-use std::borrow::Borrow;
-use std::sync::Arc;
-
 use candid::Principal;
 use once_cell::sync::Lazy;
 use rstest::*;
+use std::borrow::Borrow;
+use std::sync::Arc;
 
 use common::cycles_minting_types::{IcpXdrConversionRate, IcpXdrConversionRateCertifiedResponse};
 use common::icnaming_ledger_types::{AddPaymentResponse, Memo};
@@ -1273,6 +1272,116 @@ mod transfer {
             result.err().unwrap(),
             ICNSError::RemoteError(ErrorInfo::from(ICNSError::Unknown))
         );
+    }
+}
+
+mod transfer_by_admin {
+    use super::*;
+    use common::permissions::get_admin;
+
+    #[rstest]
+    async fn test_transfer_by_admin_success(
+        mut service: RegistrarService,
+        mut mock_registry_api: MockRegistryApi,
+        mock_user1: Principal,
+        mock_user2: Principal,
+        mock_user3: Principal,
+        mock_now: u64,
+    ) {
+        let admin = get_admin();
+        let test_name = "icnaming.icp";
+        STATE.with(|s| {
+            let mut store = s.registration_store.borrow_mut();
+            store.add_registration(Registration::new(
+                mock_user1.clone(),
+                test_name.to_string(),
+                mock_now + 1,
+                mock_now,
+            ));
+
+            let mut store = s.registration_approval_store.borrow_mut();
+            store.set_approval(test_name, &mock_user3, mock_now);
+        });
+
+        let api_received_name = test_name.clone();
+        let api_received_owner = mock_user2.clone();
+        mock_registry_api
+            .expect_transfer()
+            .returning(move |name, new_owner, resolver| {
+                assert_eq!(name, api_received_name);
+                assert_eq!(new_owner, api_received_owner);
+                Ok(true)
+            });
+        service.registry_api = Arc::new(mock_registry_api);
+
+        // act
+        let result = service
+            .transfer_by_admin(test_name, &admin, mock_user2)
+            .await;
+
+        // assert
+        assert!(result.is_ok());
+        STATE.with(|s| {
+            let store = s.registration_store.borrow();
+            let registrations = store.get_registrations();
+            let registration = registrations.get(test_name).unwrap();
+            assert_eq!(registration.get_name(), test_name);
+            assert_eq!(registration.get_owner(), mock_user2);
+            assert_eq!(registration.get_created_at(), mock_now);
+            assert_eq!(registration.get_expired_at(), mock_now + 1);
+
+            let store = s.registration_approval_store.borrow();
+            assert_eq!(store.has_approved_to(test_name), false);
+        });
+    }
+
+    #[rstest]
+    #[should_panic]
+    async fn test_transfer_by_admin_failed_not_reserved_name(
+        mut service: RegistrarService,
+        mock_user1: Principal,
+        mock_user2: Principal,
+        mock_user3: Principal,
+        mock_now: u64,
+    ) {
+        let admin = get_admin();
+        let test_name = "something-not-reserved.icp";
+        STATE.with(|s| {
+            let mut store = s.registration_store.borrow_mut();
+            store.add_registration(Registration::new(
+                mock_user1.clone(),
+                test_name.to_string(),
+                mock_now + 1,
+                mock_now,
+            ));
+
+            let mut store = s.registration_approval_store.borrow_mut();
+            store.set_approval(test_name, &mock_user3, mock_now);
+        });
+
+        // act
+        let result = service
+            .transfer_by_admin(test_name, &admin, mock_user2)
+            .await;
+    }
+
+    #[rstest]
+    async fn test_transfer_by_admin_failed_not_admin(
+        mut service: RegistrarService,
+        mock_user1: Principal,
+        mock_user2: Principal,
+    ) {
+        let admin = get_admin();
+        let test_name = "icnaming.icp";
+
+        // act
+        let result = service
+            .transfer_by_admin(test_name, &mock_user1, mock_user2)
+            .await;
+
+        // assert
+        assert!(result.is_err());
+        assert_eq!(result.err().unwrap(), ICNSError::Unauthorized);
     }
 }
 
