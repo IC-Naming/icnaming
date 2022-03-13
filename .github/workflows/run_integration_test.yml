@@ -24,15 +24,15 @@ jobs:
           node-version: "16"
           cache: "npm"
           cache-dependency-path: "src/package-lock.json"
-      # - uses: actions/download-artifact@v3
-      #   with:
-      #     name: dev
-      #     path: ~/download/dev
+      - uses: actions/download-artifact@v3
+        with:
+          name: dev
+          path: ~/download/dev
       - name: run integration test
         run: |
           cd $GITHUB_WORKSPACE/src
           echo "scripts/features/**/${{ matrix.feature }}.feature" > feature_target.txt
-          # cp -rf ~/download/dev/* .
+          cp -rf ~/download/dev/* .
           dfx start --background
           chmod a+x ./sh_setup_dev.sh
           ./sh_setup_dev.sh
