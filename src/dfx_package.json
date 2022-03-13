@@ -1,11 +1,6 @@
 {
   "canisters": {
-    "ledger": {
-      "exclude_in_package": true
-    },
-    "cycles_minting": {
-      "exclude_in_package": true
-    }
+
   },
   "envs": [
     {
