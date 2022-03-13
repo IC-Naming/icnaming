@@ -101,6 +101,9 @@ export interface _SERVICE {
   'add_quota' : (arg_0: Principal, arg_1: QuotaType, arg_2: number) => Promise<
       BooleanActorResponse
     >,
+  'approve' : (arg_0: string, arg_1: Principal) => Promise<
+      BooleanActorResponse
+    >,
   'available' : (arg_0: string) => Promise<BooleanActorResponse>,
   'cancel_order' : () => Promise<BooleanActorResponse>,
   'confirm_pay_order' : (arg_0: bigint) => Promise<BooleanActorResponse>,
@@ -142,4 +145,5 @@ export interface _SERVICE {
   'transfer' : (arg_0: string, arg_1: Principal) => Promise<
       BooleanActorResponse
     >,
+  'transfer_from' : (arg_0: string) => Promise<BooleanActorResponse>,
 }

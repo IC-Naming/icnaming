@@ -4,14 +4,16 @@ use ic_cdk::api;
 use ic_cdk_macros::*;
 use log::{debug, error, info};
 
-use common::dto::{to_state_export_data, StateExportResponse, LoadStateRequest, from_state_export_data};
+use common::dto::{
+    from_state_export_data, to_state_export_data, LoadStateRequest, StateExportResponse,
+};
 use common::errors::{BooleanActorResponse, ErrorInfo, ICNSError, ICNSResult};
 use common::named_principals::PRINCIPAL_NAME_STATE_EXPORTER;
 use common::permissions::{must_be_named_principal, must_be_system_owner};
 use common::state::StableState;
 
 use crate::service::{ManagerService, Stats};
-use crate::state::{STATE, State};
+use crate::state::{State, STATE};
 
 #[query(name = "get_stats")]
 #[candid_method(query, rename = "get_stats")]

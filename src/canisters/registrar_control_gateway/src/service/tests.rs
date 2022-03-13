@@ -1,9 +1,11 @@
-use super::*;
-use common::canister_api::*;
 use rstest::*;
+
+use common::canister_api::*;
 use test_common::canister_api::*;
 use test_common::ic_api::init_test;
 use test_common::user::*;
+
+use super::*;
 
 #[fixture]
 fn service(_init_test: (), mut mock_registrar_api: MockRegistrarApi) -> GatewayService {
@@ -16,9 +18,10 @@ fn service(_init_test: (), mut mock_registrar_api: MockRegistrarApi) -> GatewayS
 }
 
 mod assign_name {
-    use super::*;
     use common::errors::{ErrorInfo, ICNSError};
     use common::permissions::get_admin;
+
+    use super::*;
 
     #[rstest]
     async fn test_assign_name_success(

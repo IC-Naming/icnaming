@@ -1101,29 +1101,6 @@ mod reclaim_name {
     }
 
     #[rstest]
-    async fn reclaim_name_success_admin_request(
-        service: RegistrarService,
-        mock_now: u64,
-        mock_user1: Principal,
-        mock_user2: Principal,
-    ) {
-        STATE.with(|s| {
-            let mut store = s.registration_store.borrow_mut();
-            store.add_registration(Registration::new(
-                mock_user1.clone(),
-                "test-name.icp".to_string(),
-                mock_now + 1111,
-                mock_now,
-            ));
-        });
-
-        // act
-        let reclaim_result = service.reclaim_name("test-name.icp", &get_admin()).await;
-
-        assert_eq!(reclaim_result.is_ok(), true);
-    }
-
-    #[rstest]
     async fn reclaim_name_failed_name_not_found(service: RegistrarService, mock_user1: Principal) {
         // act
         let reclaim_result = service.reclaim_name("test-name.icp", &mock_user1).await;
@@ -1296,6 +1273,206 @@ mod transfer {
             result.err().unwrap(),
             ICNSError::RemoteError(ErrorInfo::from(ICNSError::Unknown))
         );
+    }
+}
+
+mod approve {
+    use super::*;
+
+    #[rstest]
+    fn test_approve_success(
+        service: RegistrarService,
+        mock_user1: Principal,
+        mock_user2: Principal,
+        mock_now: u64,
+    ) {
+        let test_name = "icnaming.icp";
+        STATE.with(|s| {
+            let mut store = s.registration_store.borrow_mut();
+            store.add_registration(Registration::new(
+                mock_user1.clone(),
+                test_name.to_string(),
+                mock_now + 1,
+                mock_now,
+            ));
+        });
+
+        // act
+        let result = service.approve(&mock_user1, mock_now, test_name, mock_user2.clone());
+
+        // assert
+        assert!(result.is_ok());
+        STATE.with(|s| {
+            let store = s.registration_approval_store.borrow();
+            assert_eq!(store.is_approved_to(test_name, &mock_user2), true);
+        });
+    }
+
+    #[rstest]
+    fn test_approve_success_twice(
+        service: RegistrarService,
+        mock_user1: Principal,
+        mock_user2: Principal,
+        mock_user3: Principal,
+        mock_now: u64,
+    ) {
+        let test_name = "icnaming.icp";
+        STATE.with(|s| {
+            let mut store = s.registration_store.borrow_mut();
+            store.add_registration(Registration::new(
+                mock_user1.clone(),
+                test_name.to_string(),
+                mock_now + 1,
+                mock_now,
+            ));
+        });
+
+        // act
+        let result = service.approve(&mock_user1, mock_now, test_name, mock_user2.clone());
+        let result = service.approve(&mock_user1, mock_now, test_name, mock_user3.clone());
+
+        // assert
+        assert!(result.is_ok());
+        STATE.with(|s| {
+            let store = s.registration_approval_store.borrow();
+            assert_eq!(store.is_approved_to(test_name, &mock_user3), true);
+        });
+    }
+
+    #[rstest]
+    fn test_approve_success_remove_approval(
+        service: RegistrarService,
+        mock_user1: Principal,
+        mock_user2: Principal,
+        mock_now: u64,
+    ) {
+        let test_name = "icnaming.icp";
+        STATE.with(|s| {
+            let mut store = s.registration_store.borrow_mut();
+            store.add_registration(Registration::new(
+                mock_user1.clone(),
+                test_name.to_string(),
+                mock_now + 1,
+                mock_now,
+            ));
+        });
+
+        // act
+        let result = service.approve(&mock_user1, mock_now, test_name, mock_user2.clone());
+        let result = service.approve(&mock_user1, mock_now, test_name, Principal::anonymous());
+
+        // assert
+        assert!(result.is_ok());
+        STATE.with(|s| {
+            let store = s.registration_approval_store.borrow();
+            assert_eq!(store.has_approved_to(test_name), false);
+        });
+    }
+
+    #[rstest]
+    fn test_approve_failed_is_not_owner(
+        service: RegistrarService,
+        mock_user1: Principal,
+        mock_user2: Principal,
+        mock_now: u64,
+    ) {
+        let test_name = "icnaming.icp";
+        STATE.with(|s| {
+            let mut store = s.registration_store.borrow_mut();
+            store.add_registration(Registration::new(
+                mock_user1.clone(),
+                test_name.to_string(),
+                mock_now + 1,
+                mock_now,
+            ));
+        });
+
+        // act
+        let result = service.approve(&mock_user2, mock_now, test_name, mock_user1.clone());
+
+        // assert
+        assert!(result.is_err());
+        STATE.with(|s| {
+            let store = s.registration_approval_store.borrow();
+            assert_eq!(store.has_approved_to(test_name), false);
+        });
+    }
+}
+
+mod transfer_from {
+    use super::*;
+
+    #[rstest]
+    async fn test_transfer_from_success(
+        mut service: RegistrarService,
+        mut mock_registry_api: MockRegistryApi,
+        mock_user1: Principal,
+        mock_user2: Principal,
+        mock_now: u64,
+    ) {
+        let test_name = "icnaming.icp";
+        STATE.with(|s| {
+            let mut store = s.registration_store.borrow_mut();
+            store.add_registration(Registration::new(
+                mock_user1.clone(),
+                test_name.to_string(),
+                mock_now + 1,
+                mock_now,
+            ));
+        });
+        service
+            .approve(&mock_user1, mock_now, test_name, mock_user2.clone())
+            .unwrap();
+
+        let api_received_name = test_name.clone();
+        let api_received_owner = mock_user2.clone();
+        mock_registry_api
+            .expect_transfer()
+            .returning(move |name, new_owner, resolver| {
+                assert_eq!(name, api_received_name);
+                assert_eq!(new_owner, api_received_owner);
+                Ok(true)
+            });
+        service.registry_api = Arc::new(mock_registry_api);
+
+        // act
+        let result = service.transfer_from(&mock_user2, test_name).await;
+
+        // assert
+        assert!(result.is_ok());
+        STATE.with(|s| {
+            let store = s.registration_store.borrow();
+            let registrations = store.get_registrations();
+            let registration = registrations.get(test_name).unwrap();
+            assert_eq!(registration.get_owner(), mock_user2);
+        });
+    }
+
+    #[rstest]
+    async fn test_transfer_from_failed_not_approve(
+        mut service: RegistrarService,
+        mut mock_registry_api: MockRegistryApi,
+        mock_user1: Principal,
+        mock_user2: Principal,
+        mock_now: u64,
+    ) {
+        let test_name = "icnaming.icp";
+        STATE.with(|s| {
+            let mut store = s.registration_store.borrow_mut();
+            store.add_registration(Registration::new(
+                mock_user1.clone(),
+                test_name.to_string(),
+                mock_now + 1,
+                mock_now,
+            ));
+        });
+
+        // act
+        let result = service.transfer_from(&mock_user2, test_name).await;
+
+        // assert
+        assert!(result.is_err());
+        assert_eq!(result.err().unwrap(), ICNSError::PermissionDenied);
     }
 }
 

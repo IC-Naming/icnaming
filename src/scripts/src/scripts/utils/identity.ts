@@ -147,19 +147,7 @@ export const identities = ((): IdentityCollection => {
             return this[name]
         },
         get_principal(name: string): Principal {
-            let identityInfo = identities.get_identity_info(name);
-            let user_principal: Principal;
-            if (identityInfo == null) {
-                // all_names contains name
-                if (all_names.includes(name)) {
-                    user_principal = Principal.fromText(get_id(name))
-                } else {
-                    user_principal = Principal.fromText(name);
-                }
-            } else {
-                user_principal = identityInfo.identity.getPrincipal();
-            }
-            return user_principal;
+            return get_principal(name);
         },
     }
 })();
@@ -180,4 +168,27 @@ export const identities_to_json = (identities: IdentityCollection): string => {
         }
         return value;
     }, 2);
+}
+
+/**
+ * get principal by name.
+ * @param name canister name, identity name, principal text, "anonymous"
+ */
+export const get_principal = (name: string): Principal => {
+    if (name == "anonymous") {
+        return Principal.anonymous();
+    }
+    let identityInfo = identities.get_identity_info(name);
+    let user_principal: Principal;
+    if (identityInfo != null) {
+        user_principal = identityInfo.identity.getPrincipal();
+    } else {
+        // all_names contains name
+        if (all_names.includes(name)) {
+            user_principal = Principal.fromText(get_id(name))
+        } else {
+            user_principal = Principal.fromText(name);
+        }
+    }
+    return user_principal;
 }

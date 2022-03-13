@@ -1,5 +1,5 @@
+use std::fs;
 use std::io::{Read, Write};
-use std::{fs};
 
 use flate2::write::ZlibEncoder;
 

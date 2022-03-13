@@ -136,6 +136,7 @@ export const idlFactory = ({ IDL }) => {
         [BooleanActorResponse],
         [],
       ),
+    'approve' : IDL.Func([IDL.Text, IDL.Principal], [BooleanActorResponse], []),
     'available' : IDL.Func([IDL.Text], [BooleanActorResponse], ['query']),
     'cancel_order' : IDL.Func([], [BooleanActorResponse], []),
     'confirm_pay_order' : IDL.Func([IDL.Nat64], [BooleanActorResponse], []),
@@ -203,6 +204,7 @@ export const idlFactory = ({ IDL }) => {
         [BooleanActorResponse],
         [],
       ),
+    'transfer_from' : IDL.Func([IDL.Text], [BooleanActorResponse], []),
   });
 };
 export const init = ({ IDL }) => { return []; };

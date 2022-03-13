@@ -538,6 +538,28 @@ async fn transfer(name: String, new_owner: Principal) -> BooleanActorResponse {
     BooleanActorResponse::new(result)
 }
 
+#[update(name = "approve")]
+#[candid_method(update, rename = "approve")]
+fn approve(name: String, to: Principal) -> BooleanActorResponse {
+    let caller = &api::caller();
+    let now = api::time();
+
+    let mut service = RegistrarService::new();
+    let result = service.approve(caller, now, name.as_str(), to);
+    BooleanActorResponse::new(result)
+}
+
+#[update(name = "transfer_from")]
+#[candid_method(update, rename = "transfer_from")]
+async fn transfer_from(name: String) -> BooleanActorResponse {
+    let caller = &api::caller();
+    let now = api::time();
+
+    let mut service = RegistrarService::new();
+    let result = service.transfer_from(caller, name.as_str()).await;
+    BooleanActorResponse::new(result)
+}
+
 candid::export_service!();
 
 #[query(name = "__get_candid_interface_tmp_hack")]

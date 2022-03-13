@@ -324,6 +324,7 @@ impl RegistrarService {
     }
 
     fn validate_name(&self, name: &str) -> ICNSResult<NameParseResult> {
+        assert_ne!(name, TOP_LABEL);
         assert!(name.len() > 0);
         let result = NameParseResult::parse(name);
         if result.get_level_count() != 2 {
@@ -1068,10 +1069,8 @@ impl RegistrarService {
         Ok(true)
     }
 
-    async fn reclaim_name(&self, name: &str, caller: &Principal) -> ICNSResult<bool> {
-        self.validate_name(name)?;
-        must_not_anonymous(caller)?;
-        let registration_owner = STATE.with(|s| {
+    fn is_name_owner(&self, name: &str, caller: &Principal) -> ICNSResult<Principal> {
+        STATE.with(|s| {
             let store = s.registration_store.borrow();
             let registrations = store.get_registrations();
             let registration = registrations.get(name);
@@ -1086,8 +1085,13 @@ impl RegistrarService {
             }
 
             Ok(owner)
-        })?;
+        })
+    }
 
+    async fn reclaim_name(&self, name: &str, caller: &Principal) -> ICNSResult<bool> {
+        self.validate_name(name)?;
+        must_not_anonymous(caller)?;
+        let registration_owner = self.is_name_owner(name, caller)?;
         debug!("reclaim name: {} to user {}", name, &registration_owner);
 
         let resolver = get_named_get_canister_id(CANISTER_NAME_RESOLVER);
@@ -1115,31 +1119,7 @@ impl RegistrarService {
         result
     }
 
-    pub(crate) async fn transfer(
-        &self,
-        name: &str,
-        caller: &Principal,
-        new_owner: Principal,
-    ) -> ICNSResult<bool> {
-        self.validate_name(name)?;
-        must_not_anonymous(caller)?;
-        must_not_anonymous(&new_owner)?;
-        let registration_owner = STATE.with(|s| {
-            let store = s.registration_store.borrow();
-            let registrations = store.get_registrations();
-            let registration = registrations.get(name);
-            if registration.is_none() {
-                return Err(ICNSError::RegistrationNotFound);
-            }
-            let registration = registration.unwrap();
-            let owner = registration.get_owner();
-            Ok(owner)
-        })?;
-        assert!(!registration_owner.eq(&new_owner));
-        if registration_owner != *caller {
-            return Err(ICNSError::PermissionDenied);
-        }
-
+    async fn transfer_core(&self, name: &str, new_owner: &Principal) -> ICNSResult<bool> {
         self.registry_api
             .transfer(
                 name.to_string(),
@@ -1158,6 +1138,55 @@ impl RegistrarService {
             info!("transfer name: {} to user {}", name, &new_owner);
             Ok(true)
         })
+    }
+
+    pub(crate) async fn transfer(
+        &self,
+        name: &str,
+        caller: &Principal,
+        new_owner: Principal,
+    ) -> ICNSResult<bool> {
+        self.validate_name(name)?;
+        must_not_anonymous(caller)?;
+        must_not_anonymous(&new_owner)?;
+        let _ = self.is_name_owner(name, caller)?;
+        assert_ne!(caller, &new_owner);
+
+        self.transfer_core(name, &new_owner).await
+    }
+
+    pub fn approve(
+        &self,
+        caller: &Principal,
+        now: u64,
+        name: &str,
+        to: Principal,
+    ) -> ICNSResult<bool> {
+        self.validate_name(name)?;
+        must_not_anonymous(caller)?;
+        let _ = self.is_name_owner(name, caller)?;
+        assert_ne!(caller, &to);
+
+        STATE.with(|s| {
+            let mut store = s.registration_approval_store.borrow_mut();
+            store.set_approval(name, &to, now);
+            Ok(true)
+        })
+    }
+
+    pub async fn transfer_from(&self, caller: &Principal, name: &str) -> ICNSResult<bool> {
+        self.validate_name(name)?;
+        must_not_anonymous(caller)?;
+        STATE.with(|s| {
+            let mut store = s.registration_approval_store.borrow_mut();
+            if !store.is_approved_to(name, caller) {
+                return Err(ICNSError::PermissionDenied);
+            }
+
+            Ok(())
+        })?;
+
+        self.transfer_core(name, caller).await
     }
 }
 
