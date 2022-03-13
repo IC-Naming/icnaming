@@ -90,6 +90,7 @@ type SubmitOrderRequest = record { name : text; years : nat32 };
 type SubmitOrderResponse = record { order : GetNameOrderResponse };
 service : {
   add_quota : (principal, QuotaType, nat32) -> (BooleanActorResponse);
+  approve : (text, principal) -> (BooleanActorResponse);
   available : (text) -> (BooleanActorResponse) query;
   cancel_order : () -> (BooleanActorResponse);
   confirm_pay_order : (nat64) -> (BooleanActorResponse);
@@ -113,4 +114,5 @@ service : {
   sub_quota : (principal, QuotaType, nat32) -> (BooleanActorResponse);
   submit_order : (SubmitOrderRequest) -> (SubmitOrderActorResponse);
   transfer : (text, principal) -> (BooleanActorResponse);
+  transfer_from : (text) -> (BooleanActorResponse);
 }

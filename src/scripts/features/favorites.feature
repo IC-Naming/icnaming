@@ -26,7 +26,7 @@ Feature: Favorites Api
       | hello.icp |
       | icp.icp   |
     And User "user1" should see the favorites
-      | name       |
+      | name      |
       | hello.icp |
       | icp.icp   |
     When User "user1" delete a favorite "hello.icp"

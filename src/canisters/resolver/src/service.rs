@@ -138,7 +138,11 @@ impl ResolverService {
         })
     }
 
-    pub(crate) fn remove_resolvers(&self, caller: &Principal, names: Vec<String>) -> ICNSResult<bool> {
+    pub(crate) fn remove_resolvers(
+        &self,
+        caller: &Principal,
+        names: Vec<String>,
+    ) -> ICNSResult<bool> {
         must_be_named_canister(caller, CANISTER_NAME_REGISTRY)?;
         STATE.with(|s| {
             let mut store = s.resolver_store.borrow_mut();

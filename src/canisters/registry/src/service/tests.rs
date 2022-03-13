@@ -368,9 +368,11 @@ mod reclaim {
 }
 
 mod reset_name {
-    use super::*;
-    use common::errors::ErrorInfo;
     use std::borrow::Borrow;
+
+    use common::errors::ErrorInfo;
+
+    use super::*;
 
     #[rstest]
     async fn test_reset_name_success(

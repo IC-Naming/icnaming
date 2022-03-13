@@ -10,13 +10,14 @@ import {
     BooleanActorResponse as AvailableResult,
     BooleanActorResponse as RegisterWithQuotaResult,
     BooleanActorResponse as TransferResult,
+    BooleanActorResponse as TransferFromResult,
     GetNameOrderResponse,
     QuotaType,
     Stats,
     SubmitOrderActorResponse as SubmitOrderResult,
 } from "~/declarations/registrar/registrar.did";
 import {toICPe8s,} from "~/utils/convert";
-import {identities} from "~/utils/identity";
+import {get_principal, identities} from "~/utils/identity";
 import {OptionalResult, Result} from "~/utils/Result";
 import {assert_remote_result} from "./utils";
 import logger from "node-color-log";
@@ -34,6 +35,7 @@ let global_quota_import_response: ImportQuotaResponse;
 let global_stats_result: Stats;
 let global_assign_name_result: AssignNameResponse;
 let global_transfer_result: TransferResult;
+let global_transfer_from_result: TransferFromResult;
 
 async function submit_order(user: string | null, name: string, years: string) {
     let actor;
@@ -456,4 +458,20 @@ When(/^User "([^"]*)" transfer name "([^"]*)" to User "([^"]*)"$/,
 Then(/^last name transfer result status is "([^"]*)"$/,
     function (status: string) {
         assert_remote_result(global_transfer_result, status);
+    });
+Given(/^User "([^"]*)" approve name "([^"]*)" to User "([^"]*)"$/,
+    async function (user: string, name: string, to: string) {
+        let registrar = createRegistrar(identities.get_identity_info(user));
+        let to_principal = get_principal(to);
+        await new Result(registrar.approve(name, to_principal)).unwrap();
+    });
+When(/^User "([^"]*)" transfer name "([^"]*)" by transfer_from$/,
+    async function (user: string, name: string) {
+        let registrar = createRegistrar(identities.get_identity_info(user));
+        global_transfer_from_result = await registrar.transfer_from(name);
+    });
+Then(/^last name transfer_from result status is "([^"]*)"$/,
+    async function (status: string) {
+        assert_remote_result(global_transfer_from_result, status);
+
     });

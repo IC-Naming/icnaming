@@ -29,13 +29,17 @@ impl StableState for RegistrationApprovalStore {
 
 impl RegistrationApprovalStore {
     pub fn set_approval(&mut self, name: &str, approved_to: &Principal, approval_at: u64) {
-        self.approvals.insert(
-            name.to_string(),
-            ApprovalRecord {
-                approved_to: approved_to.clone(),
-                approval_at,
-            },
-        );
+        if approved_to == &Principal::anonymous() {
+            self.approvals.remove(name);
+        } else {
+            self.approvals.insert(
+                name.to_string(),
+                ApprovalRecord {
+                    approved_to: approved_to.clone(),
+                    approval_at,
+                },
+            );
+        }
     }
 
     pub fn remove_approval(&mut self, name: &str) {

@@ -42,11 +42,11 @@ pub struct ResolverStore {
 
 impl StableState for ResolverStore {
     fn encode(&self) -> Vec<u8> {
-        encode_args((&self.resolvers, )).unwrap()
+        encode_args((&self.resolvers,)).unwrap()
     }
 
     fn decode(bytes: Vec<u8>) -> Result<Self, String> {
-        let (resolvers, ): (HashMap<String, Resolver>, ) = decode_args(&bytes).unwrap();
+        let (resolvers,): (HashMap<String, Resolver>,) = decode_args(&bytes).unwrap();
 
         Ok(ResolverStore { resolvers })
     }

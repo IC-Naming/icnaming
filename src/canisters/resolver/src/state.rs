@@ -8,8 +8,8 @@ use ic_cdk_macros::*;
 use log::info;
 
 use common::ic_logger::ICLogger;
-use common::named_canister_ids::CANISTER_NAME_RESOLVER;
 use common::named_canister_ids::ensure_current_canister_id_match;
+use common::named_canister_ids::CANISTER_NAME_RESOLVER;
 use common::state::StableState;
 
 use crate::resolver_store::ResolverStore;
@@ -33,11 +33,11 @@ impl State {
 
 impl StableState for State {
     fn encode(&self) -> Vec<u8> {
-        encode_args((self.resolver_store.borrow().encode(), )).unwrap()
+        encode_args((self.resolver_store.borrow().encode(),)).unwrap()
     }
 
     fn decode(bytes: Vec<u8>) -> Result<Self, String> {
-        let (resolver_store_bytes, ) = decode_args(&bytes).unwrap();
+        let (resolver_store_bytes,) = decode_args(&bytes).unwrap();
 
         Ok(State {
             resolver_store: RefCell::new(ResolverStore::decode(resolver_store_bytes)?),
@@ -63,7 +63,7 @@ fn init_function() {
 fn pre_upgrade() {
     STATE.with(|s| {
         let bytes = s.encode();
-        match storage::stable_save((&bytes, )) {
+        match storage::stable_save((&bytes,)) {
             Ok(_) => {
                 info!("Saved state before upgrade");
                 ()
@@ -75,7 +75,7 @@ fn pre_upgrade() {
 
 #[post_upgrade]
 fn post_upgrade() {
-    STATE.with(|s| match storage::stable_restore::<(Vec<u8>, )>() {
+    STATE.with(|s| match storage::stable_restore::<(Vec<u8>,)>() {
         Ok(bytes) => {
             let new_state = State::decode(bytes.0).expect("Decoding stable memory failed");
 
