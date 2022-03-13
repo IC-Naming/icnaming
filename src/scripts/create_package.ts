@@ -199,7 +199,7 @@ interface BuildContext {
     let build_context: BuildContext = {
         canisters: canisters as Map<string, DfxJsonCanister>,
         envs: envs,
-        features: [...new Set(dfxPackageJson.envs.map(env => env.feature))]
+        features: [...new Set(envs.map(env => env.feature))]
     };
 
     await clean();
