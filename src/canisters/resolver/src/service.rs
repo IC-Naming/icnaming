@@ -14,6 +14,8 @@ use common::errors::*;
 use common::ic_api::wrapper::ICStaticApi;
 use common::ic_api::IRequestContext;
 use common::metrics_encoder::MetricsEncoder;
+use common::named_canister_ids::CANISTER_NAME_REGISTRY;
+use common::permissions::must_be_named_canister;
 
 use crate::coinaddress::{validate_btc_address, validate_ltc_address};
 use crate::resolver_store::*;
@@ -133,6 +135,16 @@ impl ResolverService {
                 let resolver = get_resolver(&resolvers, &name)?;
                 Ok(resolver.get_record_value().clone())
             }
+        })
+    }
+
+    pub(crate) fn remove_resolvers(&self, caller: &Principal, names: Vec<String>) -> ICNSResult<bool> {
+        must_be_named_canister(caller, CANISTER_NAME_REGISTRY)?;
+        STATE.with(|s| {
+            let mut store = s.resolver_store.borrow_mut();
+            store.clean_up_names(&names);
+            info!("Removing resolvers {}", &names.join(", "));
+            Ok(true)
         })
     }
 

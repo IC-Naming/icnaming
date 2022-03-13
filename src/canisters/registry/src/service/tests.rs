@@ -3,10 +3,10 @@ use rstest::*;
 
 use common::constants::{DEFAULT_TTL, TOP_LABEL};
 use common::errors::ICNSError;
-use common::named_canister_ids::{CANISTER_NAME_RESOLVER, get_named_get_canister_id};
+use common::named_canister_ids::{get_named_get_canister_id, CANISTER_NAME_RESOLVER};
 use test_common::canister_api::*;
-use test_common::user::*;
 use test_common::ic_api::init_test;
+use test_common::user::*;
 
 use super::*;
 
@@ -292,18 +292,16 @@ mod reclaim {
     use super::*;
 
     #[rstest]
-    fn test_reclaim_success(_init_test: (),
-                            mut service: RegistriesService,
-                            mock_user1: Principal,
-                            resolver: Principal,
+    fn test_reclaim_success(
+        _init_test: (),
+        mut service: RegistriesService,
+        mock_user1: Principal,
+        resolver: Principal,
     ) {
         let caller = get_named_get_canister_id(CANISTER_NAME_REGISTRAR);
 
         // act
-        service.reclaim_name("nice.icp",
-                             &caller,
-                             &mock_user1,
-                             &resolver);
+        service.reclaim_name("nice.icp", &caller, &mock_user1, &resolver);
 
         // assert
         STATE.with(|s| {
@@ -317,29 +315,30 @@ mod reclaim {
         })
     }
 
-
     #[rstest]
-    fn test_reclaim_success_name_owned_by_other_user(_init_test: (),
-                                                     mut service: RegistriesService,
-                                                     mock_user1: Principal,
-                                                     mock_user2: Principal,
-                                                     resolver: Principal,
+    fn test_reclaim_success_name_owned_by_other_user(
+        _init_test: (),
+        mut service: RegistriesService,
+        mock_user1: Principal,
+        mock_user2: Principal,
+        resolver: Principal,
     ) {
         let caller = get_named_get_canister_id(CANISTER_NAME_REGISTRAR);
         STATE.with(|s| {
             let mut store = s.registry_store.borrow_mut();
             let mut registries = store.get_registries_mut();
-            registries.insert("nice.icp".to_string(),
-                              Registry::new("nice.icp".to_string(),
-                                            resolver.clone(),
-                                            0,
-                                            mock_user2.clone()));
+            registries.insert(
+                "nice.icp".to_string(),
+                Registry::new(
+                    "nice.icp".to_string(),
+                    resolver.clone(),
+                    0,
+                    mock_user2.clone(),
+                ),
+            );
         });
         // act
-        service.reclaim_name("nice.icp",
-                             &caller,
-                             &mock_user1,
-                             &resolver);
+        service.reclaim_name("nice.icp", &caller, &mock_user1, &resolver);
 
         // assert
         STATE.with(|s| {
@@ -353,21 +352,143 @@ mod reclaim {
         })
     }
 
-
     #[rstest]
-    fn test_reclaim_failed_caller_error(_init_test: (),
-                                        mut service: RegistriesService,
-                                        mock_user1: Principal,
-                                        resolver: Principal,
+    fn test_reclaim_failed_caller_error(
+        _init_test: (),
+        mut service: RegistriesService,
+        mock_user1: Principal,
+        resolver: Principal,
     ) {
         let caller = mock_user1;
         // act
-        let result = service.reclaim_name("nice.icp",
-                                          &mock_user1,
-                                          &mock_user1,
-                                          &resolver);
+        let result = service.reclaim_name("nice.icp", &mock_user1, &mock_user1, &resolver);
 
         assert_eq!(result.err().unwrap(), ICNSError::Unauthorized);
+    }
+}
+
+mod reset_name {
+    use super::*;
+    use common::errors::ErrorInfo;
+    use std::borrow::Borrow;
+
+    #[rstest]
+    async fn test_reset_name_success(
+        mut service: RegistriesService,
+        mut mock_resolver_api: MockResolverApi,
+        mock_user1: Principal,
+    ) {
+        let names = vec![
+            "ssub1.sub1.nice.icp",
+            "sub1.nice.icp",
+            "sub2.nice.icp",
+            "nice.icp",
+            "wownice.icp",
+            "icp",
+        ];
+        let resolver = get_named_get_canister_id(CANISTER_NAME_RESOLVER);
+
+        STATE.with(|s| {
+            let mut store = s.registry_store.borrow_mut();
+            for name in names.iter() {
+                let registry =
+                    Registry::new(name.to_string(), mock_user1.clone(), DEFAULT_TTL, resolver);
+                store.add_registry(registry);
+            }
+        });
+
+        mock_resolver_api
+            .expect_remove_resolvers()
+            .returning(|mut names| {
+                names.sort();
+                let mut expected = vec![
+                    "ssub1.sub1.nice.icp",
+                    "sub1.nice.icp",
+                    "sub2.nice.icp",
+                    "nice.icp",
+                ];
+                expected.sort();
+                assert_eq!(names, expected);
+                Ok(true)
+            });
+
+        service.resolver_api = Arc::new(mock_resolver_api);
+
+        // act
+        let caller = get_named_get_canister_id(CANISTER_NAME_REGISTRAR);
+        let resolver = get_named_get_canister_id(CANISTER_NAME_RESOLVER);
+        let result = service.reset_name("nice.icp", &caller, resolver).await;
+
+        // assert
+        assert!(result.is_ok());
+        STATE.with(|s| {
+            let store = s.registry_store.borrow();
+            let registries = store.get_registries();
+            assert_eq!(registries.len(), 3);
+            registries.get("icp").unwrap();
+            registries.get("wownice.icp").unwrap();
+            let registry = registries.get("nice.icp").unwrap();
+            assert_eq!(registry.get_name(), "nice.icp");
+            assert_eq!(registry.get_resolver(), resolver);
+            assert_eq!(registry.get_owner(), &mock_user1);
+            assert_eq!(registry.get_ttl(), DEFAULT_TTL);
+        })
+    }
+
+    #[rstest]
+    async fn test_reset_name_failed_api_error(
+        mut service: RegistriesService,
+        mut mock_resolver_api: MockResolverApi,
+        mock_user1: Principal,
+    ) {
+        let names = vec![
+            "ssub1.sub1.nice.icp",
+            "sub1.nice.icp",
+            "sub2.nice.icp",
+            "nice.icp",
+            "wownice.icp",
+            "icp",
+        ];
+        let resolver = get_named_get_canister_id(CANISTER_NAME_RESOLVER);
+
+        STATE.with(|s| {
+            let mut store = s.registry_store.borrow_mut();
+            for name in names.iter() {
+                let registry =
+                    Registry::new(name.to_string(), mock_user1.clone(), DEFAULT_TTL, resolver);
+                store.add_registry(registry);
+            }
+        });
+
+        mock_resolver_api
+            .expect_remove_resolvers()
+            .returning(|mut names| {
+                names.sort();
+                let mut expected = vec![
+                    "ssub1.sub1.nice.icp",
+                    "sub1.nice.icp",
+                    "sub2.nice.icp",
+                    "nice.icp",
+                ];
+                expected.sort();
+                assert_eq!(names, expected);
+                Err(ErrorInfo::from(ICNSError::PermissionDenied))
+            });
+
+        service.resolver_api = Arc::new(mock_resolver_api);
+
+        // act
+        let caller = get_named_get_canister_id(CANISTER_NAME_REGISTRAR);
+        let resolver = get_named_get_canister_id(CANISTER_NAME_RESOLVER);
+        let result = service.reset_name("nice.icp", &caller, resolver).await;
+
+        // assert
+        assert!(result.is_err());
+        STATE.with(|s| {
+            let store = s.registry_store.borrow();
+            let registries = store.get_registries();
+            assert_eq!(registries.len(), names.len());
+        })
     }
 }
 

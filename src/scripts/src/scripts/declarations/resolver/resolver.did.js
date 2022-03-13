@@ -32,6 +32,11 @@ export const idlFactory = ({ IDL }) => {
       ),
     'get_stats' : IDL.Func([], [GetStatsResponse], ['query']),
     'load_state' : IDL.Func([StateExportData], [BooleanActorResponse], []),
+    'remove_resolvers' : IDL.Func(
+        [IDL.Vec(IDL.Text)],
+        [BooleanActorResponse],
+        [],
+      ),
     'set_record_value' : IDL.Func(
         [IDL.Text, IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text))],
         [BooleanActorResponse],

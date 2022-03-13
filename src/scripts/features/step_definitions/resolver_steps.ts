@@ -1,6 +1,6 @@
 import "~/setup";
-import {Then, When} from "@cucumber/cucumber";
-import {resolver} from "~/declarations/resolver";
+import {Given, Then, When} from "@cucumber/cucumber";
+import {createResolver, resolver} from "~/declarations/resolver";
 import {
     BooleanActorResponse as EnsureResolverCreatedResult,
     BooleanActorResponse as UpdateRecordValueResult
@@ -8,6 +8,7 @@ import {
 import {expect} from "chai";
 import {Result} from "~/utils/Result";
 import {assert_remote_result} from "./utils";
+import {identities} from "~/utils/identity";
 
 let global_ensure_resolver_created_result: EnsureResolverCreatedResult;
 let global_update_record_value_result: UpdateRecordValueResult;
@@ -38,10 +39,22 @@ Then(/^get_record_value "([^"]*)" should be as below$/,
         }
 
     });
+
+async function update_resolver(resolver: any, data, name: string) {
+    let rows = data.rows();
+    global_update_record_value_result = await resolver.set_record_value(name, rows);
+}
+
+Given(/^User "([^"]*)" update resolver "([^"]*)" with values$/,
+    async function (user: string, name: string, data) {
+        let identityInfo = identities.get_identity_info(user);
+        let resolver = createResolver(identityInfo);
+        await update_resolver(resolver, data, name);
+    });
+
 When(/^I update resolver "([^"]*)" with values$/,
     async function (name: string, data) {
-        let rows = data.rows();
-        global_update_record_value_result = await resolver.set_record_value(name, rows);
+        await update_resolver(resolver, data, name);
     });
 
 Then(/^update_record_value result in status '([^']*)'$/,

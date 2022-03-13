@@ -31,6 +31,9 @@ impl Registration {
     pub fn is_owner(&self, principal: &Principal) -> bool {
         self.owner == *principal
     }
+    pub fn set_owner(&mut self, owner: Principal) {
+        self.owner = owner;
+    }
     pub(crate) fn get_owner(&self) -> Principal {
         self.owner.clone()
     }
@@ -68,6 +71,11 @@ impl RegistrationStore {
     pub fn add_registration(&mut self, registration: Registration) {
         self.registrations
             .insert(registration.name.clone(), registration);
+    }
+    pub fn transfer_registration(&mut self, name: String, owner: Principal) {
+        self.registrations.entry(name).and_modify(|registration| {
+            registration.set_owner(owner);
+        });
     }
 }
 
@@ -128,4 +136,3 @@ impl From<&Registration> for RegistrationDto {
         }
     }
 }
-

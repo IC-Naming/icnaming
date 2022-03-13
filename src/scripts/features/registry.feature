@@ -13,7 +13,7 @@ Feature: Registry Api
     Then get_resolver "hello.icp" should be the public resolver
     And get_owner "hello.icp" should be "main"
     And get_ttl "hello.icp" should be "600"
-    And get_details "hello.icp" should be as below
+    And registry get_details "hello.icp" should be as below
       | key      | value     |
       | name     | hello.icp |
       | owner    | main      |
@@ -25,7 +25,7 @@ Feature: Registry Api
       | key      | value                       |
       | resolver | qjdve-lqaaa-aaaaa-aaaeq-cai |
       | ttl      | 600                         |
-    Then get_details "hello.icp" should be as below
+    Then registry get_details "hello.icp" should be as below
       | key      | value                       |
       | name     | hello.icp                   |
       | owner    | main                        |

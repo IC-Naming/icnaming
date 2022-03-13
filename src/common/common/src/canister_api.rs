@@ -21,15 +21,15 @@ async fn call_core<T, TResult>(
     args: T,
     logging: bool,
 ) -> Result<TResult, ICNSError>
-    where
-        T: candid::utils::ArgumentEncoder,
-        TResult: for<'a> Deserialize<'a> + CandidType + Debug,
+where
+    T: candid::utils::ArgumentEncoder,
+    TResult: for<'a> Deserialize<'a> + CandidType + Debug,
 {
     if logging {
         debug!("Calling {}::{}", canister_name, method);
     }
     let canister_id = get_named_get_canister_id(canister_name);
-    let call_result: Result<(TResult, ), (RejectionCode, String)> =
+    let call_result: Result<(TResult,), (RejectionCode, String)> =
         call(canister_id, method, args).await;
     if call_result.is_err() {
         let (code, message) = call_result.err().unwrap();
@@ -58,9 +58,9 @@ async fn call_canister_as_icns_result<T, TResult>(
     method: &str,
     args: T,
 ) -> ICNSActorResult<TResult>
-    where
-        T: candid::utils::ArgumentEncoder,
-        TResult: for<'a> Deserialize<'a> + CandidType + Debug,
+where
+    T: candid::utils::ArgumentEncoder,
+    TResult: for<'a> Deserialize<'a> + CandidType + Debug,
 {
     let result = call_core::<T, ICNSActorResult<TResult>>(canister_name, method, args, true).await;
     match result {
@@ -74,9 +74,9 @@ async fn call_canister_as_result<T, TResult>(
     method: &str,
     args: T,
 ) -> ICNSActorResult<TResult>
-    where
-        T: candid::utils::ArgumentEncoder,
-        TResult: for<'a> Deserialize<'a> + CandidType + Debug,
+where
+    T: candid::utils::ArgumentEncoder,
+    TResult: for<'a> Deserialize<'a> + CandidType + Debug,
 {
     call_core::<T, TResult>(canister_name, method, args, true)
         .await
@@ -88,9 +88,9 @@ async fn call_canister_as_result_no_logging<T, TResult>(
     method: &str,
     args: T,
 ) -> ICNSActorResult<TResult>
-    where
-        T: candid::utils::ArgumentEncoder,
-        TResult: for<'a> Deserialize<'a> + CandidType + Debug,
+where
+    T: candid::utils::ArgumentEncoder,
+    TResult: for<'a> Deserialize<'a> + CandidType + Debug,
 {
     call_core::<T, TResult>(canister_name, method, args, false)
         .await
@@ -115,6 +115,13 @@ pub trait IRegistryApi {
         resolver: Principal,
     ) -> ICNSActorResult<bool>;
 
+    async fn transfer(
+        &self,
+        name: String,
+        new_owner: Principal,
+        resolver: Principal,
+    ) -> ICNSActorResult<bool>;
+
     async fn get_resolver(&self, label: &str) -> ICNSActorResult<Principal>;
     async fn get_users(&self, name: &str) -> ICNSActorResult<RegistryUsers>;
 }
@@ -122,12 +129,13 @@ pub trait IRegistryApi {
 #[async_trait]
 pub trait IResolverApi {
     async fn ensure_resolver_created(&self, name: String) -> ICNSActorResult<bool>;
+    async fn remove_resolvers(&self, names: Vec<String>) -> ICNSActorResult<bool>;
 }
 
 #[async_trait]
 pub trait IRegistrarApi {
     async fn import_quota(&self, request: ImportQuotaRequest)
-                          -> ICNSActorResult<ImportQuotaStatus>;
+        -> ICNSActorResult<ImportQuotaStatus>;
     async fn register_from_gateway(&self, name: String, owner: Principal) -> ICNSActorResult<bool>;
 }
 

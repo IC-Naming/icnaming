@@ -15,6 +15,7 @@ use crate::name_order_store::NameOrderStore;
 use crate::payment_store::PaymentStore;
 use crate::quota_import_store::QuotaImportStore;
 use crate::quota_order_store::QuotaOrderStore;
+use crate::registration_approval_store::RegistrationApprovalStore;
 use crate::registration_store::RegistrationStore;
 use crate::settings::Settings;
 use crate::user_quota_store::UserQuotaStore;
@@ -45,6 +46,7 @@ pub struct State {
     pub quota_order_store: RefCell<QuotaOrderStore>,
     pub registration_store: RefCell<RegistrationStore>,
     pub quota_import_store: RefCell<QuotaImportStore>,
+    pub registration_approval_store: RefCell<RegistrationApprovalStore>,
 }
 
 impl State {
@@ -61,6 +63,8 @@ impl State {
             .replace(new_state.quota_order_store.take());
         self.quota_import_store
             .replace(new_state.quota_import_store.take());
+        self.registration_approval_store
+            .replace(new_state.registration_approval_store.take());
     }
 }
 
@@ -74,6 +78,7 @@ impl StableState for State {
             self.user_quota_store.borrow().encode(),
             self.quota_order_store.borrow().encode(),
             self.quota_import_store.borrow().encode(),
+            self.registration_approval_store.borrow().encode(),
         ))
         .unwrap()
     }
@@ -87,7 +92,23 @@ impl StableState for State {
             user_quota_store_bytes,
             quota_order_store_bytes,
             quota_import_store_bytes,
+            registration_approval_store_bytes,
+        ): (
+            Vec<u8>,
+            Vec<u8>,
+            Vec<u8>,
+            Vec<u8>,
+            Vec<u8>,
+            Vec<u8>,
+            Vec<u8>,
+            Option<Vec<u8>>,
         ) = decode_args(&bytes).unwrap();
+
+        let registration_approval_store = if let Some(bytes) = registration_approval_store_bytes {
+            RegistrationApprovalStore::decode(bytes)?
+        } else {
+            RegistrationApprovalStore::default()
+        };
 
         Ok(State {
             name_order_store: RefCell::new(NameOrderStore::decode(name_order_store_bytes)?),
@@ -97,6 +118,7 @@ impl StableState for State {
             quota_order_store: RefCell::new(QuotaOrderStore::decode(quota_order_store_bytes)?),
             registration_store: RefCell::new(RegistrationStore::decode(registration_store_bytes)?),
             quota_import_store: RefCell::new(QuotaImportStore::decode(quota_import_store_bytes)?),
+            registration_approval_store: RefCell::new(registration_approval_store),
         })
     }
 }

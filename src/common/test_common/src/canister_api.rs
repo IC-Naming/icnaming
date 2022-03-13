@@ -29,6 +29,12 @@ impl IRegistryApi for RegistryApi {
         owner: Principal,
         resolver: Principal,
     ) -> ICNSActorResult<bool>;
+    async fn transfer(
+        &self,
+        name: String,
+        new_owner: Principal,
+        resolver: Principal,
+    ) -> ICNSActorResult<bool>;
     async fn get_resolver(&self, label: &str) -> ICNSActorResult<Principal>;
     async fn get_users(&self, name: &str) -> ICNSActorResult<RegistryUsers>;
 }
@@ -45,6 +51,7 @@ mock! {
     #[async_trait]
 impl IResolverApi for ResolverApi {
     async fn ensure_resolver_created(&self, name: String) -> ICNSActorResult<bool>;
+    async fn remove_resolvers(&self, names: Vec<String>) -> ICNSActorResult<bool>;
 }
 }
 

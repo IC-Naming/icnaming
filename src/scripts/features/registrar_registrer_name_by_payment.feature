@@ -43,7 +43,7 @@ Feature: Register a name with payment
     When Pay for my pending order with amount "3 icp"
     And Wait for payment version increased with "1"
     Then I found there is no pending order
-    And get_details "what-a-nice-day.icp" result is
+    And registrar get_details "what-a-nice-day.icp" result is
       | key        | value               |
       | owner      | main                |
       | name       | what-a-nice-day.icp |
@@ -55,7 +55,7 @@ Feature: Register a name with payment
     When Pay for my pending order with amount "3 icp"
     And User "main" confirm pay order with block height "1"
     Then I found there is no pending order
-    And get_details "what-a-nice-day.icp" result is
+    And registrar get_details "what-a-nice-day.icp" result is
       | key        | value               |
       | owner      | main                |
       | name       | what-a-nice-day.icp |
@@ -75,7 +75,7 @@ Feature: Register a name with payment
     And Pay for my pending order with amount "2 icp"
     And Wait for payment version increased with "2"
     Then I found there is no pending order
-    And get_details "what-a-nice-day.icp" result is
+    And registrar get_details "what-a-nice-day.icp" result is
       | key        | value               |
       | owner      | main                |
       | name       | what-a-nice-day.icp |
@@ -101,13 +101,13 @@ Feature: Register a name with payment
     And Wait for payment version increased with "2"
     Then User "user1" found there is no pending order
     And User "user2" found there is no pending order
-    And get_details "icnamingtest1.icp" result is
+    And registrar get_details "icnamingtest1.icp" result is
       | key        | value             |
       | owner      | user1             |
       | name       | icnamingtest1.icp |
       | expired_at | 3                 |
       | created_at | 0                 |
-    And get_details "icnamingtest2.icp" result is
+    And registrar get_details "icnamingtest2.icp" result is
       | key        | value             |
       | owner      | user2             |
       | name       | icnamingtest2.icp |
@@ -124,7 +124,7 @@ Feature: Register a name with payment
     And Wait for payment version increased with "2"
     Then User "user1" found there is no pending order
     And User "user2" found my pending order with "icnamingtest.icp" for "3" years, status "WaitingToRefund"
-    And get_details "icnamingtest.icp" result is
+    And registrar get_details "icnamingtest.icp" result is
       | key        | value            |
       | owner      | user1            |
       | name       | icnamingtest.icp |
