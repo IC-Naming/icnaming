@@ -75,7 +75,7 @@ fn service(
     service.cycles_minting_api = Arc::new(mock_cycles_minting_api);
     mock_registry_api
         .expect_reclaim_name()
-        .returning(|name, owner, resolver| Ok(true));
+        .returning(|_name, _owner, _resolver| Ok(true));
     service.registry_api = Arc::new(mock_registry_api);
     service
 }
@@ -1072,7 +1072,7 @@ mod cancel_expired_orders {
 }
 
 mod reclaim_name {
-    use common::permissions::get_admin;
+    
 
     use super::*;
 
@@ -1081,7 +1081,7 @@ mod reclaim_name {
         service: RegistrarService,
         mock_now: u64,
         mock_user1: Principal,
-        mock_user2: Principal,
+        _mock_user2: Principal,
     ) {
         STATE.with(|s| {
             let mut store = s.registration_store.borrow_mut();
@@ -1167,7 +1167,7 @@ mod transfer {
         let api_received_owner = mock_user2.clone();
         mock_registry_api
             .expect_transfer()
-            .returning(move |name, new_owner, resolver| {
+            .returning(move |name, new_owner, _resolver| {
                 assert_eq!(name, api_received_name);
                 assert_eq!(new_owner, api_received_owner);
                 Ok(true)
@@ -1259,7 +1259,7 @@ mod transfer {
 
         mock_registry_api
             .expect_transfer()
-            .returning(|name, new_owner, resolver| Err(ErrorInfo::from(ICNSError::Unknown)));
+            .returning(|_name, _new_owner, _resolver| Err(ErrorInfo::from(ICNSError::Unknown)));
         service.registry_api = Arc::new(mock_registry_api);
 
         // act
@@ -1307,7 +1307,7 @@ mod transfer_by_admin {
         let api_received_owner = mock_user2.clone();
         mock_registry_api
             .expect_transfer()
-            .returning(move |name, new_owner, resolver| {
+            .returning(move |name, new_owner, _resolver| {
                 assert_eq!(name, api_received_name);
                 assert_eq!(new_owner, api_received_owner);
                 Ok(true)
@@ -1338,7 +1338,7 @@ mod transfer_by_admin {
     #[rstest]
     #[should_panic]
     async fn test_transfer_by_admin_failed_not_reserved_name(
-        mut service: RegistrarService,
+        service: RegistrarService,
         mock_user1: Principal,
         mock_user2: Principal,
         mock_user3: Principal,
@@ -1360,18 +1360,18 @@ mod transfer_by_admin {
         });
 
         // act
-        let result = service
+        let _result = service
             .transfer_by_admin(test_name, &admin, mock_user2)
             .await;
     }
 
     #[rstest]
     async fn test_transfer_by_admin_failed_not_admin(
-        mut service: RegistrarService,
+        service: RegistrarService,
         mock_user1: Principal,
         mock_user2: Principal,
     ) {
-        let admin = get_admin();
+        let _admin = get_admin();
         let test_name = "icnaming.icp";
 
         // act
@@ -1437,7 +1437,7 @@ mod approve {
         });
 
         // act
-        let result = service.approve(&mock_user1, mock_now, test_name, mock_user2.clone());
+        let _result = service.approve(&mock_user1, mock_now, test_name, mock_user2.clone());
         let result = service.approve(&mock_user1, mock_now, test_name, mock_user3.clone());
 
         // assert
@@ -1467,7 +1467,7 @@ mod approve {
         });
 
         // act
-        let result = service.approve(&mock_user1, mock_now, test_name, mock_user2.clone());
+        let _result = service.approve(&mock_user1, mock_now, test_name, mock_user2.clone());
         let result = service.approve(&mock_user1, mock_now, test_name, Principal::anonymous());
 
         // assert
@@ -1537,7 +1537,7 @@ mod transfer_from {
         let api_received_owner = mock_user2.clone();
         mock_registry_api
             .expect_transfer()
-            .returning(move |name, new_owner, resolver| {
+            .returning(move |name, new_owner, _resolver| {
                 assert_eq!(name, api_received_name);
                 assert_eq!(new_owner, api_received_owner);
                 Ok(true)
@@ -1559,8 +1559,8 @@ mod transfer_from {
 
     #[rstest]
     async fn test_transfer_from_failed_not_approve(
-        mut service: RegistrarService,
-        mut mock_registry_api: MockRegistryApi,
+        service: RegistrarService,
+        _mock_registry_api: MockRegistryApi,
         mock_user1: Principal,
         mock_user2: Principal,
         mock_now: u64,

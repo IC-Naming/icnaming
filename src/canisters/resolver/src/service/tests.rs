@@ -334,7 +334,7 @@ mod remove_resolvers {
     use super::*;
 
     #[rstest]
-    fn test_remove_resolvers_success(mut service: ResolverService) {
+    fn test_remove_resolvers_success(service: ResolverService) {
         STATE.with(|s| {
             let mut store = s.resolver_store.borrow_mut();
             store.ensure_created("test1.icp");
@@ -361,7 +361,7 @@ mod remove_resolvers {
     }
 
     #[rstest]
-    fn test_remove_resolvers_success_even_not_found(mut service: ResolverService) {
+    fn test_remove_resolvers_success_even_not_found(service: ResolverService) {
         // act
         let caller = get_named_get_canister_id(CANISTER_NAME_REGISTRY);
         let names = vec!["app.test3.icp".to_string(), "test2.icp".to_string()];
@@ -372,7 +372,7 @@ mod remove_resolvers {
     }
 
     #[rstest]
-    fn test_remove_resolvers_failed_not_admin(mut service: ResolverService) {
+    fn test_remove_resolvers_failed_not_admin(service: ResolverService) {
         // act
         let names = vec!["app.test3.icp".to_string(), "test2.icp".to_string()];
         let result = service.remove_resolvers(&Principal::anonymous(), names);

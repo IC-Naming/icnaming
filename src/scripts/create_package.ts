@@ -59,7 +59,7 @@ const check = async (build_context: BuildContext) => {
                 const file_path = `${feature_dir}/${file}`
                 const stat = fs.statSync(file_path);
                 if (stat.size > 2 * 1024 * 1024) {
-                    throw new Error(`WASM file size of ${file} is ${stat.size} bytes, must be < 2MB`);
+                    logger.error(`WASM file size of ${file} is ${stat.size} bytes, must be < 2MB`);
                 }
             }
         }
@@ -186,10 +186,20 @@ interface BuildContext {
         logger.info(`Exclude canisters: ${exclude_canisters.join(", ")}`);
     }
 
+    // receive process argv includes 'dev_package'
+    // e.g. ts-node -r tsconfig-paths/register scripts/create_package.ts dev_package
+    logger.debug(process.argv);
+    let dev_package = process.argv.includes("dev_package");
+    logger.info(`dev_package: ${dev_package}`);
+    let envs: DfxPackageEnv[] = dev_package ? [{
+        name: "dev",
+        feature: "dev_canister"
+    }] : dfxPackageJson.envs;
+
     let build_context: BuildContext = {
         canisters: canisters as Map<string, DfxJsonCanister>,
-        envs: dfxPackageJson.envs,
-        features: [...new Set(dfxPackageJson.envs.map(env => env.feature))]
+        envs: envs,
+        features: [...new Set(envs.map(env => env.feature))]
     };
 
     await clean();

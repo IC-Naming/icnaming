@@ -1,7 +1,7 @@
-use std::str::FromStr;
+
 
 use candid::Principal;
-use once_cell::sync::Lazy;
+
 
 use crate::errors::{ICNSError, ICNSResult};
 use crate::named_canister_ids::is_named_canister_id;

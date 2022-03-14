@@ -5,27 +5,7 @@
 node_modules
 
 cucumber-report.json
-
-/src/configs/dev/canister_ids_icnaming_ledger.in
-/src/configs/dev/canister_ids_registrar.in
-/src/configs/dev/canister_ids_registry.in
-/src/configs/dev/canister_ids_resolver.in
 /src/identities.json
-/src/configs/dev/canister_ids_favorites.in
 /src/package_feature/
-/src/configs/dev/canister_ids_ledger.in
-
-/src/configs/dev/canister_ids_cycles_minting.in
-/src/configs/dev/canister_ids_icnaming_ledger.in
-/src/configs/dev/canister_ids_ledger.in
-/src/configs/dev/canister_ids_registrar.in
-/src/configs/dev/canister_ids_registry.in
-/src/configs/dev/canister_ids_resolver.in
-/src/configs/dev/principal_registrar_admin.in
-/src/configs/dev/principal_state_exporter.in
-/src/configs/dev/principal_timer_trigger.in
-
-/src/configs/dev/canister_ids_registrar_control_gateway.in
-
 /src/latest_state_data/
 /src/local_state_data/

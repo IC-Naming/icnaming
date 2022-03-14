@@ -7,7 +7,7 @@ use ic_cdk_macros::*;
 use log::info;
 
 use common::ic_logger::ICLogger;
-use common::named_canister_ids::CANISTER_NAME_REGISTRAR;
+
 use common::named_canister_ids::{
     ensure_current_canister_id_match, CANISTER_NAME_REGISTRAR_CONTROL_GATEWAY,
 };

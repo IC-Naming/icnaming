@@ -1,5 +1,5 @@
 use ic_cdk::api;
-use ic_cdk_macros::*;
+
 use log::error;
 
 use crate::payment_sync;

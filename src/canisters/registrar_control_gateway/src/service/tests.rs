@@ -1,6 +1,6 @@
 use rstest::*;
 
-use common::canister_api::*;
+
 use test_common::canister_api::*;
 use test_common::ic_api::init_test;
 use test_common::user::*;
@@ -12,7 +12,7 @@ fn service(_init_test: (), mut mock_registrar_api: MockRegistrarApi) -> GatewayS
     let mut service = GatewayService::new();
     mock_registrar_api
         .expect_register_from_gateway()
-        .returning(|name, owner| Ok(true));
+        .returning(|_name, _owner| Ok(true));
     service.registrar_api = Arc::new(mock_registrar_api);
     service
 }
@@ -58,7 +58,7 @@ mod assign_name {
     ) {
         mock_registrar_api
             .expect_register_from_gateway()
-            .returning(|name, owner| {
+            .returning(|_name, _owner| {
                 Err(ErrorInfo::from(ICNSError::InvalidName {
                     reason: "invalid name".to_string(),
                 }))
@@ -87,14 +87,14 @@ mod assign_name {
 
     #[rstest]
     async fn test_assign_name_fail_when_duplicated(
-        mut service: GatewayService,
+        service: GatewayService,
         mock_now: u64,
         mock_user1: Principal,
     ) {
         let caller = get_admin();
 
         // act
-        let result = service
+        let _result = service
             .assign_name(&caller, mock_now, "icnaming.icp".to_string(), mock_user1)
             .await;
         let result = service

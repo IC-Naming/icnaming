@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+
 
 use candid::{candid_method, CandidType, Principal};
 use ic_cdk::api;
@@ -11,7 +11,7 @@ use common::dto::{
 };
 use common::errors::{BooleanActorResponse, ErrorInfo, ICNSError, ICNSResult};
 use common::icnaming_ledger_types::BlockHeight;
-use common::named_canister_ids::CANISTER_NAME_REGISTRAR_CONTROL_GATEWAY;
+
 use common::named_principals::{PRINCIPAL_NAME_STATE_EXPORTER, PRINCIPAL_NAME_TIMER_TRIGGER};
 use common::permissions::{must_be_named_principal, must_be_system_owner};
 use common::state::StableState;
@@ -533,7 +533,7 @@ pub async fn confirm_pay_order(block_height: BlockHeight) -> BooleanActorRespons
 async fn transfer(name: String, new_owner: Principal) -> BooleanActorResponse {
     let caller = &api::caller();
 
-    let mut service = RegistrarService::new();
+    let service = RegistrarService::new();
     let result = service.transfer(name.as_str(), caller, new_owner).await;
     BooleanActorResponse::new(result)
 }
@@ -543,7 +543,7 @@ async fn transfer(name: String, new_owner: Principal) -> BooleanActorResponse {
 async fn transfer_by_admin(name: String, new_owner: Principal) -> BooleanActorResponse {
     let caller = &api::caller();
 
-    let mut service = RegistrarService::new();
+    let service = RegistrarService::new();
     let result = service
         .transfer_by_admin(name.as_str(), caller, new_owner)
         .await;
@@ -556,7 +556,7 @@ fn approve(name: String, to: Principal) -> BooleanActorResponse {
     let caller = &api::caller();
     let now = api::time();
 
-    let mut service = RegistrarService::new();
+    let service = RegistrarService::new();
     let result = service.approve(caller, now, name.as_str(), to);
     BooleanActorResponse::new(result)
 }
@@ -565,9 +565,9 @@ fn approve(name: String, to: Principal) -> BooleanActorResponse {
 #[candid_method(update, rename = "transfer_from")]
 async fn transfer_from(name: String) -> BooleanActorResponse {
     let caller = &api::caller();
-    let now = api::time();
+    let _now = api::time();
 
-    let mut service = RegistrarService::new();
+    let service = RegistrarService::new();
     let result = service.transfer_from(caller, name.as_str()).await;
     BooleanActorResponse::new(result)
 }
@@ -577,7 +577,7 @@ async fn transfer_from(name: String) -> BooleanActorResponse {
 async fn transfer_quota(to: Principal, quota_type: QuotaType, diff: u32) -> BooleanActorResponse {
     let caller = &api::caller();
 
-    let mut service = RegistrarService::new();
+    let service = RegistrarService::new();
     let result = service.transfer_quota(caller, &to, quota_type, diff);
     BooleanActorResponse::new(result)
 }

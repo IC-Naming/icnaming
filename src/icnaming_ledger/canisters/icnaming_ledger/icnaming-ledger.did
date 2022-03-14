@@ -70,9 +70,7 @@ type Timestamp =
 
 type Stats =
     record {
-        accounts_count: nat64;
-        sub_accounts_count: nat64;
-        hardware_wallet_accounts_count: nat64;
+        cycles_balance: nat64;
         transactions_count: nat64;
         block_height_synced_up_to: opt nat64;
         earliest_transaction_timestamp_nanos: nat64;
@@ -80,9 +78,7 @@ type Stats =
         latest_transaction_timestamp_nanos: nat64;
         latest_transaction_block_height: BlockHeight;
         seconds_since_last_ledger_sync: nat64;
-        neurons_created_count: nat64;
-        neurons_topped_up_count: nat64;
-        transactions_to_process_queue_length: nat32;
+        count_of_payments_by_status: vec record { text; nat64 };
         payments_version: nat64;
     };
 

@@ -298,9 +298,9 @@ impl RegistriesService {
         must_be_named_canister(caller, CANISTER_NAME_REGISTRAR)?;
         STATE.with(|s| {
             let mut store = s.registry_store.borrow_mut();
-            let mut registries = store.get_registries_mut();
+            let registries = store.get_registries_mut();
 
-            let mut registry = registries.get_mut(name);
+            let registry = registries.get_mut(name);
             if registry.is_none() {
                 let registry = Registry::new(
                     name.to_string(),

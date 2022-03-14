@@ -8,11 +8,14 @@ import {Principal} from "@dfinity/principal";
 import {all_names} from "~/canisters/names";
 import {get_id} from "~/utils/canister";
 
+function get_pem_path(name: string): string {
+    const home = process.env.HOME;
+    return `${home}/.config/dfx/identity/${name}/identity.pem`;
+}
+
 export function load(name: string): Identity {
     new_dfx_identity(name);
-    // get current home directory
-    const home = process.env.HOME;
-    let pem_path = `${home}/.config/dfx/identity/${name}/identity.pem`;
+    let pem_path = get_pem_path(name);
     const rawKey = fs
         .readFileSync(pem_path)
         .toString()
@@ -33,6 +36,10 @@ export function load(name: string): Identity {
 
 export const new_dfx_identity = (name: string) => {
     exec(`dfx identity new ${name}`, {silent: true});
+    // override static key file from scripts/identity_pem/${name}/identity.pem
+    let target_pem_path = get_pem_path(name);
+    let source_pem_path = `scripts/identity_pem/${name}/identity.pem`;
+    fs.copyFileSync(source_pem_path, target_pem_path);
 }
 
 export const use_dfx_identity = (name: string) => {
