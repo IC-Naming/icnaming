@@ -73,3 +73,7 @@ to assign reserved names to users.
 - icwhiskers
 - ic-whiskers
 - icnaming
+
+### 20220314_extra_benefits.csv
+
+https://medium.com/@icnaming/extra-benifits-for-mainnet-users-4a61656401d9
