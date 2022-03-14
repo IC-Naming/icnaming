@@ -1,5 +1,5 @@
+use std::fs;
 use std::io::{Read, Write};
-use std::{fs};
 
 use flate2::write::ZlibEncoder;
 
@@ -16,9 +16,25 @@ fn main() {
         }
     }
 
+    // validate that all files are valid csv with three columns
+    for file in files.iter() {
+        let mut file = fs::File::open(file).unwrap();
+        let mut contents = String::new();
+        file.read_to_string(&mut contents).unwrap();
+        let mut lines = contents.lines();
+        let mut line = lines.next().unwrap();
+        let mut cols = line.split(",");
+        let mut col = cols.next().unwrap();
+        col = cols.next().unwrap();
+        col = cols.next().unwrap();
+        if cols.next().is_some() {
+            panic!("{} has more than three columns", line);
+        }
+    }
+
     let mut hashes = vec![];
 
-    for file in files {
+    for file in files.iter() {
         let file_name = file.to_str().unwrap().to_string();
         let data = fs::read(file).unwrap();
         {
