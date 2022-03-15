@@ -89,6 +89,7 @@ export interface Stats {
   'name_order_paid_count' : bigint,
   'user_name_order_count_by_status' : Array<[string, bigint]>,
   'last_timestamp_seconds_xdr_permyriad_per_icp' : bigint,
+  'name_lock_count' : bigint,
   'payment_version' : bigint,
   'user_quota_order_count' : Array<[string, bigint]>,
   'registration_count' : bigint,
@@ -154,4 +155,5 @@ export interface _SERVICE {
       arg_1: QuotaType,
       arg_2: number,
     ) => Promise<BooleanActorResponse>,
+  'unlock_names' : (arg_0: Array<string>) => Promise<BooleanActorResponse>,
 }

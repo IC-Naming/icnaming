@@ -1,5 +1,3 @@
-
-
 use candid::{candid_method, CandidType, Principal};
 use ic_cdk::api;
 use ic_cdk_macros::*;
@@ -579,6 +577,16 @@ async fn transfer_quota(to: Principal, quota_type: QuotaType, diff: u32) -> Bool
 
     let service = RegistrarService::new();
     let result = service.transfer_quota(caller, &to, quota_type, diff);
+    BooleanActorResponse::new(result)
+}
+
+#[update(name = "unlock_names")]
+#[candid_method(update, rename = "unlock_names")]
+async fn unlock_names(names: Vec<String>) -> BooleanActorResponse {
+    let caller = &api::caller();
+
+    let service = RegistrarService::new();
+    let result = service.unlock_names(caller, names.iter().map(|n| n.as_str()).collect());
     BooleanActorResponse::new(result)
 }
 
