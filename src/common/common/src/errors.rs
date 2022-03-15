@@ -64,6 +64,8 @@ pub enum ICNSError {
     },
     #[error("invalid resolver value format for {value:?}, it should be formatted as {format:?}")]
     InvalidResolverValueFormat { value: String, format: String },
+    #[error("Some operations are processing, please try again later")]
+    Conflict,
 }
 
 impl ICNSError {
@@ -96,6 +98,7 @@ impl ICNSError {
             ICNSError::OperatorCountExceeded => 25,
             ICNSError::CanisterCallError { .. } => 26,
             ICNSError::InvalidResolverValueFormat { .. } => 27,
+            ICNSError::Conflict => 28,
         }
     }
 }

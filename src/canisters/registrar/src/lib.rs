@@ -1,5 +1,6 @@
 pub mod actor;
 mod http;
+mod name_locker;
 mod name_order_store;
 mod payment_store;
 mod payment_sync;

@@ -11,6 +11,7 @@ use common::named_canister_ids::ensure_current_canister_id_match;
 use common::named_canister_ids::CANISTER_NAME_REGISTRAR;
 use common::state::StableState;
 
+use crate::name_locker::NameLocker;
 use crate::name_order_store::NameOrderStore;
 use crate::payment_store::PaymentStore;
 use crate::quota_import_store::QuotaImportStore;
@@ -23,6 +24,7 @@ use crate::user_quota_store::UserQuotaStore;
 thread_local! {
     pub static STATE : State = State::default();
     pub static MERTRICS_COUNTER: RefCell<MetricsCounter> = RefCell::new(MetricsCounter::default());
+    pub static NAME_LOCKER: RefCell<NameLocker> = RefCell::new(NameLocker::new());
 }
 
 #[derive(Default)]

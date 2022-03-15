@@ -96,6 +96,7 @@ export const idlFactory = ({ IDL }) => {
     'name_order_paid_count' : IDL.Nat64,
     'user_name_order_count_by_status' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Nat64)),
     'last_timestamp_seconds_xdr_permyriad_per_icp' : IDL.Nat64,
+    'name_lock_count' : IDL.Nat64,
     'payment_version' : IDL.Nat64,
     'user_quota_order_count' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Nat64)),
     'registration_count' : IDL.Nat64,
@@ -215,6 +216,7 @@ export const idlFactory = ({ IDL }) => {
         [BooleanActorResponse],
         [],
       ),
+    'unlock_names' : IDL.Func([IDL.Vec(IDL.Text)], [BooleanActorResponse], []),
   });
 };
 export const init = ({ IDL }) => { return []; };
