@@ -20,3 +20,47 @@ Feature: Quota Management
       | user1 | LenGte      | 4           | 10    |
       | user1 | LenEq       | 5           | 10    |
       | user2 | LenGte      | 3           | 10    |
+
+  Scenario: Transfer quota to user 1
+    Given Update quota as follow operations
+      | operation | user  | quota_type1 | quota_type2 | value |
+      | add       | user1 | LenGte      | 3           | 10    |
+    When Do quota transfer as below
+      | from  | to    | quota_type1 | quota_type2 | value |
+      | user1 | user2 | LenGte      | 3           | 4     |
+    Then User quota status should be as below
+      | user  | quota_type1 | quota_type2 | value |
+      | user1 | LenGte      | 3           | 6     |
+      | user2 | LenGte      | 3           | 4     |
+
+  Scenario: Transfer quota to user 2
+    Given Update quota as follow operations
+      | operation | user  | quota_type1 | quota_type2 | value |
+      | add       | user1 | LenGte      | 3           | 10    |
+      | add       | user2 | LenGte      | 3           | 20    |
+    When Do quota transfer as below
+      | from  | to    | quota_type1 | quota_type2 | value |
+      | user1 | user2 | LenGte      | 3           | 4     |
+    Then User quota status should be as below
+      | user  | quota_type1 | quota_type2 | value |
+      | user1 | LenGte      | 3           | 6     |
+      | user2 | LenGte      | 3           | 24    |
+
+  Scenario: Transfer quota failed 1
+    Given Update quota as follow operations
+      | operation | user  | quota_type1 | quota_type2 | value |
+      | add       | user1 | LenGte      | 3           | 10    |
+    When Do quota transfer as below
+      | from  | to    | quota_type1 | quota_type2 | value |
+      | user1 | user2 | LenGte      | 3           | 11    |
+    Then User quota status should be as below
+      | user  | quota_type1 | quota_type2 | value |
+      | user1 | LenGte      | 3           | 10    |
+
+  Scenario: Transfer quota failed 2
+    When Do quota transfer as below
+      | from  | to    | quota_type1 | quota_type2 | value |
+      | user1 | user2 | LenGte      | 3           | 1     |
+    Then User quota status should be as below
+      | user  | quota_type1 | quota_type2 | value |
+      | user1 | LenGte      | 3           | 0     |

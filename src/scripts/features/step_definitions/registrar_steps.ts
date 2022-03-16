@@ -9,18 +9,20 @@ import {
     BooleanActorResponse as RefundResult,
     BooleanActorResponse as AvailableResult,
     BooleanActorResponse as RegisterWithQuotaResult,
+    BooleanActorResponse as TransferResult,
+    BooleanActorResponse as TransferFromResult,
+    BooleanActorResponse as TransferByAdminResult,
     GetNameOrderResponse,
     QuotaType,
     Stats,
     SubmitOrderActorResponse as SubmitOrderResult,
 } from "~/declarations/registrar/registrar.did";
 import {toICPe8s,} from "~/utils/convert";
-import {identities} from "~/utils/identity";
+import {get_principal, identities} from "~/utils/identity";
 import {OptionalResult, Result} from "~/utils/Result";
 import {assert_remote_result} from "./utils";
 import logger from "node-color-log";
 import fs from "fs";
-import {Principal} from "@dfinity/principal";
 import {
     AssignNameResponse,
     ImportQuotaResponse
@@ -33,6 +35,9 @@ let global_register_with_quota_response: RegisterWithQuotaResult;
 let global_quota_import_response: ImportQuotaResponse;
 let global_stats_result: Stats;
 let global_assign_name_result: AssignNameResponse;
+let global_transfer_result: TransferResult;
+let global_transfer_from_result: TransferFromResult;
+let global_transfer_by_admin_result: TransferByAdminResult;
 
 async function submit_order(user: string | null, name: string, years: string) {
     let actor;
@@ -255,7 +260,7 @@ Then(/^get_owner result "([^"]*)" is the same as "([^"]*)" identity$/,
         expect(owner.toText()).to.equal(identityInfo.principal_text);
     });
 
-Then(/^get_details "([^"]*)" result is$/,
+Then(/^registrar get_details "([^"]*)" result is$/,
     async function (name: string, data) {
         let details = await new Result(registrar.get_details(name)).unwrap();
         let target = data.rowsHash();
@@ -303,6 +308,18 @@ Then(/^User quota status should be as below$/,
             expect(quota_value).to.equal(parseInt(item.value));
         }
     });
+When(/^Do quota transfer as below$/,
+    async function (data: DataTable) {
+        let items: { from: string, to: string, quota_type1: string, quota_type2: string, value: string }[] = data.hashes();
+
+        for (const item of items) {
+            let quota_type = {};
+            quota_type[item.quota_type1] = parseInt(item.quota_type2);
+            let to_principal = get_principal(item.to);
+            let registrar = createRegistrar(identities.get_identity_info(item.from));
+            await registrar.transfer_quota(to_principal, quota_type as QuotaType, parseInt(item.value));
+        }
+    });
 Given(/^Some users already have some quotas$/,
     async function (data) {
         let items: { user: string, quota_type1: string, quota_type2: string, value: string }[] = data.hashes();
@@ -311,13 +328,12 @@ Given(/^Some users already have some quotas$/,
         let identityInfo = identities.main;
         let registrar = createRegistrar(identityInfo);
 
-        await Promise.all(items.map(async (item) => {
+        for (const item of items) {
             let quota_type = {};
             quota_type[item.quota_type1] = parseInt(item.quota_type2);
             let user_principal = identities.get_identity_info(item.user).identity.getPrincipal();
-
             await new Result(registrar.add_quota(user_principal, quota_type as QuotaType, parseInt(item.value))).unwrap();
-        }));
+        }
     });
 
 function to_quota_type(source: string): QuotaType {
@@ -445,4 +461,40 @@ Then(/^last assign name status is "([^"]*)"$/,
         } else {
             expect.fail(`last assign name status is not Ok but ${JSON.stringify(global_assign_name_result)}`);
         }
+    });
+When(/^User "([^"]*)" transfer name "([^"]*)" to User "([^"]*)"$/,
+    async function (user: string, name: string, new_owner: string) {
+        let registrar = createRegistrar(identities.get_identity_info(user));
+        let new_owner_principal = identities.get_principal(new_owner);
+        global_transfer_result = await registrar.transfer(name, new_owner_principal);
+    });
+Then(/^last name transfer result status is "([^"]*)"$/,
+    function (status: string) {
+        assert_remote_result(global_transfer_result, status);
+    });
+Given(/^User "([^"]*)" approve name "([^"]*)" to User "([^"]*)"$/,
+    async function (user: string, name: string, to: string) {
+        let registrar = createRegistrar(identities.get_identity_info(user));
+        let to_principal = get_principal(to);
+        await new Result(registrar.approve(name, to_principal)).unwrap();
+    });
+When(/^User "([^"]*)" transfer name "([^"]*)" by transfer_from$/,
+    async function (user: string, name: string) {
+        let registrar = createRegistrar(identities.get_identity_info(user));
+        global_transfer_from_result = await registrar.transfer_from(name);
+    });
+Then(/^last name transfer_from result status is "([^"]*)"$/,
+    async function (status: string) {
+        assert_remote_result(global_transfer_from_result, status);
+
+    });
+When(/^User "([^"]*)" transfer name "([^"]*)" to user "([^"]*)"$/,
+    async function (user: string, name: string, to: string) {
+        let registrar = createRegistrar(identities.get_identity_info(user));
+        let to_principal = get_principal(to);
+        global_transfer_by_admin_result = await registrar.transfer_by_admin(name, to_principal);
+    });
+Then(/^last transfer_by_admin status is "([^"]*)"$/,
+    function (status: string) {
+        assert_remote_result(global_transfer_by_admin_result, status);
     });

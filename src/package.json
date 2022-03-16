@@ -4,7 +4,6 @@
   "main": "index.js",
   "scripts": {
     "test": "cucumber-js -p default",
-    "test-registrar": "cucumber-js -p registrar",
     "test-dev": "cucumber-js -p dev",
     "test-report": "cucumber-js -p report"
   },
@@ -20,7 +19,6 @@
     "@types/archiver": "^5.3.1",
     "@types/base64-js": "^1.2.5",
     "@types/chai": "^4.3.0",
-    "@types/cucumber": "^7.0.0",
     "@types/debug": "^4.1.7",
     "@types/node": "^16.11.21",
     "@types/shelljs": "^0.8.11",

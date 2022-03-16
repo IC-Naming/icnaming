@@ -3,12 +3,12 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 use candid::{decode_args, encode_args, CandidType, Deserialize, Nat, Principal};
-use common::constants::{
-    EXPIRE_TIME_OF_NAME_ORDER_AVAILABILITY_CHECK_IN_NS, EXPIRE_TIME_OF_NAME_ORDER_IN_NS,
-};
 use getset::{Getters, Setters};
 use log::info;
 
+use common::constants::{
+    EXPIRE_TIME_OF_NAME_ORDER_AVAILABILITY_CHECK_IN_NS, EXPIRE_TIME_OF_NAME_ORDER_IN_NS,
+};
 use common::icnaming_ledger_types::{PaymentAccountId, PaymentId};
 use common::state::StableState;
 
@@ -292,7 +292,8 @@ impl QuotaOrderStore {
             .iter()
             .filter(|(_, order)| {
                 let order_ref = order.borrow();
-                order_ref.status == QuotaOrderStatus::New && order_ref.created_at >= start_time
+                order_ref.status == QuotaOrderStatus::New
+                    && order_ref.created_at >= start_time
                     && order_ref.created_at < end_time
             })
             .map(|(user, _)| user.clone())

@@ -1,9 +1,8 @@
-use std::borrow::Borrow;
-use std::sync::Arc;
-
 use candid::Principal;
 use once_cell::sync::Lazy;
 use rstest::*;
+use std::borrow::Borrow;
+use std::sync::Arc;
 
 use common::cycles_minting_types::{IcpXdrConversionRate, IcpXdrConversionRateCertifiedResponse};
 use common::icnaming_ledger_types::{AddPaymentResponse, Memo};
@@ -76,7 +75,7 @@ fn service(
     service.cycles_minting_api = Arc::new(mock_cycles_minting_api);
     mock_registry_api
         .expect_reclaim_name()
-        .returning(|name, owner, resolver| Ok(true));
+        .returning(|_name, _owner, _resolver| Ok(true));
     service.registry_api = Arc::new(mock_registry_api);
     service
 }
@@ -946,23 +945,29 @@ mod cancel_expired_orders {
         mock_user1: Principal,
         mock_user2: Principal,
     ) {
-        service.submit_order(
-            &mock_user1,
-            mock_now,
-            SubmitOrderRequest {
-                name: "test-name.icp".to_string(),
-                years: 1,
-            },
-        ).await;
+        service
+            .submit_order(
+                &mock_user1,
+                mock_now,
+                SubmitOrderRequest {
+                    name: "test-name.icp".to_string(),
+                    years: 1,
+                },
+            )
+            .await
+            .unwrap();
 
-        service.submit_order(
-            &mock_user2,
-            mock_now - EXPIRE_TIME_OF_NAME_ORDER_IN_NS - 1,
-            SubmitOrderRequest {
-                name: "test-name2.icp".to_string(),
-                years: 1,
-            },
-        ).await;
+        service
+            .submit_order(
+                &mock_user2,
+                mock_now - EXPIRE_TIME_OF_NAME_ORDER_IN_NS - 1,
+                SubmitOrderRequest {
+                    name: "test-name2.icp".to_string(),
+                    years: 1,
+                },
+            )
+            .await
+            .unwrap();
 
         // act
         service.cancel_expired_orders(mock_now).unwrap();
@@ -982,23 +987,27 @@ mod cancel_expired_orders {
         mock_user1: Principal,
         mock_user2: Principal,
     ) {
-        service.submit_order(
-            &mock_user1,
-            mock_now,
-            SubmitOrderRequest {
-                name: "test-name.icp".to_string(),
-                years: 1,
-            },
-        ).await;
+        service
+            .submit_order(
+                &mock_user1,
+                mock_now,
+                SubmitOrderRequest {
+                    name: "test-name.icp".to_string(),
+                    years: 1,
+                },
+            )
+            .await;
 
-        service.submit_order(
-            &mock_user2,
-            mock_now - EXPIRE_TIME_OF_NAME_ORDER_AVAILABILITY_CHECK_IN_NS - 1,
-            SubmitOrderRequest {
-                name: "test-name2.icp".to_string(),
-                years: 1,
-            },
-        ).await;
+        service
+            .submit_order(
+                &mock_user2,
+                mock_now - EXPIRE_TIME_OF_NAME_ORDER_AVAILABILITY_CHECK_IN_NS - 1,
+                SubmitOrderRequest {
+                    name: "test-name2.icp".to_string(),
+                    years: 1,
+                },
+            )
+            .await;
 
         STATE.with(|s| {
             let mut store = s.registration_store.borrow_mut();
@@ -1021,7 +1030,6 @@ mod cancel_expired_orders {
         });
     }
 
-
     #[rstest]
     async fn test_cancel_expired_orders_availability_check_name_is_not_taken(
         service: RegistrarService,
@@ -1029,23 +1037,27 @@ mod cancel_expired_orders {
         mock_user1: Principal,
         mock_user2: Principal,
     ) {
-        service.submit_order(
-            &mock_user1,
-            mock_now,
-            SubmitOrderRequest {
-                name: "test-name.icp".to_string(),
-                years: 1,
-            },
-        ).await;
+        service
+            .submit_order(
+                &mock_user1,
+                mock_now,
+                SubmitOrderRequest {
+                    name: "test-name.icp".to_string(),
+                    years: 1,
+                },
+            )
+            .await;
 
-        service.submit_order(
-            &mock_user2,
-            mock_now - EXPIRE_TIME_OF_NAME_ORDER_AVAILABILITY_CHECK_IN_NS + 1,
-            SubmitOrderRequest {
-                name: "test-name2.icp".to_string(),
-                years: 1,
-            },
-        ).await;
+        service
+            .submit_order(
+                &mock_user2,
+                mock_now - EXPIRE_TIME_OF_NAME_ORDER_AVAILABILITY_CHECK_IN_NS + 1,
+                SubmitOrderRequest {
+                    name: "test-name2.icp".to_string(),
+                    years: 1,
+                },
+            )
+            .await;
 
         // act
         service.cancel_expired_orders(mock_now).unwrap();
@@ -1060,14 +1072,17 @@ mod cancel_expired_orders {
 }
 
 mod reclaim_name {
-    use common::permissions::get_admin;
+    
+
     use super::*;
 
     #[rstest]
-    async fn reclaim_name_success(service: RegistrarService,
-                                  mock_now: u64,
-                                  mock_user1: Principal,
-                                  mock_user2: Principal, ) {
+    async fn reclaim_name_success(
+        service: RegistrarService,
+        mock_now: u64,
+        mock_user1: Principal,
+        _mock_user2: Principal,
+    ) {
         STATE.with(|s| {
             let mut store = s.registration_store.borrow_mut();
             store.add_registration(Registration::new(
@@ -1079,18 +1094,29 @@ mod reclaim_name {
         });
 
         // act
-        let reclaim_result = service.reclaim_name(
-            "test-name.icp",
-            &mock_user1).await;
+        let reclaim_result = service.reclaim_name("test-name.icp", &mock_user1).await;
 
         assert_eq!(reclaim_result.is_ok(), true);
     }
 
     #[rstest]
-    async fn reclaim_name_success_admin_request(service: RegistrarService,
-                                                mock_now: u64,
-                                                mock_user1: Principal,
-                                                mock_user2: Principal, ) {
+    async fn reclaim_name_failed_name_not_found(service: RegistrarService, mock_user1: Principal) {
+        // act
+        let reclaim_result = service.reclaim_name("test-name.icp", &mock_user1).await;
+
+        assert_eq!(
+            reclaim_result.err().unwrap(),
+            ICNSError::RegistrationNotFound
+        );
+    }
+
+    #[rstest]
+    async fn reclaim_name_failed_caller_error(
+        service: RegistrarService,
+        mock_now: u64,
+        mock_user1: Principal,
+        mock_user2: Principal,
+    ) {
         STATE.with(|s| {
             let mut store = s.registration_store.borrow_mut();
             store.add_registration(Registration::new(
@@ -1102,48 +1128,460 @@ mod reclaim_name {
         });
 
         // act
-        let reclaim_result = service.reclaim_name(
-            "test-name.icp",
-            &get_admin()).await;
-
-        assert_eq!(reclaim_result.is_ok(), true);
-    }
-
-    #[rstest]
-    async fn reclaim_name_failed_name_not_found(service: RegistrarService,
-                                                mock_user1: Principal, ) {
-
-        // act
-        let reclaim_result = service.reclaim_name(
-            "test-name.icp",
-            &mock_user1).await;
-
-        assert_eq!(reclaim_result.err().unwrap(), ICNSError::RegistrationNotFound);
-    }
-
-
-    #[rstest]
-    async fn reclaim_name_failed_caller_error(service: RegistrarService,
-                                              mock_now: u64,
-                                              mock_user1: Principal,
-                                              mock_user2: Principal, ) {
-        STATE.with(|s| {
-            let mut store = s.registration_store.borrow_mut();
-            store.add_registration(Registration::new(
-                mock_user1.clone(),
-                "test-name.icp".to_string(),
-                mock_now + 1111,
-                mock_now,
-            ));
-        });
-
-        // act
-        let reclaim_result = service.reclaim_name(
-            "test-name.icp",
-            &mock_user2).await;
+        let reclaim_result = service.reclaim_name("test-name.icp", &mock_user2).await;
 
         // assert
         assert_eq!(reclaim_result.err().unwrap(), ICNSError::PermissionDenied);
+    }
+}
+
+mod transfer {
+    use common::errors::ErrorInfo;
+
+    use super::*;
+
+    #[rstest]
+    async fn test_transfer_success(
+        mut service: RegistrarService,
+        mut mock_registry_api: MockRegistryApi,
+        mock_user1: Principal,
+        mock_user2: Principal,
+        mock_user3: Principal,
+        mock_now: u64,
+    ) {
+        let test_name = "icnaming.icp";
+        STATE.with(|s| {
+            let mut store = s.registration_store.borrow_mut();
+            store.add_registration(Registration::new(
+                mock_user1.clone(),
+                test_name.to_string(),
+                mock_now + 1,
+                mock_now,
+            ));
+
+            let mut store = s.registration_approval_store.borrow_mut();
+            store.set_approval(test_name, &mock_user3, mock_now);
+        });
+
+        let api_received_name = test_name.clone();
+        let api_received_owner = mock_user2.clone();
+        mock_registry_api
+            .expect_transfer()
+            .returning(move |name, new_owner, _resolver| {
+                assert_eq!(name, api_received_name);
+                assert_eq!(new_owner, api_received_owner);
+                Ok(true)
+            });
+        service.registry_api = Arc::new(mock_registry_api);
+
+        // act
+        let result = service.transfer(test_name, &mock_user1, mock_user2).await;
+
+        // assert
+        assert!(result.is_ok());
+        STATE.with(|s| {
+            let store = s.registration_store.borrow();
+            let registrations = store.get_registrations();
+            let registration = registrations.get(test_name).unwrap();
+            assert_eq!(registration.get_name(), test_name);
+            assert_eq!(registration.get_owner(), mock_user2);
+            assert_eq!(registration.get_created_at(), mock_now);
+            assert_eq!(registration.get_expired_at(), mock_now + 1);
+
+            let store = s.registration_approval_store.borrow();
+            assert_eq!(store.has_approved_to(test_name), false);
+        });
+    }
+
+    #[rstest]
+    async fn test_transfer_failed_name_not_found(
+        service: RegistrarService,
+        mock_user1: Principal,
+        mock_user2: Principal,
+    ) {
+        // act
+        let result = service
+            .transfer("test-name.icp", &mock_user1, mock_user2)
+            .await;
+
+        // assert
+        assert_eq!(result.err().unwrap(), ICNSError::RegistrationNotFound);
+    }
+
+    #[rstest]
+    async fn test_transfer_failed_caller_error(
+        service: RegistrarService,
+        mock_user1: Principal,
+        mock_user2: Principal,
+        mock_user3: Principal,
+    ) {
+        STATE.with(|s| {
+            let mut store = s.registration_store.borrow_mut();
+            store.add_registration(Registration::new(
+                mock_user1.clone(),
+                "test-name.icp".to_string(),
+                1,
+                0,
+            ));
+        });
+
+        // act
+        let result = service
+            .transfer("test-name.icp", &mock_user2, mock_user3)
+            .await;
+
+        // assert
+        assert_eq!(result.err().unwrap(), ICNSError::PermissionDenied);
+    }
+
+    #[rstest]
+    async fn test_transfer_failed_api_error(
+        mut service: RegistrarService,
+        mut mock_registry_api: MockRegistryApi,
+        mock_user1: Principal,
+        mock_user2: Principal,
+        mock_user3: Principal,
+        mock_now: u64,
+    ) {
+        let test_name = "icnaming.icp";
+        STATE.with(|s| {
+            let mut store = s.registration_store.borrow_mut();
+            store.add_registration(Registration::new(
+                mock_user1.clone(),
+                test_name.to_string(),
+                mock_now + 1,
+                mock_now,
+            ));
+
+            let mut store = s.registration_approval_store.borrow_mut();
+            store.set_approval(test_name, &mock_user3, mock_now);
+        });
+
+        mock_registry_api
+            .expect_transfer()
+            .returning(|_name, _new_owner, _resolver| Err(ErrorInfo::from(ICNSError::Unknown)));
+        service.registry_api = Arc::new(mock_registry_api);
+
+        // act
+        let result = service
+            .transfer("icnaming.icp", &mock_user1, mock_user2)
+            .await;
+
+        // assert
+        assert_eq!(
+            result.err().unwrap(),
+            ICNSError::RemoteError(ErrorInfo::from(ICNSError::Unknown))
+        );
+    }
+}
+
+mod transfer_by_admin {
+    use super::*;
+    use common::permissions::get_admin;
+
+    #[rstest]
+    async fn test_transfer_by_admin_success(
+        mut service: RegistrarService,
+        mut mock_registry_api: MockRegistryApi,
+        mock_user1: Principal,
+        mock_user2: Principal,
+        mock_user3: Principal,
+        mock_now: u64,
+    ) {
+        let admin = get_admin();
+        let test_name = "icnaming.icp";
+        STATE.with(|s| {
+            let mut store = s.registration_store.borrow_mut();
+            store.add_registration(Registration::new(
+                mock_user1.clone(),
+                test_name.to_string(),
+                mock_now + 1,
+                mock_now,
+            ));
+
+            let mut store = s.registration_approval_store.borrow_mut();
+            store.set_approval(test_name, &mock_user3, mock_now);
+        });
+
+        let api_received_name = test_name.clone();
+        let api_received_owner = mock_user2.clone();
+        mock_registry_api
+            .expect_transfer()
+            .returning(move |name, new_owner, _resolver| {
+                assert_eq!(name, api_received_name);
+                assert_eq!(new_owner, api_received_owner);
+                Ok(true)
+            });
+        service.registry_api = Arc::new(mock_registry_api);
+
+        // act
+        let result = service
+            .transfer_by_admin(test_name, &admin, mock_user2)
+            .await;
+
+        // assert
+        assert!(result.is_ok());
+        STATE.with(|s| {
+            let store = s.registration_store.borrow();
+            let registrations = store.get_registrations();
+            let registration = registrations.get(test_name).unwrap();
+            assert_eq!(registration.get_name(), test_name);
+            assert_eq!(registration.get_owner(), mock_user2);
+            assert_eq!(registration.get_created_at(), mock_now);
+            assert_eq!(registration.get_expired_at(), mock_now + 1);
+
+            let store = s.registration_approval_store.borrow();
+            assert_eq!(store.has_approved_to(test_name), false);
+        });
+    }
+
+    #[rstest]
+    #[should_panic]
+    async fn test_transfer_by_admin_failed_not_reserved_name(
+        service: RegistrarService,
+        mock_user1: Principal,
+        mock_user2: Principal,
+        mock_user3: Principal,
+        mock_now: u64,
+    ) {
+        let admin = get_admin();
+        let test_name = "something-not-reserved.icp";
+        STATE.with(|s| {
+            let mut store = s.registration_store.borrow_mut();
+            store.add_registration(Registration::new(
+                mock_user1.clone(),
+                test_name.to_string(),
+                mock_now + 1,
+                mock_now,
+            ));
+
+            let mut store = s.registration_approval_store.borrow_mut();
+            store.set_approval(test_name, &mock_user3, mock_now);
+        });
+
+        // act
+        let _result = service
+            .transfer_by_admin(test_name, &admin, mock_user2)
+            .await;
+    }
+
+    #[rstest]
+    async fn test_transfer_by_admin_failed_not_admin(
+        service: RegistrarService,
+        mock_user1: Principal,
+        mock_user2: Principal,
+    ) {
+        let _admin = get_admin();
+        let test_name = "icnaming.icp";
+
+        // act
+        let result = service
+            .transfer_by_admin(test_name, &mock_user1, mock_user2)
+            .await;
+
+        // assert
+        assert!(result.is_err());
+        assert_eq!(result.err().unwrap(), ICNSError::Unauthorized);
+    }
+}
+
+mod approve {
+    use super::*;
+
+    #[rstest]
+    fn test_approve_success(
+        service: RegistrarService,
+        mock_user1: Principal,
+        mock_user2: Principal,
+        mock_now: u64,
+    ) {
+        let test_name = "icnaming.icp";
+        STATE.with(|s| {
+            let mut store = s.registration_store.borrow_mut();
+            store.add_registration(Registration::new(
+                mock_user1.clone(),
+                test_name.to_string(),
+                mock_now + 1,
+                mock_now,
+            ));
+        });
+
+        // act
+        let result = service.approve(&mock_user1, mock_now, test_name, mock_user2.clone());
+
+        // assert
+        assert!(result.is_ok());
+        STATE.with(|s| {
+            let store = s.registration_approval_store.borrow();
+            assert_eq!(store.is_approved_to(test_name, &mock_user2), true);
+        });
+    }
+
+    #[rstest]
+    fn test_approve_success_twice(
+        service: RegistrarService,
+        mock_user1: Principal,
+        mock_user2: Principal,
+        mock_user3: Principal,
+        mock_now: u64,
+    ) {
+        let test_name = "icnaming.icp";
+        STATE.with(|s| {
+            let mut store = s.registration_store.borrow_mut();
+            store.add_registration(Registration::new(
+                mock_user1.clone(),
+                test_name.to_string(),
+                mock_now + 1,
+                mock_now,
+            ));
+        });
+
+        // act
+        let _result = service.approve(&mock_user1, mock_now, test_name, mock_user2.clone());
+        let result = service.approve(&mock_user1, mock_now, test_name, mock_user3.clone());
+
+        // assert
+        assert!(result.is_ok());
+        STATE.with(|s| {
+            let store = s.registration_approval_store.borrow();
+            assert_eq!(store.is_approved_to(test_name, &mock_user3), true);
+        });
+    }
+
+    #[rstest]
+    fn test_approve_success_remove_approval(
+        service: RegistrarService,
+        mock_user1: Principal,
+        mock_user2: Principal,
+        mock_now: u64,
+    ) {
+        let test_name = "icnaming.icp";
+        STATE.with(|s| {
+            let mut store = s.registration_store.borrow_mut();
+            store.add_registration(Registration::new(
+                mock_user1.clone(),
+                test_name.to_string(),
+                mock_now + 1,
+                mock_now,
+            ));
+        });
+
+        // act
+        let _result = service.approve(&mock_user1, mock_now, test_name, mock_user2.clone());
+        let result = service.approve(&mock_user1, mock_now, test_name, Principal::anonymous());
+
+        // assert
+        assert!(result.is_ok());
+        STATE.with(|s| {
+            let store = s.registration_approval_store.borrow();
+            assert_eq!(store.has_approved_to(test_name), false);
+        });
+    }
+
+    #[rstest]
+    fn test_approve_failed_is_not_owner(
+        service: RegistrarService,
+        mock_user1: Principal,
+        mock_user2: Principal,
+        mock_now: u64,
+    ) {
+        let test_name = "icnaming.icp";
+        STATE.with(|s| {
+            let mut store = s.registration_store.borrow_mut();
+            store.add_registration(Registration::new(
+                mock_user1.clone(),
+                test_name.to_string(),
+                mock_now + 1,
+                mock_now,
+            ));
+        });
+
+        // act
+        let result = service.approve(&mock_user2, mock_now, test_name, mock_user1.clone());
+
+        // assert
+        assert!(result.is_err());
+        STATE.with(|s| {
+            let store = s.registration_approval_store.borrow();
+            assert_eq!(store.has_approved_to(test_name), false);
+        });
+    }
+}
+
+mod transfer_from {
+    use super::*;
+
+    #[rstest]
+    async fn test_transfer_from_success(
+        mut service: RegistrarService,
+        mut mock_registry_api: MockRegistryApi,
+        mock_user1: Principal,
+        mock_user2: Principal,
+        mock_now: u64,
+    ) {
+        let test_name = "icnaming.icp";
+        STATE.with(|s| {
+            let mut store = s.registration_store.borrow_mut();
+            store.add_registration(Registration::new(
+                mock_user1.clone(),
+                test_name.to_string(),
+                mock_now + 1,
+                mock_now,
+            ));
+        });
+        service
+            .approve(&mock_user1, mock_now, test_name, mock_user2.clone())
+            .unwrap();
+
+        let api_received_name = test_name.clone();
+        let api_received_owner = mock_user2.clone();
+        mock_registry_api
+            .expect_transfer()
+            .returning(move |name, new_owner, _resolver| {
+                assert_eq!(name, api_received_name);
+                assert_eq!(new_owner, api_received_owner);
+                Ok(true)
+            });
+        service.registry_api = Arc::new(mock_registry_api);
+
+        // act
+        let result = service.transfer_from(&mock_user2, test_name).await;
+
+        // assert
+        assert!(result.is_ok());
+        STATE.with(|s| {
+            let store = s.registration_store.borrow();
+            let registrations = store.get_registrations();
+            let registration = registrations.get(test_name).unwrap();
+            assert_eq!(registration.get_owner(), mock_user2);
+        });
+    }
+
+    #[rstest]
+    async fn test_transfer_from_failed_not_approve(
+        service: RegistrarService,
+        _mock_registry_api: MockRegistryApi,
+        mock_user1: Principal,
+        mock_user2: Principal,
+        mock_now: u64,
+    ) {
+        let test_name = "icnaming.icp";
+        STATE.with(|s| {
+            let mut store = s.registration_store.borrow_mut();
+            store.add_registration(Registration::new(
+                mock_user1.clone(),
+                test_name.to_string(),
+                mock_now + 1,
+                mock_now,
+            ));
+        });
+
+        // act
+        let result = service.transfer_from(&mock_user2, test_name).await;
+
+        // assert
+        assert!(result.is_err());
+        assert_eq!(result.err().unwrap(), ICNSError::PermissionDenied);
     }
 }
 

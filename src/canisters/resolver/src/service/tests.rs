@@ -136,9 +136,8 @@ mod set_record {
     async fn test_set_record_value_value_invalid(_init_test: (), mut service: ResolverService) {
         let name = "nice.icp";
         let mut patch_values: HashMap<String, String> = HashMap::new();
-        // create string value with 257 chars
         let mut value = String::new();
-        for _ in 0..257 {
+        for _ in 0..(RESOLVER_VALUE_MAX_LENGTH + 1) {
             value.push('a');
         }
         patch_values.insert(RESOLVER_KEY_GITHUB.to_string(), value);
@@ -326,5 +325,60 @@ mod validate_value {
     fn test_icp_valid_value(#[case] value: String, #[case] expected: bool) {
         let result = validate_value(&ResolverKey::Icp, &value);
         assert_eq!(expected, result.is_ok());
+    }
+}
+
+mod remove_resolvers {
+    use common::named_canister_ids::get_named_get_canister_id;
+
+    use super::*;
+
+    #[rstest]
+    fn test_remove_resolvers_success(service: ResolverService) {
+        STATE.with(|s| {
+            let mut store = s.resolver_store.borrow_mut();
+            store.ensure_created("test1.icp");
+            store.ensure_created("test2.icp");
+            store.ensure_created("app.test3.icp");
+            store.ensure_created("app.nice.icp");
+        });
+
+        // act
+        let caller = get_named_get_canister_id(CANISTER_NAME_REGISTRY);
+        let names = vec!["app.test3.icp".to_string(), "test2.icp".to_string()];
+        let result = service.remove_resolvers(&caller, names);
+
+        // assert
+        assert!(result.is_ok());
+
+        STATE.with(|s| {
+            let store = s.resolver_store.borrow();
+            let resolvers = store.get_resolvers();
+            assert_eq!(resolvers.len(), 2);
+            resolvers.get("test1.icp").unwrap();
+            resolvers.get("app.nice.icp").unwrap();
+        })
+    }
+
+    #[rstest]
+    fn test_remove_resolvers_success_even_not_found(service: ResolverService) {
+        // act
+        let caller = get_named_get_canister_id(CANISTER_NAME_REGISTRY);
+        let names = vec!["app.test3.icp".to_string(), "test2.icp".to_string()];
+        let result = service.remove_resolvers(&caller, names);
+
+        // assert
+        assert!(result.is_ok());
+    }
+
+    #[rstest]
+    fn test_remove_resolvers_failed_not_admin(service: ResolverService) {
+        // act
+        let names = vec!["app.test3.icp".to_string(), "test2.icp".to_string()];
+        let result = service.remove_resolvers(&Principal::anonymous(), names);
+
+        // assert
+        assert!(result.is_err());
+        assert_eq!(result.unwrap_err(), ICNSError::Unauthorized);
     }
 }

@@ -89,6 +89,7 @@ export interface Stats {
   'name_order_paid_count' : bigint,
   'user_name_order_count_by_status' : Array<[string, bigint]>,
   'last_timestamp_seconds_xdr_permyriad_per_icp' : bigint,
+  'name_lock_count' : bigint,
   'payment_version' : bigint,
   'user_quota_order_count' : Array<[string, bigint]>,
   'registration_count' : bigint,
@@ -99,6 +100,9 @@ export interface SubmitOrderRequest { 'name' : string, 'years' : number }
 export interface SubmitOrderResponse { 'order' : GetNameOrderResponse }
 export interface _SERVICE {
   'add_quota' : (arg_0: Principal, arg_1: QuotaType, arg_2: number) => Promise<
+      BooleanActorResponse
+    >,
+  'approve' : (arg_0: string, arg_1: Principal) => Promise<
       BooleanActorResponse
     >,
   'available' : (arg_0: string) => Promise<BooleanActorResponse>,
@@ -122,7 +126,6 @@ export interface _SERVICE {
   'get_stats' : () => Promise<GetStatsActorResponse>,
   'import_quota' : (arg_0: ImportQuotaRequest) => Promise<ImportQuotaResponse>,
   'load_state' : (arg_0: StateExportData) => Promise<BooleanActorResponse>,
-  'reclaim_name' : (arg_0: string) => Promise<BooleanActorResponse>,
   'refund_order' : () => Promise<BooleanActorResponse>,
   'register_for' : (arg_0: string, arg_1: Principal, arg_2: bigint) => Promise<
       BooleanActorResponse
@@ -140,4 +143,17 @@ export interface _SERVICE {
   'submit_order' : (arg_0: SubmitOrderRequest) => Promise<
       SubmitOrderActorResponse
     >,
+  'transfer' : (arg_0: string, arg_1: Principal) => Promise<
+      BooleanActorResponse
+    >,
+  'transfer_by_admin' : (arg_0: string, arg_1: Principal) => Promise<
+      BooleanActorResponse
+    >,
+  'transfer_from' : (arg_0: string) => Promise<BooleanActorResponse>,
+  'transfer_quota' : (
+      arg_0: Principal,
+      arg_1: QuotaType,
+      arg_2: number,
+    ) => Promise<BooleanActorResponse>,
+  'unlock_names' : (arg_0: Array<string>) => Promise<BooleanActorResponse>,
 }

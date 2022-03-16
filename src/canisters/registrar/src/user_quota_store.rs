@@ -111,6 +111,39 @@ impl UserQuotaStore {
     pub fn get_user_quotas(&self) -> &HashMap<Principal, HashMap<QuotaType, u32>> {
         &self.user_quotas
     }
+
+    pub fn transfer_quota(
+        &mut self,
+        from: &Principal,
+        to: &Principal,
+        quota_type: &QuotaType,
+        diff: u32,
+    ) -> bool {
+        assert!(diff > 0);
+        let from_quotas = self.user_quotas.get_mut(from);
+        if from_quotas.is_none() {
+            return false;
+        }
+        let from_quotas = from_quotas.unwrap();
+        let quota_value = from_quotas.get(quota_type).cloned().unwrap_or(0);
+        if quota_value < diff {
+            return false;
+        }
+        let new_value = quota_value - diff;
+        if new_value == 0 {
+            from_quotas.remove(quota_type);
+        } else {
+            from_quotas.insert(quota_type.clone(), new_value);
+        }
+        let to_quotas = self.user_quotas.entry(to.clone()).or_insert(HashMap::new());
+        let old_value = to_quotas.entry(quota_type.clone()).or_insert(0);
+        *old_value += diff;
+        info!(
+            "transfer quotas {} {} {} with diff {}",
+            from, to, quota_type, diff
+        );
+        true
+    }
 }
 
 #[cfg(test)]

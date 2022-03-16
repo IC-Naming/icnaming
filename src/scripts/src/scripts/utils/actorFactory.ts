@@ -57,7 +57,19 @@ class ActorFactory {
             }
             this._actorCache[canisterDid][canister_id][identity_str] = actor;
         }
-        return this._actorCache[canisterDid][canister_id][identity_str];
+        let actor = this._actorCache[canisterDid][canister_id][identity_str];
+        // invoke get_stats in actor have this method
+        // try to warm up the actor
+        if (actor.get_stats) {
+            actor.get_stats()
+                .then((stats) => {
+                    logger.debug(`get stats done`);
+                })
+                .catch((err) => {
+                    logger.error(`get stats error: ${err}`);
+                });
+        }
+        return actor;
     }
 
     /*

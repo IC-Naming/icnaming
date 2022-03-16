@@ -80,6 +80,10 @@ to assign reserved names to users.
 
 https://medium.com/@icnaming/extra-benifits-for-mainnet-users-4a61656401d9
 
+### 20220315_reward_dfinitysz.csv
+
+https://twitter.com/DfinitySZ/status/1481604973234618369
+
 ### 20220316_reserved_name_assignment_secret_box.csv
 
 Quotas for secret box.

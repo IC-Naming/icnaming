@@ -1,5 +1,15 @@
+let fs = require('fs');
+let logger = require('node-color-log')
+
+// get content if feature_target.txt found
+let target = fs.existsSync('feature_target.txt')
+    ? fs.readFileSync('feature_target.txt', 'utf8')
+    : 'scripts/features/**/*.feature';
+
+logger.info('target: ' + target);
+
 let common = [
-    'scripts/features/**/*.feature',                // Specify our feature files
+    target,
     '--require-module ts-node/register',    // Load TypeScript module
     '--require-module tsconfig-paths/register',    // Load TypeScript module
     '--require scripts/features/step_definitions/**/*.ts',   // Load step definitions
@@ -8,9 +18,6 @@ let common = [
     '--publish-quiet',
     '--fail-fast',
 ];
-
-let registrar = Array.from(common);
-registrar.push('--tags @registrar');
 
 let dev = Array.from(common);
 dev.push('--tags @dev');
@@ -22,7 +29,6 @@ report.push('--format json:cucumber-report.json');
 
 module.exports = {
     default: common.join(' '),
-    registrar: registrar.join(' '),
     dev: dev.join(' '),
     report: report.join(' ')
 };

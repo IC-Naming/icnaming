@@ -28,7 +28,7 @@ Feature: Query Api
     When Name "hello.icp" is already taken
     And get_owner result "hello.icp" is the same as "main" identity
     Then get_name_expires "hello.icp" result is about in "1" years
-    And get_details "hello.icp" result is
+    And registrar get_details "hello.icp" result is
       | key        | value     |
       | owner      | main      |
       | name       | hello.icp |

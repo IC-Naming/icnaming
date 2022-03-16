@@ -1,5 +1,5 @@
 use ic_cdk::api;
-use ic_cdk_macros::*;
+
 use log::error;
 
 use crate::payment_sync;
@@ -15,5 +15,5 @@ pub async fn run_periodic_tasks() {
 
     let service = RegistrarService::new();
     let now = api::time();
-    service.cancel_expired_orders(now);
+    let _result = service.cancel_expired_orders(now);
 }

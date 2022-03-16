@@ -6,11 +6,12 @@ use std::str::FromStr;
 use std::sync::Arc;
 
 use candid::{CandidType, Deserialize, Nat, Principal};
-use ic_cdk::{api, call};
+use ic_cdk::api;
 use log::{debug, error, info, trace, warn};
 use num_bigint::BigUint;
 use num_traits::ToPrimitive;
 
+use crate::name_locker::{try_lock_name, unlock_name};
 use common::canister_api::ic_impl::{CyclesMintingApi, ICNamingLedgerApi, RegistryApi};
 use common::canister_api::{ICyclesMintingApi, IICNamingLedgerApi, IRegistryApi};
 use common::constants::*;
@@ -28,8 +29,8 @@ use common::named_canister_ids::{
     get_named_get_canister_id, CANISTER_NAME_REGISTRAR_CONTROL_GATEWAY, CANISTER_NAME_RESOLVER,
 };
 use common::naming::{normalize_name, NameParseResult};
+use common::permissions::must_not_anonymous;
 use common::permissions::{is_admin, must_be_named_canister, must_be_system_owner};
-use common::permissions::{must_be_named_principal, must_not_anonymous};
 
 use crate::name_order_store::{GetNameOrderResponse, NameOrder, NameOrderStatus};
 use crate::quota_order_store::{
@@ -62,7 +63,6 @@ pub struct RegistrarService {
     pub cycles_minting_api: Arc<dyn ICyclesMintingApi>,
 }
 
-
 impl RegistrarService {}
 
 impl Debug for RegistrarService {
@@ -87,9 +87,12 @@ impl RegistrarService {
         }
     }
 
-    pub(crate) fn get_stats(&self, now: u64) -> Stats {
+    pub(crate) fn get_stats(&self, _now: u64) -> Stats {
         let mut stats = Stats::default();
         stats.cycles_balance = api::canister_balance();
+        NAME_LOCKER.with(|name_locker| {
+            stats.name_lock_count = name_locker.borrow().get_count() as u64;
+        });
         STATE.with(|s| {
             {
                 let store = s.registration_store.borrow();
@@ -386,7 +389,7 @@ impl RegistrarService {
             quota_type,
             admin_import,
         )
-            .await
+        .await
     }
 
     pub async fn register(
@@ -1037,7 +1040,11 @@ impl RegistrarService {
         });
 
         // log count
-        info!("need_check_orders: {}, expired_order: {}", need_check_orders.len(), expired_order.len());
+        info!(
+            "need_check_orders: {}, expired_order: {}",
+            need_check_orders.len(),
+            expired_order.len()
+        );
 
         // cancel expired orders
         for user in expired_order {
@@ -1065,8 +1072,8 @@ impl RegistrarService {
         Ok(true)
     }
 
-    pub(crate) async fn reclaim_name(&self, name: &str, caller: &Principal) -> ICNSResult<bool> {
-        let registration_owner = STATE.with(|s| {
+    fn is_name_owner(&self, name: &str, caller: &Principal) -> ICNSResult<Principal> {
+        STATE.with(|s| {
             let store = s.registration_store.borrow();
             let registrations = store.get_registrations();
             let registration = registrations.get(name);
@@ -1076,35 +1083,172 @@ impl RegistrarService {
             let registration = registration.unwrap();
             let owner = registration.get_owner();
 
-            // admin change reclaim any name for users to data fixing.
-            // TODO: remove admin permission in next version when data fixing is done.
-            if !is_admin(caller) && !owner.eq(caller) {
+            if !owner.eq(caller) {
                 return Err(ICNSError::PermissionDenied);
             }
 
             Ok(owner)
-        })?;
+        })
+    }
 
-        debug!("reclaim name: {} to user {}", name,&registration_owner);
+    async fn reclaim_name(&self, name: &str, caller: &Principal) -> ICNSResult<bool> {
+        self.validate_name(name)?;
+        must_not_anonymous(caller)?;
+        let registration_owner = self.is_name_owner(name, caller)?;
+        debug!("reclaim name: {} to user {}", name, &registration_owner);
 
         let resolver = get_named_get_canister_id(CANISTER_NAME_RESOLVER);
-        let reclaim_result = self.registry_api
-            .reclaim_name(name.to_string(),
-                          registration_owner.clone(),
-                          resolver)
+        try_lock_name(name)?;
+        let reclaim_result = self
+            .registry_api
+            .reclaim_name(name.to_string(), registration_owner.clone(), resolver)
             .await;
+        unlock_name(name);
 
         let result = match reclaim_result {
             Ok(result) => {
-                info!("reclaim name: {} to user {} success", name,&registration_owner);
+                info!(
+                    "reclaim name: {} to user {} success",
+                    name, &registration_owner
+                );
                 Ok(result)
             }
             Err(e) => {
-                error!("reclaim name: {} to user {} failed: {}", name,&registration_owner, e.message);
+                error!(
+                    "reclaim name: {} to user {} failed: {}",
+                    name, &registration_owner, e.message
+                );
                 Err(RemoteError(e).into())
             }
         };
         result
+    }
+
+    async fn transfer_core(&self, name: &str, new_owner: &Principal) -> ICNSResult<bool> {
+        STATE.with(|s| {
+            let store = s.registration_store.borrow();
+            if !store.has_registration(name) {
+                return Err(ICNSError::RegistrationNotFound);
+            }
+            Ok(())
+        })?;
+        try_lock_name(name)?;
+        let registry_result = self
+            .registry_api
+            .transfer(
+                name.to_string(),
+                new_owner.clone(),
+                get_named_get_canister_id(CANISTER_NAME_RESOLVER),
+            )
+            .await;
+        unlock_name(name);
+        registry_result?;
+
+        STATE.with(|s| {
+            let mut store = s.registration_store.borrow_mut();
+            store.transfer_registration(name.to_string(), new_owner.clone());
+
+            let mut store = s.registration_approval_store.borrow_mut();
+            store.remove_approval(name);
+
+            info!("transfer name: {} to user {}", name, &new_owner);
+            Ok(true)
+        })
+    }
+
+    pub(crate) async fn transfer(
+        &self,
+        name: &str,
+        caller: &Principal,
+        new_owner: Principal,
+    ) -> ICNSResult<bool> {
+        self.validate_name(name)?;
+        must_not_anonymous(caller)?;
+        must_not_anonymous(&new_owner)?;
+        let _ = self.is_name_owner(name, caller)?;
+        assert_ne!(caller, &new_owner);
+
+        self.transfer_core(name, &new_owner).await
+    }
+
+    // TODO: remove this function when all assignment is done
+    pub async fn transfer_by_admin(
+        &self,
+        name: &str,
+        caller: &Principal,
+        new_owner: Principal,
+    ) -> ICNSResult<bool> {
+        must_be_system_owner(caller)?;
+        let name_parse_result = self.validate_name(name)?;
+        assert!(RESERVED_NAMES
+            .iter()
+            .find(|n| *n == name_parse_result.get_current_level().unwrap())
+            .is_some());
+        must_not_anonymous(&new_owner)?;
+
+        self.transfer_core(name, &new_owner).await
+    }
+
+    pub fn approve(
+        &self,
+        caller: &Principal,
+        now: u64,
+        name: &str,
+        to: Principal,
+    ) -> ICNSResult<bool> {
+        self.validate_name(name)?;
+        must_not_anonymous(caller)?;
+        let _ = self.is_name_owner(name, caller)?;
+        assert_ne!(caller, &to);
+
+        STATE.with(|s| {
+            let mut store = s.registration_approval_store.borrow_mut();
+            store.set_approval(name, &to, now);
+            Ok(true)
+        })
+    }
+
+    pub async fn transfer_from(&self, caller: &Principal, name: &str) -> ICNSResult<bool> {
+        self.validate_name(name)?;
+        must_not_anonymous(caller)?;
+        STATE.with(|s| {
+            let store = s.registration_approval_store.borrow_mut();
+            if !store.is_approved_to(name, caller) {
+                return Err(ICNSError::PermissionDenied);
+            }
+
+            Ok(())
+        })?;
+
+        self.transfer_core(name, caller).await
+    }
+
+    pub fn transfer_quota(
+        &self,
+        caller: &Principal,
+        to: &Principal,
+        quota_type: QuotaType,
+        diff: u32,
+    ) -> ICNSResult<bool> {
+        must_not_anonymous(caller)?;
+        must_not_anonymous(to)?;
+        assert_ne!(caller, to);
+
+        STATE.with(|s| {
+            let mut store = s.user_quota_store.borrow_mut();
+            Ok(store.transfer_quota(caller, to, &quota_type, diff))
+        })
+    }
+
+    pub fn unlock_names(&self, caller: &Principal, names: Vec<&str>) -> ICNSResult<bool> {
+        must_be_system_owner(caller)?;
+        NAME_LOCKER.with(|locker| {
+            let mut locker = locker.borrow_mut();
+            for name in names {
+                locker.unlock(name);
+            }
+            Ok(true)
+        })
     }
 }
 
@@ -1327,6 +1471,7 @@ pub struct Stats {
     name_order_cancelled_count: u64,
     new_registered_name_count: u64,
     payment_version: u64,
+    name_lock_count: u64,
 }
 
 #[cfg(test)]

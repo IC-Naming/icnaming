@@ -7,7 +7,7 @@ import {resolver} from "~/canisters/names";
 import {Principal} from "@dfinity/principal";
 import {expect} from "chai";
 import {identities} from "~/utils/identity";
-import {RegistryDto, GetDetailsResponse} from "~/declarations/registry/registry.did";
+import {GetDetailsResponse, RegistryDto} from "~/declarations/registry/registry.did";
 
 let global_set_subdomain_owner_result: GetDetailsResponse
 
@@ -50,7 +50,7 @@ Then(/^get_ttl "([^"]*)" should be "([^"]*)"$/,
         let ttl_value = await new Result(registry.get_ttl(name)).unwrap();
         expect(ttl_value).to.equal(BigInt(ttl));
     });
-Then(/^get_details "([^"]*)" should be as below$/,
+Then(/^registry get_details "([^"]*)" should be as below$/,
     async function (name: string, data) {
         let details: RegistryDto = await new Result(registry.get_details(name)).unwrap();
         let expected = data.rowsHash();

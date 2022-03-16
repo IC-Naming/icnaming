@@ -78,6 +78,7 @@ type Stats = record {
   name_order_paid_count : nat64;
   user_name_order_count_by_status : vec record { text; nat64 };
   last_timestamp_seconds_xdr_permyriad_per_icp : nat64;
+  name_lock_count : nat64;
   payment_version : nat64;
   user_quota_order_count : vec record { text; nat64 };
   registration_count : nat64;
@@ -90,6 +91,7 @@ type SubmitOrderRequest = record { name : text; years : nat32 };
 type SubmitOrderResponse = record { order : GetNameOrderResponse };
 service : {
   add_quota : (principal, QuotaType, nat32) -> (BooleanActorResponse);
+  approve : (text, principal) -> (BooleanActorResponse);
   available : (text) -> (BooleanActorResponse) query;
   cancel_order : () -> (BooleanActorResponse);
   confirm_pay_order : (nat64) -> (BooleanActorResponse);
@@ -105,7 +107,6 @@ service : {
   get_stats : () -> (GetStatsActorResponse) query;
   import_quota : (ImportQuotaRequest) -> (ImportQuotaResponse);
   load_state : (StateExportData) -> (BooleanActorResponse);
-  reclaim_name : (text) -> (BooleanActorResponse);
   refund_order : () -> (BooleanActorResponse);
   register_for : (text, principal, nat64) -> (BooleanActorResponse);
   register_from_gateway : (text, principal) -> (BooleanActorResponse);
@@ -113,4 +114,9 @@ service : {
   run_tasks : () -> (BooleanActorResponse);
   sub_quota : (principal, QuotaType, nat32) -> (BooleanActorResponse);
   submit_order : (SubmitOrderRequest) -> (SubmitOrderActorResponse);
+  transfer : (text, principal) -> (BooleanActorResponse);
+  transfer_by_admin : (text, principal) -> (BooleanActorResponse);
+  transfer_from : (text) -> (BooleanActorResponse);
+  transfer_quota : (principal, QuotaType, nat32) -> (BooleanActorResponse);
+  unlock_names : (vec text) -> (BooleanActorResponse);
 }

@@ -72,4 +72,9 @@ impl ResolverStore {
                 .insert(name.to_string(), Resolver::new(name.to_string()));
         }
     }
+    pub fn clean_up_names(&mut self, names: &Vec<String>) {
+        for name in names {
+            self.resolvers.remove(name);
+        }
+    }
 }

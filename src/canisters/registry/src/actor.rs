@@ -13,7 +13,7 @@ use common::permissions::{must_be_named_principal, must_be_system_owner};
 use common::state::StableState;
 
 use crate::service::{RegistriesService, Stats};
-use crate::state::{STATE, State};
+use crate::state::{State, STATE};
 
 #[query(name = "get_stats")]
 #[candid_method(query, rename = "get_stats")]
@@ -319,6 +319,18 @@ fn reclaim_name(name: String, owner: Principal, resolver: Principal) -> BooleanA
 
     let mut service = RegistriesService::new();
     let result = service.reclaim_name(name.as_str(), caller, &owner, &resolver);
+    BooleanActorResponse::new(result)
+}
+
+#[update(name = "transfer")]
+#[candid_method(update, rename = "transfer")]
+async fn transfer(name: String, new_owner: Principal, resolver: Principal) -> BooleanActorResponse {
+    let caller = &ic_caller();
+
+    let mut service = RegistriesService::new();
+    let result = service
+        .transfer(name.as_str(), caller, &new_owner, resolver)
+        .await;
     BooleanActorResponse::new(result)
 }
 

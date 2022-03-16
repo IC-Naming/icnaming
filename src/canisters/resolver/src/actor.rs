@@ -5,7 +5,9 @@ use ic_cdk::{api, caller};
 use ic_cdk_macros::*;
 use log::{debug, error, info};
 
-use common::dto::{to_state_export_data, StateExportResponse, LoadStateRequest, from_state_export_data};
+use common::dto::{
+    from_state_export_data, to_state_export_data, LoadStateRequest, StateExportResponse,
+};
 use common::errors::{BooleanActorResponse, ErrorInfo, ICNSError, ICNSResult};
 use common::named_canister_ids::get_named_get_canister_id;
 use common::named_canister_ids::CANISTER_NAME_REGISTRY;
@@ -14,7 +16,7 @@ use common::permissions::{must_be_named_principal, must_be_system_owner};
 use common::state::StableState;
 
 use crate::service::{ResolverService, Stats};
-use crate::state::{STATE, State};
+use crate::state::{State, STATE};
 
 #[query(name = "get_stats")]
 #[candid_method(query, rename = "get_stats")]
@@ -119,6 +121,15 @@ fn get_record_value(name: String) -> GetRecordValueResponse {
     let service = ResolverService::new();
     let result = service.get_record_value(name.as_str());
     GetRecordValueResponse::new(result)
+}
+
+#[update(name = "remove_resolvers")]
+#[candid_method(update, rename = "remove_resolvers")]
+fn remove_resolvers(names: Vec<String>) -> BooleanActorResponse {
+    let caller = &api::caller();
+    let service = ResolverService::new();
+    let result = service.remove_resolvers(caller, names);
+    BooleanActorResponse::new(result)
 }
 
 #[derive(CandidType)]

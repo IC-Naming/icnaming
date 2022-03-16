@@ -14,15 +14,11 @@ export const idlFactory = ({ IDL }) => {
   });
   const BlockHeight = IDL.Nat64;
   const Stats = IDL.Record({
+    'cycles_balance' : IDL.Nat64,
     'latest_transaction_block_height' : BlockHeight,
     'seconds_since_last_ledger_sync' : IDL.Nat64,
-    'sub_accounts_count' : IDL.Nat64,
-    'neurons_topped_up_count' : IDL.Nat64,
     'payments_version' : IDL.Nat64,
-    'transactions_to_process_queue_length' : IDL.Nat32,
-    'neurons_created_count' : IDL.Nat64,
-    'hardware_wallet_accounts_count' : IDL.Nat64,
-    'accounts_count' : IDL.Nat64,
+    'count_of_payments_by_status' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Nat64)),
     'earliest_transaction_block_height' : BlockHeight,
     'transactions_count' : IDL.Nat64,
     'block_height_synced_up_to' : IDL.Opt(IDL.Nat64),

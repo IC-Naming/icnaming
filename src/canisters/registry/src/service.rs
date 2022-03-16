@@ -13,7 +13,7 @@ use common::dto::{GetPageInput, GetPageOutput, IRegistryUsers, RegistryDto, Regi
 use common::errors::{ICNSError, ICNSResult};
 use common::metrics_encoder::MetricsEncoder;
 use common::named_canister_ids::CANISTER_NAME_REGISTRAR;
-use common::permissions::must_be_named_canister;
+use common::permissions::{must_be_named_canister, must_not_anonymous};
 
 use crate::registry_store::*;
 use crate::state::STATE;
@@ -288,19 +288,26 @@ impl RegistriesService {
         })
     }
 
-    pub fn reclaim_name(&mut self,
-                        name: &str,
-                        caller: &Principal,
-                        new_owner: &Principal,
-                        resolver: &Principal) -> ICNSResult<bool> {
+    pub fn reclaim_name(
+        &mut self,
+        name: &str,
+        caller: &Principal,
+        new_owner: &Principal,
+        resolver: &Principal,
+    ) -> ICNSResult<bool> {
         must_be_named_canister(caller, CANISTER_NAME_REGISTRAR)?;
         STATE.with(|s| {
             let mut store = s.registry_store.borrow_mut();
-            let mut registries = store.get_registries_mut();
+            let registries = store.get_registries_mut();
 
-            let mut registry = registries.get_mut(name);
+            let registry = registries.get_mut(name);
             if registry.is_none() {
-                let registry = Registry::new(name.to_string(), new_owner.to_owned(), DEFAULT_TTL, resolver.clone());
+                let registry = Registry::new(
+                    name.to_string(),
+                    new_owner.to_owned(),
+                    DEFAULT_TTL,
+                    resolver.clone(),
+                );
                 registries.insert(name.to_string(), registry);
             } else {
                 let registry = registry.unwrap();
@@ -313,6 +320,85 @@ impl RegistriesService {
         Ok(true)
     }
 
+    async fn reset_name(
+        &mut self,
+        name: &str,
+        caller: &Principal,
+        resolver: Principal,
+    ) -> ICNSResult<bool> {
+        must_not_anonymous(caller)?;
+        must_be_named_canister(caller, CANISTER_NAME_REGISTRAR)?;
+        // prevent remove top level name
+        assert!(name != TOP_LABEL);
+        let (sub_names, registry) = STATE.with(|s| {
+            let store = s.registry_store.borrow();
+            let registry = store.get_registry(name);
+            if registry.is_none() {
+                return Err(ICNSError::RegistryNotFoundError {
+                    name: name.to_string(),
+                });
+            }
+            let registry = registry.unwrap().clone();
+            let sub_names = store.get_sub_names(name);
+            debug!("reset_name: sub_names: {:?}", sub_names);
+
+            Ok((sub_names, registry))
+        })?;
+
+        let mut removing_names = sub_names;
+        removing_names.push(name.to_string());
+
+        // remove resolvers for current and sub names
+        self.resolver_api
+            .remove_resolvers(removing_names.clone())
+            .await?;
+        debug!(
+            "reset_name: removed resolvers for sub_names: {:?}",
+            &removing_names
+        );
+
+        STATE.with(|s| {
+            let mut store = s.registry_store.borrow_mut();
+            // remove registries
+            store.remove_names(&removing_names);
+            debug!(
+                "reset_name: removed registries for sub_names: {:?}",
+                &removing_names
+            );
+
+            // insert current registry
+            store.add_registry(Registry::new(
+                name.to_string(),
+                registry.get_owner().to_owned(),
+                DEFAULT_TTL,
+                resolver,
+            ));
+            Ok(true)
+        })
+    }
+
+    pub async fn transfer(
+        &mut self,
+        name: &str,
+        caller: &Principal,
+        new_owner: &Principal,
+        resolver: Principal,
+    ) -> ICNSResult<bool> {
+        must_be_named_canister(caller, CANISTER_NAME_REGISTRAR)?;
+        must_not_anonymous(new_owner)?;
+        must_not_anonymous(caller)?;
+        self.reset_name(name, caller, resolver).await?;
+
+        STATE.with(|s| {
+            let mut store = s.registry_store.borrow_mut();
+            store.update_owner(name, new_owner.to_owned());
+            info!(
+                "transfer: updated owner for name: {} to: {}",
+                name, new_owner
+            );
+            Ok(true)
+        })
+    }
 
     pub fn get_stats(&self) -> Stats {
         let mut stats = Stats::default();

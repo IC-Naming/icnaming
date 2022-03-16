@@ -8,11 +8,14 @@ import {Principal} from "@dfinity/principal";
 import {all_names} from "~/canisters/names";
 import {get_id} from "~/utils/canister";
 
+function get_pem_path(name: string): string {
+    const home = process.env.HOME;
+    return `${home}/.config/dfx/identity/${name}/identity.pem`;
+}
+
 export function load(name: string): Identity {
     new_dfx_identity(name);
-    // get current home directory
-    const home = process.env.HOME;
-    let pem_path = `${home}/.config/dfx/identity/${name}/identity.pem`;
+    let pem_path = get_pem_path(name);
     const rawKey = fs
         .readFileSync(pem_path)
         .toString()
@@ -33,6 +36,10 @@ export function load(name: string): Identity {
 
 export const new_dfx_identity = (name: string) => {
     exec(`dfx identity new ${name}`, {silent: true});
+    // override static key file from scripts/identity_pem/${name}/identity.pem
+    let target_pem_path = get_pem_path(name);
+    let source_pem_path = `scripts/identity_pem/${name}/identity.pem`;
+    fs.copyFileSync(source_pem_path, target_pem_path);
 }
 
 export const use_dfx_identity = (name: string) => {
@@ -147,19 +154,7 @@ export const identities = ((): IdentityCollection => {
             return this[name]
         },
         get_principal(name: string): Principal {
-            let identityInfo = identities.get_identity_info(name);
-            let user_principal: Principal;
-            if (identityInfo == null) {
-                // all_names contains name
-                if (all_names.includes(name)) {
-                    user_principal = Principal.fromText(get_id(name))
-                } else {
-                    user_principal = Principal.fromText(name);
-                }
-            } else {
-                user_principal = identityInfo.identity.getPrincipal();
-            }
-            return user_principal;
+            return get_principal(name);
         },
     }
 })();
@@ -180,4 +175,27 @@ export const identities_to_json = (identities: IdentityCollection): string => {
         }
         return value;
     }, 2);
+}
+
+/**
+ * get principal by name.
+ * @param name canister name, identity name, principal text, "anonymous"
+ */
+export const get_principal = (name: string): Principal => {
+    if (name == "anonymous") {
+        return Principal.anonymous();
+    }
+    let identityInfo = identities.get_identity_info(name);
+    let user_principal: Principal;
+    if (identityInfo != null) {
+        user_principal = identityInfo.identity.getPrincipal();
+    } else {
+        // all_names contains name
+        if (all_names.includes(name)) {
+            user_principal = Principal.fromText(get_id(name))
+        } else {
+            user_principal = Principal.fromText(name);
+        }
+    }
+    return user_principal;
 }

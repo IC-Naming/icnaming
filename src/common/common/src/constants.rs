@@ -33,7 +33,7 @@ pub const RESOLVER_KEY_KEYWORDS: &str = "keywords";
 pub const RESOLVER_KEY_TWITTER: &str = "com.twitter";
 pub const RESOLVER_KEY_GITHUB: &str = "com.github";
 
-pub const RESOLVER_VALUE_MAX_LENGTH: usize = 256;
+pub const RESOLVER_VALUE_MAX_LENGTH: usize = 512;
 
 pub enum ResolverKey {
     Eth,

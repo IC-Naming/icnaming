@@ -96,6 +96,7 @@ export const idlFactory = ({ IDL }) => {
     'name_order_paid_count' : IDL.Nat64,
     'user_name_order_count_by_status' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Nat64)),
     'last_timestamp_seconds_xdr_permyriad_per_icp' : IDL.Nat64,
+    'name_lock_count' : IDL.Nat64,
     'payment_version' : IDL.Nat64,
     'user_quota_order_count' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Nat64)),
     'registration_count' : IDL.Nat64,
@@ -136,6 +137,7 @@ export const idlFactory = ({ IDL }) => {
         [BooleanActorResponse],
         [],
       ),
+    'approve' : IDL.Func([IDL.Text, IDL.Principal], [BooleanActorResponse], []),
     'available' : IDL.Func([IDL.Text], [BooleanActorResponse], ['query']),
     'cancel_order' : IDL.Func([], [BooleanActorResponse], []),
     'confirm_pay_order' : IDL.Func([IDL.Nat64], [BooleanActorResponse], []),
@@ -171,7 +173,6 @@ export const idlFactory = ({ IDL }) => {
     'get_stats' : IDL.Func([], [GetStatsActorResponse], ['query']),
     'import_quota' : IDL.Func([ImportQuotaRequest], [ImportQuotaResponse], []),
     'load_state' : IDL.Func([StateExportData], [BooleanActorResponse], []),
-    'reclaim_name' : IDL.Func([IDL.Text], [BooleanActorResponse], []),
     'refund_order' : IDL.Func([], [BooleanActorResponse], []),
     'register_for' : IDL.Func(
         [IDL.Text, IDL.Principal, IDL.Nat64],
@@ -199,6 +200,23 @@ export const idlFactory = ({ IDL }) => {
         [SubmitOrderActorResponse],
         [],
       ),
+    'transfer' : IDL.Func(
+        [IDL.Text, IDL.Principal],
+        [BooleanActorResponse],
+        [],
+      ),
+    'transfer_by_admin' : IDL.Func(
+        [IDL.Text, IDL.Principal],
+        [BooleanActorResponse],
+        [],
+      ),
+    'transfer_from' : IDL.Func([IDL.Text], [BooleanActorResponse], []),
+    'transfer_quota' : IDL.Func(
+        [IDL.Principal, QuotaType, IDL.Nat32],
+        [BooleanActorResponse],
+        [],
+      ),
+    'unlock_names' : IDL.Func([IDL.Vec(IDL.Text)], [BooleanActorResponse], []),
   });
 };
 export const init = ({ IDL }) => { return []; };
