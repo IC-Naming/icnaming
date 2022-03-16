@@ -1,8 +1,10 @@
 # Quota Import Data
 
-There is only one way to import data to product environment now, which is administrator can upload a file to registrar canister to import data.
+There is only one way to import data to product environment now, which is administrator can upload a file to registrar
+canister to import data.
 
-In this way, everything imported can be traced by everyone. No one including ICNaming team can import quota without tracing by community.
+In this way, everything imported can be traced by everyone. No one including ICNaming team can import quota without
+tracing by community.
 
 ## Details
 
@@ -38,12 +40,9 @@ to assign reserved names to users.
 - ickoalas
 - icturtles
 - icaliens
-- icspliffsters
-- icturtles
+- cetoswap
 - icapps
-- icvibesters
 - icevent
-- amazon
 - icpxy
 - dfinity-community
 - dfinitycommunity
@@ -73,6 +72,9 @@ to assign reserved names to users.
 - icwhiskers
 - ic-whiskers
 - icnaming
+- dstar
+- paul
+- bob
 
 ### 20220314_extra_benefits.csv
 
@@ -81,3 +83,13 @@ https://medium.com/@icnaming/extra-benifits-for-mainnet-users-4a61656401d9
 ### 20220315_reward_dfinitysz.csv
 
 https://twitter.com/DfinitySZ/status/1481604973234618369
+
+### 20220316_reserved_name_assignment_secret_box.csv
+
+Quotas for secret box.
+
+Quota to assign reserved names to users.
+
+- paulyoung
+- codebase
+- young
