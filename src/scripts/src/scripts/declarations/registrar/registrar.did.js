@@ -148,6 +148,11 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'get_details' : IDL.Func([IDL.Text], [GetDetailsActorResponse], ['query']),
+    'get_last_registrations' : IDL.Func(
+        [],
+        [GetAllDetailsActorResponse],
+        ['query'],
+      ),
     'get_name_expires' : IDL.Func(
         [IDL.Text],
         [GetNameExpiresActorResponse],

@@ -1,4 +1,5 @@
 use std::cell::RefCell;
+use std::collections::VecDeque;
 use std::sync::Once;
 
 use candid::{decode_args, encode_args};
@@ -17,7 +18,7 @@ use crate::payment_store::PaymentStore;
 use crate::quota_import_store::QuotaImportStore;
 use crate::quota_order_store::QuotaOrderStore;
 use crate::registration_approval_store::RegistrationApprovalStore;
-use crate::registration_store::RegistrationStore;
+use crate::registration_store::{Registration, RegistrationStore};
 use crate::settings::Settings;
 use crate::user_quota_store::UserQuotaStore;
 
@@ -31,10 +32,21 @@ thread_local! {
 pub struct MetricsCounter {
     pub last_xdr_permyriad_per_icp: u64,
     pub last_timestamp_seconds_xdr_permyriad_per_icp: u64,
+    pub last_registrations: VecDeque<Registration>,
+    // TODO remove counters below since useless
     pub name_order_placed_count: u64,
     pub name_order_paid_count: u64,
     pub name_order_cancelled_count: u64,
     pub new_registered_name_count: u64,
+}
+
+impl MetricsCounter {
+    pub fn push_registration(&mut self, registration: Registration) {
+        self.last_registrations.push_front(registration);
+        if self.last_registrations.len() > 50 {
+            self.last_registrations.pop_back();
+        }
+    }
 }
 
 #[derive(Default)]

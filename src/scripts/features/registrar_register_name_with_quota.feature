@@ -49,3 +49,13 @@ Feature: Register a name with quota
       | user1 | LenGte      | 3           | 10    |
       | user1 | LenGte      | 4           | 6     |
       | user1 | LenEq       | 5           | 10    |
+
+  Scenario: Register name and get last registrations
+    When User "user1" register name "hello1.icp" with quote "LenGte(3)"
+    And User "user1" register name "hello2.icp" with quote "LenGte(3)"
+    And User "user1" register name "hello3.icp" with quote "LenGte(3)"
+    Then Get last registrations result is
+      | name |
+      | hello3.icp |
+      | hello2.icp |
+      | hello1.icp |

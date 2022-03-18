@@ -28,9 +28,10 @@ use common::metrics_encoder::MetricsEncoder;
 use common::named_canister_ids::{
     get_named_get_canister_id, CANISTER_NAME_REGISTRAR_CONTROL_GATEWAY, CANISTER_NAME_RESOLVER,
 };
+use common::named_principals::{NAME_DPRINCIPALS, PRINCIPAL_NAME_TIMER_TRIGGER};
 use common::naming::{normalize_name, NameParseResult};
-use common::permissions::must_not_anonymous;
 use common::permissions::{is_admin, must_be_named_canister, must_be_system_owner};
+use common::permissions::{must_be_named_principal, must_not_anonymous};
 
 use crate::name_order_store::{GetNameOrderResponse, NameOrder, NameOrderStatus};
 use crate::quota_order_store::{
@@ -468,11 +469,11 @@ impl RegistrarService {
             trace!("registered success from registry {:?}", registration);
             STATE.with(|s| {
                 let mut store = s.registration_store.borrow_mut();
-                store.add_registration(registration);
+                store.add_registration(registration.clone());
             });
             MERTRICS_COUNTER.with(|c| {
                 let mut counter = c.borrow_mut();
-                counter.new_registered_name_count += 1;
+                counter.push_registration(registration.clone());
             });
             Ok(true)
         } else {
@@ -589,10 +590,6 @@ impl RegistrarService {
             name_order_store.get_order(caller).unwrap().into()
         });
 
-        MERTRICS_COUNTER.with(|c| {
-            let mut counter = c.borrow_mut();
-            counter.name_order_placed_count += 1;
-        });
         Ok(SubmitOrderResponse {
             order: get_order_result,
         })
@@ -610,11 +607,6 @@ impl RegistrarService {
             name_order_store.cancel_name_order(caller);
             Ok(true)
         })?;
-
-        MERTRICS_COUNTER.with(|c| {
-            let mut counter = c.borrow_mut();
-            counter.name_order_cancelled_count += 1;
-        });
 
         STATE.with(|s| {
             let mut name_order_store = s.name_order_store.borrow_mut();
@@ -765,12 +757,7 @@ impl RegistrarService {
                             false,
                         )
                         .await;
-                    if result.is_ok() {
-                        MERTRICS_COUNTER.with(|c| {
-                            let mut counter = c.borrow_mut();
-                            counter.name_order_paid_count += 1;
-                        });
-                    } else {
+                    if !(result.is_ok()) {
                         warn!("failed to register name {}", name);
                     }
                     // always remove name order, if name is not registered, take name, if name is not available, just remove name order and leave quota to user.
@@ -1248,6 +1235,21 @@ impl RegistrarService {
                 locker.unlock(name);
             }
             Ok(true)
+        })
+    }
+
+    pub fn get_last_registrations(
+        &self,
+        caller: &Principal,
+    ) -> ICNSResult<Vec<RegistrationDetails>> {
+        must_be_named_principal(caller, PRINCIPAL_NAME_TIMER_TRIGGER)?;
+        MERTRICS_COUNTER.with(|counter| {
+            let counter = counter.borrow();
+            let mut result = Vec::new();
+            for details in counter.last_registrations.iter() {
+                result.push(details.into());
+            }
+            Ok(result)
         })
     }
 }
