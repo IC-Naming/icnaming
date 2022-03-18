@@ -498,3 +498,14 @@ Then(/^last transfer_by_admin status is "([^"]*)"$/,
     function (status: string) {
         assert_remote_result(global_transfer_by_admin_result, status);
     });
+Then(/^Get last registrations result is$/,
+    async function (data: DataTable) {
+        let items: { name: string }[] = data.hashes();
+        let registrar = createRegistrar(identities.timer_trigger);
+        let last_registrations = await new Result(registrar.get_last_registrations()).unwrap();
+        let actual_names = last_registrations.map(r => r.name);
+        // expect item and order
+        for (let i = 0; i < items.length; i++) {
+            expect(actual_names[i]).to.equal(items[i].name);
+        }
+    });

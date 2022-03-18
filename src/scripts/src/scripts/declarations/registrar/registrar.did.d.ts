@@ -113,6 +113,7 @@ export interface _SERVICE {
       GetAllDetailsActorResponse
     >,
   'get_details' : (arg_0: string) => Promise<GetDetailsActorResponse>,
+  'get_last_registrations' : () => Promise<GetAllDetailsActorResponse>,
   'get_name_expires' : (arg_0: string) => Promise<GetNameExpiresActorResponse>,
   'get_names' : (arg_0: Principal, arg_1: GetPageInput) => Promise<
       GetNamesActorResponse

@@ -98,6 +98,7 @@ service : {
   export_state : () -> (StateExportResponse);
   get_all_details : (GetPageInput) -> (GetAllDetailsActorResponse) query;
   get_details : (text) -> (GetDetailsActorResponse) query;
+  get_last_registrations : () -> (GetAllDetailsActorResponse) query;
   get_name_expires : (text) -> (GetNameExpiresActorResponse) query;
   get_names : (principal, GetPageInput) -> (GetNamesActorResponse) query;
   get_owner : (text) -> (GetOwnerActorResponse) query;

@@ -337,6 +337,15 @@ impl GetAllDetailsActorResponse {
     }
 }
 
+#[query(name = "get_last_registrations")]
+#[candid_method(query, rename = "get_last_registrations")]
+pub fn get_last_registrations() -> GetAllDetailsActorResponse {
+    let caller = api::caller();
+    let service = RegistrarService::new();
+    let result = service.get_last_registrations(&caller);
+    GetAllDetailsActorResponse::new(result)
+}
+
 /// Add quotas to a quota owner.
 /// Returns true if quotas are added successfully.
 ///
