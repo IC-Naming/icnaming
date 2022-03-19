@@ -11,7 +11,6 @@ use log::{debug, error, info, trace, warn};
 use num_bigint::BigUint;
 use num_traits::ToPrimitive;
 
-use crate::name_locker::{try_lock_name, unlock_name};
 use common::canister_api::ic_impl::{CyclesMintingApi, ICNamingLedgerApi, RegistryApi};
 use common::canister_api::{ICyclesMintingApi, IICNamingLedgerApi, IRegistryApi};
 use common::constants::*;
@@ -33,6 +32,7 @@ use common::naming::{normalize_name, NameParseResult};
 use common::permissions::{is_admin, must_be_named_canister, must_be_system_owner};
 use common::permissions::{must_be_named_principal, must_not_anonymous};
 
+use crate::name_locker::{try_lock_name, unlock_name};
 use crate::name_order_store::{GetNameOrderResponse, NameOrder, NameOrderStatus};
 use crate::quota_order_store::{
     GetOrderOutput, ICPMemo, PaymentMemo, PaymentType, PlaceOrderOutput, QuotaOrderDetails,
@@ -542,17 +542,22 @@ impl RegistrarService {
         self.validate_year(request.years)?;
         let current_level = name_result.get_current_level().unwrap();
         let name_length = current_level.chars().count() as u8;
-        if name_length < MIN_NAME_LENGTH_OF_NAME_ORDER {
+        let length_limit = if now > LENGTH_6_NAME_OPEN_REGISTRATION_TIME_IN_NS {
+            6
+        } else {
+            7
+        };
+        if name_length < length_limit {
             return Err(ICNSError::InvalidName {
                 reason: format!(
                     "the name need to be at least {} characters long",
-                    MIN_NAME_LENGTH_OF_NAME_ORDER,
+                    length_limit,
                 ),
             });
         }
 
         // place quota order
-        let quota_type_len = min(name_length, MIN_NAME_LENGTH_OF_NAME_ORDER);
+        let quota_type_len = min(name_length, MAX_LENGTH_OF_NAME_QUOTA_TYPE);
         let quote_type = QuotaType::LenGte(quota_type_len);
         let mut quotas = HashMap::new();
         quotas.insert(quote_type.clone(), request.years);
