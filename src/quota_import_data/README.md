@@ -101,3 +101,9 @@ Quotas for secret box.
 ### 20220319_dc_ama_rewards.csv
 
 Quotas for DC AMA telegram winner.
+
+### 20220320_rewards.csv
+
+Quotas for DC AMA twitter winner.
+
+Rewards for issue reporter.
