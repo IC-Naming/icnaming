@@ -17,7 +17,7 @@ log = "0.4"
 async-trait = "0.1.52"
 url = "2.2.2"
 num-bigint = "0.4.3"
-yansi = "0.5.0"
+yansi = "0.5.1"
 once_cell = "1.9"
 flate2 = "1.0"
 
