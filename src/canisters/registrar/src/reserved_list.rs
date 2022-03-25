@@ -522,6 +522,7 @@ pub const RESERVED_NAMES: &[&str] = &[
     "qr-gallery",
     "qrgallery",
     "quark",
+    "quartz",
     "radius",
     "raisinrank",
     "ratels",

@@ -521,6 +521,7 @@ pythonagent
 qr-gallery
 qrgallery
 quark
+quartz
 radius
 raisinrank
 ratels

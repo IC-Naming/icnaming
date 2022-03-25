@@ -80,6 +80,16 @@
         "recommend_url": "ambergroup"
     },
     {
+        "id": "andrew",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "andrew",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "andrew"
+    },
+    {
         "id": "animal-guardians",
         "title": "Animal Guardians",
         "summary": "",
@@ -118,6 +128,16 @@
         "type": "reserved",
         "url": "",
         "recommend_url": "anthonymq"
+    },
+    {
+        "id": "anydao",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "anydao",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "anydao"
     },
     {
         "id": "arkstream",
@@ -248,6 +268,16 @@
         "type": "icp123",
         "url": "https://axon.ooo/",
         "recommend_url": "axon"
+    },
+    {
+        "id": "azdag",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "azdag",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "azdag"
     },
     {
         "id": "b9 labs",
@@ -1630,6 +1660,16 @@
         "recommend_url": "dots"
     },
     {
+        "id": "dplus",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "dplus",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "dplus"
+    },
+    {
         "id": "dport",
         "title": "DPort",
         "summary": "Identity service for data ownership\"",
@@ -2448,6 +2488,16 @@
         "type": "grant",
         "url": "",
         "recommend_url": "ic.rocks"
+    },
+    {
+        "id": "ic1101",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "ic1101",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "ic1101"
     },
     {
         "id": "ic8",
@@ -4750,6 +4800,16 @@
         "recommend_url": "perun-channels-on-the-internet-computer"
     },
     {
+        "id": "phasma",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "phasma",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "phasma"
+    },
+    {
         "id": "photos",
         "title": "Photos",
         "summary": "Photo sharing and storage dapp",
@@ -4960,6 +5020,16 @@
         "recommend_url": "ratels"
     },
     {
+        "id": "ratelswallet",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "ratelswallet",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "ratelswallet"
+    },
+    {
         "id": "raver",
         "title": "Raver",
         "summary": "Decentralized social network and DAO",
@@ -5158,6 +5228,16 @@
         "type": "grant",
         "url": "",
         "recommend_url": "shelf-(follow-on)"
+    },
+    {
+        "id": "shiku",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "shiku",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "shiku"
     },
     {
         "id": "shine",
@@ -6058,5 +6138,15 @@
         "type": "reserved",
         "url": "",
         "recommend_url": "young"
+    },
+    {
+        "id": "yumi",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "yumi",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "yumi"
     }
 ]
