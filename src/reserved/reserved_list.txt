@@ -6,11 +6,13 @@ aikin
 alexa
 amber
 ambergroup
+andrew
 animal-guardians
 animalguardians
 anmi
 anmicapital
 anthonymq
+anydao
 arkstream
 arkstreamcapital
 art
@@ -26,6 +28,7 @@ aviatelabs
 avocado-research
 avocadoresearch
 axon
+azdag
 b9-labs
 b9labs
 badge
@@ -164,6 +167,7 @@ documentingtheic
 dom
 doocoins
 dots
+dplus
 dport
 drake
 draperdragon
@@ -243,6 +247,7 @@ ic-turtles
 ic-vault
 ic-video
 ic-whiskers
+ic1101
 ic8
 ica-dashboard
 icadashboard
@@ -493,6 +498,7 @@ paul
 paulyoung
 perun-channels
 perunchannels
+phasma
 photos
 plug
 pocket4d
@@ -518,6 +524,7 @@ quark
 radius
 raisinrank
 ratels
+ratelswallet
 raver
 relation
 reversi
@@ -539,6 +546,7 @@ scinet
 secrets-of-the-midgaard-planet
 secretsofthemidgaardplanet
 shelf
+shiku
 shine
 shinemine
 shobai-global
@@ -639,3 +647,4 @@ ygg
 yolo-club
 yoloclub
 young
+yumi
