@@ -178,3 +178,9 @@ shiku
 yumi
 anydao
 azdag
+ratels
+ratelswallet
+andrew
+ic1101
+dplus
+quartz
