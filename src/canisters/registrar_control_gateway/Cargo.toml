@@ -15,7 +15,7 @@ ic-cdk-macros = "0.4.0"
 candid = "0.7.13"
 serde = "1.0.136"
 serde_bytes = "0.11"
-async-trait = "0.1.52"
+async-trait = "0.1.53"
 common = { path = "../../common/common", default-features = false }
 log = "0.4"
 num-bigint = "0.4.3"

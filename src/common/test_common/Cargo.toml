@@ -15,7 +15,7 @@ common = { path = "../common" }
 log = "0.4"
 env_logger = "0.9.0"
 mockall = "0.11.0"
-async-trait = "0.1.52"
+async-trait = "0.1.53"
 rstest = "0.12.0"
 ic-crypto-sha256 = { git = "https://github.com/dfinity/ic", rev = "89446f5a04f053040b4863eab5458446d925ed0e" }
 hex = "0.4.3"
