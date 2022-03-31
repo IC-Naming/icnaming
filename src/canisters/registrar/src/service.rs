@@ -542,11 +542,7 @@ impl RegistrarService {
         self.validate_year(request.years)?;
         let current_level = name_result.get_current_level().unwrap();
         let name_length = current_level.chars().count() as u8;
-        let length_limit = if now > LENGTH_6_NAME_OPEN_REGISTRATION_TIME_IN_NS {
-            6
-        } else {
-            7
-        };
+        let length_limit = 6;
         if name_length < length_limit {
             return Err(ICNSError::InvalidName {
                 reason: format!(

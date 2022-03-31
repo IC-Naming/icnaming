@@ -4610,6 +4610,16 @@
         "recommend_url": "openchat"
     },
     {
+        "id": "opera",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "opera",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "opera"
+    },
+    {
         "id": "optex",
         "title": "ClinTex CTi",
         "summary": "Optex is a powerful data visualisation tool designed to provide seamless insights into complex data. ",
