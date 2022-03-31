@@ -4990,6 +4990,16 @@
         "recommend_url": "quark"
     },
     {
+        "id": "quartz",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "quartz",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "quartz"
+    },
+    {
         "id": "radius",
         "title": "Radius",
         "summary": "Decentralized physical community organizing and moderation",

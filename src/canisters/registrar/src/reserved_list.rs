@@ -482,6 +482,7 @@ pub const RESERVED_NAMES: &[&str] = &[
     "open-assessment-platform",
     "openassessmentplatform",
     "openchat",
+    "opera",
     "optex",
     "orb",
     "orderswap",
