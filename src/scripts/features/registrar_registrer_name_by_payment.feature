@@ -7,7 +7,7 @@ Feature: Register a name with payment
 
   Scenario: Submit a name with 6 characters
     When I submit a order to register name "hello.icp" for "3" years
-    Then Order submitting result in status 'name is invalid, reason: "the name need to be at least 7 characters long"'
+    Then Order submitting result in status 'name is invalid, reason: "the name need to be at least 6 characters long"'
 
   Scenario: Submit a order
     When I submit a order to register name "what-a-nice-day.icp" for "3" years
