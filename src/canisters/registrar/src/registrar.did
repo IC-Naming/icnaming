@@ -89,6 +89,12 @@ type SubmitOrderActorResponse = variant {
 };
 type SubmitOrderRequest = record { name : text; years : nat32 };
 type SubmitOrderResponse = record { order : GetNameOrderResponse };
+type TransferFromQuotaRequest = record {
+  to : principal;
+  diff : nat32;
+  from : principal;
+  quota_type : QuotaType;
+};
 service : {
   add_quota : (principal, QuotaType, nat32) -> (BooleanActorResponse);
   approve : (text, principal) -> (BooleanActorResponse);
@@ -118,6 +124,7 @@ service : {
   transfer : (text, principal) -> (BooleanActorResponse);
   transfer_by_admin : (text, principal) -> (BooleanActorResponse);
   transfer_from : (text) -> (BooleanActorResponse);
+  transfer_from_quota : (TransferFromQuotaRequest) -> (BooleanActorResponse);
   transfer_quota : (principal, QuotaType, nat32) -> (BooleanActorResponse);
   unlock_names : (vec text) -> (BooleanActorResponse);
 }

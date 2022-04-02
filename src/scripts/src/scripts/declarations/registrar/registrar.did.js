@@ -131,6 +131,12 @@ export const idlFactory = ({ IDL }) => {
     'Ok' : SubmitOrderResponse,
     'Err' : ErrorInfo,
   });
+  const TransferFromQuotaRequest = IDL.Record({
+    'to' : IDL.Principal,
+    'diff' : IDL.Nat32,
+    'from' : IDL.Principal,
+    'quota_type' : QuotaType,
+  });
   return IDL.Service({
     'add_quota' : IDL.Func(
         [IDL.Principal, QuotaType, IDL.Nat32],
@@ -216,6 +222,11 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'transfer_from' : IDL.Func([IDL.Text], [BooleanActorResponse], []),
+    'transfer_from_quota' : IDL.Func(
+        [TransferFromQuotaRequest],
+        [BooleanActorResponse],
+        [],
+      ),
     'transfer_quota' : IDL.Func(
         [IDL.Principal, QuotaType, IDL.Nat32],
         [BooleanActorResponse],

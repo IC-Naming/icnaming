@@ -64,3 +64,27 @@ Feature: Quota Management
     Then User quota status should be as below
       | user  | quota_type1 | quota_type2 | value |
       | user1 | LenGte      | 3           | 0     |
+
+  Scenario: Transfer quota bu transfer_from_quota
+    Given Update quota as follow operations
+      | operation | user  | quota_type1 | quota_type2 | value |
+      | add       | user1 | LenGte      | 3           | 10    |
+    When Do quota transfer_from_quota as below by admin
+      | from  | to    | quota_type1 | quota_type2 | value |
+      | user1 | user2 | LenGte      | 3           | 4     |
+    Then User quota status should be as below
+      | user  | quota_type1 | quota_type2 | value |
+      | user1 | LenGte      | 3           | 6     |
+      | user2 | LenGte      | 3           | 4     |
+
+  Scenario: Transfer quota bu transfer_from_quota failed 1
+    Given Update quota as follow operations
+      | operation | user  | quota_type1 | quota_type2 | value |
+      | add       | user1 | LenGte      | 3           | 10    |
+    When Do quota transfer_from_quota as below by admin
+      | from  | to    | quota_type1 | quota_type2 | value |
+      | user1 | user2 | LenGte      | 3           | 11    |
+    Then User quota status should be as below
+      | user  | quota_type1 | quota_type2 | value |
+      | user1 | LenGte      | 3           | 10    |
+      | user2 | LenGte      | 3           | 0     |
