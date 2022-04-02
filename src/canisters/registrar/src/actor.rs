@@ -1,4 +1,4 @@
-use candid::{candid_method, CandidType, Principal};
+use candid::{candid_method, CandidType, Deserialize, Principal};
 use ic_cdk::api;
 use ic_cdk_macros::*;
 use log::{debug, error, info};
@@ -9,7 +9,6 @@ use common::dto::{
 };
 use common::errors::{BooleanActorResponse, ErrorInfo, ICNSError, ICNSResult};
 use common::icnaming_ledger_types::BlockHeight;
-
 use common::named_principals::{PRINCIPAL_NAME_STATE_EXPORTER, PRINCIPAL_NAME_TIMER_TRIGGER};
 use common::permissions::{must_be_named_principal, must_be_system_owner};
 use common::state::StableState;
@@ -586,6 +585,30 @@ async fn transfer_quota(to: Principal, quota_type: QuotaType, diff: u32) -> Bool
 
     let service = RegistrarService::new();
     let result = service.transfer_quota(caller, &to, quota_type, diff);
+    BooleanActorResponse::new(result)
+}
+
+#[derive(CandidType, Deserialize)]
+pub struct TransferFromQuotaRequest {
+    from: Principal,
+    to: Principal,
+    quota_type: QuotaType,
+    diff: u32,
+}
+
+#[update(name = "transfer_from_quota")]
+#[candid_method(update, rename = "transfer_from_quota")]
+async fn transfer_from_quota(request: TransferFromQuotaRequest) -> BooleanActorResponse {
+    let caller = &api::caller();
+
+    let service = RegistrarService::new();
+    let result = service.transfer_from_quota(
+        caller,
+        request.from,
+        request.to,
+        request.quota_type,
+        request.diff,
+    );
     BooleanActorResponse::new(result)
 }
 

@@ -336,6 +336,23 @@ Given(/^Some users already have some quotas$/,
         }
     });
 
+When(/^Do quota transfer_from_quota as below by admin$/,
+    async function (data: DataTable) {
+        let items: { from: string, to: string, quota_type1: string, quota_type2: string, value: string }[] = data.hashes();
+        for (const item of items) {
+            let quota_type = {};
+            quota_type[item.quota_type1] = parseInt(item.quota_type2);
+            let to_principal = get_principal(item.to);
+            let from_principal = get_principal(item.from);
+            await registrar.transfer_from_quota({
+                from: from_principal,
+                to: to_principal,
+                quota_type: quota_type as QuotaType,
+                diff: parseInt(item.value)
+            });
+        }
+    });
+
 function to_quota_type(source: string): QuotaType {
     // get number in ()
     let match = source.match(/\(([0-9]+)\)/);

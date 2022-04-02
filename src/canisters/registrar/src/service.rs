@@ -1211,6 +1211,37 @@ impl RegistrarService {
         self.transfer_core(name, caller).await
     }
 
+    pub fn transfer_from_quota(
+        &self,
+        caller: &Principal,
+        from: Principal,
+        to: Principal,
+        quota_type: QuotaType,
+        diff: u32,
+    ) -> ICNSResult<bool> {
+        // TODO: change validation caller to named canister
+        must_be_system_owner(caller)?;
+        must_not_anonymous(&to)?;
+        must_not_anonymous(&from)?;
+        assert!(diff > 0);
+
+        STATE.with(|s| {
+            let mut store = s.user_quota_store.borrow_mut();
+            let quota_count = store.get_quota(&from, &quota_type).unwrap_or(0);
+            if quota_count < diff {
+                return Err(ICNSError::InsufficientQuota);
+            }
+
+            store.sub_quota(&from, &quota_type, diff);
+            store.add_quota(to.clone(), quota_type.clone(), diff);
+            info!(
+                "transfer quota: {} from user {} to user {}, diff: {}",
+                quota_type, &from, &to, diff
+            );
+            Ok(true)
+        })
+    }
+
     pub fn transfer_quota(
         &self,
         caller: &Principal,

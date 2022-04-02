@@ -66,6 +66,8 @@ pub enum ICNSError {
     InvalidResolverValueFormat { value: String, format: String },
     #[error("Some operations are processing, please try again later")]
     Conflict,
+    #[error("Insufficient quota")]
+    InsufficientQuota,
 }
 
 impl ICNSError {
@@ -99,6 +101,7 @@ impl ICNSError {
             ICNSError::CanisterCallError { .. } => 26,
             ICNSError::InvalidResolverValueFormat { .. } => 27,
             ICNSError::Conflict => 28,
+            ICNSError::InsufficientQuota => 29,
         }
     }
 }

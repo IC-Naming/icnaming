@@ -98,6 +98,12 @@ export type SubmitOrderActorResponse = { 'Ok' : SubmitOrderResponse } |
   { 'Err' : ErrorInfo };
 export interface SubmitOrderRequest { 'name' : string, 'years' : number }
 export interface SubmitOrderResponse { 'order' : GetNameOrderResponse }
+export interface TransferFromQuotaRequest {
+  'to' : Principal,
+  'diff' : number,
+  'from' : Principal,
+  'quota_type' : QuotaType,
+}
 export interface _SERVICE {
   'add_quota' : (arg_0: Principal, arg_1: QuotaType, arg_2: number) => Promise<
       BooleanActorResponse
@@ -151,6 +157,9 @@ export interface _SERVICE {
       BooleanActorResponse
     >,
   'transfer_from' : (arg_0: string) => Promise<BooleanActorResponse>,
+  'transfer_from_quota' : (arg_0: TransferFromQuotaRequest) => Promise<
+      BooleanActorResponse
+    >,
   'transfer_quota' : (
       arg_0: Principal,
       arg_1: QuotaType,

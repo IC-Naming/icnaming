@@ -1,8 +1,9 @@
+use std::borrow::Borrow;
+use std::sync::Arc;
+
 use candid::Principal;
 use once_cell::sync::Lazy;
 use rstest::*;
-use std::borrow::Borrow;
-use std::sync::Arc;
 
 use common::cycles_minting_types::{IcpXdrConversionRate, IcpXdrConversionRateCertifiedResponse};
 use common::icnaming_ledger_types::{AddPaymentResponse, Memo};
@@ -1072,8 +1073,6 @@ mod cancel_expired_orders {
 }
 
 mod reclaim_name {
-    
-
     use super::*;
 
     #[rstest]
@@ -1276,8 +1275,9 @@ mod transfer {
 }
 
 mod transfer_by_admin {
-    use super::*;
     use common::permissions::get_admin;
+
+    use super::*;
 
     #[rstest]
     async fn test_transfer_by_admin_success(
@@ -1582,6 +1582,80 @@ mod transfer_from {
         // assert
         assert!(result.is_err());
         assert_eq!(result.err().unwrap(), ICNSError::PermissionDenied);
+    }
+}
+
+mod transfer_from_quota {
+    use common::permissions::get_admin;
+
+    use super::*;
+
+    #[rstest]
+    fn test_transfer_from_quota_success(
+        service: RegistrarService,
+        mock_user1: Principal,
+        quota_owner: Principal,
+        register_years: u32,
+    ) {
+        let admin = get_admin();
+        let result = service.transfer_from_quota(
+            &admin,
+            quota_owner.clone(),
+            mock_user1.clone(),
+            TEST_QUOTA.clone(),
+            register_years,
+        );
+
+        // assert
+        assert!(result.is_ok());
+        assert_quota_count(&quota_owner, 0);
+        assert_quota_count(&mock_user1, register_years);
+    }
+
+    #[rstest]
+    fn test_transfer_from_quota_success_2(
+        service: RegistrarService,
+        mock_user1: Principal,
+        quota_owner: Principal,
+        register_years: u32,
+    ) {
+        let admin = get_admin();
+        let result = service.transfer_from_quota(
+            &admin,
+            quota_owner.clone(),
+            mock_user1.clone(),
+            TEST_QUOTA.clone(),
+            register_years - 1,
+        );
+
+        // assert
+        assert!(result.is_ok());
+        assert_quota_count(&quota_owner, 1);
+        assert_quota_count(&mock_user1, register_years - 1);
+    }
+
+    #[rstest]
+    fn test_transfer_from_quota_failed(
+        service: RegistrarService,
+        mock_user1: Principal,
+        quota_owner: Principal,
+        register_years: u32,
+    ) {
+        let admin = get_admin();
+        let result = service.transfer_from_quota(
+            &admin,
+            mock_user1.clone(),
+            quota_owner.clone(),
+            TEST_QUOTA.clone(),
+            register_years - 1,
+        );
+
+        // assert
+        assert!(result.is_err());
+        let error = result.err().unwrap();
+        assert_eq!(error, ICNSError::InsufficientQuota);
+        assert_quota_count(&quota_owner, register_years);
+        assert_quota_count(&mock_user1, 0);
     }
 }
 
