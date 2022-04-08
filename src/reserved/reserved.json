@@ -130,6 +130,16 @@
         "recommend_url": "anthonymq"
     },
     {
+        "id": "anycloud",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "anycloud",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "anycloud"
+    },
+    {
         "id": "anydao",
         "title": "",
         "summary": "",
@@ -298,6 +308,16 @@
         "type": "icp123",
         "url": "https://b9lab.com/",
         "recommend_url": "b9lab"
+    },
+    {
+        "id": "baca",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "baca",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "baca"
     },
     {
         "id": "badge",
@@ -780,6 +800,16 @@
         "recommend_url": "cleverland"
     },
     {
+        "id": "cloudbox",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "cloudbox",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "cloudbox"
+    },
+    {
         "id": "codebase",
         "title": "",
         "summary": "",
@@ -928,6 +958,16 @@
         "type": "icapp",
         "url": "",
         "recommend_url": "crowd-created-canvas"
+    },
+    {
+        "id": "crowd-created-ollectables",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "crowd-created-ollectables",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "crowd-created-ollectables"
     },
     {
         "id": "crowdeats",
@@ -2168,6 +2208,16 @@
         "type": "reserved",
         "url": "",
         "recommend_url": "hashkeycapital"
+    },
+    {
+        "id": "hashmix",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "hashmix",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "hashmix"
     },
     {
         "id": "haundet-hamsters",
@@ -3820,6 +3870,16 @@
         "recommend_url": "kucoin"
     },
     {
+        "id": "kverso",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "kverso",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "kverso"
+    },
+    {
         "id": "learnd",
         "title": "LEARND",
         "summary": "Learning and rewards platform with Internet Computer courses and content",
@@ -4448,6 +4508,16 @@
         "type": "reserved",
         "url": "",
         "recommend_url": "nftgeek"
+    },
+    {
+        "id": "nftofu",
+        "title": "",
+        "summary": "",
+        "grant": "",
+        "icnaming": "nftofu",
+        "type": "reserved",
+        "url": "",
+        "recommend_url": "nftofu"
     },
     {
         "id": "nftstudio",
