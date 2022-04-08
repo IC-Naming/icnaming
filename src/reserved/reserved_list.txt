@@ -12,6 +12,7 @@ animalguardians
 anmi
 anmicapital
 anthonymq
+anycloud
 anydao
 arkstream
 arkstreamcapital
@@ -31,6 +32,7 @@ axon
 azdag
 b9-labs
 b9labs
+baca
 badge
 banklessdao
 bartlett
@@ -75,6 +77,7 @@ cheersland
 cipherproxy
 civol
 cleverland
+cloudbox
 codebase
 coin-flipper
 coinflipper
@@ -87,7 +90,9 @@ cramium
 cronic
 cronicnfts
 crowd-created-canvas
+crowd-created-ollectables
 crowdcreatedcanvas
+crowdcreatedollectables
 crowdeats
 crowdfund-nft
 crowdfundnft
@@ -221,6 +226,7 @@ golangdevelopertools
 gpad
 hashkey
 hashkeycapital
+hashmix
 haundet-hamsters
 haundethamsters
 herbert
@@ -398,6 +404,7 @@ kontribute
 kr1
 kryptonic
 kucoin
+kverso
 learned
 light-wallet
 lightsail
@@ -458,6 +465,7 @@ nftenglishauction
 nftgaga
 nftgeek
 nftkarts
+nftofu
 nftstudio
 nftstudiomarketplace
 nftstudiomintingengine
