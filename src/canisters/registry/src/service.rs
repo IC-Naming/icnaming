@@ -2,17 +2,16 @@ use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
 
 use candid::Principal;
-use candid::{CandidType, Deserialize};
-use ic_cdk::api;
-use log::{debug, info};
+
+use log::{debug, error, info};
 
 use common::canister_api::ic_impl::ResolverApi;
 use common::canister_api::IResolverApi;
-use common::constants::{DEFAULT_TTL, MAX_REGISTRY_OPERATOR_COUNT, TOP_LABEL};
+use common::constants::{DEFAULT_TTL, MAX_REGISTRY_OPERATOR_COUNT, NAMING_TOP_LABEL};
 use common::dto::{GetPageInput, GetPageOutput, IRegistryUsers, RegistryDto, RegistryUsers};
-use common::errors::{ICNSError, ICNSResult};
-use common::metrics_encoder::MetricsEncoder;
-use common::named_canister_ids::CANISTER_NAME_REGISTRAR;
+use common::errors::{NamingError, ServiceResult};
+use common::named_canister_ids::CanisterNames;
+
 use common::permissions::{must_be_named_canister, must_not_anonymous};
 
 use crate::registry_store::*;
@@ -28,12 +27,12 @@ pub struct RegistriesService {
 pub fn get_registry<'a>(
     registries: &'a HashMap<String, Registry>,
     name: &str,
-) -> ICNSResult<&'a Registry> {
+) -> ServiceResult<&'a Registry> {
     let registry = registries.get(name);
     if let Some(registry) = registry {
         Ok(registry)
     } else {
-        Err(ICNSError::RegistryNotFoundError {
+        Err(NamingError::RegistryNotFoundError {
             name: name.to_string(),
         })
     }
@@ -42,12 +41,12 @@ pub fn get_registry<'a>(
 pub fn get_registry_mut<'a>(
     registries: &'a mut HashMap<String, Registry>,
     name: &str,
-) -> ICNSResult<&'a mut Registry> {
+) -> ServiceResult<&'a mut Registry> {
     let registry = registries.get_mut(name);
     if let Some(registry) = registry {
         Ok(registry)
     } else {
-        Err(ICNSError::RegistryNotFoundError {
+        Err(NamingError::RegistryNotFoundError {
             name: name.to_string(),
         })
     }
@@ -56,35 +55,35 @@ pub fn get_registry_mut<'a>(
 impl RegistriesService {
     pub fn new() -> Self {
         Self {
-            resolver_api: Arc::new(ResolverApi::new()),
+            resolver_api: Arc::new(ResolverApi::default()),
         }
     }
 
-    pub fn set_top_icp_name(&mut self, registrar: Principal) -> ICNSResult<bool> {
+    pub fn set_top_icp_name(&mut self, registrar: Principal) -> ServiceResult<bool> {
         STATE.with(|s| {
             let store = s.registry_store.borrow();
             let registries = store.get_registries();
-            if registries.contains_key(TOP_LABEL) {
-                Err(ICNSError::TopNameAlreadyExists)
+            if registries.contains_key(NAMING_TOP_LABEL) {
+                Err(NamingError::TopNameAlreadyExists)
             } else {
                 Ok(true)
             }
         })?;
 
         self.set_top_name(Registry::new(
-            TOP_LABEL.to_string(),
+            NAMING_TOP_LABEL.to_string(),
             registrar,
             DEFAULT_TTL,
             Principal::anonymous(),
         ))
     }
 
-    fn set_top_name(&mut self, registry: Registry) -> ICNSResult<bool> {
+    fn set_top_name(&mut self, registry: Registry) -> ServiceResult<bool> {
         STATE.with(|s| {
             let mut store = s.registry_store.borrow_mut();
             let registries = store.get_registries_mut();
-            if registries.len() > 0 {
-                return Err(ICNSError::TopNameAlreadyExists);
+            if !registries.is_empty() {
+                return Err(NamingError::TopNameAlreadyExists);
             }
             registries.insert(registry.get_name().to_string(), registry);
             Ok(true)
@@ -99,15 +98,15 @@ impl RegistriesService {
         sub_owner: Principal,
         ttl: u64,
         resolver: Principal,
-    ) -> ICNSResult<RegistryDto> {
+    ) -> ServiceResult<RegistryDto> {
         debug!("set_subdomain_owner: label: {}, parent_name: {}, owner: {}, sub_owner: {}, ttl: {}, resolver: {}", label, parent_name, owner, sub_owner, ttl, resolver);
 
         STATE.with(|s| {
             let store = s.registry_store.borrow();
             let registries = store.get_registries();
-            let registry = get_registry(&registries, &parent_name)?;
+            let registry = get_registry(registries, &parent_name)?;
             if !registry.is_owner(&owner) {
-                Err(ICNSError::PermissionDenied)
+                Err(NamingError::PermissionDenied)
             } else {
                 Ok(true)
             }
@@ -119,10 +118,9 @@ impl RegistriesService {
             let mut store = s.registry_store.borrow_mut();
             let registries = store.get_registries_mut();
             let old_registry = registries.get_mut(&subdomain_name);
-            if old_registry.is_some() {
+            if let Some(old_registry) = old_registry {
                 info!("old_registry: {:?}", old_registry);
                 // update owner of old registry
-                let old_registry = old_registry.unwrap();
                 old_registry.set_owner(sub_owner);
                 old_registry.set_ttl(ttl);
                 old_registry.set_resolver(resolver);
@@ -152,30 +150,49 @@ impl RegistriesService {
         })
     }
 
-    pub fn get_resolver(&self, name: &str) -> ICNSResult<Principal> {
+    pub fn get_resolver(&self, name: &str) -> ServiceResult<Principal> {
         STATE.with(|s| {
             let store = s.registry_store.borrow();
             let registries = store.get_registries();
-            let registry = get_registry(&registries, name)?;
+            let registry = get_registry(registries, name)?;
             Ok(registry.get_resolver())
         })
     }
+
     pub fn set_record(
         &mut self,
         caller: &Principal,
         name: &str,
         ttl: u64,
         resolver: &Principal,
-    ) -> ICNSResult<bool> {
+    ) -> ServiceResult<bool> {
         STATE.with(|s| {
             let mut store = s.registry_store.borrow_mut();
-            let mut registries = store.get_registries_mut();
-            let registry = get_registry_mut(&mut registries, &name)?;
-            if !registry.can_operate(&caller) {
-                return Err(ICNSError::PermissionDenied);
+            let registries = store.get_registries_mut();
+            let registry = get_registry_mut(registries, name)?;
+            if !registry.can_operate(caller) {
+                return Err(NamingError::PermissionDenied);
             }
             registry.set_ttl(ttl);
-            registry.set_resolver(resolver.clone());
+            registry.set_resolver(*resolver);
+            Ok(true)
+        })
+    }
+
+    pub fn set_resolver(
+        &self,
+        caller: Principal,
+        name: &str,
+        resolver: Principal,
+    ) -> ServiceResult<bool> {
+        STATE.with(|s| {
+            let mut store = s.registry_store.borrow_mut();
+            let registries = store.get_registries_mut();
+            let registry = get_registry_mut(registries, name)?;
+            if !registry.can_operate(&caller) {
+                return Err(NamingError::PermissionDenied);
+            }
+            registry.set_resolver(resolver);
             Ok(true)
         })
     }
@@ -184,20 +201,17 @@ impl RegistriesService {
         &self,
         owner: Principal,
         page: GetPageInput,
-    ) -> ICNSResult<GetPageOutput<String>> {
+    ) -> ServiceResult<GetPageOutput<String>> {
         STATE.with(|s| {
             let store = s.registry_store.borrow();
             let registries = store.get_registries();
-            let resolver_names = registries
-                .iter()
-                .filter_map(|(name, registry)| {
-                    if registry.is_owner(&owner) {
-                        Some(name.clone())
-                    } else {
-                        None
-                    }
-                })
-                .collect::<Vec<String>>();
+            let resolver_names = registries.iter().filter_map(|(name, registry)| {
+                if registry.is_owner(&owner) {
+                    Some(name.clone())
+                } else {
+                    None
+                }
+            });
 
             let resolver_names = resolver_names
                 .into_iter()
@@ -214,20 +228,20 @@ impl RegistriesService {
         name: &str,
         caller: &Principal,
         operator: &Principal,
-    ) -> ICNSResult<bool> {
+    ) -> ServiceResult<bool> {
         STATE.with(|s| {
             let mut store = s.registry_store.borrow_mut();
-            let mut registries = store.get_registries_mut();
-            let registry = get_registry_mut(&mut registries, &name)?;
-            if !registry.is_owner(&caller) {
-                return Err(ICNSError::PermissionDenied);
+            let registries = store.get_registries_mut();
+            let registry = get_registry_mut(registries, name)?;
+            if !registry.is_owner(caller) {
+                return Err(NamingError::PermissionDenied);
             }
             if caller == operator {
-                return Err(ICNSError::OperatorShouldNotBeTheSameToOwner);
+                return Err(NamingError::OperatorShouldNotBeTheSameToOwner);
             }
             let operator_count = registry.get_operator_count();
             if operator_count + 1 >= MAX_REGISTRY_OPERATOR_COUNT {
-                return Err(ICNSError::OperatorCountExceeded);
+                return Err(NamingError::OperatorCountExceeded);
             }
             registry.add_operator(operator);
             Ok(true)
@@ -239,51 +253,79 @@ impl RegistriesService {
         name: &str,
         caller: &Principal,
         operator: &Principal,
-    ) -> ICNSResult<bool> {
+    ) -> ServiceResult<bool> {
         STATE.with(|s| {
             let mut store = s.registry_store.borrow_mut();
-            let mut registries = store.get_registries_mut();
-            let registry = get_registry_mut(&mut registries, &name)?;
-            if !registry.is_owner(&caller) {
-                return Err(ICNSError::PermissionDenied);
+            let registries = store.get_registries_mut();
+            let registry = get_registry_mut(registries, name)?;
+            if !registry.is_owner(caller) {
+                return Err(NamingError::PermissionDenied);
             }
             registry.remove_operator(operator);
             Ok(true)
         })
     }
 
-    pub(crate) fn get_users(&self, name: &String) -> ICNSResult<RegistryUsers> {
+    pub(crate) fn get_users(&self, name: &str) -> ServiceResult<RegistryUsers> {
         STATE.with(|s| {
             let store = s.registry_store.borrow();
             let registries = store.get_registries();
-            let registry = get_registry(&registries, name)?;
+            let registry = get_registry(registries, name)?;
             Ok(registry.get_users())
         })
     }
 
-    pub(crate) fn get_owner(&self, name: &String) -> ICNSResult<Principal> {
+    pub(crate) fn get_owner(&self, name: &str) -> ServiceResult<Principal> {
         STATE.with(|s| {
             let store = s.registry_store.borrow();
             let registries = store.get_registries();
-            let registry = get_registry(&registries, name)?;
+            let registry = get_registry(registries, name)?;
             Ok(registry.get_owner().to_owned())
         })
     }
 
-    pub(crate) fn get_ttl(&self, name: &String) -> ICNSResult<u64> {
+    pub(crate) fn set_owner(
+        &self,
+        caller: Principal,
+        name: &str,
+        owner: Principal,
+    ) -> ServiceResult<bool> {
+        must_not_anonymous(&caller)?;
+        must_not_anonymous(&owner)?;
+        STATE.with(|s| {
+            let mut store = s.registry_store.borrow_mut();
+            let registries = store.get_registries_mut();
+            let registry = get_registry_mut(registries, name)?;
+            let old_owner = registry.get_owner();
+            if *old_owner != caller {
+                error!("{} is not the owner of {}", caller, name);
+                return Err(NamingError::PermissionDenied);
+            }
+
+            if *old_owner == owner {
+                error!("{} is already the owner of {}", owner, name);
+                return Err(NamingError::InvalidOwner);
+            }
+            registry.set_owner(owner);
+            info!("{} is set as the owner of {}", owner, name);
+            Ok(true)
+        })
+    }
+
+    pub(crate) fn get_ttl(&self, name: &str) -> ServiceResult<u64> {
         STATE.with(|s| {
             let store = s.registry_store.borrow();
             let registries = store.get_registries();
-            let registry = get_registry(&registries, name)?;
+            let registry = get_registry(registries, name)?;
             Ok(registry.get_ttl())
         })
     }
 
-    pub(crate) fn get_details(&self, name: &String) -> ICNSResult<RegistryDto> {
+    pub(crate) fn get_details(&self, name: &str) -> ServiceResult<RegistryDto> {
         STATE.with(|s| {
             let store = s.registry_store.borrow();
             let registries = store.get_registries();
-            let registry = get_registry(&registries, name)?;
+            let registry = get_registry(registries, name)?;
             Ok(RegistryDto::from(registry))
         })
     }
@@ -294,27 +336,26 @@ impl RegistriesService {
         caller: &Principal,
         new_owner: &Principal,
         resolver: &Principal,
-    ) -> ICNSResult<bool> {
-        must_be_named_canister(caller, CANISTER_NAME_REGISTRAR)?;
+    ) -> ServiceResult<bool> {
+        must_be_named_canister(*caller, CanisterNames::Registrar)?;
         STATE.with(|s| {
             let mut store = s.registry_store.borrow_mut();
             let registries = store.get_registries_mut();
 
             let registry = registries.get_mut(name);
-            if registry.is_none() {
-                let registry = Registry::new(
-                    name.to_string(),
-                    new_owner.to_owned(),
-                    DEFAULT_TTL,
-                    resolver.clone(),
-                );
-                registries.insert(name.to_string(), registry);
-            } else {
-                let registry = registry.unwrap();
+            if let Some(registry) = registry {
                 registry.set_owner(new_owner.to_owned());
                 registry.set_ttl(DEFAULT_TTL);
                 registry.set_resolver(resolver.to_owned());
                 registry.set_operators(HashSet::new());
+            } else {
+                let registry = Registry::new(
+                    name.to_string(),
+                    new_owner.to_owned(),
+                    DEFAULT_TTL,
+                    *resolver,
+                );
+                registries.insert(name.to_string(), registry);
             }
         });
         Ok(true)
@@ -325,16 +366,16 @@ impl RegistriesService {
         name: &str,
         caller: &Principal,
         resolver: Principal,
-    ) -> ICNSResult<bool> {
+    ) -> ServiceResult<bool> {
         must_not_anonymous(caller)?;
-        must_be_named_canister(caller, CANISTER_NAME_REGISTRAR)?;
+        must_be_named_canister(*caller, CanisterNames::Registrar)?;
         // prevent remove top level name
-        assert!(name != TOP_LABEL);
+        assert_ne!(name, NAMING_TOP_LABEL);
         let (sub_names, registry) = STATE.with(|s| {
             let store = s.registry_store.borrow();
             let registry = store.get_registry(name);
             if registry.is_none() {
-                return Err(ICNSError::RegistryNotFoundError {
+                return Err(NamingError::RegistryNotFoundError {
                     name: name.to_string(),
                 });
             }
@@ -383,8 +424,8 @@ impl RegistriesService {
         caller: &Principal,
         new_owner: &Principal,
         resolver: Principal,
-    ) -> ICNSResult<bool> {
-        must_be_named_canister(caller, CANISTER_NAME_REGISTRAR)?;
+    ) -> ServiceResult<bool> {
+        must_be_named_canister(*caller, CanisterNames::Registrar)?;
         must_not_anonymous(new_owner)?;
         must_not_anonymous(caller)?;
         self.reset_name(name, caller, resolver).await?;
@@ -399,39 +440,4 @@ impl RegistriesService {
             Ok(true)
         })
     }
-
-    pub fn get_stats(&self) -> Stats {
-        let mut stats = Stats::default();
-        stats.cycles_balance = api::canister_balance();
-        STATE.with(|s| {
-            let store = s.registry_store.borrow();
-            let registries = store.get_registries();
-            stats.registry_count = registries.len() as u64;
-        });
-
-        stats
-    }
-}
-
-pub fn encode_metrics(w: &mut MetricsEncoder<Vec<u8>>) -> std::io::Result<()> {
-    let service = RegistriesService::new();
-    let stats = service.get_stats();
-    w.encode_gauge(
-        "icnaming_registry_cycles_balance",
-        stats.cycles_balance as f64,
-        "Balance in cycles",
-    )?;
-    w.encode_gauge(
-        "icnaming_registry_registry_count",
-        stats.registry_count as f64,
-        "Number of registries",
-    )?;
-
-    Ok(())
-}
-
-#[derive(CandidType, Deserialize, Default)]
-pub struct Stats {
-    cycles_balance: u64,
-    registry_count: u64,
 }

@@ -2,7 +2,6 @@ import "../setup"
 import {canister} from "../utils";
 import {cycles_minting as name} from "./names";
 import {ReInstallOptions} from "~/utils/canister";
-import {identities} from "~/utils/identity";
 
 
 const build = () => {

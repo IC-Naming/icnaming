@@ -1,6 +1,6 @@
 use rstest::*;
 
-use common::errors::ICNSError;
+use common::errors::NamingError;
 use test_common::ic_api::init_test;
 use test_common::user::*;
 
@@ -19,7 +19,7 @@ mod get_favorites {
     fn test_get_favorites_anonymous_user(service: ManagerService, anonymous_user: Principal) {
         let favorites = service.get_favorites(&anonymous_user);
         assert_eq!(favorites.is_err(), true);
-        assert_eq!(favorites.unwrap_err(), ICNSError::Unauthorized);
+        assert_eq!(favorites.unwrap_err(), NamingError::Unauthorized);
     }
 
     #[rstest]
@@ -51,7 +51,7 @@ mod add_favorite {
         let name = "nice.icp";
         let result = service.add_favorite(mock_now, &anonymous_user, name);
         assert_eq!(result.is_err(), true);
-        assert_eq!(result.unwrap_err(), ICNSError::Unauthorized);
+        assert_eq!(result.unwrap_err(), NamingError::Unauthorized);
     }
 
     #[rstest]
@@ -129,7 +129,7 @@ mod remove_favorite {
         let name = "nice.icp";
         let result = service.remove_favorite(mock_now, &anonymous_user, name);
         assert_eq!(result.is_err(), true);
-        assert_eq!(result.unwrap_err(), ICNSError::Unauthorized);
+        assert_eq!(result.unwrap_err(), NamingError::Unauthorized);
     }
 
     #[rstest]

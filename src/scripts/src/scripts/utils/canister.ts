@@ -49,7 +49,7 @@ export const add_main_as_controller = async () => {
     }
 }
 
-export const build = (name: string, features?: string) => {
+export const build = (name: string, canisterEnv?: string) => {
     let dfx_json = get_dfx_json();
     let canister: DfxJsonCanister = dfx_json.canisters.get(name) as DfxJsonCanister;
     if (!canister) {
@@ -61,21 +61,10 @@ export const build = (name: string, features?: string) => {
         return;
     }
 
-    if (features) {
-        logger.debug(`Building canister ${name} with features ${features}`);
-        if (canister.build) {
-            // run each line of build by replace dev_canister with features
-            canister.build.forEach(line => {
-                line = line.replace("dev_canister", features);
-                console.info(`Running build command: ${line}`);
-                const result = exec(line);
-                if (result.code !== 0) {
-                    throw new Error(result.stderr);
-                }
-            });
-        } else {
-            throw new Error(`Canister ${name} does not have a build section, so it cannot be built with features`);
-        }
+    if (canisterEnv) {
+        // set env var EX3_CANISTER_ENV=canisterEnv
+        logger.debug(`Building canister ${name} with features ${canisterEnv}`);
+        exec(`NAMING_ENV=${canisterEnv} dfx build ${name}`);
     } else {
         logger.debug(`Building canister ${name}`);
         const result = exec(`dfx build ${name}`);

@@ -1,9 +1,9 @@
 use candid::Principal;
 use rstest::*;
 
-use common::constants::{DEFAULT_TTL, TOP_LABEL};
-use common::errors::ICNSError;
-use common::named_canister_ids::{get_named_get_canister_id, CANISTER_NAME_RESOLVER};
+use common::constants::{DEFAULT_TTL, NAMING_TOP_LABEL};
+use common::errors::NamingError;
+use common::named_canister_ids::{get_named_get_canister_id, CanisterNames};
 use test_common::canister_api::*;
 use test_common::ic_api::init_test;
 use test_common::user::*;
@@ -27,12 +27,12 @@ fn service() -> RegistriesService {
 
 #[fixture]
 fn resolver() -> Principal {
-    get_named_get_canister_id(CANISTER_NAME_RESOLVER)
+    get_named_get_canister_id(CanisterNames::Resolver)
 }
 
 pub(crate) fn create_registry(_name: String, _owner: Principal) -> Registry {
     Registry::new(
-        TOP_LABEL.to_string(),
+        NAMING_TOP_LABEL.to_string(),
         top_owner(),
         DEFAULT_TTL,
         Principal::anonymous(),
@@ -55,20 +55,20 @@ mod add_top_name {
 
     #[rstest]
     fn test_add_top_name(_init_test: (), mut service: RegistriesService, top_owner: Principal) {
-        let icp_registry = create_registry(TOP_LABEL.to_string(), top_owner);
+        let icp_registry = create_registry(NAMING_TOP_LABEL.to_string(), top_owner);
         let result = service.set_top_name(icp_registry);
         assert!(result.is_ok());
-        let icp_registry = create_registry(TOP_LABEL.to_string(), top_owner);
+        let icp_registry = create_registry(NAMING_TOP_LABEL.to_string(), top_owner);
         let result = service.set_top_name(icp_registry).err().unwrap();
-        assert_eq!(result, ICNSError::TopNameAlreadyExists);
+        assert_eq!(result, NamingError::TopNameAlreadyExists);
 
         STATE.with(|s| {
             let store = s.registry_store.borrow();
             let registries = store.get_registries();
             assert_eq!(registries.len(), 1);
-            let item = get_registry(&registries, &TOP_LABEL.to_string()).unwrap();
+            let item = get_registry(&registries, &NAMING_TOP_LABEL.to_string()).unwrap();
             info!("{:?}", item);
-            assert_eq!(item.get_name(), TOP_LABEL.to_string());
+            assert_eq!(item.get_name(), NAMING_TOP_LABEL.to_string());
             assert_eq!(item.get_owner(), &top_owner);
             assert_eq!(item.get_ttl(), DEFAULT_TTL);
             assert_eq!(item.get_resolver(), Principal::anonymous());
@@ -91,7 +91,7 @@ mod add_subdomain_to_registries {
             .returning(|_name| Ok(true));
         service.resolver_api = Arc::new(mock_resolver_api);
         service
-            .set_top_name(create_registry(TOP_LABEL.to_string(), top_owner))
+            .set_top_name(create_registry(NAMING_TOP_LABEL.to_string(), top_owner))
             .unwrap();
 
         let sub_owner = Principal::from_text("2vxsx-fae").unwrap();
@@ -162,7 +162,7 @@ mod approval {
 
         // assert
         assert!(result.is_err());
-        assert_eq!(result.err().unwrap(), ICNSError::PermissionDenied);
+        assert_eq!(result.err().unwrap(), NamingError::PermissionDenied);
     }
 
     #[rstest]
@@ -205,7 +205,7 @@ mod approval {
 
         // assert
         assert!(result.is_err());
-        assert_eq!(result.err().unwrap(), ICNSError::PermissionDenied);
+        assert_eq!(result.err().unwrap(), NamingError::PermissionDenied);
     }
 }
 
@@ -255,7 +255,7 @@ mod set_record {
         assert!(result.is_err());
         assert_eq!(
             result.err().unwrap(),
-            ICNSError::RegistryNotFoundError {
+            NamingError::RegistryNotFoundError {
                 name: name.to_string()
             }
         );
@@ -284,12 +284,13 @@ mod set_record {
 
         // assert
         assert!(result.is_err());
-        assert_eq!(result.err().unwrap(), ICNSError::PermissionDenied);
+        assert_eq!(result.err().unwrap(), NamingError::PermissionDenied);
     }
 }
 
 mod reclaim {
     use super::*;
+    use common::named_canister_ids::CanisterNames;
 
     #[rstest]
     fn test_reclaim_success(
@@ -298,10 +299,12 @@ mod reclaim {
         mock_user1: Principal,
         resolver: Principal,
     ) {
-        let caller = get_named_get_canister_id(CANISTER_NAME_REGISTRAR);
+        let caller = get_named_get_canister_id(CanisterNames::Registrar);
 
         // act
-        service.reclaim_name("nice.icp", &caller, &mock_user1, &resolver);
+        service
+            .reclaim_name("nice.icp", &caller, &mock_user1, &resolver)
+            .unwrap();
 
         // assert
         STATE.with(|s| {
@@ -323,7 +326,7 @@ mod reclaim {
         mock_user2: Principal,
         resolver: Principal,
     ) {
-        let caller = get_named_get_canister_id(CANISTER_NAME_REGISTRAR);
+        let caller = get_named_get_canister_id(CanisterNames::Registrar);
         STATE.with(|s| {
             let mut store = s.registry_store.borrow_mut();
             let registries = store.get_registries_mut();
@@ -338,7 +341,9 @@ mod reclaim {
             );
         });
         // act
-        service.reclaim_name("nice.icp", &caller, &mock_user1, &resolver);
+        service
+            .reclaim_name("nice.icp", &caller, &mock_user1, &resolver)
+            .unwrap();
 
         // assert
         STATE.with(|s| {
@@ -363,7 +368,7 @@ mod reclaim {
         // act
         let result = service.reclaim_name("nice.icp", &mock_user1, &mock_user1, &resolver);
 
-        assert_eq!(result.err().unwrap(), ICNSError::Unauthorized);
+        assert_eq!(result.err().unwrap(), NamingError::Unauthorized);
     }
 }
 
@@ -388,7 +393,7 @@ mod reset_name {
             "wownice.icp",
             "icp",
         ];
-        let resolver = get_named_get_canister_id(CANISTER_NAME_RESOLVER);
+        let resolver = get_named_get_canister_id(CanisterNames::Resolver);
 
         STATE.with(|s| {
             let mut store = s.registry_store.borrow_mut();
@@ -417,8 +422,8 @@ mod reset_name {
         service.resolver_api = Arc::new(mock_resolver_api);
 
         // act
-        let caller = get_named_get_canister_id(CANISTER_NAME_REGISTRAR);
-        let resolver = get_named_get_canister_id(CANISTER_NAME_RESOLVER);
+        let caller = get_named_get_canister_id(CanisterNames::Registrar);
+        let resolver = get_named_get_canister_id(CanisterNames::Resolver);
         let result = service.reset_name("nice.icp", &caller, resolver).await;
 
         // assert
@@ -451,7 +456,7 @@ mod reset_name {
             "wownice.icp",
             "icp",
         ];
-        let resolver = get_named_get_canister_id(CANISTER_NAME_RESOLVER);
+        let resolver = get_named_get_canister_id(CanisterNames::Resolver);
 
         STATE.with(|s| {
             let mut store = s.registry_store.borrow_mut();
@@ -474,14 +479,14 @@ mod reset_name {
                 ];
                 expected.sort();
                 assert_eq!(names, expected);
-                Err(ErrorInfo::from(ICNSError::PermissionDenied))
+                Err(ErrorInfo::from(NamingError::PermissionDenied))
             });
 
         service.resolver_api = Arc::new(mock_resolver_api);
 
         // act
-        let caller = get_named_get_canister_id(CANISTER_NAME_REGISTRAR);
-        let resolver = get_named_get_canister_id(CANISTER_NAME_RESOLVER);
+        let caller = get_named_get_canister_id(CanisterNames::Registrar);
+        let resolver = get_named_get_canister_id(CanisterNames::Resolver);
         let result = service.reset_name("nice.icp", &caller, resolver).await;
 
         // assert

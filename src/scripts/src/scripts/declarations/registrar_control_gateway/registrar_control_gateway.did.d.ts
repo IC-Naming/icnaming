@@ -6,9 +6,25 @@ export type AssignNameResult = { 'Ok' : null } |
   { 'FailFromRegistrar' : null };
 export type BooleanActorResponse = { 'Ok' : boolean } |
   { 'Err' : ErrorInfo };
+export interface CallbackStrategy {
+  'token' : Token,
+  'callback' : [Principal, string],
+}
 export interface ErrorInfo { 'code' : number, 'message' : string }
-export type GetStatsActorResponse = { 'Ok' : Stats } |
+export type GetStatsResponse = { 'Ok' : Stats } |
   { 'Err' : ErrorInfo };
+export interface HttpRequest {
+  'url' : string,
+  'method' : string,
+  'body' : Array<number>,
+  'headers' : Array<[string, string]>,
+}
+export interface HttpResponse {
+  'body' : Array<number>,
+  'headers' : Array<[string, string]>,
+  'streaming_strategy' : [] | [StreamingStrategy],
+  'status_code' : number,
+}
 export type ImportQuotaResponse = { 'Ok' : ImportQuotaResult } |
   { 'Err' : ErrorInfo };
 export type ImportQuotaResult = { 'Ok' : null } |
@@ -23,12 +39,21 @@ export interface Stats {
   'imported_file_hashes_count' : bigint,
   'acceptable_file_hashes_count' : bigint,
 }
+export type StreamingStrategy = { 'Callback' : CallbackStrategy };
+export interface Token {
+  'key' : string,
+  'sha256' : [] | [Array<number>],
+  'index' : bigint,
+  'content_encoding' : string,
+}
 export interface _SERVICE {
   'assign_name' : (arg_0: string, arg_1: Principal) => Promise<
       AssignNameResponse
     >,
   'export_state' : () => Promise<StateExportResponse>,
-  'get_stats' : () => Promise<GetStatsActorResponse>,
+  'get_stats' : () => Promise<GetStatsResponse>,
+  'get_wasm_info' : () => Promise<Array<[string, string]>>,
+  'http_request' : (arg_0: HttpRequest) => Promise<HttpResponse>,
   'import_quota' : (arg_0: Array<number>) => Promise<ImportQuotaResponse>,
   'load_state' : (arg_0: StateExportData) => Promise<BooleanActorResponse>,
 }

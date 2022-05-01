@@ -1,19 +1,17 @@
+use common::TimeInNs;
 use ic_cdk::api;
 
-use log::error;
-
-use crate::payment_sync;
 use crate::service::RegistrarService;
+use crate::token_service::TokenService;
 
 pub async fn run_periodic_tasks() {
-    let option = payment_sync::sync_transactions().await;
-    if let Some(result) = option {
-        if let Err(e) = result {
-            error!("Error while syncing transactions: {}", e);
-        }
-    }
-
-    let service = RegistrarService::new();
     let now = api::time();
-    let _result = service.cancel_expired_orders(now);
+    {
+        let service = RegistrarService::default();
+        let _result = service.cancel_expired_orders(now);
+    }
+    {
+        let service = TokenService::default();
+        let _result = service.retry_refund(TimeInNs(now));
+    }
 }

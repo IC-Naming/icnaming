@@ -9,8 +9,7 @@ use log::info;
 
 use common::ic_logger::ICLogger;
 use common::named_canister_ids::{
-    ensure_current_canister_id_match, get_named_get_canister_id, CANISTER_NAME_REGISTRAR,
-    CANISTER_NAME_REGISTRY,
+    ensure_current_canister_id_match, get_named_get_canister_id, CanisterNames,
 };
 use common::state::StableState;
 
@@ -52,9 +51,9 @@ static INIT: Once = Once::new();
 
 pub(crate) fn canister_module_init() {
     INIT.call_once(|| {
-        ICLogger::init();
+        ICLogger::init("registry");
     });
-    ensure_current_canister_id_match(CANISTER_NAME_REGISTRY);
+    ensure_current_canister_id_match(CanisterNames::Registry);
 }
 
 #[init]
@@ -62,7 +61,7 @@ fn init_function() {
     canister_module_init();
 
     // insert top level name
-    let registrar = get_named_get_canister_id(CANISTER_NAME_REGISTRAR);
+    let registrar = get_named_get_canister_id(CanisterNames::Registrar);
     let mut service = RegistriesService::new();
     service.set_top_icp_name(registrar).unwrap();
 }

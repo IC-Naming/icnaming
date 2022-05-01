@@ -2,23 +2,24 @@ import "~/setup";
 import {DataTable, Given, Then, When} from "@cucumber/cucumber";
 import {createRegistrar, registrar} from "~/declarations/registrar";
 import {registrar_control_gateway} from "~/declarations/registrar_control_gateway";
-import {createLedger, ledger} from "~/declarations/ledger";
+import {createDicp, dicp} from "~/declarations/dicp";
 import {assert, expect} from 'chai';
 import {reinstall_all} from "~/../tasks"
 import {
-    BooleanActorResponse as RefundResult,
     BooleanActorResponse as AvailableResult,
     BooleanActorResponse as RegisterWithQuotaResult,
     BooleanActorResponse as TransferResult,
     BooleanActorResponse as TransferFromResult,
     BooleanActorResponse as TransferByAdminResult,
+    BooleanActorResponse as RenewNameResult,
     GetNameOrderResponse,
     QuotaType,
     Stats,
-    SubmitOrderActorResponse as SubmitOrderResult,
+    SubmitOrderActorResponse as SubmitOrderResult, TransferQuotaDetails,
 } from "~/declarations/registrar/registrar.did";
 import {toICPe8s,} from "~/utils/convert";
 import {get_principal, identities} from "~/utils/identity";
+import {get_id} from "~/utils/canister";
 import {OptionalResult, Result} from "~/utils/Result";
 import {assert_remote_result} from "./utils";
 import logger from "node-color-log";
@@ -29,7 +30,6 @@ import {
 } from "~/declarations/registrar_control_gateway/registrar_control_gateway.did";
 
 let global_submit_order_result: SubmitOrderResult;
-let global_refund_response: RefundResult;
 let global_available_response: AvailableResult;
 let global_register_with_quota_response: RegisterWithQuotaResult;
 let global_quota_import_response: ImportQuotaResponse;
@@ -38,6 +38,7 @@ let global_assign_name_result: AssignNameResponse;
 let global_transfer_result: TransferResult;
 let global_transfer_from_result: TransferFromResult;
 let global_transfer_by_admin_result: TransferByAdminResult;
+let global_renew_name_result: RenewNameResult;
 
 async function submit_order(user: string | null, name: string, years: string) {
     let actor;
@@ -58,34 +59,35 @@ async function submit_order(user: string | null, name: string, years: string) {
 
 async function pay_to_pending_order(user: string | null, amount: string) {
     let current_registrar;
-    let current_ledger;
+    let current_dicp;
     if (user) {
         let identityInfo = identities.get_identity_info(user);
         current_registrar = createRegistrar(identityInfo);
-        current_ledger = createLedger(identityInfo);
+        current_dicp = createDicp(identityInfo);
     } else {
         current_registrar = registrar;
-        current_ledger = ledger;
+        current_dicp = dicp;
     }
     let optionalResult: OptionalResult<GetNameOrderResponse> = new OptionalResult(current_registrar.get_pending_order());
     const order = await optionalResult.unwrap();
     const e8s = toICPe8s(amount);
     console.debug(`Pay for order: ${JSON.stringify(order)} with amount: ${e8s}`);
-    let transfer_result = await current_ledger.transfer({
-        amount: {
-            e8s: BigInt(e8s)
-        },
-        memo: toICPe8s(order.payment_memo.ICP.toString()),
-        to: order.payment_account_id,
-        fee: {
-            e8s: BigInt(10_000),
-        },
-        created_at_time: [],
-        from_subaccount: []
-    });
-    if ('Err' in transfer_result) {
-        assert(false, transfer_result.Err.message);
+    const sub_account = [];
+    const to = get_id("registrar");
+    const created_at = [];
+    let approve_result = await current_dicp.approve(
+        sub_account,
+        to,
+        e8s,
+        created_at
+    )
+    if ('Err' in approve_result) {
+        assert(false, approve_result.Err.message);
+    } else {
+        logger.debug(`Approve result: ${JSON.stringify(approve_result)}`);
     }
+    let pay_result = await current_registrar.pay_my_order();
+    logger.debug(`Pay result: ${JSON.stringify(pay_result)}`);
 }
 
 async function ensure_no_pending_order(user: string | null) {
@@ -131,12 +133,21 @@ function diff_less_than(a: bigint, b: bigint, diff: bigint): boolean {
 
 function is_around_to_date(value: bigint, diff_year: number): boolean {
     let target = now_add_years(diff_year);
+    logger.debug(`Target: ${target}, Value: ${value}`);
     return diff_less_than(value, target, BigInt(60000));
 }
 
 function now_add_years(years: number): bigint {
-    let now = BigInt(Date.now());
-    return now + BigInt(years * 365 * 24 * 60 * 60 * 1000);
+    let date = new Date(Date.now());
+    date.setFullYear(date.getFullYear() + years);
+    return BigInt(date.getTime());
+}
+
+function get_expired_at(years: number): bigint {
+    let date = new Date(Date.now());
+    date.setFullYear(date.getFullYear() + years);
+    date.setHours(0, 0, 0, 0);
+    return BigInt(date.getTime());
 }
 
 Given(/^Reinstall registrar related canisters$/,
@@ -145,8 +156,7 @@ Given(/^Reinstall registrar related canisters$/,
             build: false,
             init: true,
             canisters: {
-                ledger: true,
-                icnaming_ledger: true,
+                dicp: true,
                 registrar: true,
                 registry: true,
                 resolver: true,
@@ -200,25 +210,6 @@ Then(/^User "([^"]*)" found my pending order with "([^"]*)" for "([^"]*)" years,
     async function (user: string, name: string, years: string, status: string) {
         await ensure_pending_order(user, name, years, status);
     });
-When(/^User "([^"]*)" refund my pending order$/,
-    async function (user: string) {
-        let identityInfo = identities.get_identity_info(user);
-        let actor = createRegistrar(identityInfo);
-        global_refund_response = await actor.refund_order();
-    });
-Then(/^Last refund response is "([^"]*)"$/,
-    function (status: string) {
-        if (status === "Ok") {
-            assert(status in global_refund_response,
-                `Status not match: ${JSON.stringify(global_refund_response)}`);
-        } else {
-            if ('Err' in global_refund_response) {
-                assert(global_refund_response.Err.message === status);
-            } else {
-                assert(false, `Status not match: ${JSON.stringify(global_refund_response)}`);
-            }
-        }
-    });
 When(/^Check availability of "([^"]*)"$/,
     async function (name: string) {
         global_available_response = await registrar.available(name);
@@ -251,7 +242,8 @@ Given(/^Name "([^"]*)" is already taken$/,
 Then(/^get_name_expires "([^"]*)" result is about in "([^"]*)" years$/,
     async function (name: string, year: string) {
         let expired_at = await new Result(registrar.get_name_expires(name)).unwrap();
-        expect(is_around_to_date(expired_at, parseInt(year))).to.be.true;
+        let expectedExpiredAt = get_expired_at(parseInt(year));
+        expect(expired_at).eq(expectedExpiredAt);
     });
 Then(/^get_owner result "([^"]*)" is the same as "([^"]*)" identity$/,
     async function (name: string, user: string) {
@@ -270,7 +262,8 @@ Then(/^registrar get_details "([^"]*)" result is$/,
         expect(details.owner.toText()).to.equal(identityInfo.principal_text);
 
         expect(details.name).to.equal(target.name);
-        expect(is_around_to_date(details.expired_at, parseInt(target.expired_at))).to.be.true;
+        let expiredAt = get_expired_at(parseInt(target.expired_at));
+        expect(details.expired_at).eq(expiredAt)
         expect(is_around_to_date(details.created_at, parseInt(target.created_at))).to.be.true;
     });
 When(/^Update quota as follow operations$/,
@@ -413,35 +406,7 @@ Then(/^I found my pending order as bellow$/,
         expect(order.name).to.equal(rows.name);
         expect(order.price_icp_in_e8s).to.equal(toICPe8s(rows.price_icp_in_e8s));
         let target_type = to_quota_type(rows.quota_type);
-        expect(order.quota_type).to.deep.equal(target_type);
         expect(order.years).to.equal(parseInt(rows.years));
-    });
-Given(/^Record payment version$/,
-    async function () {
-        let timer_target = createRegistrar(identities.timer_trigger);
-        await timer_target.run_tasks();
-        global_stats_result = await new Result(registrar.get_stats()).unwrap();
-        console.info(`Record payment version: ${global_stats_result.payment_version}`);
-    });
-When(/^Wait for payment version increased with "([^"]*)"$/,
-    async function (version_change: string) {
-        let timer_target = createRegistrar(identities.timer_trigger);
-
-        let max_retry = 20;
-        let version_add = BigInt(parseInt(version_change));
-        let target_version = global_stats_result.payment_version + version_add;
-        for (let i = 0; i < max_retry; i++) {
-            await timer_target.run_tasks();
-            let stats = await new Result(registrar.get_stats()).unwrap();
-            if (stats.payment_version >= target_version) {
-                console.info(`Payment version increased to ${target_version}, now is ${stats.payment_version}`);
-                return;
-            } else {
-                console.debug(`Wait for payment version increased to ${target_version}, now is ${stats.payment_version}`);
-                await new Promise(resolve => setTimeout(resolve, 1000));
-            }
-        }
-
     });
 When(/^admin import quota file "([^"]*)"$/,
     async function (filename: string) {
@@ -459,12 +424,7 @@ Then(/^Last quota import status "([^"]*)"$/,
             expect.fail(`Last quota import status is not Ok but ${JSON.stringify(global_quota_import_response)}`);
         }
     });
-When(/^User "([^"]*)" confirm pay order with block height "([^"]*)"$/,
-    async function (user: string, block_height: string) {
-        let registrar = createRegistrar(identities.get_identity_info(user));
-        let result = await new Result(registrar.confirm_pay_order(BigInt(parseInt(block_height)))).unwrap();
-        logger.info(`confirm pay order result: ${JSON.stringify(result)}`);
-    });
+
 Given(/^admin assign name "([^"]*)" to user "([^"]*)"$/,
     async function (name: string, user: string) {
         global_assign_name_result = await registrar_control_gateway.assign_name(name, identities.get_identity_info(user).identity.getPrincipal());
@@ -525,4 +485,80 @@ Then(/^Get last registrations result is$/,
         for (let i = 0; i < items.length; i++) {
             expect(actual_names[i]).to.equal(items[i].name);
         }
+    });
+When(/^User "([^"]*)" reclaim name "([^"]*)"$/,
+    async function (user: string, name: string) {
+        const registrar = createRegistrar(identities.get_identity_info(user));
+        let result = await registrar.reclaim_name(name);
+        logger.debug(`reclaim_name result: ${JSON.stringify(result)}`);
+    });
+
+interface BatchTransferQuotaDetails {
+    to: string;
+    quota_type1: string;
+    quota_type2: string;
+    diff: string;
+}
+
+When(/^User "([^"]*)" transfer quota as below by batch$/,
+    async function (user: string, data: DataTable) {
+        let items: BatchTransferQuotaDetails[] = data.hashes();
+        let registrar = createRegistrar(identities.get_identity_info(user));
+        let request_items = items.map(item => {
+            let quota_type = {};
+            quota_type[item.quota_type1] = parseInt(item.quota_type2);
+            return {
+                to: identities.get_principal(item.to),
+                quota_type: quota_type as QuotaType,
+                diff: parseInt(item.diff)
+            }
+        });
+        let result = await registrar.batch_transfer_quota({
+            items: request_items
+        });
+        logger.debug(`batch_transfer_quota result: ${JSON.stringify(result)}`);
+    });
+When(/^User "([^"]*)" renew name "([^"]*)" for "([^"]*)" years and pay "([^"]*)"$/,
+    async function (user: string, name: string, years: string, approve_amount: string) {
+        let registrar = createRegistrar(identities.get_identity_info(user));
+        let dicp = createDicp(identities.get_identity_info(user));
+        let amount = toICPe8s(approve_amount);
+        {
+            let result = await dicp.approve([], get_id("registrar"), amount, []);
+            logger.debug(`approve result: ${JSON.stringify(result)}`);
+        }
+        {
+            let result = await registrar.renew_name({
+                name: name,
+                years: parseInt(years),
+                approve_amount: amount
+            });
+            global_renew_name_result = result;
+            logger.debug(`renew_name result: ${JSON.stringify(result)}`);
+        }
+    });
+Then(/^Last renew name status is "([^"]*)"$/,
+    function (status: string) {
+        assert_remote_result(global_renew_name_result, status);
+    });
+
+interface ImportNameItem {
+    name: string,
+    owner: string,
+    years: string
+}
+
+When(/^Admin import names as following$/,
+    async function (data: DataTable) {
+        let items: ImportNameItem[] = data.hashes();
+        let result = await registrar.import_registrations({
+            items: items.map(item => {
+                return {
+                    name: item.name,
+                    owner: identities.get_principal(item.owner),
+                    years: parseInt(item.years)
+                }
+            })
+        });
+        logger.info(`import_registrations result: ${JSON.stringify(result)}`);
     });

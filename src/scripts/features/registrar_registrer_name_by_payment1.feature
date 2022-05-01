@@ -3,48 +3,23 @@ Feature: Register a name with payment
 
   Background:
     Given Reinstall registrar related canisters
-    And Record payment version
+    And User "user1" balance is set to be "10 icp"
 
   Scenario: Pay enough to my pending order
-    Given I submit a order to register name "what-a-nice-day.icp" for "3" years
-    When Pay for my pending order with amount "3 icp"
-    And Wait for payment version increased with "1"
+    Given User "user1" submit a order to register name "what-a-nice-day.icp" for "3" years
+    When User "user1" pay for my pending order with amount "3 icp"
     Then I found there is no pending order
     And registrar get_details "what-a-nice-day.icp" result is
       | key        | value               |
-      | owner      | main                |
+      | owner      | user1                |
       | name       | what-a-nice-day.icp |
       | expired_at | 3                   |
       | created_at | 0                   |
-
-  Scenario: Pay enough to my pending order
-    Given I submit a order to register name "what-a-nice-day.icp" for "3" years
-    When Pay for my pending order with amount "3 icp"
-    And User "main" confirm pay order with block height "1"
-    Then I found there is no pending order
-    And registrar get_details "what-a-nice-day.icp" result is
-      | key        | value               |
-      | owner      | main                |
-      | name       | what-a-nice-day.icp |
-      | expired_at | 3                   |
-      | created_at | 0                   |
+    And User "user1" balance is "7 icp"
 
   Scenario: Pay not enough to my pending order
-    Given I submit a order to register name "what-a-nice-day.icp" for "3" years
-    When Pay for my pending order with amount "1 icp"
-    And Wait for payment version increased with "1"
-    Then I found my pending order with "what-a-nice-day.icp" for "3" years
+    Given User "user1" submit a order to register name "what-a-nice-day.icp" for "3" years
+    When User "user1" pay for my pending order with amount "1 icp"
+    Then User "user1" found my pending order with "what-a-nice-day.icp" for "3" years, status "New"
     And name "what-a-nice-day.icp" is available
-
-  Scenario: Pay multiple times enough to my pending order
-    Given I submit a order to register name "what-a-nice-day.icp" for "3" years
-    When Pay for my pending order with amount "1 icp"
-    And Pay for my pending order with amount "2 icp"
-    And Wait for payment version increased with "2"
-    Then I found there is no pending order
-    And registrar get_details "what-a-nice-day.icp" result is
-      | key        | value               |
-      | owner      | main                |
-      | name       | what-a-nice-day.icp |
-      | expired_at | 3                   |
-      | created_at | 0                   |
+    And User "user1" balance is "10 icp"

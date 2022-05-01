@@ -11,7 +11,7 @@ use flate2::Compression;
 use crate::constants::{
     PAGE_INPUT_MAX_LIMIT, PAGE_INPUT_MAX_OFFSET, PAGE_INPUT_MIN_LIMIT, PAGE_INPUT_MIN_OFFSET,
 };
-use crate::errors::{ErrorInfo, ICNSError, ICNSResult};
+use crate::errors::{ErrorInfo, NamingError, ServiceResult};
 
 #[cfg(test)]
 mod tests;
@@ -23,11 +23,11 @@ pub struct GetPageInput {
 }
 
 impl GetPageInput {
-    pub fn validate(&self) -> ICNSResult<()> {
+    pub fn validate(&self) -> ServiceResult<()> {
         let max_offset = PAGE_INPUT_MAX_OFFSET;
         let min_offset = PAGE_INPUT_MIN_OFFSET;
         if self.offset > max_offset || self.offset < min_offset {
-            return Err(ICNSError::ValueShouldBeInRangeError {
+            return Err(NamingError::ValueShouldBeInRangeError {
                 field: "offset".to_string(),
                 min: min_offset,
                 max: max_offset,
@@ -36,7 +36,7 @@ impl GetPageInput {
         let max_limit = PAGE_INPUT_MAX_LIMIT;
         let min_limit = PAGE_INPUT_MIN_LIMIT;
         if self.limit > max_limit || self.limit < min_limit {
-            return Err(ICNSError::ValueShouldBeInRangeError {
+            return Err(NamingError::ValueShouldBeInRangeError {
                 field: "limit".to_string(),
                 min: min_limit,
                 max: max_limit,
@@ -139,7 +139,7 @@ pub enum StateExportResponse {
 }
 
 impl StateExportResponse {
-    pub fn new(result: ICNSResult<StateExportData>) -> StateExportResponse {
+    pub fn new(result: ServiceResult<StateExportData>) -> StateExportResponse {
         match result {
             Ok(stats) => StateExportResponse::Ok(stats),
             Err(err) => StateExportResponse::Err(err.into()),
@@ -169,4 +169,19 @@ pub fn to_state_export_data(source_state_data: Vec<u8>) -> StateExportData {
 
 pub fn from_state_export_data(request: LoadStateRequest) -> Vec<u8> {
     decode_zlib(request.state_data.as_slice())
+}
+
+#[derive(CandidType)]
+pub enum GetStatsResponse<T> {
+    Ok(T),
+    Err(ErrorInfo),
+}
+
+impl<T> GetStatsResponse<T> {
+    pub fn new(result: ServiceResult<T>) -> GetStatsResponse<T> {
+        match result {
+            Ok(stats) => GetStatsResponse::Ok(stats),
+            Err(err) => GetStatsResponse::Err(err.into()),
+        }
+    }
 }

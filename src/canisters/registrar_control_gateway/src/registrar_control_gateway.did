@@ -1,8 +1,21 @@
 type AssignNameResponse = variant { Ok : AssignNameResult; Err : ErrorInfo };
 type AssignNameResult = variant { Ok; AlreadyAssigned; FailFromRegistrar };
 type BooleanActorResponse = variant { Ok : bool; Err : ErrorInfo };
+type CallbackStrategy = record { token : Token; callback : func () -> () };
 type ErrorInfo = record { code : nat32; message : text };
-type GetStatsActorResponse = variant { Ok : Stats; Err : ErrorInfo };
+type GetStatsResponse = variant { Ok : Stats; Err : ErrorInfo };
+type HttpRequest = record {
+  url : text;
+  method : text;
+  body : vec nat8;
+  headers : vec record { text; text };
+};
+type HttpResponse = record {
+  body : vec nat8;
+  headers : vec record { text; text };
+  streaming_strategy : opt StreamingStrategy;
+  status_code : nat16;
+};
 type ImportQuotaResponse = variant { Ok : ImportQuotaResult; Err : ErrorInfo };
 type ImportQuotaResult = variant { Ok; AlreadyExists; InvalidRequest };
 type StateExportData = record { state_data : vec nat8 };
@@ -13,10 +26,19 @@ type Stats = record {
   imported_file_hashes_count : nat64;
   acceptable_file_hashes_count : nat64;
 };
+type StreamingStrategy = variant { Callback : CallbackStrategy };
+type Token = record {
+  key : text;
+  sha256 : opt vec nat8;
+  index : nat;
+  content_encoding : text;
+};
 service : {
   assign_name : (text, principal) -> (AssignNameResponse);
   export_state : () -> (StateExportResponse);
-  get_stats : () -> (GetStatsActorResponse) query;
+  get_stats : () -> (GetStatsResponse) query;
+  get_wasm_info : () -> (vec record { text; text }) query;
+  http_request : (HttpRequest) -> (HttpResponse) query;
   import_quota : (vec nat8) -> (ImportQuotaResponse);
   load_state : (StateExportData) -> (BooleanActorResponse);
 }

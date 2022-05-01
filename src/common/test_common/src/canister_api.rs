@@ -1,13 +1,12 @@
 use async_trait::async_trait;
-use candid::Principal;
+use candid::{Nat, Principal};
 use mockall::{mock, predicate::*};
 use rstest::*;
 
 use common::canister_api::*;
 use common::cycles_minting_types::*;
 use common::dto::*;
-use common::errors::ICNSActorResult;
-use common::icnaming_ledger_types::*;
+use common::errors::ActorResult;
 
 mock! {
     pub RegistryApi {
@@ -21,22 +20,22 @@ impl IRegistryApi for RegistryApi {
         sub_owner: Principal,
         ttl: u64,
         resolver: Principal,
-    ) -> ICNSActorResult<RegistryDto>;
+    ) -> ActorResult<RegistryDto>;
 
     async fn reclaim_name(
         &self,
         name: String,
         owner: Principal,
         resolver: Principal,
-    ) -> ICNSActorResult<bool>;
+    ) -> ActorResult<bool>;
     async fn transfer(
         &self,
         name: String,
         new_owner: Principal,
         resolver: Principal,
-    ) -> ICNSActorResult<bool>;
-    async fn get_resolver(&self, label: &str) -> ICNSActorResult<Principal>;
-    async fn get_users(&self, name: &str) -> ICNSActorResult<RegistryUsers>;
+    ) -> ActorResult<bool>;
+    async fn get_resolver(&self, label: &str) -> ActorResult<Principal>;
+    async fn get_users(&self, name: &str) -> ActorResult<RegistryUsers>;
 }
 }
 
@@ -50,8 +49,8 @@ mock! {
     }
     #[async_trait]
 impl IResolverApi for ResolverApi {
-    async fn ensure_resolver_created(&self, name: String) -> ICNSActorResult<bool>;
-    async fn remove_resolvers(&self, names: Vec<String>) -> ICNSActorResult<bool>;
+    async fn ensure_resolver_created(&self, name: String) -> ActorResult<bool>;
+    async fn remove_resolvers(&self, names: Vec<String>) -> ActorResult<bool>;
 }
 }
 
@@ -61,29 +60,11 @@ pub fn mock_resolver_api() -> MockResolverApi {
 }
 
 mock! {
-    pub ICNamingLedgerApi {
-    }
-    #[async_trait]
-impl IICNamingLedgerApi for ICNamingLedgerApi {
-    async fn add_payment(&self, request: AddPaymentRequest) -> ICNSActorResult<AddPaymentResponse>;
-    async fn verify_payment(&self, request: VerifyPaymentRequest) -> ICNSActorResult<VerifyPaymentResponse>;
-    async fn get_tip_of_ledger(&self, request: GetTipOfLedgerRequest) -> ICNSActorResult<GetTipOfLedgerResponse>;
-    async fn refund_payment(&self, request: RefundPaymentRequest) -> ICNSActorResult<RefundPaymentResponse>;
-    async fn sync_icp_payment(&self, request: SyncICPPaymentRequest) -> ICNSActorResult<SyncICPPaymentResponse>;
-}
-}
-
-#[fixture]
-pub fn mock_icnaming_ledger_api() -> MockICNamingLedgerApi {
-    MockICNamingLedgerApi::new()
-}
-
-mock! {
     pub CyclesMintingApi {
     }
     #[async_trait]
 impl ICyclesMintingApi for CyclesMintingApi {
-    async fn get_icp_xdr_conversion_rate(&self) -> ICNSActorResult<IcpXdrConversionRateCertifiedResponse>;
+    async fn get_icp_xdr_conversion_rate(&self) -> ActorResult<IcpXdrConversionRateCertifiedResponse>;
 }
 }
 
@@ -98,12 +79,43 @@ mock! {
     #[async_trait]
 impl IRegistrarApi for RegistrarApi {
     async fn import_quota(&self, request: ImportQuotaRequest)
-        -> ICNSActorResult<ImportQuotaStatus>;
-    async fn register_from_gateway(&self, name: String, owner: Principal) -> ICNSActorResult<bool>;
+        -> ActorResult<ImportQuotaStatus>;
+    async fn register_from_gateway(&self, name: String, owner: Principal) -> ActorResult<bool>;
 }
 }
 
 #[fixture]
 pub fn mock_registrar_api() -> MockRegistrarApi {
     MockRegistrarApi::new()
+}
+
+mock! {
+    pub DICPApi {
+    }
+    #[async_trait]
+impl IDICPApi for DICPApi {
+    async fn transfer_from(
+        &self,
+        spender_sub_account: Option<Subaccount>,
+        from: String,
+        to: String,
+        value: Nat,
+        created_at: Option<u64>,
+    ) -> ActorResult<TransactionResponse>;
+
+    async fn transfer(
+        &self,
+        from_sub_account: Option<Subaccount>,
+        to: String,
+        value: Nat,
+        created_at: Option<u64>,
+    ) -> ActorResult<TransactionResponse>;
+
+    async fn balance_of(&self, token_holder: String) -> ActorResult<Nat>;
+}
+}
+
+#[fixture]
+pub fn mock_dicp_api() -> MockDICPApi {
+    MockDICPApi::new()
 }

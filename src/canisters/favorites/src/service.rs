@@ -1,10 +1,9 @@
-use candid::{CandidType, Deserialize, Principal};
-use ic_cdk::api;
+use candid::Principal;
 
 use common::constants::{MAX_COUNT_USER_FAVORITES, MAX_LENGTH_USER_FAVORITES};
-use common::errors::ICNSError::{InvalidName, TooManyFavorites, ValueMaxLengthError};
-use common::errors::ICNSResult;
-use common::metrics_encoder::MetricsEncoder;
+use common::errors::NamingError::{InvalidName, TooManyFavorites, ValueMaxLengthError};
+use common::errors::ServiceResult;
+
 use common::naming::{normalize_name, parse_name};
 use common::permissions::must_not_anonymous;
 
@@ -19,7 +18,7 @@ impl ManagerService {
 }
 
 impl ManagerService {
-    pub fn get_favorites(&self, user: &Principal) -> ICNSResult<Vec<String>> {
+    pub fn get_favorites(&self, user: &Principal) -> ServiceResult<Vec<String>> {
         must_not_anonymous(user)?;
         STATE.with(|s| {
             let user_set = s.user_favorite_store.borrow();
@@ -30,9 +29,9 @@ impl ManagerService {
         })
     }
 
-    pub fn add_favorite(&self, now: u64, user: &Principal, favorite: &str) -> ICNSResult<bool> {
+    pub fn add_favorite(&self, now: u64, user: &Principal, favorite: &str) -> ServiceResult<bool> {
         must_not_anonymous(user)?;
-        let favorite = normalize_name(favorite);
+        let favorite = normalize_name(favorite).0;
         if favorite.len() == 0 {
             return Err(InvalidName {
                 reason: "empty name".to_string(),
@@ -67,9 +66,14 @@ impl ManagerService {
         })
     }
 
-    pub fn remove_favorite(&self, now: u64, user: &Principal, favorite: &str) -> ICNSResult<bool> {
+    pub fn remove_favorite(
+        &self,
+        now: u64,
+        user: &Principal,
+        favorite: &str,
+    ) -> ServiceResult<bool> {
         must_not_anonymous(user)?;
-        let favorite = normalize_name(favorite);
+        let favorite = normalize_name(favorite).0;
         let result = parse_name(&favorite);
         if result.is_err() {
             return Err(InvalidName {
@@ -83,49 +87,6 @@ impl ManagerService {
             Ok(true)
         })
     }
-
-    pub fn get_stats(&self) -> Stats {
-        let mut stats = Stats::default();
-        stats.cycles_balance = api::canister_balance();
-        STATE.with(|s| {
-            let user_set = s.user_favorite_store.borrow();
-            let user_favorites = user_set.get_favorites();
-            stats.user_count = user_favorites.len() as u64;
-            stats.favorite_count = user_favorites
-                .values()
-                .fold(0u64, |acc, favorites| acc + favorites.len() as u64);
-        });
-        stats
-    }
-}
-
-pub fn encode_metrics(w: &mut MetricsEncoder<Vec<u8>>) -> std::io::Result<()> {
-    let service = ManagerService::new();
-    let stats = service.get_stats();
-    w.encode_gauge(
-        "icnaming_favorites_cycles_balance",
-        stats.cycles_balance as f64,
-        "Balance in cycles",
-    )?;
-    w.encode_gauge(
-        "icnaming_favorites_user_count",
-        stats.user_count as f64,
-        "Number of users",
-    )?;
-    w.encode_gauge(
-        "icnaming_favorites_favorite_count",
-        stats.favorite_count as f64,
-        "Number of favorites",
-    )?;
-
-    Ok(())
-}
-
-#[derive(CandidType, Deserialize, Default)]
-pub struct Stats {
-    cycles_balance: u64,
-    user_count: u64,
-    favorite_count: u64,
 }
 
 #[cfg(test)]

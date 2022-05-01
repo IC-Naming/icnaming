@@ -3,10 +3,11 @@ import {reinstall as reinstall_ledger} from "./scripts/canisters/ledger";
 import {reinstall as reinstall_icnaming_ledger} from "./scripts/canisters/icnaming_ledger";
 import {reinstall as reinstall_favorites} from "./scripts/canisters/favorites";
 import {reinstall as reinstall_registrar} from "./scripts/canisters/registrar";
-import {reinstall as reinstall_registrar_control_gateway } from "./scripts/canisters/registrar_control_gateway";
+import {reinstall as reinstall_registrar_control_gateway} from "./scripts/canisters/registrar_control_gateway";
 import {reinstall as reinstall_resolver} from "./scripts/canisters/resolver";
 import {reinstall as reinstall_registry} from "./scripts/canisters/registry";
 import {reinstall as reinstall_cycles_minting} from "./scripts/canisters/cycles_minting";
+import {reinstall as reinstall_dicp} from "./scripts/canisters/dicp";
 
 
 export const reinstall_all = async (options?: CanisterReinstallOptions) => {
@@ -16,6 +17,12 @@ export const reinstall_all = async (options?: CanisterReinstallOptions) => {
     if (options && options.one_by_one) {
         if (options && options.canisters?.ledger) {
             await reinstall_ledger({
+                ...options,
+            });
+        }
+
+        if (options && options.canisters?.dicp) {
+            await reinstall_dicp({
                 ...options,
             });
         }
@@ -61,11 +68,18 @@ export const reinstall_all = async (options?: CanisterReinstallOptions) => {
                 ...options,
             });
         }
+
     } else {
         console.info("reinstall all in parallel");
         let jobs: Promise<void>[] = [];
         if (options && options.canisters?.ledger) {
             jobs.push(reinstall_ledger({
+                ...options,
+            }));
+        }
+
+        if (options && options.canisters?.dicp) {
+            jobs.push(reinstall_dicp({
                 ...options,
             }));
         }
@@ -123,6 +137,7 @@ export const reinstall_all = async (options?: CanisterReinstallOptions) => {
 
 export interface CanisterReinstallOptionsCanisters {
     ledger?: boolean;
+    dicp?: boolean;
     icnaming_ledger?: boolean;
     favorites?: boolean;
     registrar?: boolean;

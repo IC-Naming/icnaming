@@ -5,8 +5,9 @@ use std::str::FromStr;
 use candid::{decode_args, encode_args};
 use flate2::read::ZlibDecoder;
 use ic_cdk::export::Principal;
-use ic_crypto_sha256::Sha256;
 use log::debug;
+use sha2::Digest;
+use sha2::Sha256;
 
 use common::dto::ImportQuotaItem;
 use common::state::StableState;
@@ -47,7 +48,9 @@ impl QuotaImportStore {
         let mut decoder = ZlibDecoder::new(file_content);
         let mut file_content = Vec::new();
         decoder.read_to_end(&mut file_content).unwrap();
-        let file_hash = Sha256::hash(file_content.as_slice()).to_vec();
+        let mut sha256 = Sha256::new();
+        sha256.update(&file_content);
+        let file_hash = sha256.finalize().to_vec();
         debug!("File hash: {}", hex::encode(&file_hash));
         if self.imported_file_hashes.contains(&file_hash) {
             return Err(ImportError::FileAlreadyImported);

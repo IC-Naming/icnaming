@@ -8,9 +8,7 @@ use log::info;
 
 use common::ic_logger::ICLogger;
 
-use common::named_canister_ids::{
-    ensure_current_canister_id_match, CANISTER_NAME_REGISTRAR_CONTROL_GATEWAY,
-};
+use common::named_canister_ids::{ensure_current_canister_id_match, CanisterNames};
 use common::state::StableState;
 
 use crate::build_gen::ACCEPTABLE_HASHES;
@@ -72,9 +70,9 @@ static INIT: Once = Once::new();
 
 pub(crate) fn canister_module_init() {
     INIT.call_once(|| {
-        ICLogger::init();
+        ICLogger::init("registrar_control_gateway");
     });
-    ensure_current_canister_id_match(CANISTER_NAME_REGISTRAR_CONTROL_GATEWAY);
+    ensure_current_canister_id_match(CanisterNames::RegistrarControlGateway);
 
     STATE.with(|s| {
         let mut store = s.quota_import_store.borrow_mut();

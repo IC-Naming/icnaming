@@ -1,12 +1,6 @@
 use log::LevelFilter;
 use rstest::*;
 
-use crate::ic_api::test_wrapper::enable_test_ic_api;
-
-pub mod test_wrapper;
-#[cfg(test)]
-mod tests;
-
 pub fn init_test_logger() {
     let _ = env_logger::builder()
         .filter_level(LevelFilter::Trace)
@@ -17,5 +11,4 @@ pub fn init_test_logger() {
 #[fixture]
 pub fn init_test() {
     init_test_logger();
-    enable_test_ic_api();
 }

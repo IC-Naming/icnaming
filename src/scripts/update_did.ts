@@ -1,5 +1,5 @@
 import {exec} from "shelljs";
-import {favorites, registrar, registrar_control_gateway, registry, resolver} from "~/canisters/names";
+import {favorites, icnaming_ledger, registrar, registrar_control_gateway, registry, resolver} from "~/canisters/names";
 import fs from "fs";
 import logger from "node-color-log";
 
@@ -21,12 +21,12 @@ const download_did = async (canister) => {
 };
 
 (async () => {
-    let names = [registrar, registrar_control_gateway, registry, favorites, resolver];
+    let names = [registrar, registrar_control_gateway, registry, favorites, resolver, icnaming_ledger];
     for (let name of names) {
         let did_content = await download_did(name);
         let did_file = `canisters/${name}/src/${name}.did`;
         logger.debug(`Writing ${did_file}`);
-        fs.writeFileSync(did_file, did_content);
+        fs.writeFileSync(did_file, `${did_content}\n`);
     }
 
     logger.info("Did update complete");

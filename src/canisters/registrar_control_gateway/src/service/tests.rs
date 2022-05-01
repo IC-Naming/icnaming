@@ -1,6 +1,5 @@
 use rstest::*;
 
-
 use test_common::canister_api::*;
 use test_common::ic_api::init_test;
 use test_common::user::*;
@@ -9,7 +8,7 @@ use super::*;
 
 #[fixture]
 fn service(_init_test: (), mut mock_registrar_api: MockRegistrarApi) -> GatewayService {
-    let mut service = GatewayService::new();
+    let mut service = GatewayService::default();
     mock_registrar_api
         .expect_register_from_gateway()
         .returning(|_name, _owner| Ok(true));
@@ -18,7 +17,7 @@ fn service(_init_test: (), mut mock_registrar_api: MockRegistrarApi) -> GatewayS
 }
 
 mod assign_name {
-    use common::errors::{ErrorInfo, ICNSError};
+    use common::errors::{ErrorInfo, NamingError};
     use common::permissions::get_admin;
 
     use super::*;
@@ -59,7 +58,7 @@ mod assign_name {
         mock_registrar_api
             .expect_register_from_gateway()
             .returning(|_name, _owner| {
-                Err(ErrorInfo::from(ICNSError::InvalidName {
+                Err(ErrorInfo::from(NamingError::InvalidName {
                     reason: "invalid name".to_string(),
                 }))
             });

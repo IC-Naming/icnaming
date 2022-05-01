@@ -1,6 +1,5 @@
 use candid::{decode_args, encode_args};
 
-
 use common::state::StableState;
 
 #[derive(Default)]

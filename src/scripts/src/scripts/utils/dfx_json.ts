@@ -65,7 +65,7 @@ export interface DfxPackageCanister {
 
 export interface DfxPackageEnv {
     name: string,
-    feature: string
+    canister_env: string
 }
 
 export class FileDfxPackage implements DfxPackageJson {

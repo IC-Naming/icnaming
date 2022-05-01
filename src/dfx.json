@@ -1,86 +1,59 @@
 {
   "canisters": {
     "registry": {
-      "type": "custom",
-      "build": [
-        "cargo build --target wasm32-unknown-unknown --package registry --release --no-default-features --features dev_canister",
-        "ic-cdk-optimizer target/wasm32-unknown-unknown/release/registry.wasm -o target/wasm32-unknown-unknown/release/registry_opt.wasm"
-      ],
-      "wasm": "target/wasm32-unknown-unknown/release/registry_opt.wasm",
+      "type": "rust",
+      "package": "registry",
       "candid": "canisters/registry/src/registry.did"
     },
     "registrar": {
-      "type": "custom",
-      "build": [
-        "cargo build --target wasm32-unknown-unknown --package registrar --release --no-default-features --features dev_canister",
-        "ic-cdk-optimizer target/wasm32-unknown-unknown/release/registrar.wasm -o target/wasm32-unknown-unknown/release/registrar_opt.wasm"
-      ],
-      "wasm": "target/wasm32-unknown-unknown/release/registrar_opt.wasm",
-      "candid": "canisters/registrar/src/registrar.did",
-      "dependencies": [
-        "registry",
-        "icnaming_ledger",
-        "cycles_minting"
-      ]
+      "type": "rust",
+      "package": "registrar",
+      "candid": "canisters/registrar/src/registrar.did"
     },
     "registrar_control_gateway": {
-      "type": "custom",
-      "build": [
-        "cargo build --target wasm32-unknown-unknown --package registrar_control_gateway --release --no-default-features --features dev_canister",
-        "ic-cdk-optimizer target/wasm32-unknown-unknown/release/registrar_control_gateway.wasm -o target/wasm32-unknown-unknown/release/registrar_control_gateway_opt.wasm"
-      ],
-      "wasm": "target/wasm32-unknown-unknown/release/registrar_control_gateway_opt.wasm",
-      "candid": "canisters/registrar_control_gateway/src/registrar_control_gateway.did",
-      "dependencies": [
-        "registrar"
-      ]
+      "type": "rust",
+      "package": "registrar_control_gateway",
+      "candid": "canisters/registrar_control_gateway/src/registrar_control_gateway.did"
     },
     "resolver": {
-      "type": "custom",
-      "build": [
-        "cargo build --target wasm32-unknown-unknown --package resolver --release --no-default-features --features dev_canister",
-        "ic-cdk-optimizer target/wasm32-unknown-unknown/release/resolver.wasm -o target/wasm32-unknown-unknown/release/resolver_opt.wasm"
-      ],
-      "wasm": "target/wasm32-unknown-unknown/release/resolver_opt.wasm",
-      "candid": "canisters/resolver/src/resolver.did",
-      "dependencies": [
-        "registry"
-      ]
+      "type": "rust",
+      "package": "resolver",
+      "candid": "canisters/resolver/src/resolver.did"
     },
     "favorites": {
-      "type": "custom",
-      "build": [
-        "cargo build --target wasm32-unknown-unknown --package favorites --release --no-default-features --features dev_canister",
-        "ic-cdk-optimizer target/wasm32-unknown-unknown/release/favorites.wasm -o target/wasm32-unknown-unknown/release/favorites_opt.wasm"
-      ],
-      "wasm": "target/wasm32-unknown-unknown/release/favorites_opt.wasm",
+      "type": "rust",
+      "package": "favorites",
       "candid": "canisters/favorites/src/favorites.did"
     },
     "cycles_minting": {
-      "type": "custom",
-      "build": [
-        "cargo build --target wasm32-unknown-unknown --package cycles_minting --release --no-default-features --features dev_canister",
-        "ic-cdk-optimizer target/wasm32-unknown-unknown/release/cycles_minting.wasm -o target/wasm32-unknown-unknown/release/cycles_minting_opt.wasm"
-      ],
-      "wasm": "target/wasm32-unknown-unknown/release/cycles_minting_opt.wasm",
+      "type": "rust",
+      "package": "cycles_minting",
       "candid": "canisters/cycles_minting/src/cycles_minting.did"
+    },
+    "naming_marketplace": {
+      "type": "rust",
+      "package": "naming_marketplace",
+      "candid": "canisters/naming_marketplace/src/naming_marketplace.did"
+    },
+    "mystery_box": {
+      "type": "rust",
+      "package": "mystery_box",
+      "candid": "canisters/mystery_box/src/mystery_box.did"
     },
     "ledger": {
       "type": "custom",
       "candid": "scripts/wasm/ledger.public.did",
       "wasm": "scripts/wasm/ledger-canister.wasm"
     },
-    "icnaming_ledger": {
+    "dicp": {
       "type": "custom",
-      "build": [
-        "cargo +stable build --target wasm32-unknown-unknown --package icnaming_ledger --release --no-default-features --features dev_canister --manifest-path icnaming_ledger/Cargo.toml",
-        "ic-cdk-optimizer icnaming_ledger/target/wasm32-unknown-unknown/release/icnaming_ledger.wasm -o icnaming_ledger/target/wasm32-unknown-unknown/release/icnaming_ledger_opt.wasm"
-      ],
-      "candid": "icnaming_ledger/canisters/icnaming_ledger/icnaming-ledger.did",
-      "wasm": "icnaming_ledger/target/wasm32-unknown-unknown/release/icnaming_ledger_opt.wasm",
-      "dependencies": [
-        "ledger"
-      ]
+      "candid": "scripts/wasm/dft_basic.did",
+      "wasm": "scripts/wasm/dft_basic.wasm"
+    },
+    "icnaming_ledger": {
+      "type": "rust",
+      "package": "icnaming_ledger",
+      "candid": "canisters/icnaming_ledger/src/icnaming_ledger.did"
     }
   },
   "defaults": {

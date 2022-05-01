@@ -5,6 +5,14 @@ export const idlFactory = ({ IDL }) => {
     'Ok' : IDL.Bool,
     'Err' : ErrorInfo,
   });
+  const TransferQuotaDetails = IDL.Record({
+    'to' : IDL.Principal,
+    'diff' : IDL.Nat32,
+    'quota_type' : QuotaType,
+  });
+  const BatchTransferRequest = IDL.Record({
+    'items' : IDL.Vec(TransferQuotaDetails),
+  });
   const StateExportData = IDL.Record({ 'state_data' : IDL.Vec(IDL.Nat8) });
   const StateExportResponse = IDL.Variant({
     'Ok' : StateExportData,
@@ -52,15 +60,11 @@ export const idlFactory = ({ IDL }) => {
     'Done' : IDL.Null,
     'Canceled' : IDL.Null,
   });
-  const PaymentMemo = IDL.Variant({ 'ICP' : IDL.Nat64 });
   const GetNameOrderResponse = IDL.Record({
     'status' : NameOrderStatus,
-    'payment_memo' : PaymentMemo,
     'name' : IDL.Text,
+    'created_at' : IDL.Nat64,
     'price_icp_in_e8s' : IDL.Nat,
-    'payment_account_id' : IDL.Vec(IDL.Nat8),
-    'quota_type' : QuotaType,
-    'payment_id' : IDL.Nat64,
     'created_user' : IDL.Principal,
     'years' : IDL.Nat32,
   });
@@ -79,6 +83,10 @@ export const idlFactory = ({ IDL }) => {
   });
   const GetPriceTableResponse = IDL.Variant({
     'Ok' : PriceTable,
+    'Err' : ErrorInfo,
+  });
+  const GetPublicResolverActorResponse = IDL.Variant({
+    'Ok' : IDL.Text,
     'Err' : ErrorInfo,
   });
   const GetQuotaActorResponse = IDL.Variant({
@@ -101,9 +109,29 @@ export const idlFactory = ({ IDL }) => {
     'user_quota_order_count' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Nat64)),
     'registration_count' : IDL.Nat64,
   });
-  const GetStatsActorResponse = IDL.Variant({
-    'Ok' : Stats,
-    'Err' : ErrorInfo,
+  const GetStatsResponse = IDL.Variant({ 'Ok' : Stats, 'Err' : ErrorInfo });
+  const HttpRequest = IDL.Record({
+    'url' : IDL.Text,
+    'method' : IDL.Text,
+    'body' : IDL.Vec(IDL.Nat8),
+    'headers' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
+  });
+  const Token = IDL.Record({
+    'key' : IDL.Text,
+    'sha256' : IDL.Opt(IDL.Vec(IDL.Nat8)),
+    'index' : IDL.Nat,
+    'content_encoding' : IDL.Text,
+  });
+  const CallbackStrategy = IDL.Record({
+    'token' : Token,
+    'callback' : IDL.Func([], [], []),
+  });
+  const StreamingStrategy = IDL.Variant({ 'Callback' : CallbackStrategy });
+  const HttpResponse = IDL.Record({
+    'body' : IDL.Vec(IDL.Nat8),
+    'headers' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
+    'streaming_strategy' : IDL.Opt(StreamingStrategy),
+    'status_code' : IDL.Nat16,
   });
   const ImportQuotaItem = IDL.Record({
     'owner' : IDL.Principal,
@@ -121,6 +149,19 @@ export const idlFactory = ({ IDL }) => {
   const ImportQuotaResponse = IDL.Variant({
     'Ok' : ImportQuotaStatus,
     'Err' : ErrorInfo,
+  });
+  const ImportNameRegistrationItem = IDL.Record({
+    'owner' : IDL.Principal,
+    'name' : IDL.Text,
+    'years' : IDL.Nat32,
+  });
+  const ImportNameRegistrationRequest = IDL.Record({
+    'items' : IDL.Vec(ImportNameRegistrationItem),
+  });
+  const RenewNameRequest = IDL.Record({
+    'name' : IDL.Text,
+    'approve_amount' : IDL.Nat64,
+    'years' : IDL.Nat32,
   });
   const SubmitOrderRequest = IDL.Record({
     'name' : IDL.Text,
@@ -145,8 +186,12 @@ export const idlFactory = ({ IDL }) => {
       ),
     'approve' : IDL.Func([IDL.Text, IDL.Principal], [BooleanActorResponse], []),
     'available' : IDL.Func([IDL.Text], [BooleanActorResponse], ['query']),
+    'batch_transfer_quota' : IDL.Func(
+        [BatchTransferRequest],
+        [BooleanActorResponse],
+        [],
+      ),
     'cancel_order' : IDL.Func([], [BooleanActorResponse], []),
-    'confirm_pay_order' : IDL.Func([IDL.Nat64], [BooleanActorResponse], []),
     'export_state' : IDL.Func([], [StateExportResponse], []),
     'get_all_details' : IDL.Func(
         [GetPageInput],
@@ -176,15 +221,32 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'get_price_table' : IDL.Func([], [GetPriceTableResponse], []),
+    'get_public_resolver' : IDL.Func(
+        [],
+        [GetPublicResolverActorResponse],
+        ['query'],
+      ),
     'get_quota' : IDL.Func(
         [IDL.Principal, QuotaType],
         [GetQuotaActorResponse],
         ['query'],
       ),
-    'get_stats' : IDL.Func([], [GetStatsActorResponse], ['query']),
+    'get_stats' : IDL.Func([], [GetStatsResponse], ['query']),
+    'get_wasm_info' : IDL.Func(
+        [],
+        [IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text))],
+        ['query'],
+      ),
+    'http_request' : IDL.Func([HttpRequest], [HttpResponse], ['query']),
     'import_quota' : IDL.Func([ImportQuotaRequest], [ImportQuotaResponse], []),
+    'import_registrations' : IDL.Func(
+        [ImportNameRegistrationRequest],
+        [BooleanActorResponse],
+        [],
+      ),
     'load_state' : IDL.Func([StateExportData], [BooleanActorResponse], []),
-    'refund_order' : IDL.Func([], [BooleanActorResponse], []),
+    'pay_my_order' : IDL.Func([], [BooleanActorResponse], []),
+    'reclaim_name' : IDL.Func([IDL.Text], [BooleanActorResponse], []),
     'register_for' : IDL.Func(
         [IDL.Text, IDL.Principal, IDL.Nat64],
         [BooleanActorResponse],
@@ -200,6 +262,7 @@ export const idlFactory = ({ IDL }) => {
         [BooleanActorResponse],
         [],
       ),
+    'renew_name' : IDL.Func([RenewNameRequest], [BooleanActorResponse], []),
     'run_tasks' : IDL.Func([], [BooleanActorResponse], []),
     'sub_quota' : IDL.Func(
         [IDL.Principal, QuotaType, IDL.Nat32],

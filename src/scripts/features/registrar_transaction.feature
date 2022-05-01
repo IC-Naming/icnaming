@@ -117,3 +117,28 @@ Feature: Name Transaction
     And User "user1" transfer name "hello.icp" to User "user3"
     When User "user3" transfer name "hello.icp" by transfer_from
     Then last name transfer_from result status is "permission deny"
+
+  Scenario: Reclaim name successfully if owner of registry is changed
+    Given User "user1" register name "hello.icp" with quote "LenGte(3)"
+    And User "user1" update resolver "hello.icp" with values
+      | key       | value                              |
+      | token.icp | qjdve-lqaaa-aaaaa-aaaeq-cai        |
+      | token.btc | 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa |
+    And User "user1" set registry owner for "hello.icp" to "user2"
+    When User "user1" reclaim name "hello.icp"
+    And registrar get_details "hello.icp" result is
+      | key        | value     |
+      | owner      | user1     |
+      | name       | hello.icp |
+      | expired_at | 1         |
+      | created_at | 0         |
+    And get_record_value "hello.icp" should be as below
+      | key       | value                              |
+      | token.icp | qjdve-lqaaa-aaaaa-aaaeq-cai        |
+      | token.btc | 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa |
+    And registry get_details "hello.icp" should be as below
+      | key      | value     |
+      | name     | hello.icp |
+      | owner    | user1     |
+      | resolver | public    |
+      | ttl      | 600       |

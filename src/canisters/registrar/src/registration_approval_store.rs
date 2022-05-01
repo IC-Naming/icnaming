@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use candid::{decode_args, encode_args, CandidType, Deserialize, Principal};
+use common::naming::FirstLevelName;
 
 use common::state::StableState;
 
@@ -28,9 +29,14 @@ impl StableState for RegistrationApprovalStore {
 }
 
 impl RegistrationApprovalStore {
-    pub fn set_approval(&mut self, name: &str, approved_to: &Principal, approval_at: u64) {
+    pub fn set_approval(
+        &mut self,
+        name: &FirstLevelName,
+        approved_to: &Principal,
+        approval_at: u64,
+    ) {
         if approved_to == &Principal::anonymous() {
-            self.approvals.remove(name);
+            self.approvals.remove(name.0.get_name());
         } else {
             self.approvals.insert(
                 name.to_string(),
@@ -42,12 +48,12 @@ impl RegistrationApprovalStore {
         }
     }
 
-    pub fn remove_approval(&mut self, name: &str) {
-        self.approvals.remove(name);
+    pub fn remove_approval(&mut self, name: &FirstLevelName) {
+        self.approvals.remove(name.0.get_name());
     }
 
-    pub fn is_approved_to(&self, name: &str, approved_to: &Principal) -> bool {
-        if let Some(approval) = self.approvals.get(name) {
+    pub fn is_approved_to(&self, name: &FirstLevelName, approved_to: &Principal) -> bool {
+        if let Some(approval) = self.approvals.get(name.0.get_name()) {
             if approval.approved_to == *approved_to {
                 return true;
             }
@@ -55,7 +61,7 @@ impl RegistrationApprovalStore {
         false
     }
 
-    pub fn has_approved_to(&self, name: &str) -> bool {
-        self.approvals.contains_key(name)
+    pub fn has_approved_to(&self, name: &FirstLevelName) -> bool {
+        self.approvals.contains_key(name.0.get_name())
     }
 }

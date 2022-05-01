@@ -8,8 +8,7 @@ use ic_cdk_macros::*;
 use log::info;
 
 use common::ic_logger::ICLogger;
-use common::named_canister_ids::ensure_current_canister_id_match;
-use common::named_canister_ids::CANISTER_NAME_RESOLVER;
+use common::named_canister_ids::{ensure_current_canister_id_match, CanisterNames};
 use common::state::StableState;
 
 use crate::resolver_store::ResolverStore;
@@ -49,9 +48,9 @@ static INIT: Once = Once::new();
 
 pub(crate) fn canister_module_init() {
     INIT.call_once(|| {
-        ICLogger::init();
+        ICLogger::init("resolver");
     });
-    ensure_current_canister_id_match(CANISTER_NAME_RESOLVER);
+    ensure_current_canister_id_match(CanisterNames::Resolver);
 }
 
 #[init]

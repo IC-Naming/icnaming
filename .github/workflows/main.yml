@@ -54,10 +54,7 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE/src
           dfx start --background
-          chmod a+x ./sh_setup_dev.sh
           ./sh_setup_dev.sh
-
-          chmod a+x ./sh_dev_package.sh
           ./sh_dev_package.sh
       - name: Archive artifacts
         uses: actions/upload-artifact@v3
@@ -103,10 +100,7 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE/src
           dfx start --background
-          chmod a+x ./sh_setup_dev.sh
           ./sh_setup_dev.sh
-
-          chmod a+x ./sh_package.sh
           ./sh_package.sh
       - name: Archive artifacts
         uses: actions/upload-artifact@v3

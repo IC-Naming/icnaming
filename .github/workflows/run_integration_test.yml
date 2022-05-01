@@ -34,7 +34,6 @@ jobs:
           echo "scripts/features/**/${{ matrix.feature }}.feature" > feature_target.txt
           cp -rf ~/download/dev/* .
           dfx start --background
-          chmod a+x ./sh_setup_dev.sh
           ./sh_setup_dev.sh
 
           npm run test-report

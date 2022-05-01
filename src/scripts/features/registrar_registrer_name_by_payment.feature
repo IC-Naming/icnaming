@@ -3,7 +3,6 @@ Feature: Register a name with payment
 
   Background:
     Given Reinstall registrar related canisters
-    And Record payment version
 
   Scenario: Submit a name with 6 characters
     When I submit a order to register name "hello.icp" for "3" years
@@ -37,3 +36,4 @@ Feature: Register a name with payment
       | name         | years | price_icp_in_e8s | quota_type |
       | s6d9w5r1.icp | 3     | 300_000_000      | LenGte(7)  |
       | 6s3d2f1.icp  | 3     | 300_000_000      | LenGte(7)  |
+      | 365214.icp   | 3     | 330_000_000      | LenGte(6)  |

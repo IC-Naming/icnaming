@@ -1,0 +1,35 @@
+type CyclesResponse = variant {
+    Refunded : record { text; opt nat64 };
+    CanisterCreated : principal;
+    ToppedUp;
+};
+type ICPTs = record { e8s : nat64 };
+type Result = variant { Ok : CyclesResponse; Err : text };
+type TransactionNotification = record {
+    to : principal;
+    to_subaccount : opt vec nat8;
+    from : principal;
+    memo : nat64;
+    from_subaccount : opt vec nat8;
+    amount : ICPTs;
+    block_height : nat64;
+};
+type SetAuthorizedSubnetworkListArgs = record {
+    who : opt principal;
+    subnets : vec principal;
+};
+type IcpXdrConversionRate = record {
+    timestamp_seconds : nat64;
+    xdr_permyriad_per_icp : nat64;
+};
+type IcpXdrConversionRateCertifiedResponse = record {
+    data: IcpXdrConversionRate;
+    hash_tree: vec nat8;
+    certificate: vec nat8;
+};
+service : {
+    set_authorized_subnetwork_list : (SetAuthorizedSubnetworkListArgs) -> ();
+    transaction_notification : (TransactionNotification) -> (Result);
+    get_icp_xdr_conversion_rate : () -> (IcpXdrConversionRateCertifiedResponse) query;
+    get_average_icp_xdr_conversion_rate : () -> (IcpXdrConversionRateCertifiedResponse) query;
+}

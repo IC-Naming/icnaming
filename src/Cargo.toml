@@ -2,8 +2,12 @@
 members = [
     "common/common",
     "common/test_common",
+    "common/common_actor",
     "canisters/cycles_minting",
+    "canisters/naming_marketplace",
+    "canisters/mystery_box",
     "canisters/registrar",
+    "canisters/icnaming_ledger",
     "canisters/registrar_control_gateway",
     "canisters/registry",
     "canisters/favorites",
@@ -14,5 +18,3 @@ members = [
 lto = true
 opt-level = 'z'
 panic = 'abort'
-
-

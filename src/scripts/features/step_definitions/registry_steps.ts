@@ -8,6 +8,7 @@ import {Principal} from "@dfinity/principal";
 import {expect} from "chai";
 import {identities} from "~/utils/identity";
 import {GetDetailsResponse, RegistryDto} from "~/declarations/registry/registry.did";
+import logger from "node-color-log";
 
 let global_set_subdomain_owner_result: GetDetailsResponse
 
@@ -64,4 +65,15 @@ When(/^I update registry "([^"]*)" with values$/,
         let input: { ttl, resolver } = data.rowsHash();
         let registry = createRegistry(identities.main);
         await new Result(registry.set_record(name, BigInt(input.ttl), Principal.fromText(input.resolver))).unwrap();
+    });
+When(/^User "([^"]*)" set registry owner for "([^"]*)" to "([^"]*)"$/,
+    async function (user: string, name: string, new_owner: string) {
+        const registry = createRegistry(identities.get_identity_info(user));
+        await registry.set_owner(name, identities.get_principal(new_owner));
+    });
+When(/^I update registry "([^"]*)" resolver to "([^"]*)"$/,
+    async function (name: string, new_resolver: string) {
+        const registry = createRegistry(identities.main);
+        let result = await registry.set_resolver(name, Principal.fromText(new_resolver));
+        logger.debug(`set_resolver result: ${result.toString()}`);
     });
