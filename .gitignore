@@ -9,3 +9,4 @@ cucumber-report.json
 /src/package_feature/
 /src/latest_state_data/
 /src/local_state_data/
+package_canister_env
