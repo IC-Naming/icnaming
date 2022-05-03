@@ -18,8 +18,8 @@ common = { path = "../../common/common", default-features = false }
 log = "0.4"
 url = "2.2.2"
 num-bigint = "0.4.3"
-num-traits = "0.2.14"
-num-integer = "0.1.44"
+num-traits = "0.2.15"
+num-integer = "0.1.45"
 ic-crypto-sha256 = { git = "https://github.com/dfinity/ic", rev = "89446f5a04f053040b4863eab5458446d925ed0e" }
 
 [dev-dependencies]

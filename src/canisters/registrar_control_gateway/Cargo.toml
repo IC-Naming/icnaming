@@ -19,7 +19,7 @@ async-trait = "0.1.53"
 common = { path = "../../common/common", default-features = false }
 log = "0.4"
 num-bigint = "0.4.3"
-num-traits = "0.2.14"
+num-traits = "0.2.15"
 getset = "0.1.2"
 once_cell = "1.9"
 hex = "0.4.3"
