@@ -7,7 +7,7 @@ Feature: Query Api
 
   Scenario: It is impossible to call ensure_resolver_created from other principal but registry
     When I call ensure_resolver_created "hello.icp"
-    Then ensure_resolver_created result in status "permission deny"
+    Then ensure_resolver_created result in status "Unauthorized, please login first"
 
   Scenario: Query default resolver values
     Then get_record_value "hello.icp" should be as below
@@ -22,7 +22,7 @@ Feature: Query Api
       | token.eth    | 0xb436ef6cc9f24193ccb42f98be2b1db764484514 |
       | canister.icp | qsgjb-riaaa-aaaaa-aaaga-cai                |
     Then get_record_value "hello.icp" should be as below
-      | key          | value                       |
+      | key          | value                                      |
       | token.icp    | qjdve-lqaaa-aaaaa-aaaeq-cai                |
       | token.btc    | 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa         |
       | token.ltc    | LUwxSibYhxq2u6RfhQmkuTPZRk2wNjwLbE         |
