@@ -46,9 +46,6 @@ jobs:
           target: "wasm32-unknown-unknown"
       - uses: Swatinem/rust-cache@v1
         with:
-          working-directory: "src/icnaming_ledger"
-      - uses: Swatinem/rust-cache@v1
-        with:
           working-directory: "src"
       - name: run package
         run: |
@@ -90,9 +87,6 @@ jobs:
           toolchain: stable
           profile: minimal
           target: "wasm32-unknown-unknown"
-      - uses: Swatinem/rust-cache@v1
-        with:
-          working-directory: "src/icnaming_ledger"
       - uses: Swatinem/rust-cache@v1
         with:
           working-directory: "src"

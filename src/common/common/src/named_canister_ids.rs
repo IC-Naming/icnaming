@@ -47,7 +47,6 @@ impl NamedCanisterIds {
             }
             CanisterNames::Registry => *CANISTER_IDS_REGISTRY.deref(),
             CanisterNames::Resolver => *CANISTER_IDS_RESOLVER.deref(),
-            CanisterNames::ICNamingLedger => *CANISTER_IDS_ICNAMING_LEDGER.deref(),
             CanisterNames::CyclesMinting => *CANISTER_IDS_CYCLES_MINTING.deref(),
             CanisterNames::Favorites => *CANISTER_IDS_FAVORITES.deref(),
             CanisterNames::Ledger => *CANISTER_IDS_LEDGER.deref(),
@@ -95,7 +94,6 @@ pub enum CanisterNames {
     RegistrarControlGateway,
     Resolver,
     Favorites,
-    ICNamingLedger,
     CyclesMinting,
     DICP,
     Ledger,

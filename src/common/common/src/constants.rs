@@ -138,10 +138,6 @@ const NAMING_CANISTER_IDS_RESOLVER: &str = "";
 pub static CANISTER_IDS_RESOLVER: Lazy<Principal> =
     Lazy::new(|| Principal::from_str(NAMING_CANISTER_IDS_RESOLVER).unwrap());
 #[from_env]
-const NAMING_CANISTER_IDS_ICNAMING_LEDGER: &str = "";
-pub static CANISTER_IDS_ICNAMING_LEDGER: Lazy<Principal> =
-    Lazy::new(|| Principal::from_str(NAMING_CANISTER_IDS_ICNAMING_LEDGER).unwrap());
-#[from_env]
 const NAMING_CANISTER_IDS_CYCLES_MINTING: &str = "";
 pub static CANISTER_IDS_CYCLES_MINTING: Lazy<Principal> =
     Lazy::new(|| Principal::from_str(NAMING_CANISTER_IDS_CYCLES_MINTING).unwrap());

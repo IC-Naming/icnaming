@@ -1,6 +1,5 @@
 import "./scripts/setup"
 import {reinstall as reinstall_ledger} from "./scripts/canisters/ledger";
-import {reinstall as reinstall_icnaming_ledger} from "./scripts/canisters/icnaming_ledger";
 import {reinstall as reinstall_favorites} from "./scripts/canisters/favorites";
 import {reinstall as reinstall_registrar} from "./scripts/canisters/registrar";
 import {reinstall as reinstall_registrar_control_gateway} from "./scripts/canisters/registrar_control_gateway";
@@ -23,12 +22,6 @@ export const reinstall_all = async (options?: CanisterReinstallOptions) => {
 
         if (options && options.canisters?.dicp) {
             await reinstall_dicp({
-                ...options,
-            });
-        }
-
-        if (options && options.canisters?.icnaming_ledger) {
-            await reinstall_icnaming_ledger({
                 ...options,
             });
         }
@@ -84,12 +77,6 @@ export const reinstall_all = async (options?: CanisterReinstallOptions) => {
             }));
         }
 
-        if (options && options.canisters?.icnaming_ledger) {
-            jobs.push(reinstall_icnaming_ledger({
-                ...options,
-            }));
-        }
-
         if (options && options.canisters?.favorites) {
             jobs.push(reinstall_favorites({
                 ...options,
@@ -138,7 +125,6 @@ export const reinstall_all = async (options?: CanisterReinstallOptions) => {
 export interface CanisterReinstallOptionsCanisters {
     ledger?: boolean;
     dicp?: boolean;
-    icnaming_ledger?: boolean;
     favorites?: boolean;
     registrar?: boolean;
     registrar_control_gateway?: boolean;

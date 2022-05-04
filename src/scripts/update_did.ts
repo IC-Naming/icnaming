@@ -1,5 +1,5 @@
 import {exec} from "shelljs";
-import {favorites, icnaming_ledger, registrar, registrar_control_gateway, registry, resolver} from "~/canisters/names";
+import {favorites, registrar, registrar_control_gateway, registry, resolver} from "~/canisters/names";
 import fs from "fs";
 import logger from "node-color-log";
 
@@ -21,7 +21,7 @@ const download_did = async (canister) => {
 };
 
 (async () => {
-    let names = [registrar, registrar_control_gateway, registry, favorites, resolver, icnaming_ledger];
+    let names = [registrar, registrar_control_gateway, registry, favorites, resolver];
     for (let name of names) {
         let did_content = await download_did(name);
         let did_file = `canisters/${name}/src/${name}.did`;

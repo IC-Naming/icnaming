@@ -7,7 +7,6 @@ members = [
     "canisters/naming_marketplace",
     "canisters/mystery_box",
     "canisters/registrar",
-    "canisters/icnaming_ledger",
     "canisters/registrar_control_gateway",
     "canisters/registry",
     "canisters/favorites",

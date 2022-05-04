@@ -49,11 +49,6 @@
       "type": "custom",
       "candid": "scripts/wasm/dft_basic.did",
       "wasm": "scripts/wasm/dft_basic.wasm"
-    },
-    "icnaming_ledger": {
-      "type": "rust",
-      "package": "icnaming_ledger",
-      "candid": "canisters/icnaming_ledger/src/icnaming_ledger.did"
     }
   },
   "defaults": {
