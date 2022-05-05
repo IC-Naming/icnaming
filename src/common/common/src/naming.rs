@@ -29,6 +29,12 @@ impl From<&str> for FirstLevelName {
     }
 }
 
+impl From<String> for FirstLevelName {
+    fn from(name: String) -> Self {
+        FirstLevelName(NameParseResult::parse(&NormalizedName(name)))
+    }
+}
+
 pub fn normalize_name(name: &str) -> NormalizedName {
     NormalizedName(name.trim().to_ascii_lowercase())
 }

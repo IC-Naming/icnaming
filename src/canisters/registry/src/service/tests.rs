@@ -44,8 +44,8 @@ fn add_test_registry() -> Registry {
     STATE.with(|s| {
         let mut store = s.registry_store.borrow_mut();
         let registries = store.get_registries_mut();
-        let registry = create_registry("icp".to_string(), top_owner());
-        registries.insert("icp".to_string(), registry.clone());
+        let registry = create_registry(NAMING_TOP_LABEL.to_string(), top_owner());
+        registries.insert(NAMING_TOP_LABEL.to_string(), registry.clone());
         registry
     })
 }
@@ -78,6 +78,7 @@ mod add_top_name {
 
 mod add_subdomain_to_registries {
     use super::*;
+    use test_common::create_test_name;
 
     #[rstest]
     async fn test_add_subdomain_to_registries(
@@ -98,7 +99,7 @@ mod add_subdomain_to_registries {
         let result = service
             .set_subdomain_owner(
                 "test".to_string(),
-                "icp".to_string(),
+                NAMING_TOP_LABEL.to_string(),
                 top_owner,
                 sub_owner,
                 128,
@@ -107,15 +108,16 @@ mod add_subdomain_to_registries {
             .await;
         println!("{:?}", result);
         assert!(result.is_ok());
-        assert!(service.check_exist("test.icp".to_string()));
+        let name = create_test_name("test");
+        assert!(service.check_exist(&name));
 
         STATE.with(|s| {
             let store = s.registry_store.borrow();
             let registries = store.get_registries();
             assert_eq!(registries.len(), 2);
-            let item = get_registry(&registries, &"test.icp".to_string()).unwrap();
+            let item = get_registry(&registries, &name).unwrap();
             info!("{:?}", item);
-            assert_eq!(item.get_name(), "test.icp".to_string());
+            assert_eq!(item.get_name(), name);
             assert_eq!(item.get_owner(), &sub_owner);
             assert_eq!(item.get_ttl(), 128);
             assert_eq!(item.get_resolver(), Principal::anonymous());

@@ -35,6 +35,10 @@ fn register_years() -> u32 {
     5
 }
 
+fn create_test_name(name: &str) -> String {
+    format!("{}.{}", name, NAMING_TOP_LABEL)
+}
+
 #[fixture]
 fn service(
     _init_test: (),
@@ -99,30 +103,39 @@ mod validate_name {
     use super::*;
 
     #[rstest]
-    #[case("nice.icp", Ok(FirstLevelName::from("nice.icp")))]
-    #[case("ni-e.icp", Ok(FirstLevelName::from("ni-e.icp")))]
-    #[case("n1-e.icp", Ok(FirstLevelName::from("n1-e.icp")))]
-    #[case("www.nice.icp",
+    #[case(
+        create_test_name("nice"),
+        Ok(FirstLevelName::from(create_test_name("nice")))
+    )]
+    #[case(
+        create_test_name("ni-e"),
+        Ok(FirstLevelName::from(create_test_name("ni-e")))
+    )]
+    #[case(
+        create_test_name("n1-e"),
+        Ok(FirstLevelName::from(create_test_name("n1-e")))
+    )]
+    #[case(create_test_name("www.nice"),
     Err("it must be second level name".to_string())
     )]
     #[case("nice.com",
     Err(format ! ("top level of name must be {}", NAMING_TOP_LABEL))
     )]
-    #[case("01234567890123456789012345678901234567890123456789012345678912345.icp",
+    #[case(create_test_name("01234567890123456789012345678901234567890123456789012345678912345"),
     Err("second level name must be less than 64 characters".to_string())
     )]
-    #[case("nic%.icp",
+    #[case(create_test_name("nic%"),
     Err("name must be alphanumeric or -".to_string()),
     )]
-    #[case("你好.icp",
+    #[case(create_test_name("你好"),
     Err("name must be alphanumeric or -".to_string()),
     )]
-    #[case("n1-e .icp",
+    #[case(create_test_name("n1-e "),
     Err("name must be alphanumeric or -".to_string()),
     )]
-    fn test_validate_name(#[case] input: &str, #[case] expected: Result<FirstLevelName, String>) {
+    fn test_validate_name(#[case] input: String, #[case] expected: Result<FirstLevelName, String>) {
         let expected = expected.map_err(|e| NamingError::InvalidName { reason: e });
-        let result = validate_name(input);
+        let result = validate_name(input.as_str());
         assert_eq!(result, expected);
     }
 }
@@ -131,34 +144,34 @@ mod validate_quota {
     use super::*;
 
     #[rstest]
-    #[case("nice.icp",
+    #[case(create_test_name("nice"),
     QuotaType::LenGte(3),
     Ok(()),
     )]
-    #[case("nice.icp",
+    #[case(create_test_name("nice"),
     QuotaType::LenGte(4),
     Ok(()),
     )]
-    #[case("nice.icp",
+    #[case(create_test_name("nice"),
     QuotaType::LenGte(5),
     Err("Name must be at least 5 characters long".to_string()),
     )]
-    #[case("nice.icp",
+    #[case(create_test_name("nice"),
     QuotaType::LenEq(3),
     Err("Name must be exactly 3 characters long".to_string()),
     )]
-    #[case("nice.icp",
+    #[case(create_test_name("nice"),
     QuotaType::LenEq(4),
     Ok(()),
     )]
-    #[case("nice.icp",
+    #[case(create_test_name("nice"),
     QuotaType::LenEq(5),
     Err("Name must be exactly 5 characters long".to_string()),
     )]
     fn test_validate_quota(
         service: RegistrarService,
         owner: AuthPrincipal,
-        #[case] name: &str,
+        #[case] name: String,
         #[case] quota_type: QuotaType,
         #[case] expected: Result<(), String>,
     ) {
@@ -166,14 +179,14 @@ mod validate_quota {
             let mut m = s.user_quota_store.borrow_mut();
             m.add_quota(owner.clone(), quota_type.clone(), 1);
         });
-        let name = FirstLevelName::from(name);
+        let name = FirstLevelName::from(name.as_str());
         let result = service.validate_quota(&name, &owner, &quota_type, 1);
         assert_eq!(result, expected);
     }
 
     #[rstest]
     fn test_validate_quota_no_quota(service: RegistrarService, owner: AuthPrincipal) {
-        let name = FirstLevelName::from("nice.icp");
+        let name = FirstLevelName::from(create_test_name("nice"));
         let quota_type = QuotaType::LenGte(3);
         let result = service.validate_quota(&name, &owner, &quota_type, 1);
         assert_eq!(result, Err("User has no quota for len_gte(3)".to_string()));
@@ -186,7 +199,7 @@ mod validate_quota {
             let mut m = s.user_quota_store.borrow_mut();
             m.add_quota(owner.clone(), quota_type.clone(), 1);
         });
-        let name = FirstLevelName::from("nice.icp");
+        let name = FirstLevelName::from(create_test_name("nice"));
         let result = service.validate_quota(&name, &owner, &quota_type, 2);
         assert_eq!(result, Err("User has no quota for len_gte(3)".to_string()));
     }
@@ -198,7 +211,7 @@ mod available {
     #[rstest]
     fn test_available(service: RegistrarService) {
         {
-            let result = service.available("www.nice.icp");
+            let result = service.available(create_test_name("www.nice").as_str());
             assert_eq!(
                 result,
                 Err(NamingError::InvalidName {
@@ -207,23 +220,23 @@ mod available {
             );
         }
         {
-            let result = service.available("nice.icp");
+            let result = service.available(create_test_name("nice").as_str());
             assert_eq!(result.is_ok(), true);
         }
         {
-            let name = "nice.icp";
+            let name = create_test_name("nice");
             STATE.with(|s| {
                 let mut store = s.registration_store.borrow_mut();
                 let registration =
                     Registration::new(Principal::anonymous(), name.to_string(), 0, 0);
                 store.add_registration(registration);
             });
-            let result = service.available(name);
+            let result = service.available(name.as_str());
             assert_eq!(result, Err(NamingError::RegistrationHasBeenTaken));
         }
         {
-            let name = "icnaming.icp";
-            let result = service.available(name);
+            let name = create_test_name("icnaming");
+            let result = service.available(name.as_str());
             assert_eq!(result, Err(NamingError::RegistrationHasBeenTaken));
         }
     }
@@ -235,12 +248,12 @@ mod get_name_expires {
     #[rstest]
     fn test_get_name_expires(service: RegistrarService) {
         {
-            let name = "nice.icp";
-            let expires = service.get_name_expires(name);
+            let name = create_test_name("nice");
+            let expires = service.get_name_expires(name.as_str());
             assert_eq!(expires, Err(NamingError::RegistrationNotFound));
         }
         {
-            let name = "nice.icp";
+            let name = create_test_name("nice");
             let expired_at = 123000000;
             STATE.with(|s| {
                 let mut store = s.registration_store.borrow_mut();
@@ -248,7 +261,7 @@ mod get_name_expires {
                     Registration::new(Principal::anonymous(), name.to_string(), expired_at, 0);
                 store.add_registration(registration);
             });
-            let expires = service.get_name_expires(name);
+            let expires = service.get_name_expires(name.as_str());
             assert_eq!(expires, Ok(expired_at / 1000000));
         }
     }
@@ -317,7 +330,7 @@ mod register {
         quota_owner: AuthPrincipal,
         mock_now: u64,
     ) {
-        let name = "www.nice.icp";
+        let name = create_test_name("www.nice");
         let context = RegisterCoreContext::new(
             name.to_string(),
             owner,
@@ -345,7 +358,7 @@ mod register {
         register_years: u32,
         mock_now: u64,
     ) {
-        let name = "nice.icp";
+        let name = create_test_name("nice");
         STATE.with(|s| {
             let mut quota_manager = s.user_quota_store.borrow_mut();
             quota_manager.sub_quota(&quota_owner.to_owned(), &TEST_QUOTA, register_years - 1);
@@ -379,7 +392,7 @@ mod register {
         register_years: u32,
         mock_now: u64,
     ) {
-        let name = "nice.icp";
+        let name = create_test_name("nice");
         let context =
             RegisterCoreContext::new(name.to_string(), owner, 15, TimeInNs(mock_now), false);
         let result = service
@@ -403,7 +416,7 @@ mod register {
         register_years: u32,
         mock_now: u64,
     ) {
-        let name = "nice.icp";
+        let name = create_test_name("nice");
         STATE.with(|s| {
             let mut store = s.registration_store.borrow_mut();
             let registration = Registration::new(owner.0, name.to_string(), 0, 0);
@@ -431,7 +444,7 @@ mod register {
         register_years: u32,
         mock_now: u64,
     ) {
-        let name = "icnaming.icp";
+        let name = create_test_name("icnaming");
         let context = RegisterCoreContext::new(
             name.to_string(),
             owner,
@@ -456,7 +469,7 @@ mod register {
         mut mock_registry_api: MockRegistryApi,
         mock_now: u64,
     ) {
-        let name = "nice.icp";
+        let name = create_test_name("nice");
 
         let _ctx = mock_registry_api.expect_set_subdomain_owner().returning(
             move |label, parent_name, sub_owner, ttl, resolver| {
@@ -504,7 +517,8 @@ mod register {
         mut mock_registry_api: MockRegistryApi,
         mock_now: u64,
     ) {
-        let name = "nice.icp";
+        let name = create_test_name("nice");
+        let api_name = name.clone();
 
         let _ctx = mock_registry_api.expect_set_subdomain_owner().returning(
             move |label, parent_name, sub_owner, ttl, resolver| {
@@ -515,7 +529,7 @@ mod register {
                 assert_eq!(resolver, default_resolver);
                 Ok(RegistryDto {
                     owner: owner.0,
-                    name: name.to_string(),
+                    name: api_name.to_string(),
                     ttl,
                     resolver,
                 })
@@ -525,7 +539,7 @@ mod register {
 
         // act
         let context = RegisterCoreContext::new(
-            name.to_string(),
+            name.clone(),
             owner,
             register_years,
             TimeInNs(mock_now),
@@ -542,10 +556,10 @@ mod register {
             let store = s.registration_store.borrow();
             let registrations = store.get_registrations();
             assert_eq!(
-                registrations.borrow().get(&name.to_string()),
+                registrations.borrow().get(&name),
                 Some(&Registration::new(
                     owner.0,
-                    name.to_string(),
+                    name.clone(),
                     get_expired_at(register_years, TimeInNs(mock_now)).0,
                     mock_now,
                 ))
@@ -589,7 +603,7 @@ mod cancel_expired_orders {
                 &mock_user1,
                 mock_now,
                 SubmitOrderRequest {
-                    name: "test-name.icp".to_string(),
+                    name: create_test_name("test-name").to_string(),
                     years: 1,
                 },
             )
@@ -601,7 +615,7 @@ mod cancel_expired_orders {
                 &mock_user2,
                 mock_now - EXPIRE_TIME_OF_NAME_ORDER_IN_NS - 1,
                 SubmitOrderRequest {
-                    name: "test-name2.icp".to_string(),
+                    name: create_test_name("test-name2").to_string(),
                     years: 1,
                 },
             )
@@ -631,7 +645,7 @@ mod cancel_expired_orders {
                 &mock_user1,
                 mock_now,
                 SubmitOrderRequest {
-                    name: "test-name.icp".to_string(),
+                    name: create_test_name("test-name").to_string(),
                     years: 1,
                 },
             )
@@ -642,7 +656,7 @@ mod cancel_expired_orders {
                 &mock_user2,
                 mock_now - EXPIRE_TIME_OF_NAME_ORDER_AVAILABILITY_CHECK_IN_NS - 1,
                 SubmitOrderRequest {
-                    name: "test-name2.icp".to_string(),
+                    name: create_test_name("test-name2").to_string(),
                     years: 1,
                 },
             )
@@ -652,7 +666,7 @@ mod cancel_expired_orders {
             let mut store = s.registration_store.borrow_mut();
             store.add_registration(Registration::new(
                 mock_user2.clone(),
-                "test-name2.icp".to_string(),
+                create_test_name("test-name2").to_string(),
                 mock_now + 1111,
                 mock_now,
             ));
@@ -681,7 +695,7 @@ mod cancel_expired_orders {
                 &mock_user1,
                 mock_now,
                 SubmitOrderRequest {
-                    name: "test-name.icp".to_string(),
+                    name: create_test_name("test-name").to_string(),
                     years: 1,
                 },
             )
@@ -692,7 +706,7 @@ mod cancel_expired_orders {
                 &mock_user2,
                 mock_now - EXPIRE_TIME_OF_NAME_ORDER_AVAILABILITY_CHECK_IN_NS + 1,
                 SubmitOrderRequest {
-                    name: "test-name2.icp".to_string(),
+                    name: create_test_name("test-name2").to_string(),
                     years: 1,
                 },
             )
@@ -724,14 +738,16 @@ mod reclaim_name {
             let mut store = s.registration_store.borrow_mut();
             store.add_registration(Registration::new(
                 mock_user1.clone(),
-                "test-name.icp".to_string(),
+                create_test_name("test-name").to_string(),
                 mock_now + 1111,
                 mock_now,
             ));
         });
 
         // act
-        let reclaim_result = service.reclaim_name("test-name.icp", &mock_user1).await;
+        let reclaim_result = service
+            .reclaim_name(&create_test_name("test-name"), &mock_user1)
+            .await;
 
         assert_eq!(reclaim_result.is_ok(), true);
     }
@@ -739,7 +755,9 @@ mod reclaim_name {
     #[rstest]
     async fn reclaim_name_failed_name_not_found(service: RegistrarService, mock_user1: Principal) {
         // act
-        let reclaim_result = service.reclaim_name("test-name.icp", &mock_user1).await;
+        let reclaim_result = service
+            .reclaim_name(&create_test_name("test-name"), &mock_user1)
+            .await;
 
         assert_eq!(
             reclaim_result.err().unwrap(),
@@ -758,14 +776,16 @@ mod reclaim_name {
             let mut store = s.registration_store.borrow_mut();
             store.add_registration(Registration::new(
                 mock_user1.clone(),
-                "test-name.icp".to_string(),
+                create_test_name("test-name").to_string(),
                 mock_now + 1111,
                 mock_now,
             ));
         });
 
         // act
-        let reclaim_result = service.reclaim_name("test-name.icp", &mock_user2).await;
+        let reclaim_result = service
+            .reclaim_name(&create_test_name("test-name"), &mock_user2)
+            .await;
 
         // assert
         assert_eq!(reclaim_result.err().unwrap(), NamingError::PermissionDenied);
@@ -786,7 +806,7 @@ mod transfer {
         mock_user3: Principal,
         mock_now: u64,
     ) {
-        let test_name = FirstLevelName::from("icnaming.icp");
+        let test_name = FirstLevelName::from(create_test_name("icnaming"));
         STATE.with(|s| {
             let mut store = s.registration_store.borrow_mut();
             store.add_registration(Registration::new(
@@ -839,7 +859,7 @@ mod transfer {
     ) {
         // act
         let result = service
-            .transfer("test-name.icp", &mock_user1, mock_user2)
+            .transfer(&create_test_name("test-name"), &mock_user1, mock_user2)
             .await;
 
         // assert
@@ -857,7 +877,7 @@ mod transfer {
             let mut store = s.registration_store.borrow_mut();
             store.add_registration(Registration::new(
                 mock_user1.clone(),
-                "test-name.icp".to_string(),
+                create_test_name("test-name").to_string(),
                 1,
                 0,
             ));
@@ -865,7 +885,7 @@ mod transfer {
 
         // act
         let result = service
-            .transfer("test-name.icp", &mock_user2, mock_user3)
+            .transfer(&create_test_name("test-name"), &mock_user2, mock_user3)
             .await;
 
         // assert
@@ -881,7 +901,7 @@ mod transfer {
         mock_user3: Principal,
         mock_now: u64,
     ) {
-        let test_name = FirstLevelName::from("icnaming.icp");
+        let test_name = FirstLevelName::from(create_test_name("icnaming"));
         STATE.with(|s| {
             let mut store = s.registration_store.borrow_mut();
             store.add_registration(Registration::new(
@@ -902,7 +922,7 @@ mod transfer {
 
         // act
         let result = service
-            .transfer("icnaming.icp", &mock_user1, mock_user2)
+            .transfer(&create_test_name("icnaming"), &mock_user1, mock_user2)
             .await;
 
         // assert
@@ -928,7 +948,7 @@ mod transfer_by_admin {
         mock_now: u64,
     ) {
         let admin = get_admin();
-        let test_name = FirstLevelName::from("icnaming.icp");
+        let test_name = FirstLevelName::from(create_test_name("icnaming"));
         STATE.with(|s| {
             let mut store = s.registration_store.borrow_mut();
             store.add_registration(Registration::new(
@@ -983,7 +1003,7 @@ mod transfer_by_admin {
         mock_now: u64,
     ) {
         let admin = get_admin();
-        let test_name = FirstLevelName::from("something-not-reserved.icp");
+        let test_name = FirstLevelName::from(create_test_name("something-not-reserved"));
         STATE.with(|s| {
             let mut store = s.registration_store.borrow_mut();
             store.add_registration(Registration::new(
@@ -1010,7 +1030,7 @@ mod transfer_by_admin {
         mock_user2: Principal,
     ) {
         let _admin = get_admin();
-        let test_name = FirstLevelName::from("icnaming.icp");
+        let test_name = FirstLevelName::from(create_test_name("icnaming"));
 
         // act
         let result = service
@@ -1033,8 +1053,8 @@ mod approve {
         mock_user2: Principal,
         mock_now: u64,
     ) {
-        let test_name_str = "icnaming.icp";
-        let test_name = FirstLevelName::from(test_name_str);
+        let test_name_str = create_test_name("icnaming");
+        let test_name = FirstLevelName::from(test_name_str.as_str());
         STATE.with(|s| {
             let mut store = s.registration_store.borrow_mut();
             store.add_registration(Registration::new(
@@ -1046,7 +1066,7 @@ mod approve {
         });
 
         // act
-        let result = service.approve(&mock_user1, mock_now, test_name_str, mock_user2.clone());
+        let result = service.approve(&mock_user1, mock_now, &test_name_str, mock_user2.clone());
 
         // assert
         assert!(result.is_ok());
@@ -1064,8 +1084,8 @@ mod approve {
         mock_user3: Principal,
         mock_now: u64,
     ) {
-        let test_name_str = "icnaming.icp";
-        let test_name = FirstLevelName::from(test_name_str);
+        let test_name_str = create_test_name("icnaming");
+        let test_name = FirstLevelName::from(test_name_str.as_str());
         STATE.with(|s| {
             let mut store = s.registration_store.borrow_mut();
             store.add_registration(Registration::new(
@@ -1077,8 +1097,8 @@ mod approve {
         });
 
         // act
-        let _result = service.approve(&mock_user1, mock_now, test_name_str, mock_user2.clone());
-        let result = service.approve(&mock_user1, mock_now, test_name_str, mock_user3.clone());
+        let _result = service.approve(&mock_user1, mock_now, &test_name_str, mock_user2.clone());
+        let result = service.approve(&mock_user1, mock_now, &test_name_str, mock_user3.clone());
 
         // assert
         assert!(result.is_ok());
@@ -1095,8 +1115,8 @@ mod approve {
         mock_user2: Principal,
         mock_now: u64,
     ) {
-        let test_name_str = "icnaming.icp";
-        let test_name = FirstLevelName::from(test_name_str);
+        let test_name_str = create_test_name("icnaming");
+        let test_name = FirstLevelName::from(test_name_str.as_str());
         STATE.with(|s| {
             let mut store = s.registration_store.borrow_mut();
             store.add_registration(Registration::new(
@@ -1108,8 +1128,13 @@ mod approve {
         });
 
         // act
-        let _result = service.approve(&mock_user1, mock_now, test_name_str, mock_user2.clone());
-        let result = service.approve(&mock_user1, mock_now, test_name_str, Principal::anonymous());
+        let _result = service.approve(&mock_user1, mock_now, &test_name_str, mock_user2.clone());
+        let result = service.approve(
+            &mock_user1,
+            mock_now,
+            &test_name_str,
+            Principal::anonymous(),
+        );
 
         // assert
         assert!(result.is_ok());
@@ -1126,8 +1151,8 @@ mod approve {
         mock_user2: Principal,
         mock_now: u64,
     ) {
-        let test_name_str = "icnaming.icp";
-        let test_name = FirstLevelName::from(test_name_str);
+        let test_name_str = create_test_name("icnaming");
+        let test_name = FirstLevelName::from(test_name_str.as_str());
         STATE.with(|s| {
             let mut store = s.registration_store.borrow_mut();
             store.add_registration(Registration::new(
@@ -1139,7 +1164,7 @@ mod approve {
         });
 
         // act
-        let result = service.approve(&mock_user2, mock_now, test_name_str, mock_user1.clone());
+        let result = service.approve(&mock_user2, mock_now, &test_name_str, mock_user1.clone());
 
         // assert
         assert!(result.is_err());
@@ -1161,8 +1186,8 @@ mod transfer_from {
         mock_user2: Principal,
         mock_now: u64,
     ) {
-        let test_name_str = "icnaming.icp";
-        let test_name = FirstLevelName::from(test_name_str);
+        let test_name_str = create_test_name("icnaming");
+        let test_name = FirstLevelName::from(test_name_str.as_str());
         STATE.with(|s| {
             let mut store = s.registration_store.borrow_mut();
             store.add_registration(Registration::new(
@@ -1173,7 +1198,7 @@ mod transfer_from {
             ));
         });
         service
-            .approve(&mock_user1, mock_now, test_name_str, mock_user2.clone())
+            .approve(&mock_user1, mock_now, &test_name_str, mock_user2.clone())
             .unwrap();
 
         let api_received_name = test_name_str.clone();
@@ -1188,7 +1213,7 @@ mod transfer_from {
         service.registry_api = Arc::new(mock_registry_api);
 
         // act
-        let result = service.transfer_from(&mock_user2, test_name_str).await;
+        let result = service.transfer_from(&mock_user2, &test_name_str).await;
 
         // assert
         assert!(result.is_ok());
@@ -1207,8 +1232,8 @@ mod transfer_from {
         mock_user2: Principal,
         mock_now: u64,
     ) {
-        let test_name_str = "icnaming.icp";
-        let test_name = FirstLevelName::from(test_name_str);
+        let test_name_str = create_test_name("icnaming");
+        let test_name = FirstLevelName::from(test_name_str.as_str());
         STATE.with(|s| {
             let mut store = s.registration_store.borrow_mut();
             store.add_registration(Registration::new(
@@ -1220,7 +1245,9 @@ mod transfer_from {
         });
 
         // act
-        let result = service.transfer_from(&mock_user2, test_name_str).await;
+        let result = service
+            .transfer_from(&mock_user2, test_name_str.as_str())
+            .await;
 
         // assert
         assert!(result.is_err());

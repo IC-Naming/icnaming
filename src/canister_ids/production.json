@@ -1,17 +1,17 @@
 {
   "registry": {
-    "ic": "c7nxw-iiaaa-aaaam-aacaq-cai"
+    "ic": "f542z-iqaaa-aaaam-aafnq-cai"
   },
   "registrar": {
-    "ic": "cymrc-fqaaa-aaaam-aacaa-cai"
+    "ic": "ft6xr-taaaa-aaaam-aafmq-cai"
   },
   "resolver": {
-    "ic": "cwo4k-6aaaa-aaaam-aacba-cai"
+    "ic": "fi3lu-jyaaa-aaaam-aafoa-cai"
   },
   "favorites": {
-    "ic": "crp26-tyaaa-aaaam-aacbq-cai"
+    "ic": "fu7rf-6yaaa-aaaam-aafma-cai"
   },
   "registrar_control_gateway": {
-    "ic": "gjzpj-bqaaa-aaaam-aacya-cai"
+    "ic": "f254n-fiaaa-aaaam-aafna-cai"
   }
 }

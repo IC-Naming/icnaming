@@ -142,11 +142,11 @@ impl RegistriesService {
         Ok(RegistryDto::from(&updated_registry))
     }
 
-    pub fn check_exist(&self, name: String) -> bool {
+    pub fn check_exist(&self, name: &str) -> bool {
         STATE.with(|s| {
             let store = s.registry_store.borrow();
             let registries = store.get_registries();
-            registries.contains_key(&name)
+            registries.contains_key(name)
         })
     }
 
