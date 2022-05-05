@@ -1,7 +1,7 @@
 use std::cell::RefCell;
 use std::sync::Once;
 
-use candid::{decode_args, encode_args};
+use candid::{candid_method, decode_args, encode_args};
 use ic_cdk::{api, storage};
 use ic_cdk_macros::*;
 use log::info;
@@ -69,11 +69,6 @@ impl StableState for State {
 static INIT: Once = Once::new();
 
 pub(crate) fn canister_module_init() {
-    INIT.call_once(|| {
-        ICLogger::init("registrar_control_gateway");
-    });
-    ensure_current_canister_id_match(CanisterNames::RegistrarControlGateway);
-
     STATE.with(|s| {
         let mut store = s.quota_import_store.borrow_mut();
 
@@ -110,12 +105,21 @@ pub(crate) fn canister_module_init() {
     })
 }
 
-#[init]
-fn init_function() {
-    canister_module_init();
+fn guard_func() -> Result<(), String> {
+    INIT.call_once(|| {
+        ICLogger::init("registrar_control_gateway");
+    });
+    ensure_current_canister_id_match(CanisterNames::RegistrarControlGateway)
 }
 
-#[pre_upgrade]
+#[init(guard = "guard_func")]
+#[candid_method(init)]
+fn init_function() {
+    canister_module_init();
+    info!("init function called");
+}
+
+#[pre_upgrade(guard = "guard_func")]
 fn pre_upgrade() {
     STATE.with(|s| {
         let bytes = s.encode();
@@ -129,7 +133,7 @@ fn pre_upgrade() {
     });
 }
 
-#[post_upgrade]
+#[post_upgrade(guard = "guard_func")]
 fn post_upgrade() {
     STATE.with(|s| match storage::stable_restore::<(Vec<u8>,)>() {
         Ok(bytes) => {

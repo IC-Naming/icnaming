@@ -64,7 +64,7 @@ export const build = (name: string, canisterEnv?: string) => {
     if (canisterEnv) {
         // set env var EX3_CANISTER_ENV=canisterEnv
         logger.debug(`Building canister ${name} with features ${canisterEnv}`);
-        exec(`NAMING_ENV=${canisterEnv} && dfx build ${name}`);
+        exec(`NAMING_CANISTER_ENV=${canisterEnv} dfx build ${name}`);
     } else {
         logger.debug(`Building canister ${name}`);
         const result = exec(`dfx build ${name}`);

@@ -71,11 +71,20 @@ pub fn is_named_canister_id(name: CanisterNames, id: Principal) -> bool {
     })
 }
 
-pub fn ensure_current_canister_id_match(name: CanisterNames) {
+pub fn ensure_current_canister_id_match(name: CanisterNames) -> Result<(), String> {
     let current = api::id();
     let expected = get_named_get_canister_id(name);
     if current != expected {
-        panic!("Current canister id does not match expected canister id. Expected: {:?}, Current: {:?}", expected, current);
+        Err(format!(
+            "Current canister id does not match expected canister id. Expected: {}, Current: {}",
+            expected, current
+        ))
+    } else {
+        info!(
+            "Current canister id matches expected canister id, {}",
+            current
+        );
+        Ok(())
     }
 }
 

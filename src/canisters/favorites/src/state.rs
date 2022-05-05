@@ -2,7 +2,7 @@ use std::borrow::Borrow;
 use std::cell::RefCell;
 use std::sync::Once;
 
-use candid::{decode_args, encode_args};
+use candid::{candid_method, decode_args, encode_args};
 use ic_cdk::{api, storage};
 use ic_cdk_macros::*;
 use log::info;
@@ -49,19 +49,20 @@ impl StableState for State {
 
 static INIT: Once = Once::new();
 
-pub(crate) fn canister_module_init() {
+fn guard_func() -> Result<(), String> {
     INIT.call_once(|| {
         ICLogger::init("favorites");
     });
-    ensure_current_canister_id_match(CanisterNames::Favorites);
+    ensure_current_canister_id_match(CanisterNames::Favorites)
 }
 
-#[init]
+#[init(guard = "guard_func")]
+#[candid_method(init)]
 fn init_function() {
-    canister_module_init();
+    info!("init function called");
 }
 
-#[pre_upgrade]
+#[pre_upgrade(guard = "guard_func")]
 fn pre_upgrade() {
     STATE.with(|s| {
         let bytes = s.encode();
@@ -75,14 +76,13 @@ fn pre_upgrade() {
     });
 }
 
-#[post_upgrade]
+#[post_upgrade(guard = "guard_func")]
 fn post_upgrade() {
     STATE.with(|s| match storage::stable_restore::<(Vec<u8>,)>() {
         Ok(bytes) => {
             let new_state = State::decode(bytes.0).expect("Decoding stable memory failed");
 
             s.replace(new_state);
-            canister_module_init();
             info!("Loaded state after upgrade");
         }
         Err(e) => api::trap(format!("Failed to restored state after upgrade: {:?}", e).as_str()),

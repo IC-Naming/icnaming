@@ -8,7 +8,8 @@ fn main() -> Result<()> {
     } else {
         "dev"
     };
-
+    println!("load env: {}", env);
+    println!("rerun-if-env-changed=NAMING_CANISTER_ENV");
     let env_parts = vec!["canister_ids", "config", "principals"];
     for env_part in env_parts {
         let env_variables = read_file(format!("../../env_configs/{}.{}.env", env, env_part))?;

@@ -194,7 +194,7 @@ impl UserQuotaStore {
         }
 
         for details in details {
-            self.transfer_quota(&from, details);
+            self.transfer_quota(&from, details).unwrap();
         }
         Ok(())
     }
