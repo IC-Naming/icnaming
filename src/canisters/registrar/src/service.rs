@@ -365,9 +365,8 @@ impl RegistrarService {
         // update quota before await in case of concurrent register
         STATE.with(|s| {
             let mut user_quota_manager = s.user_quota_store.borrow_mut();
-            let result = user_quota_manager.sub_quota(&quota_owner, &quota_type, years);
-            assert!(result);
-        });
+            user_quota_manager.sub_quota(&quota_owner, &quota_type, years)
+        })?;
 
         let result = self.register_core(context).await;
 
@@ -531,8 +530,8 @@ impl RegistrarService {
         let quota_owner = must_not_anonymous(&quota_owner)?;
         STATE.with(|s| {
             let mut user_quota_manager = s.user_quota_store.borrow_mut();
-            user_quota_manager.sub_quota(&quota_owner, &quota_type, diff);
-        });
+            user_quota_manager.sub_quota(&quota_owner, &quota_type, diff)
+        })?;
         Ok(true)
     }
 
@@ -836,7 +835,7 @@ impl RegistrarService {
                 return Err(NamingError::InsufficientQuota);
             }
 
-            store.sub_quota(&from, &quota_type, diff);
+            store.sub_quota(&from, &quota_type, diff)?;
             store.add_quota(to, quota_type, diff);
             info!(
                 "transfer quota: {} from user {} to user {}, diff: {}",
@@ -857,7 +856,8 @@ impl RegistrarService {
 
         STATE.with(|s| {
             let mut store = s.user_quota_store.borrow_mut();
-            Ok(store.transfer_quota(&caller, &details))
+            store.transfer_quota(&caller, &details)?;
+            Ok(true)
         })
     }
 
@@ -874,7 +874,8 @@ impl RegistrarService {
 
         STATE.with(|s| {
             let mut store = s.user_quota_store.borrow_mut();
-            Ok(store.batch_transfer_quota(caller, request.items.as_slice()))
+            store.batch_transfer_quota(caller, request.items.as_slice())?;
+            Ok(true)
         })
     }
 

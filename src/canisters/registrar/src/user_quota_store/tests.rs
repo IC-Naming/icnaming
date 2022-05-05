@@ -98,7 +98,7 @@ mod transfer_quota {
         );
 
         // assert
-        assert!(result);
+        assert!(result.is_ok());
         let user_quota = store.get_quota(&mock_user1, &QuotaType::LenGte(4));
         assert_eq!(user_quota, Some(3));
         let user_quota = store.get_quota(&mock_user2, &QuotaType::LenGte(4));
@@ -126,7 +126,7 @@ mod transfer_quota {
         );
 
         // assert
-        assert!(!result);
+        assert!(result.is_err());
         let user_quota = store.get_quota(&mock_user1, &QuotaType::LenGte(4));
         assert_eq!(user_quota, Some(4));
         let user_quota = store.get_quota(&mock_user2, &QuotaType::LenGte(4));
@@ -152,7 +152,7 @@ mod transfer_quota {
         );
 
         // assert
-        assert!(!result);
+        assert!(result.is_err());
         let user_quota = store.get_quota(&mock_user1, &QuotaType::LenGte(4));
         assert_eq!(user_quota, None);
         let user_quota = store.get_quota(&mock_user2, &QuotaType::LenGte(4));
