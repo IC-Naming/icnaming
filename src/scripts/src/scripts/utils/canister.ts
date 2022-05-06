@@ -17,7 +17,7 @@ export const uninstall_code = async (name: string) => {
     if (result.code !== 0) {
         throw new Error(result.stderr);
     }
-    let max_retries = 30
+    const max_retries = 30
     for (let i = 0; i < max_retries; i++) {
         const info_result = exec(`dfx canister info ${name}`);
         if (info_result.code !== 0) {
@@ -50,13 +50,13 @@ export const add_main_as_controller = async () => {
 }
 
 export const build = (name: string, canisterEnv?: string) => {
-    let dfx_json = get_dfx_json();
-    let canister: DfxJsonCanister = dfx_json.canisters.get(name) as DfxJsonCanister;
+    const dfx_json = get_dfx_json();
+    const canister: DfxJsonCanister = dfx_json.canisters.get(name) as DfxJsonCanister;
     if (!canister) {
         throw new Error(`Canister ${name} not found in dfx.json`);
     }
 
-    if (canister["type"] === "custom" && !canister.build) {
+    if (canister.type === "custom" && !canister.build) {
         logger.debug(`Canister ${name} is a custom canister without build scripts, skipping build`);
         return;
     }
@@ -99,12 +99,12 @@ export const reinstall = (name: string, args?: string) => {
 
 export const reinstall_code = async (name: string, args?: ArrayBuffer) => {
     console.info(`Reinstalling ${name}`);
-    let dfxJson = get_dfx_json();
-    let canister: DfxJsonCanister = dfxJson.canisters.get(name) as DfxJsonCanister;
-    let wasmPath = get_wasm_path(canister);
-    let buffer = fs.readFileSync(wasmPath);
-    let canister_id = get_id(name);
-    let agent = new HttpAgent(identities.main.agentOptions);
+    const dfxJson = get_dfx_json();
+    const canister: DfxJsonCanister = dfxJson.canisters.get(name) as DfxJsonCanister;
+    const wasmPath = get_wasm_path(canister);
+    const buffer = fs.readFileSync(wasmPath);
+    const canister_id = get_id(name);
+    const agent = new HttpAgent(identities.main.agentOptions);
     await agent.fetchRootKey();
     await Actor.install({
         module: buffer,
@@ -112,7 +112,7 @@ export const reinstall_code = async (name: string, args?: ArrayBuffer) => {
         arg: args
     }, {
         canisterId: canister_id,
-        agent: agent,
+        agent,
     })
     console.info(`${name} reinstalled`);
 }

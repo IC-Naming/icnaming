@@ -9,6 +9,8 @@ fn main() -> Result<()> {
         "dev"
     };
     println!("load env: {}", env);
+    println!("warning={}", env);
+
     println!("rerun-if-env-changed=NAMING_CANISTER_ENV");
     let env_parts = vec!["canister_ids", "config", "principals"];
     for env_part in env_parts {

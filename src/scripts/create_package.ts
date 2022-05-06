@@ -17,7 +17,7 @@ const build_all = async (build_context: BuildContext) => {
     fs.mkdirSync(package_canister_env_dir)
 
     // distinct feature
-    let canister_envs = build_context.canister_envs;
+    const canister_envs = build_context.canister_envs;
 
     // build each canister by each feature
     for (const canisterEnv of canister_envs) {
@@ -26,7 +26,7 @@ const build_all = async (build_context: BuildContext) => {
         fs.mkdirSync(canister_env_dir)
 
         logger.debug(`build canister_env: ${canisterEnv}`);
-        for (let [name, canister_json] of Object.entries(build_context.canisters)) {
+        for (const [name, canister_json] of Object.entries(build_context.canisters)) {
             canister.build(name, canisterEnv);
             // copy wasm files to feature dir
             const wasm_path = get_wasm_path(canister_json);
@@ -51,7 +51,7 @@ const clean = async () => {
 
 const check = async (build_context: BuildContext) => {
     // ensure every wasm file in package_feature dir must be < 2MB, check recursive
-    for (let feature of build_context.canister_envs) {
+    for (const feature of build_context.canister_envs) {
         const feature_dir = `${package_canister_env_dir}/${feature}`
         const files = fs.readdirSync(feature_dir);
         for (const file of files) {
@@ -99,7 +99,7 @@ const create = async (build_context: BuildContext) => {
             "type": "custom"
         };
     }
-    out_dfx_json["canisters"] = canister_node;
+    out_dfx_json.canisters = canister_node;
 
     logger.debug("creating package for each env");
     for (const env of build_context.envs) {
@@ -118,7 +118,7 @@ const create = async (build_context: BuildContext) => {
         fs.mkdirSync(env_assets_dir);
 
         // copy files from package_feature dir to env dir
-        let feature = env.canister_env;
+        const feature = env.canister_env;
         const feature_dir = `${package_canister_env_dir}/${feature}`;
         const files = fs.readdirSync(feature_dir);
         for (const file of files) {

@@ -1,4 +1,4 @@
-use crate::canister_api::{AccountId, AccountIdentifier, Subaccount};
+use crate::canister_api::{AccountIdentifier, Subaccount};
 use crate::errors::NamingError;
 use candid::Principal;
 use const_env::from_env;

@@ -7,22 +7,22 @@ import {get_dfx_json} from "~/utils/dfx_json";
 
 (async () => {
     await canister.create_all();
-    let dfxJson = get_dfx_json();
+    const dfxJson = get_dfx_json();
     const names = dfxJson.canisters.keys();
-    let dir = `./env_configs`;
+    const dir = `./env_configs`;
     // create dir if not exists
     if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, {recursive: true});
     }
 
-    let env_file_content = "";
-    for (let name of names) {
-        let env_name = `NAMING_CANISTER_IDS_${name.toUpperCase()}`;
-        let value = canister.get_id(name);
-        env_file_content += `export ${env_name}=${value}\n`;
+    let envFileContent = "";
+    for (const name of names) {
+        const envName = `NAMING_CANISTER_IDS_${name.toUpperCase()}`;
+        const value = canister.get_id(name);
+        envFileContent += `export ${envName}=${value}\n`;
     }
     // write env file
-    fs.writeFileSync(`${dir}/dev.canister_ids.env`, env_file_content);
+    fs.writeFileSync(`${dir}/dev.canister_ids.env`, envFileContent);
 
     // TODO: write env file for prod
     // let registrar_admin = `# main node\n${identities.main.principal_text}`;

@@ -8,16 +8,16 @@ import fs from "fs";
 
 // export state data
 const export_state = async (actor: any, name: string) => {
-    let now_time = new Date();
-    let state_result = await actor.export_state();
+    const now_time = new Date();
+    const state_result = await actor.export_state();
     if ('Ok' in state_result) {
-        let latest_actor_dir = `local_state_data/${name}`;
+        const latest_actor_dir = `local_state_data/${name}`;
         if (!fs.existsSync(latest_actor_dir)) {
             fs.mkdirSync(latest_actor_dir, { recursive: true });
         }
 
         // update last file too
-        let last_filename = `${latest_actor_dir}/latest.zlib`;
+        const last_filename = `${latest_actor_dir}/latest.zlib`;
         fs.writeFileSync(last_filename, Uint8Array.from(state_result.Ok.state_data));
         logger.debug(`${name} State data exported, cost ${(new Date()).getTime() - now_time.getTime()}ms`);
     } else {

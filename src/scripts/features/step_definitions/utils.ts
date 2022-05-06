@@ -25,7 +25,7 @@ export const set_balance_to = async (to: string, balance: string | BigInt): Prom
     const sub_account = [];
     const amount = balance_bigint;
     const created_at = [];
-    let result = await dicp.transfer(sub_account as [],
+    const result = await dicp.transfer(sub_account as [],
         to,
         amount,
         created_at as [],
@@ -33,16 +33,16 @@ export const set_balance_to = async (to: string, balance: string | BigInt): Prom
     logger.debug(`Transfer result: ${JSON.stringify(result)}`);
 }
 
-export const ledger_transfer_to = async (actor: ledgerActor, to: Array<number>, balance_bigint: bigint, memo: bigint): Promise<void> => {
+export const ledger_transfer_to = async (actor: ledgerActor, to: number[], balance_bigint: bigint, memo: bigint): Promise<void> => {
     if (balance_bigint <= 0n) {
         return;
     }
-    let transfer_result = await actor.transfer({
+    const transfer_result = await actor.transfer({
         amount: {
             e8s: balance_bigint
         },
-        memo: memo,
-        to: to,
+        memo,
+        to,
         fee: {
             e8s: BigInt(10_000),
         },
@@ -57,14 +57,14 @@ export const ledger_transfer_to = async (actor: ledgerActor, to: Array<number>, 
 
 export const get_balance_e8s = async (user: string): Promise<BigInt> => {
     const account_id = identities.get_identity_info(user).account_id_bytes;
-    let balance_result: Tokens = await ledger.account_balance({
+    const balance_result: Tokens = await ledger.account_balance({
         account: account_id,
     });
     return balance_result.e8s;
 }
 
 export const reinstall_canisters = async (names: string[]): Promise<void> => {
-    let canisters = {};
+    const canisters = {};
     for (const name of names) {
         canisters[name] = true;
     }
@@ -74,7 +74,7 @@ export const reinstall_canisters = async (names: string[]): Promise<void> => {
     await reinstall_all({
         build: false,
         init: true,
-        canisters: canisters
+        canisters
     });
 }
 
@@ -92,8 +92,8 @@ export const assert_remote_result = (result: any, status?: string) => {
 
 Given(/^Reinstall canisters$/,
     async function (data) {
-        let target_canisters = data.hashes();
-        let names: string[] = [];
+        const target_canisters = data.hashes();
+        const names: string[] = [];
         for (const item of target_canisters) {
             names.push(item.name);
         }
@@ -110,7 +110,7 @@ Given(/^User "([^"]*)" balance is set to be "([^"]*)"$/,
 Then(/^User "([^"]*)" balance is "([^"]*)"$/,
     async function (user: string, balance_str: string) {
         const balance = toICPe8s(balance_str);
-        let balance_result = await dicp.balanceOf(identities.get_principal(user).toText());
+        const balance_result = await dicp.balanceOf(identities.get_principal(user).toText());
         logger.debug(`Balance result: ${JSON.stringify(balance_result)}`);
         expect(balance_result).to.be.equal(balance);
     });

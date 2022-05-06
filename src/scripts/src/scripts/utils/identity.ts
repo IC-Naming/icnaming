@@ -15,7 +15,7 @@ function get_pem_path(name: string): string {
 
 export function load(name: string): Identity {
     new_dfx_identity(name);
-    let pem_path = get_pem_path(name);
+    const pem_path = get_pem_path(name);
     const rawKey = fs
         .readFileSync(pem_path)
         .toString()
@@ -37,8 +37,8 @@ export function load(name: string): Identity {
 export const new_dfx_identity = (name: string) => {
     exec(`dfx identity new ${name}`, {silent: true});
     // override static key file from scripts/identity_pem/${name}/identity.pem
-    let target_pem_path = get_pem_path(name);
-    let source_pem_path = `scripts/identity_pem/${name}/identity.pem`;
+    const target_pem_path = get_pem_path(name);
+    const source_pem_path = `scripts/identity_pem/${name}/identity.pem`;
     fs.copyFileSync(source_pem_path, target_pem_path);
 }
 
@@ -61,10 +61,10 @@ export interface IdentityInfo {
     principal_text: string;
     agentOptions: agentOptions;
     account_id_hex: string;
-    account_id_bytes: Array<number>;
-    subaccount1_id_bytes: Array<number>;
-    subaccount2_id_bytes: Array<number>;
-    subaccount3_id_bytes: Array<number>;
+    account_id_bytes: number[];
+    subaccount1_id_bytes: number[];
+    subaccount2_id_bytes: number[];
+    subaccount3_id_bytes: number[];
 }
 
 export interface IdentityCollection {
@@ -75,13 +75,13 @@ export interface IdentityCollection {
     user3: IdentityInfo,
     state_exporter: IdentityInfo,
     timer_trigger: IdentityInfo,
-    subaccount1: Array<number>,
-    subaccount2: Array<number>,
-    subaccount3: Array<number>,
+    subaccount1: number[],
+    subaccount2: number[],
+    subaccount3: number[],
     // subaccount for icnaming ledger to receive quota order payment
-    registrar_quota_order_receiver_subaccount: Array<number>,
+    registrar_quota_order_receiver_subaccount: number[],
     // subaccount for icnaming ledger to refund quota order payment
-    registrar_quota_order_refund_subaccount: Array<number>,
+    registrar_quota_order_refund_subaccount: number[],
 
     get_identity_info(name: string): IdentityInfo;
 
@@ -100,7 +100,7 @@ export const create_identities = () => {
 
 export const identities = ((): IdentityCollection => {
     const get_subaccount = (index: number) => {
-        let subAccount = new Uint8Array(32).fill(0);
+        const subAccount = new Uint8Array(32).fill(0);
         subAccount[0] = index;
         return subAccount;
     }
@@ -112,14 +112,14 @@ export const identities = ((): IdentityCollection => {
         const account_id_uint8 = principalToAccountIDInBytes(principal);
         const account_id_bytes = Array.from(account_id_uint8);
         return {
-            identity: identity,
+            identity,
             principal_text: principal.toText(),
             agentOptions: {
                 host: "http://127.0.0.1:8000",
-                identity: identity,
+                identity,
             },
             account_id_hex: toHexString(account_id_uint8),
-            account_id_bytes: account_id_bytes,
+            account_id_bytes,
             subaccount1_id_bytes: Array.from(principalToAccountIDInBytes(principal, (get_subaccount(1)))),
             subaccount2_id_bytes: Array.from(principalToAccountIDInBytes(principal, (get_subaccount(2)))),
             subaccount3_id_bytes: Array.from(principalToAccountIDInBytes(principal, (get_subaccount(3)))),
@@ -185,7 +185,7 @@ export const get_principal = (name: string): Principal => {
     if (name == "anonymous") {
         return Principal.anonymous();
     }
-    let identityInfo = identities.get_identity_info(name);
+    const identityInfo = identities.get_identity_info(name);
     let user_principal: Principal;
     if (identityInfo != null) {
         user_principal = identityInfo.identity.getPrincipal();

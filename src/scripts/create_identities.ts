@@ -8,7 +8,7 @@ import logger from "node-color-log";
 
 create_identities();
 const identities = identity.identities;
-let identities_json = identities_to_json(identities)
+const identities_json = identities_to_json(identities)
 // write json to identities.json
 fs.writeFileSync("identities.json",identities_json);
 logger.debug("Identities created, identities.json written to disk");

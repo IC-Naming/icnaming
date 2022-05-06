@@ -34,9 +34,9 @@ export class DfxJsonFile implements DfxJson {
         if (fs.existsSync(this.path)) {
             const json = fs.readFileSync(this.path, "utf8");
             const dfxJson: DfxJson = JSON.parse(json);
-            let dfxPackageJson = get_dfx_package_json();
-            for (let [key, value] of Object.entries(dfxJson.canisters)) {
-                let pack_config = dfxPackageJson.getCanister(key);
+            const dfxPackageJson = get_dfx_package_json();
+            for (const [key, value] of Object.entries(dfxJson.canisters)) {
+                const pack_config = dfxPackageJson.getCanister(key);
                 if (pack_config !== undefined) {
                     value.pack_config = pack_config;
                 }
@@ -76,11 +76,11 @@ export class FileDfxPackage implements DfxPackageJson {
     constructor(file_content: string) {
         this.canisters = new Map();
         const dfx_package_json = JSON.parse(file_content);
-        for (let name in dfx_package_json["canisters"]) {
-            this.canisters.set(name, dfx_package_json["canisters"][name] as DfxPackageCanister);
+        for (const name in dfx_package_json.canisters) {
+            this.canisters.set(name, dfx_package_json.canisters[name] as DfxPackageCanister);
         }
         this.envs = [];
-        for (const item of dfx_package_json["envs"]) {
+        for (const item of dfx_package_json.envs) {
             this.envs.push(item as DfxPackageEnv);
         }
     }
@@ -92,6 +92,6 @@ export class FileDfxPackage implements DfxPackageJson {
 }
 
 export const get_dfx_package_json = (): DfxPackageJson => {
-    let json = fs.readFileSync("./dfx_package.json", "utf8");
+    const json = fs.readFileSync("./dfx_package.json", "utf8");
     return new FileDfxPackage(json);
 }

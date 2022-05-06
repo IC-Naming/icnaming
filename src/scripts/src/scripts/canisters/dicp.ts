@@ -24,7 +24,7 @@ export const reinstall = async (options?: ReInstallOptions) => {
 
     const archiveArgs = "null";
 
-    let owner_principal = identities.main.identity.getPrincipal().toText();
+    const owner_principal = identities.main.identity.getPrincipal().toText();
     const owner = `opt principal "${owner_principal}"`;
     const args = `'(null ,null ,"${name}", "${symbol}", ${decimals}:nat8, ${supply}:nat, record { minimum = 0 : nat; rate = 0 : nat32; rateDecimals= 0:nat8 } , ${owner}, ${archiveArgs})'`;
     logger.debug(`Reinstall by dfx: ${args}`);

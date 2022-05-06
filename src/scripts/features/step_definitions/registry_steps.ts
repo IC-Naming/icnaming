@@ -14,7 +14,7 @@ let global_set_subdomain_owner_result: GetDetailsResponse
 
 When(/^I call set_subdomain_owner to add a second level name$/,
     async function () {
-        let call = registry.set_subdomain_owner("hello2.icp",
+        const call = registry.set_subdomain_owner("hello2.icp",
             "icp",
             identities.user1.identity.getPrincipal(),
             BigInt(600),
@@ -35,26 +35,26 @@ Then(/^set_subdomain_owner result in status "([^"]*)"$/,
     });
 Then(/^get_resolver "([^"]*)" should be the public resolver$/,
     async function (name: string) {
-        let resolver_value = await new Result(registry.get_resolver(name)).unwrap();
-        let public_resolver = get_id(resolver);
+        const resolver_value = await new Result(registry.get_resolver(name)).unwrap();
+        const public_resolver = get_id(resolver);
         expect(resolver_value.toText()).to.equal(public_resolver);
     });
 Then(/^get_owner "([^"]*)" should be "([^"]*)"$/,
     async function (name: string, owner: string) {
-        let owner_value = await new Result(registry.get_owner(name)).unwrap();
-        let owner_principal = identities.get_identity_info(owner).principal_text;
+        const owner_value = await new Result(registry.get_owner(name)).unwrap();
+        const owner_principal = identities.get_identity_info(owner).principal_text;
         expect(owner_value.toText()).to.equal(owner_principal);
     });
 
 Then(/^get_ttl "([^"]*)" should be "([^"]*)"$/,
     async function (name: string, ttl: string) {
-        let ttl_value = await new Result(registry.get_ttl(name)).unwrap();
+        const ttl_value = await new Result(registry.get_ttl(name)).unwrap();
         expect(ttl_value).to.equal(BigInt(ttl));
     });
 Then(/^registry get_details "([^"]*)" should be as below$/,
     async function (name: string, data) {
-        let details: RegistryDto = await new Result(registry.get_details(name)).unwrap();
-        let expected = data.rowsHash();
+        const details: RegistryDto = await new Result(registry.get_details(name)).unwrap();
+        const expected = data.rowsHash();
         expect(details.owner.toText()).to.equal(identities.get_identity_info(expected.owner).principal_text);
         expect(details.resolver.toText()).to.equal(expected.resolver === "public" ? get_id(resolver) : expected.resolver);
         expect(details.ttl).to.equal(BigInt(expected.ttl));
@@ -62,8 +62,8 @@ Then(/^registry get_details "([^"]*)" should be as below$/,
     });
 When(/^I update registry "([^"]*)" with values$/,
     async function (name: string, data) {
-        let input: { ttl, resolver } = data.rowsHash();
-        let registry = createRegistry(identities.main);
+        const input: { ttl, resolver } = data.rowsHash();
+        const registry = createRegistry(identities.main);
         await new Result(registry.set_record(name, BigInt(input.ttl), Principal.fromText(input.resolver))).unwrap();
     });
 When(/^User "([^"]*)" set registry owner for "([^"]*)" to "([^"]*)"$/,
@@ -74,6 +74,6 @@ When(/^User "([^"]*)" set registry owner for "([^"]*)" to "([^"]*)"$/,
 When(/^I update registry "([^"]*)" resolver to "([^"]*)"$/,
     async function (name: string, new_resolver: string) {
         const registry = createRegistry(identities.main);
-        let result = await registry.set_resolver(name, Principal.fromText(new_resolver));
+        const result = await registry.set_resolver(name, Principal.fromText(new_resolver));
         logger.debug(`set_resolver result: ${result.toString()}`);
     });

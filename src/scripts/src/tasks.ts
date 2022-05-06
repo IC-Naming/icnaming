@@ -64,7 +64,7 @@ export const reinstall_all = async (options?: CanisterReinstallOptions) => {
 
     } else {
         console.info("reinstall all in parallel");
-        let jobs: Promise<void>[] = [];
+        const jobs: Promise<void>[] = [];
         if (options && options.canisters?.ledger) {
             jobs.push(reinstall_ledger({
                 ...options,

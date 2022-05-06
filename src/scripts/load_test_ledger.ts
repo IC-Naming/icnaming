@@ -6,60 +6,50 @@ import logger from "node-color-log";
 
 
 // Initialize an identity from the secret key
-const default_identity = identity.load("default");
-const miner_identity = identity.load("miner");
+const defaultIdentity = identity.load("default");
 
 const name = "ledger";
 
-const ledger_id = canister.get_id(name);
-const default_actor = createActor(ledger_id, {
+const ledgerId = canister.get_id(name);
+const defaultActor = createActor(ledgerId, {
     agentOptions: {
         host: "http://127.0.0.1:8000",
-        identity: default_identity,
-    },
-});
-const miner_actor = createActor(ledger_id, {
-    agentOptions: {
-        host: "http://127.0.0.1:8000",
-        identity: miner_identity,
+        identity: defaultIdentity,
     },
 });
 
-const miner_principal = miner_identity.getPrincipal();
-const miner_account_in_bytes = convert.principalToAccountIDInBytes(miner_principal);
-
-const default_principal = default_identity.getPrincipal();
-const default_account_in_bytes = Array.from(convert.principalToAccountIDInBytes(default_principal));
+const defaultPrincipal = defaultIdentity.getPrincipal();
+const defaultAccountInBytes = Array.from(convert.principalToAccountIDInBytes(defaultPrincipal));
 
 const subaccount1_in_bytes = (() => {
-    let subAccount = new Uint8Array(32).fill(0);
+    const subAccount = new Uint8Array(32).fill(0);
     subAccount[0] = 1;
     return subAccount;
 })();
 
-const subaccount1_id_in_bytes = Array.from(convert.principalToAccountIDInBytes(default_principal, subaccount1_in_bytes));
+const subaccount1_id_in_bytes = Array.from(convert.principalToAccountIDInBytes(defaultPrincipal, subaccount1_in_bytes));
 
 const subaccount2_in_bytes = (() => {
-    let subAccount = new Uint8Array(32).fill(0);
+    const subAccount = new Uint8Array(32).fill(0);
     subAccount[0] = 2;
     return subAccount;
 })();
 
-const subaccount2_id_in_bytes = Array.from(convert.principalToAccountIDInBytes(default_principal, subaccount2_in_bytes));
+const subaccount2_id_in_bytes = Array.from(convert.principalToAccountIDInBytes(defaultPrincipal, subaccount2_in_bytes));
 
 
 const add_some_data = async () => {
     const transfer_core = async (from_subaccount: [] | [SubAccount], to: AccountIdentifier, amount: bigint, memo: bigint, fee: bigint) => {
-        const result: TransferResult = await default_actor.transfer({
+        const result: TransferResult = await defaultActor.transfer({
             amount: {
                 e8s: amount
             },
             fee: {
                 e8s: fee
             },
-            memo: memo,
-            from_subaccount: from_subaccount,
-            to: to,
+            memo,
+            from_subaccount,
+            to,
             created_at_time: []
         });
 
@@ -79,12 +69,12 @@ const add_some_data = async () => {
     }
 
 
-    const get_balance = async (account: Array<number>) => {
-        const balance = await default_actor.account_balance({account: account});
+    const get_balance = async (account: number[]) => {
+        const balance = await defaultActor.account_balance({account});
         logger.debug(`balance: ${balance.e8s}`);
     }
 
-    await get_balance(default_account_in_bytes);
+    await get_balance(defaultAccountInBytes);
     await get_balance(subaccount1_id_in_bytes);
     await get_balance(subaccount2_id_in_bytes);
     // transfer between subaccounts for 5000 times
@@ -92,7 +82,7 @@ const add_some_data = async () => {
         await transfer(subaccount1_id_in_bytes, BigInt(1_000_000), BigInt(i), [Array.from(subaccount2_in_bytes)]);
         await transfer(subaccount2_id_in_bytes, BigInt(1_000_000), BigInt(i), [Array.from(subaccount1_in_bytes)]);
     }
-    await get_balance(default_account_in_bytes);
+    await get_balance(defaultAccountInBytes);
     await get_balance(subaccount1_id_in_bytes);
     await get_balance(subaccount2_id_in_bytes);
 }
@@ -104,4 +94,3 @@ const add_some_data = async () => {
 }).catch((e) => {
     logger.debug(e);
 })
-

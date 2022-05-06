@@ -29,13 +29,13 @@ class ActorFactory {
     _isAuthenticated: boolean = false;
 
     createActorByName<T>(canisterDid: any, canisterName: string, identity_info: IdentityInfo): T {
-        let canister_id = get_id(canisterName);
+        const canister_id = get_id(canisterName);
         return this.createActor(canisterDid, canister_id, identity_info.identity);
     }
 
     createActor<T>(canisterDid: any, canisterId: string | Principal, identity?: Identity) {
-        let canister_id = canisterId.toString();
-        let identity_str = identity ? identity.toString() : "default";
+        const canister_id = canisterId.toString();
+        const identity_str = identity ? identity.toString() : "default";
         // find actor from cache
         if (!(this._actorCache[canisterDid] && this._actorCache[canisterDid][canister_id] && this._actorCache[canisterDid][canister_id][identity_str])) {
             logger.info("Creating actor for canisterId: " + canister_id + " identity: " + identity_str);
@@ -57,7 +57,7 @@ class ActorFactory {
             }
             this._actorCache[canisterDid][canister_id][identity_str] = actor;
         }
-        let actor = this._actorCache[canisterDid][canister_id][identity_str];
+        const actor = this._actorCache[canisterDid][canister_id][identity_str];
         // invoke get_stats in actor have this method
         // try to warm up the actor
         if (actor.get_stats) {
@@ -79,7 +79,7 @@ class ActorFactory {
     async authenticateWithIdentity(identity: Identity) {
         ActorFactory._agent = new HttpAgent({
             host,
-            identity: identity
+            identity
         });
         this._isAuthenticated = true;
     }

@@ -38,21 +38,21 @@ const reinstall_by_dfx = () => {
 
     switch_to_init_did();
 
-    const args = `'(record { 
+    const args = `'(record {
     send_whitelist = vec { };
-    minting_account = "${identities.miner.account_id_hex}"; 
+    minting_account = "${identities.miner.account_id_hex}";
     transaction_window = opt record { secs = ${
         2 * 1024 * 1024
-    } :nat64; nanos = 0:nat32}; 
-    max_message_size_bytes = opt ${2 * 1024 * 1024} : opt nat64;  
-    archive_options = opt record { 
-        trigger_threshold = 12 : nat64; 
-        num_blocks_to_archive = 12 : nat64; 
-        node_max_memory_size_bytes =opt ${512 * 128} : opt nat64; 
-        max_message_size_bytes =opt ${2 * 1024 * 1024} : opt nat64; 
-        controller_id = principal "${identities.miner.principal_text}"; 
-      }; 
-    initial_values = vec { record { "${identities.main.account_id_hex}"; record { e8s = 100_000_000_000 : nat64; } } }; 
+    } :nat64; nanos = 0:nat32};
+    max_message_size_bytes = opt ${2 * 1024 * 1024} : opt nat64;
+    archive_options = opt record {
+        trigger_threshold = 12 : nat64;
+        num_blocks_to_archive = 12 : nat64;
+        node_max_memory_size_bytes =opt ${512 * 128} : opt nat64;
+        max_message_size_bytes =opt ${2 * 1024 * 1024} : opt nat64;
+        controller_id = principal "${identities.miner.principal_text}";
+      };
+    initial_values = vec { record { "${identities.main.account_id_hex}"; record { e8s = 100_000_000_000 : nat64; } } };
     })'`;
     canister.reinstall("ledger", args);
     switch_to_public_did();
@@ -75,9 +75,9 @@ const add_some_data = async () => {
             fee: {
                 e8s: fee
             },
-            memo: memo,
-            from_subaccount: from_subaccount,
-            to: to,
+            memo,
+            from_subaccount,
+            to,
             created_at_time: []
         });
 
@@ -104,9 +104,9 @@ const add_some_data = async () => {
             fee: {
                 e8s: BigInt(0)
             },
-            memo: memo,
+            memo,
             from_subaccount: [],
-            to: to,
+            to,
             created_at_time: []
         });
         if ("Ok" in result) {
@@ -116,8 +116,8 @@ const add_some_data = async () => {
         }
     }
 
-    const get_balance = async (account: Array<number>) => {
-        const balance = await main_actor.account_balance({account: account});
+    const get_balance = async (account: number[]) => {
+        const balance = await main_actor.account_balance({account});
         logger.debug(`balance: ${balance.e8s}`);
     }
 

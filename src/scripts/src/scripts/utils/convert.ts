@@ -35,14 +35,14 @@ export const principalToAccountID = (
 };
 
 
-export const asciiStringToByteArray = (text: string): Array<number> => {
+export const asciiStringToByteArray = (text: string): number[] => {
     return Array.from(text).map((c) => c.charCodeAt(0));
 };
 
 export const toHexString = (bytes: Uint8Array) =>
     bytes.reduce((str, byte) => str + byte.toString(16).padStart(2, "0"), "");
 
-export const hexToBytes = (hex: string): Array<number> => {
+export const hexToBytes = (hex: string): number[] => {
     const bytes = new Uint8Array(hex.length / 2);
     for (let i = 0; i < hex.length; i += 2) {
         bytes[i / 2] = parseInt(hex.substr(i, 2), 16);
@@ -56,7 +56,7 @@ export const toCandidString = (bytes: Uint8Array) => {
     return `vec { ${inner} }`;
 }
 
-export const toCandidString2 = (bytes: Array<number>) => {
+export const toCandidString2 = (bytes: number[]) => {
     // join the bytes into a string with ; as separator and the last ; removed
     const inner = bytes.reduce((str, byte) => str + byte.toString() + ";", "").slice(0, -1);
     return `vec { ${inner} }`;
@@ -72,13 +72,13 @@ export const calculateCrc32 = (bytes: Uint8Array): Uint8Array => {
 
 
 export const arrayOfNumberToUint8Array = (
-    numbers: Array<number>
+    numbers: number[]
 ): Uint8Array => {
     return new Uint8Array(numbers);
 };
 
 export const arrayOfNumberToArrayBuffer = (
-    numbers: Array<number>
+    numbers: number[]
 ): ArrayBuffer => {
     return arrayOfNumberToUint8Array(numbers).buffer;
 };
