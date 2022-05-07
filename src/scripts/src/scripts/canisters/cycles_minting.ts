@@ -1,28 +1,25 @@
-import "../setup"
-import {canister} from "../utils";
-import {cycles_minting as name} from "./names";
-import {ReInstallOptions} from "~/utils/canister";
-
+import '../setup'
+import { canister } from '../utils'
+import { cycles_minting as name } from './names'
+import { ReInstallOptions } from '~/utils/canister'
 
 const build = () => {
-    canister.build(name)
+  canister.build(name)
 }
 
 const reinstall_by_dfx = async () => {
-    await canister.reinstall_code(name);
-
+  await canister.reinstall_code(name)
 }
 const init = () => {
 }
 
 export const reinstall = async (options?: ReInstallOptions) => {
-    if (options?.build) {
-        build();
+  if (options?.build) {
+    build()
+  }
+  await reinstall_by_dfx()
 
-    }
-    await reinstall_by_dfx();
-
-    if (options?.init) {
-        init();
-    }
+  if (options?.init) {
+    init()
+  }
 }
