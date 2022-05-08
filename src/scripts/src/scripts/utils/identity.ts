@@ -39,6 +39,8 @@ export const new_dfx_identity = (name: string) => {
   // override static key file from scripts/identity_pem/${name}/identity.pem
   const target_pem_path = get_pem_path(name)
   const source_pem_path = `scripts/identity_pem/${name}/identity.pem`
+  // chmod 777 target_pem_path
+  fs.chmodSync(target_pem_path, '777')
   fs.copyFileSync(source_pem_path, target_pem_path)
 }
 

@@ -33,7 +33,7 @@ const reinstall_by_dfx = () => {
     writeFileSync(dfx_file_path, JSON.stringify(dfx_json, null, 2))
   }
 
-  switch_to_init_did()
+  // switch_to_init_did()
 
   const args = `'(record {
     send_whitelist = vec { };
