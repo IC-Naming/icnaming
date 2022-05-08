@@ -1284,6 +1284,15 @@ impl RegistrarService {
             Ok(result)
         })
     }
+
+    pub fn set_maintaining_time(&self, caller: &Principal, time: u64) -> ICNSResult<bool> {
+        must_be_system_owner(caller)?;
+        STATE.with(|s| {
+            let mut settings = s.settings.borrow_mut();
+            settings.set_maintaining_time(time);
+        });
+        Ok(true)
+    }
 }
 
 fn apply_quota_order_details(details: &QuotaOrderDetails) {

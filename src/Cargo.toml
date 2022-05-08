@@ -4,6 +4,7 @@ members = [
     "common/test_common",
     "canisters/cycles_minting",
     "canisters/registrar",
+    "canisters/icnaming_ledger",
     "canisters/registrar_control_gateway",
     "canisters/registry",
     "canisters/favorites",

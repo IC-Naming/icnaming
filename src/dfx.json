@@ -16,12 +16,7 @@
         "ic-cdk-optimizer target/wasm32-unknown-unknown/release/registrar.wasm -o target/wasm32-unknown-unknown/release/registrar_opt.wasm"
       ],
       "wasm": "target/wasm32-unknown-unknown/release/registrar_opt.wasm",
-      "candid": "canisters/registrar/src/registrar.did",
-      "dependencies": [
-        "registry",
-        "icnaming_ledger",
-        "cycles_minting"
-      ]
+      "candid": "canisters/registrar/src/registrar.did"
     },
     "registrar_control_gateway": {
       "type": "custom",
@@ -30,10 +25,7 @@
         "ic-cdk-optimizer target/wasm32-unknown-unknown/release/registrar_control_gateway.wasm -o target/wasm32-unknown-unknown/release/registrar_control_gateway_opt.wasm"
       ],
       "wasm": "target/wasm32-unknown-unknown/release/registrar_control_gateway_opt.wasm",
-      "candid": "canisters/registrar_control_gateway/src/registrar_control_gateway.did",
-      "dependencies": [
-        "registrar"
-      ]
+      "candid": "canisters/registrar_control_gateway/src/registrar_control_gateway.did"
     },
     "resolver": {
       "type": "custom",
@@ -42,10 +34,7 @@
         "ic-cdk-optimizer target/wasm32-unknown-unknown/release/resolver.wasm -o target/wasm32-unknown-unknown/release/resolver_opt.wasm"
       ],
       "wasm": "target/wasm32-unknown-unknown/release/resolver_opt.wasm",
-      "candid": "canisters/resolver/src/resolver.did",
-      "dependencies": [
-        "registry"
-      ]
+      "candid": "canisters/resolver/src/resolver.did"
     },
     "favorites": {
       "type": "custom",
@@ -73,14 +62,11 @@
     "icnaming_ledger": {
       "type": "custom",
       "build": [
-        "cargo +stable build --target wasm32-unknown-unknown --package icnaming_ledger --release --no-default-features --features dev_canister --manifest-path icnaming_ledger/Cargo.toml",
-        "ic-cdk-optimizer icnaming_ledger/target/wasm32-unknown-unknown/release/icnaming_ledger.wasm -o icnaming_ledger/target/wasm32-unknown-unknown/release/icnaming_ledger_opt.wasm"
+        "cargo build --target wasm32-unknown-unknown --package icnaming_ledger --release --no-default-features --features dev_canister",
+        "ic-cdk-optimizer target/wasm32-unknown-unknown/release/icnaming_ledger.wasm -o target/wasm32-unknown-unknown/release/icnaming_ledger_opt.wasm"
       ],
-      "candid": "icnaming_ledger/canisters/icnaming_ledger/icnaming-ledger.did",
-      "wasm": "icnaming_ledger/target/wasm32-unknown-unknown/release/icnaming_ledger_opt.wasm",
-      "dependencies": [
-        "ledger"
-      ]
+      "wasm": "target/wasm32-unknown-unknown/release/icnaming_ledger_opt.wasm",
+      "candid": "canisters/icnaming_ledger/src/icnaming_ledger.did"
     }
   },
   "defaults": {

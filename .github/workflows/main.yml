@@ -46,9 +46,6 @@ jobs:
           target: "wasm32-unknown-unknown"
       - uses: Swatinem/rust-cache@v1
         with:
-          working-directory: "src/icnaming_ledger"
-      - uses: Swatinem/rust-cache@v1
-        with:
           working-directory: "src"
       - name: run package
         run: |
@@ -93,9 +90,6 @@ jobs:
           toolchain: stable
           profile: minimal
           target: "wasm32-unknown-unknown"
-      - uses: Swatinem/rust-cache@v1
-        with:
-          working-directory: "src/icnaming_ledger"
       - uses: Swatinem/rust-cache@v1
         with:
           working-directory: "src"
@@ -147,6 +141,4 @@ jobs:
       - name: unit test
         run: |
           cd $GITHUB_WORKSPACE/src
-          cargo test
-          cd $GITHUB_WORKSPACE/src/icnaming_ledger
           cargo test

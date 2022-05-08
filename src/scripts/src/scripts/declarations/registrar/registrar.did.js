@@ -201,6 +201,7 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'run_tasks' : IDL.Func([], [BooleanActorResponse], []),
+    'set_maintaining_time' : IDL.Func([IDL.Nat64], [BooleanActorResponse], []),
     'sub_quota' : IDL.Func(
         [IDL.Principal, QuotaType, IDL.Nat32],
         [BooleanActorResponse],

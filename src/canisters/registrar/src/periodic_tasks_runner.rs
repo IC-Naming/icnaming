@@ -6,12 +6,13 @@ use crate::payment_sync;
 use crate::service::RegistrarService;
 
 pub async fn run_periodic_tasks() {
-    let option = payment_sync::sync_transactions().await;
-    if let Some(result) = option {
-        if let Err(e) = result {
-            error!("Error while syncing transactions: {}", e);
-        }
-    }
+    // icnaming_ledger is offline, so there is no need to sync it
+    // let option = payment_sync::sync_transactions().await;
+    // if let Some(result) = option {
+    //     if let Err(e) = result {
+    //         error!("Error while syncing transactions: {}", e);
+    //     }
+    // }
 
     let service = RegistrarService::new();
     let now = api::time();

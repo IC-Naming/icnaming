@@ -24,6 +24,8 @@ pub const RESOLVER_KEY_BTC: &str = "token.btc";
 pub const RESOLVER_KEY_ICP: &str = "token.icp";
 pub const RESOLVER_KEY_LTC: &str = "token.ltc";
 pub const RESOLVER_KEY_ICP_CANISTER: &str = "canister.icp";
+pub const RESOLVER_KEY_ICP_PRINCIPAL: &str = "principal.icp";
+pub const RESOLVER_KEY_ICP_ACCOUNT_ID: &str = "account_id.icp";
 pub const RESOLVER_KEY_EMAIL: &str = "email";
 pub const RESOLVER_KEY_URL: &str = "url";
 pub const RESOLVER_KEY_AVATAR: &str = "avatar";
@@ -41,6 +43,8 @@ pub enum ResolverKey {
     Icp,
     Ltc,
     IcpCanister,
+    IcpPrincipal,
+    IcpAccountId,
     Email,
     Url,
     Avatar,
@@ -61,6 +65,8 @@ impl FromStr for ResolverKey {
             RESOLVER_KEY_ICP => Ok(ResolverKey::Icp),
             RESOLVER_KEY_LTC => Ok(ResolverKey::Ltc),
             RESOLVER_KEY_ICP_CANISTER => Ok(ResolverKey::IcpCanister),
+            RESOLVER_KEY_ICP_PRINCIPAL => Ok(ResolverKey::IcpPrincipal),
+            RESOLVER_KEY_ICP_ACCOUNT_ID => Ok(ResolverKey::IcpAccountId),
             RESOLVER_KEY_EMAIL => Ok(ResolverKey::Email),
             RESOLVER_KEY_URL => Ok(ResolverKey::Url),
             RESOLVER_KEY_AVATAR => Ok(ResolverKey::Avatar),

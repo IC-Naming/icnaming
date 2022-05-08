@@ -146,7 +146,7 @@ Given(/^Reinstall registrar related canisters$/,
             init: true,
             canisters: {
                 ledger: true,
-                icnaming_ledger: true,
+                icnaming_ledger: false,
                 registrar: true,
                 registry: true,
                 resolver: true,
