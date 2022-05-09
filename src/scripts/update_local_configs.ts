@@ -1,8 +1,7 @@
 import { canister } from '~/utils'
 import fs from 'fs'
 import { identities } from '~/utils/identity'
-import logger from 'node-color-log'
-import { get_dfx_json } from '~/utils/dfx_json';
+import {get_dfx_json} from "~/utils/dfx_json";
 
 (async () => {
   await canister.create_all()
@@ -23,11 +22,22 @@ import { get_dfx_json } from '~/utils/dfx_json';
   // write env file
   fs.writeFileSync(`${dir}/dev.canister_ids.env`, envFileContent)
 
-  // TODO: write env file for prod
-  // let registrar_admin = `# main node\n${identities.main.principal_text}`;
-  // fs.writeFileSync(`./configs/dev/principal_registrar_admin.in`, registrar_admin);
-  // let state_exporter = `${registrar_admin}\n# state exporter node \n${identities.state_exporter.principal_text}`;
-  // fs.writeFileSync(`./configs/dev/principal_state_exporter.in`, state_exporter);
-  // let timer_trigger = `${registrar_admin}\n# timer_trigger node\n${identities.timer_trigger.principal_text}`;
-  // fs.writeFileSync(`./configs/dev/principal_timer_trigger.in`, timer_trigger);
+  const principalContent = `export NAMING_PRINCIPAL_NAME_ADMIN="
+# main node
+${identities.main.principal_text}
+"
+export NAMING_PRINCIPAL_NAME_STATE_EXPORTER="
+# main node
+${identities.main.principal_text}
+# state exporter node
+${identities.state_exporter.principal_text}
+"
+export NAMING_PRINCIPAL_NAME_TIMER_TRIGGER="
+# main node
+${identities.main.principal_text}
+# timer_trigger node
+${identities.timer_trigger.principal_text}
+"
+`
+  fs.writeFileSync(`${dir}/dev.principals.env`, principalContent)
 })()
