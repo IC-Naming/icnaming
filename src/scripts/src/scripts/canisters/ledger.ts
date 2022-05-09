@@ -30,10 +30,10 @@ const reinstall_by_dfx = () => {
     // get the public DID
     dfx_json.canisters[name].candid = 'scripts/wasm/ledger.did'
     // save the dfx.json file
-    writeFileSync(dfx_file_path, JSON.stringify(dfx_json, null, 2))
+    writeFileSync(dfx_file_path, `${JSON.stringify(dfx_json, null, 2)}\n`)
   }
 
-  // switch_to_init_did()
+  switch_to_init_did()
 
   const args = `'(record {
     send_whitelist = vec { };

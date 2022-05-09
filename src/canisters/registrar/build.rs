@@ -1,8 +1,7 @@
 use anyhow::{Ok, Result};
-use vergen::{vergen, Config};
+use build_common::generate_envs;
 
 fn main() -> Result<()> {
-    // Generate the default 'cargo:' instruction output
-    vergen(Config::default())?;
+    generate_envs()?;
     Ok(())
 }

@@ -33,7 +33,10 @@ rstest = "0.12.0"
 csv = "1.1.6"
 
 [build-dependencies]
-vergen = { version = "7", default-features = false, features = ["build", "git"] }
 anyhow = "1.0.57"
-hex = "0.4.3"
-flate2 = "1.0"
+build_common = { path = "../../common/build_common" }
+
+
+[features]
+default = []
+dev_env = []

@@ -7,6 +7,7 @@ mod user_favorite_store;
 mod shared_actor;
 mod stats_service;
 
+use crate::state::InitArgs;
 use common::dto::*;
 use common::http::*;
 use stats_service::*;

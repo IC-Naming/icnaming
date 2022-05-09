@@ -1,6 +1,18 @@
 type BatchTransferRequest = record { items : vec TransferQuotaDetails };
 type BooleanActorResponse = variant { Ok : bool; Err : ErrorInfo };
 type CallbackStrategy = record { token : Token; callback : func () -> () };
+type CanisterNames = variant {
+  NamingMarketplace;
+  RegistrarControlGateway;
+  DICP;
+  CyclesMinting;
+  Registrar;
+  MysteryBox;
+  Registry;
+  Ledger;
+  Favorites;
+  Resolver;
+};
 type ErrorInfo = record { code : nat32; message : text };
 type GetAllDetailsActorResponse = variant {
   Ok : vec RegistrationDetails;
@@ -62,6 +74,9 @@ type ImportQuotaRequest = record {
 };
 type ImportQuotaResponse = variant { Ok : ImportQuotaStatus; Err : ErrorInfo };
 type ImportQuotaStatus = variant { Ok; AlreadyExists };
+type InitArgs = record {
+  dev_named_canister_ids : vec record { CanisterNames; principal };
+};
 type NameOrderStatus = variant { New; WaitingToRefund; Done; Canceled };
 type PriceTable = record {
   icp_xdr_conversion_rate : nat64;
@@ -131,7 +146,7 @@ type TransferQuotaDetails = record {
   diff : nat32;
   quota_type : QuotaType;
 };
-service : {
+service : (opt InitArgs) -> {
   add_quota : (principal, QuotaType, nat32) -> (BooleanActorResponse);
   approve : (text, principal) -> (BooleanActorResponse);
   available : (text) -> (BooleanActorResponse) query;

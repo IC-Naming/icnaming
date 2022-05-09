@@ -1,5 +1,17 @@
 type BooleanActorResponse = variant { Ok : bool; Err : ErrorInfo };
 type CallbackStrategy = record { token : Token; callback : func () -> () };
+type CanisterNames = variant {
+  NamingMarketplace;
+  RegistrarControlGateway;
+  DICP;
+  CyclesMinting;
+  Registrar;
+  MysteryBox;
+  Registry;
+  Ledger;
+  Favorites;
+  Resolver;
+};
 type ErrorInfo = record { code : nat32; message : text };
 type GetFavoritesResponse = variant { Ok : vec text; Err : ErrorInfo };
 type GetStatsResponse = variant { Ok : Stats; Err : ErrorInfo };
@@ -15,6 +27,9 @@ type HttpResponse = record {
   streaming_strategy : opt StreamingStrategy;
   status_code : nat16;
 };
+type InitArgs = record {
+  dev_named_canister_ids : vec record { CanisterNames; principal };
+};
 type StateExportData = record { state_data : vec nat8 };
 type StateExportResponse = variant { Ok : StateExportData; Err : ErrorInfo };
 type Stats = record {
@@ -29,7 +44,7 @@ type Token = record {
   index : nat;
   content_encoding : text;
 };
-service : {
+service : (opt InitArgs) -> {
   add_favorite : (text) -> (BooleanActorResponse);
   export_state : () -> (StateExportResponse);
   get_favorites : () -> (GetFavoritesResponse) query;

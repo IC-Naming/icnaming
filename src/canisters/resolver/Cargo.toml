@@ -29,5 +29,9 @@ async-std = { version = "1.11", features = ["attributes"] }
 rstest = "0.12.0"
 
 [build-dependencies]
-vergen = { version = "7", default-features = false, features = ["build", "git"] }
 anyhow = "1.0.57"
+build_common = { path = "../../common/build_common" }
+
+[features]
+default = []
+dev_env = []

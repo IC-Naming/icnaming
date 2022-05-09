@@ -1,7 +1,7 @@
-use crate::constants::{is_dev_env, is_env, NamingEnv};
+use crate::constants::is_dev_env;
+use crate::constants::NAMING_ENV;
 use ic_cdk::api;
-use log::{Level, LevelFilter, Metadata, Record};
-use std::borrow::Borrow;
+use log::{info, Level, LevelFilter, Metadata, Record};
 use std::panic;
 use yansi::Paint;
 
@@ -52,6 +52,7 @@ impl ICLogger {
                 let message = format!("{}", data);
                 api::print(Paint::red(message).to_string());
             }));
+            info!("current wasm is a {} package", NAMING_ENV);
         }
     }
 }

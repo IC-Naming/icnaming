@@ -5,6 +5,16 @@ export interface CallbackStrategy {
   'token' : Token,
   'callback' : [Principal, string],
 }
+export type CanisterNames = { 'NamingMarketplace' : null } |
+  { 'RegistrarControlGateway' : null } |
+  { 'DICP' : null } |
+  { 'CyclesMinting' : null } |
+  { 'Registrar' : null } |
+  { 'MysteryBox' : null } |
+  { 'Registry' : null } |
+  { 'Ledger' : null } |
+  { 'Favorites' : null } |
+  { 'Resolver' : null };
 export interface ErrorInfo { 'code' : number, 'message' : string }
 export type GetRecordValueResponse = { 'Ok' : Array<[string, string]> } |
   { 'Err' : ErrorInfo };
@@ -21,6 +31,9 @@ export interface HttpResponse {
   'headers' : Array<[string, string]>,
   'streaming_strategy' : [] | [StreamingStrategy],
   'status_code' : number,
+}
+export interface InitArgs {
+  'dev_named_canister_ids' : Array<[CanisterNames, Principal]>,
 }
 export interface StateExportData { 'state_data' : Array<number> }
 export type StateExportResponse = { 'Ok' : StateExportData } |

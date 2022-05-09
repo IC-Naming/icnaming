@@ -32,19 +32,19 @@ Feature: Registrar Control Gateway
     Given Update quota as follow operations
       | operation | user                      | quota_type1 | quota_type2 | value |
       | add       | registrar_control_gateway | LenGte      | 1           | 10    |
-    When admin assign name "icnaming.icp" to user "user1"
-    And admin assign name "icp.icp" to user "user2"
+    When admin assign name "icnaming.ark" to user "user1"
+    And admin assign name "icp.ark" to user "user2"
     Then last assign name status is "Ok"
-    And registrar get_details "icnaming.icp" result is
+    And registrar get_details "icnaming.ark" result is
       | key        | value        |
       | owner      | user1        |
-      | name       | icnaming.icp |
+      | name       | icnaming.ark |
       | expired_at | 1            |
       | created_at | 0            |
-    And registrar get_details "icp.icp" result is
+    And registrar get_details "icp.ark" result is
       | key        | value   |
       | owner      | user2   |
-      | name       | icp.icp |
+      | name       | icp.ark |
       | expired_at | 1       |
       | created_at | 0       |
     And User quota status should be as below
@@ -55,14 +55,14 @@ Feature: Registrar Control Gateway
     Given Update quota as follow operations
       | operation | user                      | quota_type1 | quota_type2 | value |
       | add       | registrar_control_gateway | LenGte      | 1           | 10    |
-    And admin assign name "icnaming.icp" to user "user1"
+    And admin assign name "icnaming.ark" to user "user1"
     And last assign name status is "Ok"
-    When admin assign name "icnaming.icp" to user "user2"
+    When admin assign name "icnaming.ark" to user "user2"
     Then last assign name status is "AlreadyAssigned"
-    And registrar get_details "icnaming.icp" result is
+    And registrar get_details "icnaming.ark" result is
       | key        | value        |
       | owner      | user1        |
-      | name       | icnaming.icp |
+      | name       | icnaming.ark |
       | expired_at | 1            |
       | created_at | 0            |
     Then User quota status should be as below
@@ -70,31 +70,31 @@ Feature: Registrar Control Gateway
       | registrar_control_gateway | LenGte      | 1           | 9     |
 
   Scenario: Assign a name without quota result in fail
-    Given admin assign name "icnaming.icp" to user "user1"
+    Given admin assign name "icnaming.ark" to user "user1"
     And last assign name status is "FailFromRegistrar"
 
   Scenario: Assign a reserved name success and transfer by admin to another user
     Given Update quota as follow operations
       | operation | user                      | quota_type1 | quota_type2 | value |
       | add       | registrar_control_gateway | LenGte      | 1           | 10    |
-    And admin assign name "icnaming.icp" to user "user1"
-    When User "main" transfer name "icnaming.icp" to user "user3"
+    And admin assign name "icnaming.ark" to user "user1"
+    When User "main" transfer name "icnaming.ark" to user "user3"
     Then last transfer_by_admin status is "Ok"
-    And registrar get_details "icnaming.icp" result is
+    And registrar get_details "icnaming.ark" result is
       | key        | value        |
       | owner      | user3        |
-      | name       | icnaming.icp |
+      | name       | icnaming.ark |
       | expired_at | 1            |
       | created_at | 0            |
 
   Scenario: Failed to transfer_by_admin if name is not assigned
-    When User "main" transfer name "icnaming.icp" to user "user3"
+    When User "main" transfer name "icnaming.ark" to user "user3"
     Then last transfer_by_admin status is "Registration is not found"
 
   Scenario: Failed to transfer_by_admin if is not admin
     Given Update quota as follow operations
       | operation | user                      | quota_type1 | quota_type2 | value |
       | add       | registrar_control_gateway | LenGte      | 1           | 10    |
-    And admin assign name "icnaming.icp" to user "user1"
-    When User "user1" transfer name "icnaming.icp" to user "user3"
+    And admin assign name "icnaming.ark" to user "user1"
+    When User "user1" transfer name "icnaming.ark" to user "user3"
     Then last transfer_by_admin status is "Unauthorized, please login first"

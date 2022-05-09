@@ -2,6 +2,7 @@
 members = [
     "common/common",
     "common/test_common",
+    "common/build_common",
     "common/common_actor",
     "canisters/cycles_minting",
     "canisters/naming_marketplace",

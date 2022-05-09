@@ -6,6 +6,16 @@ export interface CallbackStrategy {
   'token' : Token,
   'callback' : [Principal, string],
 }
+export type CanisterNames = { 'NamingMarketplace' : null } |
+  { 'RegistrarControlGateway' : null } |
+  { 'DICP' : null } |
+  { 'CyclesMinting' : null } |
+  { 'Registrar' : null } |
+  { 'MysteryBox' : null } |
+  { 'Registry' : null } |
+  { 'Ledger' : null } |
+  { 'Favorites' : null } |
+  { 'Resolver' : null };
 export interface ErrorInfo { 'code' : number, 'message' : string }
 export type GetAllDetailsActorResponse = { 'Ok' : Array<RegistrationDetails> } |
   { 'Err' : ErrorInfo };
@@ -72,6 +82,9 @@ export type ImportQuotaResponse = { 'Ok' : ImportQuotaStatus } |
   { 'Err' : ErrorInfo };
 export type ImportQuotaStatus = { 'Ok' : null } |
   { 'AlreadyExists' : null };
+export interface InitArgs {
+  'dev_named_canister_ids' : Array<[CanisterNames, Principal]>,
+}
 export type NameOrderStatus = { 'New' : null } |
   { 'WaitingToRefund' : null } |
   { 'Done' : null } |

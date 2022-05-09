@@ -7,6 +7,7 @@ mod state;
 mod shared_actor;
 mod stats_service;
 
+use crate::state::InitArgs;
 use candid::{candid_method, CandidType, Principal};
 use common::dto::*;
 use common::errors::{BooleanActorResponse, ErrorInfo, NamingError, ServiceResult};
@@ -22,7 +23,7 @@ use crate::service::RegistriesService;
 /// Returns details of the new registry
 ///
 /// * `label` - label of subdomain. e.g. `www`
-/// * `parent_name` - parent name of subdomain. e.g. `hello.icp`
+/// * `parent_name` - parent name of subdomain. e.g. `hello.ark`
 /// * `sub_owner` - owner of subdomain
 /// * `ttl` - ttl of subdomain
 /// * `resolver` - resolver of subdomain
@@ -66,7 +67,7 @@ impl SetSubdomainOwnerResponse {
 /// Set full info of subdomain
 /// Returns true if success
 ///
-/// * `name` - a name. e.g. `hello.icp`
+/// * `name` - a name. e.g. `hello.ark`
 /// * `ttl` - ttl of name
 /// * `resolver` - resolver of name
 #[update(name = "set_record")]
@@ -80,7 +81,7 @@ fn set_record(name: String, ttl: u64, resolver: Principal) -> BooleanActorRespon
 
 /// Get resolver
 ///
-/// * `name` - a name. e.g. `hello.icp`
+/// * `name` - a name. e.g. `hello.ark`
 #[query(name = "get_resolver")]
 #[candid_method(query)]
 fn get_resolver(name: String) -> GetResolverResponse {
@@ -117,7 +118,7 @@ fn set_resolver(name: String, resolver: Principal) -> BooleanActorResponse {
 /// Set approval status of operator. Operator can be update info of subdomain.
 /// Returns true if success.
 ///
-/// * `name` - a name. e.g. `hello.icp`
+/// * `name` - a name. e.g. `hello.ark`
 /// * `operator` - operator to be set.
 /// * `approved` - approval status of operator
 #[update(name = "set_approval")]
@@ -163,7 +164,7 @@ impl GetControlledNamesResponse {
 
 /// Get owner and operators of name
 ///
-/// * `name` - a name. e.g. `hello.icp`
+/// * `name` - a name. e.g. `hello.ark`
 #[query(name = "get_users")]
 #[candid_method(query)]
 fn get_users(name: String) -> GetUsersResponse {
@@ -189,7 +190,7 @@ impl GetUsersResponse {
 
 /// Get owner of name
 ///
-/// * `name` - a name. e.g. `hello.icp`
+/// * `name` - a name. e.g. `hello.ark`
 #[query(name = "get_owner")]
 #[candid_method(query)]
 fn get_owner(name: String) -> GetOwnerResponse {
@@ -224,7 +225,7 @@ fn set_owner(name: String, new_owner: Principal) -> BooleanActorResponse {
 
 /// Get ttl of name
 ///
-/// * `name` - a name. e.g. `hello.icp`
+/// * `name` - a name. e.g. `hello.ark`
 #[query(name = "get_ttl")]
 #[candid_method(query)]
 fn get_ttl(name: String) -> GetTtlResponse {
@@ -250,7 +251,7 @@ impl GetTtlResponse {
 
 /// Get details of name
 ///
-/// * `name` - a name. e.g. `hello.icp`
+/// * `name` - a name. e.g. `hello.ark`
 #[query(name = "get_details")]
 #[candid_method(query)]
 fn get_details(name: String) -> GetDetailsResponse {

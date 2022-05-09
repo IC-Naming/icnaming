@@ -305,15 +305,15 @@ mod reclaim {
 
         // act
         service
-            .reclaim_name("nice.icp", &caller, &mock_user1, &resolver)
+            .reclaim_name("nice.ark", &caller, &mock_user1, &resolver)
             .unwrap();
 
         // assert
         STATE.with(|s| {
             let store = s.registry_store.borrow();
             let registries = store.get_registries();
-            let registry = registries.get("nice.icp").unwrap();
-            assert_eq!(registry.get_name(), "nice.icp");
+            let registry = registries.get("nice.ark").unwrap();
+            assert_eq!(registry.get_name(), "nice.ark");
             assert_eq!(registry.get_resolver(), resolver);
             assert_eq!(registry.get_owner(), &mock_user1);
             assert_eq!(registry.get_ttl(), DEFAULT_TTL);
@@ -333,9 +333,9 @@ mod reclaim {
             let mut store = s.registry_store.borrow_mut();
             let registries = store.get_registries_mut();
             registries.insert(
-                "nice.icp".to_string(),
+                "nice.ark".to_string(),
                 Registry::new(
-                    "nice.icp".to_string(),
+                    "nice.ark".to_string(),
                     resolver.clone(),
                     0,
                     mock_user2.clone(),
@@ -344,15 +344,15 @@ mod reclaim {
         });
         // act
         service
-            .reclaim_name("nice.icp", &caller, &mock_user1, &resolver)
+            .reclaim_name("nice.ark", &caller, &mock_user1, &resolver)
             .unwrap();
 
         // assert
         STATE.with(|s| {
             let store = s.registry_store.borrow();
             let registries = store.get_registries();
-            let registry = registries.get("nice.icp").unwrap();
-            assert_eq!(registry.get_name(), "nice.icp");
+            let registry = registries.get("nice.ark").unwrap();
+            assert_eq!(registry.get_name(), "nice.ark");
             assert_eq!(registry.get_resolver(), resolver);
             assert_eq!(registry.get_owner(), &mock_user1);
             assert_eq!(registry.get_ttl(), DEFAULT_TTL);
@@ -368,7 +368,7 @@ mod reclaim {
     ) {
         let _caller = mock_user1;
         // act
-        let result = service.reclaim_name("nice.icp", &mock_user1, &mock_user1, &resolver);
+        let result = service.reclaim_name("nice.ark", &mock_user1, &mock_user1, &resolver);
 
         assert_eq!(result.err().unwrap(), NamingError::Unauthorized);
     }
@@ -388,12 +388,12 @@ mod reset_name {
         mock_user1: Principal,
     ) {
         let names = vec![
-            "ssub1.sub1.nice.icp",
-            "sub1.nice.icp",
-            "sub2.nice.icp",
-            "nice.icp",
-            "wownice.icp",
-            "icp",
+            "ssub1.sub1.nice.ark",
+            "sub1.nice.ark",
+            "sub2.nice.ark",
+            "nice.ark",
+            "wownice.ark",
+            "ark",
         ];
         let resolver = get_named_get_canister_id(CanisterNames::Resolver);
 
@@ -411,10 +411,10 @@ mod reset_name {
             .returning(|mut names| {
                 names.sort();
                 let mut expected = vec![
-                    "ssub1.sub1.nice.icp",
-                    "sub1.nice.icp",
-                    "sub2.nice.icp",
-                    "nice.icp",
+                    "ssub1.sub1.nice.ark",
+                    "sub1.nice.ark",
+                    "sub2.nice.ark",
+                    "nice.ark",
                 ];
                 expected.sort();
                 assert_eq!(names, expected);
@@ -426,7 +426,7 @@ mod reset_name {
         // act
         let caller = get_named_get_canister_id(CanisterNames::Registrar);
         let resolver = get_named_get_canister_id(CanisterNames::Resolver);
-        let result = service.reset_name("nice.icp", &caller, resolver).await;
+        let result = service.reset_name("nice.ark", &caller, resolver).await;
 
         // assert
         assert!(result.is_ok());
@@ -434,10 +434,10 @@ mod reset_name {
             let store = s.registry_store.borrow();
             let registries = store.get_registries();
             assert_eq!(registries.len(), 3);
-            registries.get("icp").unwrap();
-            registries.get("wownice.icp").unwrap();
-            let registry = registries.get("nice.icp").unwrap();
-            assert_eq!(registry.get_name(), "nice.icp");
+            registries.get("ark").unwrap();
+            registries.get("wownice.ark").unwrap();
+            let registry = registries.get("nice.ark").unwrap();
+            assert_eq!(registry.get_name(), "nice.ark");
             assert_eq!(registry.get_resolver(), resolver);
             assert_eq!(registry.get_owner(), &mock_user1);
             assert_eq!(registry.get_ttl(), DEFAULT_TTL);
@@ -451,11 +451,11 @@ mod reset_name {
         mock_user1: Principal,
     ) {
         let names = vec![
-            "ssub1.sub1.nice.icp",
-            "sub1.nice.icp",
-            "sub2.nice.icp",
-            "nice.icp",
-            "wownice.icp",
+            "ssub1.sub1.nice.ark",
+            "sub1.nice.ark",
+            "sub2.nice.ark",
+            "nice.ark",
+            "wownice.ark",
             "icp",
         ];
         let resolver = get_named_get_canister_id(CanisterNames::Resolver);
@@ -474,10 +474,10 @@ mod reset_name {
             .returning(|mut names| {
                 names.sort();
                 let mut expected = vec![
-                    "ssub1.sub1.nice.icp",
-                    "sub1.nice.icp",
-                    "sub2.nice.icp",
-                    "nice.icp",
+                    "ssub1.sub1.nice.ark",
+                    "sub1.nice.ark",
+                    "sub2.nice.ark",
+                    "nice.ark",
                 ];
                 expected.sort();
                 assert_eq!(names, expected);
@@ -489,7 +489,7 @@ mod reset_name {
         // act
         let caller = get_named_get_canister_id(CanisterNames::Registrar);
         let resolver = get_named_get_canister_id(CanisterNames::Resolver);
-        let result = service.reset_name("nice.icp", &caller, resolver).await;
+        let result = service.reset_name("nice.ark", &caller, resolver).await;
 
         // assert
         assert!(result.is_err());

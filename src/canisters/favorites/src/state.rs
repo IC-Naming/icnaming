@@ -1,14 +1,18 @@
+use candid::{CandidType, Deserialize};
 use std::borrow::Borrow;
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::sync::Once;
 
-use candid::{candid_method, decode_args, encode_args};
+use candid::{candid_method, decode_args, encode_args, Principal};
 use ic_cdk::{api, storage};
 use ic_cdk_macros::*;
 use log::info;
 
 use common::ic_logger::ICLogger;
-use common::named_canister_ids::{ensure_current_canister_id_match, CanisterNames};
+use common::named_canister_ids::{
+    ensure_current_canister_id_match, update_dev_named_canister_ids, CanisterNames,
+};
 use common::state::StableState;
 
 use crate::user_favorite_store::UserFavoriteStore;
@@ -56,10 +60,29 @@ fn guard_func() -> Result<(), String> {
     ensure_current_canister_id_match(CanisterNames::Favorites)
 }
 
-#[init(guard = "guard_func")]
+#[derive(CandidType, Deserialize)]
+pub struct InitArgs {
+    dev_named_canister_ids: HashMap<CanisterNames, Principal>,
+}
+
+#[init]
 #[candid_method(init)]
+#[cfg(feature = "dev_env")]
+fn init_function(args: Option<InitArgs>) {
+    info!("init function called");
+    if let Some(args) = args {
+        update_dev_named_canister_ids(&args.dev_named_canister_ids);
+    }
+
+    guard_func().unwrap();
+}
+
+#[init]
+#[candid_method(init)]
+#[cfg(not(feature = "dev_env"))]
 fn init_function() {
     info!("init function called");
+    guard_func().unwrap();
 }
 
 #[pre_upgrade(guard = "guard_func")]

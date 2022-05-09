@@ -22,11 +22,12 @@ use common::errors::{BooleanActorResponse, ErrorInfo, NamingError, ServiceResult
 use common::named_canister_ids::{get_named_get_canister_id, CanisterNames};
 
 use crate::service::ResolverService;
+use crate::state::InitArgs;
 
 /// Ensure the resolver is created.
 /// Returns true if the resolver is created, false otherwise.
 ///
-/// * `name` - a name. e.g. `hello.icp`
+/// * `name` - a name. e.g. `hello.ark`
 #[update(name = "ensure_resolver_created")]
 #[candid_method(update, rename = "ensure_resolver_created")]
 fn ensure_resolver_created(name: String) -> BooleanActorResponse {
@@ -43,8 +44,8 @@ fn ensure_resolver_created(name: String) -> BooleanActorResponse {
 /// Set the record values for the name
 /// Returns true if the record is set, false otherwise.
 ///
-/// * `name` - a name. e.g. `hello.icp`
-/// * `values` - a list of values. e.g. `canister.icp`
+/// * `name` - a name. e.g. `hello.ark`
+/// * `values` - a list of values. e.g. `canister.ark`
 #[update(name = "set_record_value")]
 #[candid_method(update, rename = "set_record_value")]
 async fn set_record_value(
@@ -62,7 +63,7 @@ async fn set_record_value(
 /// Get the values for the name
 /// Returns a map of values.
 ///
-/// * `name` - a name. e.g. `hello.icp`
+/// * `name` - a name. e.g. `hello.ark`
 #[query(name = "get_record_value")]
 #[candid_method(query, rename = "get_record_value")]
 fn get_record_value(name: String) -> GetRecordValueResponse {

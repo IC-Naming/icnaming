@@ -1,9 +1,9 @@
 use anyhow::Result;
+use build_common::generate_envs;
 use flate2::write::ZlibEncoder;
 use sha2::Digest;
 use std::fs;
 use std::io::{Read, Write};
-use vergen::{vergen, Config};
 
 fn main() -> Result<()> {
     // create zlib encode bytes for each txt file in ../../quota_import_data/
@@ -112,6 +112,6 @@ fn main() -> Result<()> {
     let mut file = fs::File::create("src/build_gen.rs").unwrap();
     file.write_all(new_contents.as_bytes()).unwrap();
 
-    vergen(Config::default())?;
+    generate_envs()?;
     Ok(())
 }

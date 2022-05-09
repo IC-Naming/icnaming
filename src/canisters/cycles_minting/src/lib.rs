@@ -7,7 +7,7 @@ use common::cycles_minting_types::{IcpXdrConversionRate, IcpXdrConversionRateCer
 /// Check if name is available.
 /// Returns true if name is available.
 ///
-/// * `name` - name to check, e.g. "hello.icp"
+/// * `name` - name to check, e.g. "hello.ark"
 #[query(name = "get_icp_xdr_conversion_rate")]
 #[candid_method(query, rename = "get_icp_xdr_conversion_rate")]
 pub fn get_icp_xdr_conversion_rate() -> IcpXdrConversionRateCertifiedResponse {

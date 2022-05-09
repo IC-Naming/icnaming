@@ -9,27 +9,27 @@ Feature: Favorites Api
   Scenario: Add a favorite
     When User "user1" add some favorites
       | name      |
-      | hello.icp |
+      | hello.ark |
     And User "user2" add some favorites
       | name       |
-      | hello1.icp |
+      | hello1.ark |
     Then User "user1" should see the favorites
       | name      |
-      | hello.icp |
+      | hello.ark |
     And User "user2" should see the favorites
       | name       |
-      | hello1.icp |
+      | hello1.ark |
 
   Scenario: Delete a favorite
     Given User "user1" add some favorites
       | name      |
-      | hello.icp |
-      | icp.icp   |
+      | hello.ark |
+      | icp.ark   |
     And User "user1" should see the favorites
       | name      |
-      | hello.icp |
-      | icp.icp   |
-    When User "user1" delete a favorite "hello.icp"
+      | hello.ark |
+      | icp.ark   |
+    When User "user1" delete a favorite "hello.ark"
     Then User "user1" should see the favorites
       | name    |
-      | icp.icp |
+      | icp.ark |

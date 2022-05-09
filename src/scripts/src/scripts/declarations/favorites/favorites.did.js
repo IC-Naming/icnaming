@@ -1,4 +1,19 @@
 export const idlFactory = ({ IDL }) => {
+  const CanisterNames = IDL.Variant({
+    'NamingMarketplace' : IDL.Null,
+    'RegistrarControlGateway' : IDL.Null,
+    'DICP' : IDL.Null,
+    'CyclesMinting' : IDL.Null,
+    'Registrar' : IDL.Null,
+    'MysteryBox' : IDL.Null,
+    'Registry' : IDL.Null,
+    'Ledger' : IDL.Null,
+    'Favorites' : IDL.Null,
+    'Resolver' : IDL.Null,
+  });
+  const InitArgs = IDL.Record({
+    'dev_named_canister_ids' : IDL.Vec(IDL.Tuple(CanisterNames, IDL.Principal)),
+  });
   const ErrorInfo = IDL.Record({ 'code' : IDL.Nat32, 'message' : IDL.Text });
   const BooleanActorResponse = IDL.Variant({
     'Ok' : IDL.Bool,
@@ -57,4 +72,21 @@ export const idlFactory = ({ IDL }) => {
     'remove_favorite' : IDL.Func([IDL.Text], [BooleanActorResponse], []),
   });
 };
-export const init = ({ IDL }) => { return []; };
+export const init = ({ IDL }) => {
+  const CanisterNames = IDL.Variant({
+    'NamingMarketplace' : IDL.Null,
+    'RegistrarControlGateway' : IDL.Null,
+    'DICP' : IDL.Null,
+    'CyclesMinting' : IDL.Null,
+    'Registrar' : IDL.Null,
+    'MysteryBox' : IDL.Null,
+    'Registry' : IDL.Null,
+    'Ledger' : IDL.Null,
+    'Favorites' : IDL.Null,
+    'Resolver' : IDL.Null,
+  });
+  const InitArgs = IDL.Record({
+    'dev_named_canister_ids' : IDL.Vec(IDL.Tuple(CanisterNames, IDL.Principal)),
+  });
+  return [IDL.Opt(InitArgs)];
+};

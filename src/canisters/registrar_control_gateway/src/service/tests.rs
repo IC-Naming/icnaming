@@ -32,7 +32,7 @@ mod assign_name {
 
         // act
         let result = service
-            .assign_name(&caller, mock_now, "icnaming.icp".to_string(), mock_user1)
+            .assign_name(&caller, mock_now, "icnaming.ark".to_string(), mock_user1)
             .await;
 
         // assert
@@ -68,7 +68,7 @@ mod assign_name {
 
         // act
         let result = service
-            .assign_name(&caller, mock_now, "icnaming.icp".to_string(), mock_user1)
+            .assign_name(&caller, mock_now, "icnaming.ark".to_string(), mock_user1)
             .await;
 
         // assert
@@ -94,10 +94,10 @@ mod assign_name {
 
         // act
         let _result = service
-            .assign_name(&caller, mock_now, "icnaming.icp".to_string(), mock_user1)
+            .assign_name(&caller, mock_now, "icnaming.ark".to_string(), mock_user1)
             .await;
         let result = service
-            .assign_name(&caller, mock_now, "icnaming.icp".to_string(), mock_user1)
+            .assign_name(&caller, mock_now, "icnaming.ark".to_string(), mock_user1)
             .await;
 
         // assert

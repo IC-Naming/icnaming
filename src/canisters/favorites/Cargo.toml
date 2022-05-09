@@ -18,14 +18,16 @@ common = { path = "../../common/common", default-features = false }
 log = "0.4"
 url = "2.2.2"
 
-
 [dev-dependencies]
 env_logger = "0.9.0"
 test_common = { path = "../../common/test_common" }
 rstest = "0.12.0"
 async-std = { version = "1.11", features = ["attributes"] }
 
-
 [build-dependencies]
-vergen = { version = "7", default-features = false, features = ["build", "git"] }
 anyhow = "1.0.57"
+build_common = { path = "../../common/build_common" }
+
+[features]
+default = []
+dev_env = []
