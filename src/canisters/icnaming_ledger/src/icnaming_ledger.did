@@ -1,0 +1,34 @@
+type BooleanActorResponse = variant { Ok : bool; Err : ErrorInfo };
+type CallbackStrategy = record { token : Token; callback : func () -> () };
+type ErrorInfo = record { code : nat32; message : text };
+type GetStatsResponse = variant { Ok : Stats; Err : ErrorInfo };
+type HttpRequest = record {
+  url : text;
+  method : text;
+  body : vec nat8;
+  headers : vec record { text; text };
+};
+type HttpResponse = record {
+  body : vec nat8;
+  headers : vec record { text; text };
+  streaming_strategy : opt StreamingStrategy;
+  status_code : nat16;
+};
+type StateExportData = record { state_data : vec nat8 };
+type StateExportResponse = variant { Ok : StateExportData; Err : ErrorInfo };
+type Stats = record { cycles_balance : nat64 };
+type StreamingStrategy = variant { Callback : CallbackStrategy };
+type Token = record {
+  key : text;
+  sha256 : opt vec nat8;
+  index : nat;
+  content_encoding : text;
+};
+service : {
+  export_state : () -> (StateExportResponse);
+  get_stats : () -> (GetStatsResponse) query;
+  get_wasm_info : () -> (vec record { text; text }) query;
+  http_request : (HttpRequest) -> (HttpResponse) query;
+  load_state : (StateExportData) -> (BooleanActorResponse);
+  withdraw_icp : (nat8, nat) -> (BooleanActorResponse);
+}

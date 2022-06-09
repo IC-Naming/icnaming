@@ -213,6 +213,22 @@ fn validate_value(key: &ResolverKey, value: &str) -> ICNSResult<()> {
         ResolverKey::IcpCanister => {
             // do nothing validate since, it would be able to set custom domain for canister
         }
+        ResolverKey::IcpPrincipal => {
+            if !is_valid_icp_principal(value) {
+                return Err(ICNSError::InvalidResolverValueFormat {
+                    value: value.to_string(),
+                    format: "it is no a valid principal text".to_string(),
+                });
+            }
+        }
+        ResolverKey::IcpAccountId => {
+            if !is_valid_icp_account_id(value) {
+                return Err(ICNSError::InvalidResolverValueFormat {
+                    value: value.to_string(),
+                    format: "it is no a valid account id text (64 chars hex string)".to_string(),
+                });
+            }
+        }
         ResolverKey::Email => {
             // do nothing
         }
@@ -265,10 +281,21 @@ fn is_valid_btc_address(address: &str) -> bool {
 
 // impl is_valid_icp_address
 fn is_valid_icp_address(address: &str) -> bool {
-    if Principal::from_str(address).is_ok() {
+    if is_valid_icp_principal(address) {
         return true;
     }
     // ok if it's a valid 64 hex digit string
+    if is_valid_icp_account_id(address) {
+        return true;
+    }
+    false
+}
+
+fn is_valid_icp_principal(address: &str) -> bool {
+    Principal::from_str(address).is_ok()
+}
+
+fn is_valid_icp_account_id(address: &str) -> bool {
     if address.len() == 64 && address.chars().all(|c| c.is_ascii_hexdigit()) {
         return true;
     }

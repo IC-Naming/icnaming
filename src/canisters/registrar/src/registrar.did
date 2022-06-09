@@ -119,6 +119,7 @@ service : {
   register_from_gateway : (text, principal) -> (BooleanActorResponse);
   register_with_quota : (text, QuotaType) -> (BooleanActorResponse);
   run_tasks : () -> (BooleanActorResponse);
+  set_maintaining_time : (nat64) -> (BooleanActorResponse);
   sub_quota : (principal, QuotaType, nat32) -> (BooleanActorResponse);
   submit_order : (SubmitOrderRequest) -> (SubmitOrderActorResponse);
   transfer : (text, principal) -> (BooleanActorResponse);

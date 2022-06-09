@@ -144,6 +144,7 @@ export interface _SERVICE {
       BooleanActorResponse
     >,
   'run_tasks' : () => Promise<BooleanActorResponse>,
+  'set_maintaining_time' : (arg_0: bigint) => Promise<BooleanActorResponse>,
   'sub_quota' : (arg_0: Principal, arg_1: QuotaType, arg_2: number) => Promise<
       BooleanActorResponse
     >,

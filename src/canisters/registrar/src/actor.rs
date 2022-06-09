@@ -19,6 +19,7 @@ use crate::registration_store::{RegistrationDetails, RegistrationDto};
 use crate::service::{
     PriceTable, RegistrarService, Stats, SubmitOrderRequest, SubmitOrderResponse,
 };
+use crate::settings::check_system_is_maintaining;
 use crate::state::{State, STATE};
 use crate::user_quota_store::QuotaType;
 
@@ -170,6 +171,10 @@ impl GetNameExpiresActorResponse {
 pub async fn register_for(name: String, owner: Principal, years: u64) -> BooleanActorResponse {
     let caller = &api::caller();
     debug!("register_for: caller: {}", caller);
+    let now = api::time();
+    if let Err(e) = check_system_is_maintaining(now) {
+        return BooleanActorResponse::new(Err(e.into()));
+    }
 
     let mut service = RegistrarService::new();
     let result = service
@@ -196,6 +201,10 @@ pub async fn register_for(name: String, owner: Principal, years: u64) -> Boolean
 pub async fn register_with_quota(name: String, quota_type: QuotaType) -> BooleanActorResponse {
     let caller = &api::caller();
     debug!("register_with_quota: caller: {}", caller);
+    let now = api::time();
+    if let Err(e) = check_system_is_maintaining(now) {
+        return BooleanActorResponse::new(Err(e.into()));
+    }
 
     let mut service = RegistrarService::new();
     let years = 1;
@@ -218,6 +227,10 @@ pub async fn register_with_quota(name: String, quota_type: QuotaType) -> Boolean
 pub async fn register_from_gateway(name: String, owner: Principal) -> BooleanActorResponse {
     let caller = &api::caller();
     debug!("register_from_gateway: caller: {}", caller);
+    let now = api::time();
+    if let Err(e) = check_system_is_maintaining(now) {
+        return BooleanActorResponse::new(Err(e.into()));
+    }
 
     let mut service = RegistrarService::new();
     let result = service
@@ -376,6 +389,10 @@ pub fn add_quota(quota_owner: Principal, quota_type: QuotaType, diff: u32) -> Bo
 pub fn import_quota(request: ImportQuotaRequest) -> ImportQuotaResponse {
     let caller = &api::caller();
     debug!("import_quota: caller: {}", caller);
+    let now = api::time();
+    if let Err(e) = check_system_is_maintaining(now) {
+        return ImportQuotaResponse::new(Err(e.into()));
+    }
 
     let service = RegistrarService::new();
     let result = service.import_quota(caller, request);
@@ -408,6 +425,10 @@ impl ImportQuotaResponse {
 pub fn sub_quota(quota_owner: Principal, quota_type: QuotaType, diff: u32) -> BooleanActorResponse {
     let caller = &api::caller();
     debug!("sub_quota: caller: {}", caller);
+    let now = api::time();
+    if let Err(e) = check_system_is_maintaining(now) {
+        return BooleanActorResponse::new(Err(e.into()));
+    }
 
     let mut service = RegistrarService::new();
     let result = service.sub_quota(caller, quota_owner, quota_type, diff);
@@ -477,6 +498,9 @@ pub async fn submit_order(request: SubmitOrderRequest) -> SubmitOrderActorRespon
     let caller = &api::caller();
     debug!("submit_order: caller: {}", caller);
     let now = api::time();
+    if let Err(e) = check_system_is_maintaining(now) {
+        return SubmitOrderActorResponse::new(Err(e.into()));
+    }
 
     let service = RegistrarService::new();
     let result = service.submit_order(caller, now, request).await;
@@ -516,6 +540,9 @@ pub async fn refund_order() -> BooleanActorResponse {
     let caller = &api::caller();
     debug!("refund_order: caller: {}", caller);
     let now = api::time();
+    if let Err(e) = check_system_is_maintaining(now) {
+        return BooleanActorResponse::new(Err(e.into()));
+    }
 
     let service = RegistrarService::new();
     let result = service.refund_order(caller, now).await;
@@ -528,6 +555,9 @@ pub async fn confirm_pay_order(block_height: BlockHeight) -> BooleanActorRespons
     let caller = &api::caller();
     debug!("refund_order: caller: {}", caller);
     let now = api::time();
+    if let Err(e) = check_system_is_maintaining(now) {
+        return BooleanActorResponse::new(Err(e.into()));
+    }
 
     let mut service = RegistrarService::new();
     let result = service.confirm_pay_order(now, caller, block_height).await;
@@ -538,6 +568,10 @@ pub async fn confirm_pay_order(block_height: BlockHeight) -> BooleanActorRespons
 #[candid_method(update, rename = "transfer")]
 async fn transfer(name: String, new_owner: Principal) -> BooleanActorResponse {
     let caller = &api::caller();
+    let now = api::time();
+    if let Err(e) = check_system_is_maintaining(now) {
+        return BooleanActorResponse::new(Err(e.into()));
+    }
 
     let service = RegistrarService::new();
     let result = service.transfer(name.as_str(), caller, new_owner).await;
@@ -561,6 +595,9 @@ async fn transfer_by_admin(name: String, new_owner: Principal) -> BooleanActorRe
 fn approve(name: String, to: Principal) -> BooleanActorResponse {
     let caller = &api::caller();
     let now = api::time();
+    if let Err(e) = check_system_is_maintaining(now) {
+        return BooleanActorResponse::new(Err(e.into()));
+    }
 
     let service = RegistrarService::new();
     let result = service.approve(caller, now, name.as_str(), to);
@@ -571,7 +608,10 @@ fn approve(name: String, to: Principal) -> BooleanActorResponse {
 #[candid_method(update, rename = "transfer_from")]
 async fn transfer_from(name: String) -> BooleanActorResponse {
     let caller = &api::caller();
-    let _now = api::time();
+    let now = api::time();
+    if let Err(e) = check_system_is_maintaining(now) {
+        return BooleanActorResponse::new(Err(e.into()));
+    }
 
     let service = RegistrarService::new();
     let result = service.transfer_from(caller, name.as_str()).await;
@@ -582,6 +622,10 @@ async fn transfer_from(name: String) -> BooleanActorResponse {
 #[candid_method(update, rename = "transfer_quota")]
 async fn transfer_quota(to: Principal, quota_type: QuotaType, diff: u32) -> BooleanActorResponse {
     let caller = &api::caller();
+    let now = api::time();
+    if let Err(e) = check_system_is_maintaining(now) {
+        return BooleanActorResponse::new(Err(e.into()));
+    }
 
     let service = RegistrarService::new();
     let result = service.transfer_quota(caller, &to, quota_type, diff);
@@ -600,6 +644,10 @@ pub struct TransferFromQuotaRequest {
 #[candid_method(update, rename = "transfer_from_quota")]
 async fn transfer_from_quota(request: TransferFromQuotaRequest) -> BooleanActorResponse {
     let caller = &api::caller();
+    let now = api::time();
+    if let Err(e) = check_system_is_maintaining(now) {
+        return BooleanActorResponse::new(Err(e.into()));
+    }
 
     let service = RegistrarService::new();
     let result = service.transfer_from_quota(
@@ -619,6 +667,16 @@ async fn unlock_names(names: Vec<String>) -> BooleanActorResponse {
 
     let service = RegistrarService::new();
     let result = service.unlock_names(caller, names.iter().map(|n| n.as_str()).collect());
+    BooleanActorResponse::new(result)
+}
+
+#[update(name = "set_maintaining_time")]
+#[candid_method(update, rename = "set_maintaining_time")]
+async fn set_maintaining_time(time: u64) -> BooleanActorResponse {
+    let caller = &api::caller();
+
+    let service = RegistrarService::new();
+    let result = service.set_maintaining_time(caller, time);
     BooleanActorResponse::new(result)
 }
 

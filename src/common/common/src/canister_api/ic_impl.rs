@@ -1,6 +1,6 @@
 use crate::named_canister_ids::{
-    CANISTER_NAME_CYCLES_MINTING, CANISTER_NAME_ICNAMING_LEDGER, CANISTER_NAME_REGISTRAR,
-    CANISTER_NAME_REGISTRY, CANISTER_NAME_RESOLVER,
+    CANISTER_NAME_CYCLES_MINTING, CANISTER_NAME_ICNAMING_LEDGER, CANISTER_NAME_LEDGER,
+    CANISTER_NAME_REGISTRAR, CANISTER_NAME_REGISTRY, CANISTER_NAME_RESOLVER,
 };
 
 use super::*;
@@ -192,5 +192,15 @@ impl ICyclesMintingApi for CyclesMintingApi {
             (),
         )
         .await
+    }
+}
+
+#[derive(Default)]
+pub struct LedgerApi;
+
+#[async_trait]
+impl ILedgerApi for LedgerApi {
+    async fn transfer(&self, args: TransferArgs) -> ICNSActorResult<TransferResult> {
+        call_canister_as_result(CANISTER_NAME_LEDGER, "transfer", (args,)).await
     }
 }

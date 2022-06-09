@@ -36,9 +36,7 @@
   "mounts": [
     "target=${containerWorkspaceFolder}/node_modules,type=volume",
     "target=${containerWorkspaceFolder}/.dfx,type=volume",
-    "target=${containerWorkspaceFolder}/target,type=volume",
-    "target=${containerWorkspaceFolder}/icnaming_ledger/.dfx,type=volume",
-    "target=${containerWorkspaceFolder}/icnaming_ledger/target,type=volume"
+    "target=${containerWorkspaceFolder}/target,type=volume"
   ]
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   // "forwardPorts": [],

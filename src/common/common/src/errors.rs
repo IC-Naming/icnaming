@@ -68,6 +68,8 @@ pub enum ICNSError {
     Conflict,
     #[error("Insufficient quota")]
     InsufficientQuota,
+    #[error("System is maintaining, please try again later")]
+    SystemMaintaining,
 }
 
 impl ICNSError {
@@ -102,6 +104,7 @@ impl ICNSError {
             ICNSError::InvalidResolverValueFormat { .. } => 27,
             ICNSError::Conflict => 28,
             ICNSError::InsufficientQuota => 29,
+            ICNSError::SystemMaintaining => 30,
         }
     }
 }

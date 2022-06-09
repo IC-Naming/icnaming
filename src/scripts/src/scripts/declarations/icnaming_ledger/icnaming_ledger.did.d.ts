@@ -1,59 +1,43 @@
 import type { Principal } from '@dfinity/principal';
-export type AccountIdentifier = Array<number>;
-export interface AddPaymentRequest {
-  'created_remark' : string,
-  'amount' : ICPTs,
+export type BooleanActorResponse = { 'Ok' : boolean } |
+  { 'Err' : ErrorInfo };
+export interface CallbackStrategy {
+  'token' : Token,
+  'callback' : [Principal, string],
 }
-export interface AddPaymentResponse {
-  'memo' : Memo,
-  'payment_account_id' : AccountIdentifier,
-  'payment_id' : PaymentId,
+export interface ErrorInfo { 'code' : number, 'message' : string }
+export type GetStatsResponse = { 'Ok' : Stats } |
+  { 'Err' : ErrorInfo };
+export interface HttpRequest {
+  'url' : string,
+  'method' : string,
+  'body' : Array<number>,
+  'headers' : Array<[string, string]>,
 }
-export type BlockHeight = bigint;
-export type CanisterId = Principal;
-export interface ICPTs { 'e8s' : bigint }
-export type Memo = bigint;
-export type NeuronId = bigint;
-export type PaymentId = bigint;
-export interface RefundPaymentRequest { 'payment_id' : PaymentId }
-export type RefundPaymentResponse = { 'Refunding' : null } |
-  { 'Refunded' : { 'refunded_amount' : ICPTs } } |
-  { 'PaymentNotFound' : null } |
-  { 'RefundFailed' : null };
-export interface Stats {
-  'cycles_balance' : bigint,
-  'latest_transaction_block_height' : BlockHeight,
-  'seconds_since_last_ledger_sync' : bigint,
-  'payments_version' : bigint,
-  'count_of_payments_by_status' : Array<[string, bigint]>,
-  'earliest_transaction_block_height' : BlockHeight,
-  'transactions_count' : bigint,
-  'block_height_synced_up_to' : [] | [bigint],
-  'latest_transaction_timestamp_nanos' : bigint,
-  'earliest_transaction_timestamp_nanos' : bigint,
+export interface HttpResponse {
+  'body' : Array<number>,
+  'headers' : Array<[string, string]>,
+  'streaming_strategy' : [] | [StreamingStrategy],
+  'status_code' : number,
 }
-export type SubAccount = Array<number>;
-export interface SyncICPPaymentRequest { 'block_height' : BlockHeight }
-export interface SyncICPPaymentResponse {
-  'verify_payment_response' : [] | [VerifyPaymentResponse],
-  'payment_id' : [] | [PaymentId],
+export interface StateExportData { 'state_data' : Array<number> }
+export type StateExportResponse = { 'Ok' : StateExportData } |
+  { 'Err' : ErrorInfo };
+export interface Stats { 'cycles_balance' : bigint }
+export type StreamingStrategy = { 'Callback' : CallbackStrategy };
+export interface Token {
+  'key' : string,
+  'sha256' : [] | [Array<number>],
+  'index' : bigint,
+  'content_encoding' : string,
 }
-export interface Timestamp { 'timestamp_nanos' : bigint }
-export interface VerifyPaymentRequest { 'payment_id' : PaymentId }
-export type VerifyPaymentResponse = { 'Paid' : { 'paid_at' : Timestamp } } |
-  { 'PaymentNotFound' : null } |
-  { 'NeedMore' : { 'received_amount' : ICPTs, 'amount' : ICPTs } };
 export interface _SERVICE {
-  'add_payment' : (arg_0: AddPaymentRequest) => Promise<AddPaymentResponse>,
-  'add_stable_asset' : (arg_0: Array<number>) => Promise<undefined>,
-  'get_stats' : () => Promise<Stats>,
-  'refund_payment' : (arg_0: RefundPaymentRequest) => Promise<
-      RefundPaymentResponse
-    >,
-  'sync_icp_payment' : (arg_0: SyncICPPaymentRequest) => Promise<
-      SyncICPPaymentResponse
-    >,
-  'verify_payment' : (arg_0: VerifyPaymentRequest) => Promise<
-      VerifyPaymentResponse
+  'export_state' : () => Promise<StateExportResponse>,
+  'get_stats' : () => Promise<GetStatsResponse>,
+  'get_wasm_info' : () => Promise<Array<[string, string]>>,
+  'http_request' : (arg_0: HttpRequest) => Promise<HttpResponse>,
+  'load_state' : (arg_0: StateExportData) => Promise<BooleanActorResponse>,
+  'withdraw_icp' : (arg_0: number, arg_1: bigint) => Promise<
+      BooleanActorResponse
     >,
 }

@@ -20,6 +20,9 @@ num-bigint = "0.4.3"
 yansi = "0.5.1"
 once_cell = "1.9"
 flate2 = "1.0"
+ic-crypto-sha256 = { git = "https://github.com/dfinity/ic", rev = "89446f5a04f053040b4863eab5458446d925ed0e" }
+hex = "0.4.3"
+crc32fast = "1.3.2"
 
 [dev-dependencies]
 env_logger = "0.9.0"
