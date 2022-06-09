@@ -1,7 +1,9 @@
+use candid::{CandidType, Deserialize};
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::sync::Once;
 
-use candid::{decode_args, encode_args};
+use candid::{candid_method, decode_args, encode_args, Principal};
 use ic_cdk::{api, storage};
 use ic_cdk_macros::*;
 use log::info;
@@ -9,7 +11,7 @@ use log::info;
 use common::ic_logger::ICLogger;
 
 use common::named_canister_ids::{
-    ensure_current_canister_id_match, CANISTER_NAME_REGISTRAR_CONTROL_GATEWAY,
+    ensure_current_canister_id_match, update_dev_named_canister_ids, CanisterNames,
 };
 use common::state::StableState;
 
@@ -71,11 +73,6 @@ impl StableState for State {
 static INIT: Once = Once::new();
 
 pub(crate) fn canister_module_init() {
-    INIT.call_once(|| {
-        ICLogger::init();
-    });
-    ensure_current_canister_id_match(CANISTER_NAME_REGISTRAR_CONTROL_GATEWAY);
-
     STATE.with(|s| {
         let mut store = s.quota_import_store.borrow_mut();
 
@@ -112,12 +109,40 @@ pub(crate) fn canister_module_init() {
     })
 }
 
-#[init]
-fn init_function() {
-    canister_module_init();
+fn guard_func() -> Result<(), String> {
+    INIT.call_once(|| {
+        ICLogger::init("registrar_control_gateway");
+    });
+    ensure_current_canister_id_match(CanisterNames::RegistrarControlGateway)
 }
 
-#[pre_upgrade]
+#[derive(CandidType, Deserialize)]
+pub struct InitArgs {
+    dev_named_canister_ids: HashMap<CanisterNames, Principal>,
+}
+
+#[init]
+#[candid_method(init)]
+#[cfg(feature = "dev_env")]
+fn init_function(args: Option<InitArgs>) {
+    info!("init function called");
+    if let Some(args) = args {
+        update_dev_named_canister_ids(&args.dev_named_canister_ids);
+    }
+    canister_module_init();
+    guard_func().unwrap();
+}
+
+#[init]
+#[candid_method(init)]
+#[cfg(not(feature = "dev_env"))]
+fn init_function() {
+    info!("init function called");
+    canister_module_init();
+    guard_func().unwrap();
+}
+
+#[pre_upgrade(guard = "guard_func")]
 fn pre_upgrade() {
     STATE.with(|s| {
         let bytes = s.encode();
@@ -131,7 +156,7 @@ fn pre_upgrade() {
     });
 }
 
-#[post_upgrade]
+#[post_upgrade(guard = "guard_func")]
 fn post_upgrade() {
     STATE.with(|s| match storage::stable_restore::<(Vec<u8>,)>() {
         Ok(bytes) => {

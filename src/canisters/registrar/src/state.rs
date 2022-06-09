@@ -1,22 +1,24 @@
 use std::cell::RefCell;
-use std::collections::VecDeque;
+use std::collections::{HashMap, VecDeque};
 use std::sync::Once;
 
-use candid::{decode_args, encode_args};
+use candid::{candid_method, decode_args, encode_args, Principal};
 use ic_cdk::{api, storage};
 use ic_cdk_macros::*;
 use log::info;
 
+use crate::balance_store::BalanceStore;
+use candid::{CandidType, Deserialize};
 use common::ic_logger::ICLogger;
-use common::named_canister_ids::ensure_current_canister_id_match;
-use common::named_canister_ids::CANISTER_NAME_REGISTRAR;
+use common::named_canister_ids::{
+    ensure_current_canister_id_match, update_dev_named_canister_ids, CanisterNames,
+};
 use common::state::StableState;
 
 use crate::name_locker::NameLocker;
 use crate::name_order_store::NameOrderStore;
 use crate::payment_store::PaymentStore;
 use crate::quota_import_store::QuotaImportStore;
-use crate::quota_order_store::QuotaOrderStore;
 use crate::registration_approval_store::RegistrationApprovalStore;
 use crate::registration_store::{Registration, RegistrationStore};
 use crate::settings::Settings;
@@ -57,10 +59,10 @@ pub struct State {
     pub payment_store: RefCell<PaymentStore>,
     pub settings: RefCell<Settings>,
     pub user_quota_store: RefCell<UserQuotaStore>,
-    pub quota_order_store: RefCell<QuotaOrderStore>,
     pub registration_store: RefCell<RegistrationStore>,
     pub quota_import_store: RefCell<QuotaImportStore>,
     pub registration_approval_store: RefCell<RegistrationApprovalStore>,
+    pub balance_store: RefCell<BalanceStore>,
 }
 
 impl State {
@@ -73,14 +75,24 @@ impl State {
         self.payment_store.replace(new_state.payment_store.take());
         self.user_quota_store
             .replace(new_state.user_quota_store.take());
-        self.quota_order_store
-            .replace(new_state.quota_order_store.take());
         self.quota_import_store
             .replace(new_state.quota_import_store.take());
         self.registration_approval_store
             .replace(new_state.registration_approval_store.take());
+        self.balance_store.replace(new_state.balance_store.take());
     }
 }
+
+pub type EncodedState = (
+    Option<Vec<u8>>,
+    Option<Vec<u8>>,
+    Option<Vec<u8>>,
+    Option<Vec<u8>>,
+    Option<Vec<u8>>,
+    Option<Vec<u8>>,
+    Option<Vec<u8>>,
+    Option<Vec<u8>>,
+);
 
 impl StableState for State {
     fn encode(&self) -> Vec<u8> {
@@ -90,9 +102,9 @@ impl StableState for State {
             self.name_order_store.borrow().encode(),
             self.payment_store.borrow().encode(),
             self.user_quota_store.borrow().encode(),
-            self.quota_order_store.borrow().encode(),
             self.quota_import_store.borrow().encode(),
             self.registration_approval_store.borrow().encode(),
+            self.balance_store.borrow().encode(),
         ))
         .unwrap()
     }
@@ -104,54 +116,73 @@ impl StableState for State {
             name_order_store_bytes,
             payment_store_bytes,
             user_quota_store_bytes,
-            quota_order_store_bytes,
             quota_import_store_bytes,
             registration_approval_store_bytes,
-        ): (
-            Vec<u8>,
-            Vec<u8>,
-            Vec<u8>,
-            Vec<u8>,
-            Vec<u8>,
-            Vec<u8>,
-            Vec<u8>,
-            Option<Vec<u8>>,
-        ) = decode_args(&bytes).unwrap();
+            balance_store_bytes,
+        ): EncodedState = decode_args(&bytes).unwrap();
 
-        let registration_approval_store = if let Some(bytes) = registration_approval_store_bytes {
-            RegistrationApprovalStore::decode(bytes)?
-        } else {
-            RegistrationApprovalStore::default()
-        };
+        return Ok(State {
+            name_order_store: decode_or_default::<NameOrderStore>(name_order_store_bytes)?,
+            payment_store: decode_or_default::<PaymentStore>(payment_store_bytes)?,
+            settings: decode_or_default::<Settings>(settings_bytes)?,
+            user_quota_store: decode_or_default::<UserQuotaStore>(user_quota_store_bytes)?,
+            registration_store: decode_or_default::<RegistrationStore>(registration_store_bytes)?,
+            quota_import_store: decode_or_default::<QuotaImportStore>(quota_import_store_bytes)?,
+            registration_approval_store: decode_or_default::<RegistrationApprovalStore>(
+                registration_approval_store_bytes,
+            )?,
+            balance_store: decode_or_default::<BalanceStore>(balance_store_bytes)?,
+        });
 
-        Ok(State {
-            name_order_store: RefCell::new(NameOrderStore::decode(name_order_store_bytes)?),
-            payment_store: RefCell::new(PaymentStore::decode(payment_store_bytes)?),
-            settings: RefCell::new(Settings::decode(settings_bytes)?),
-            user_quota_store: RefCell::new(UserQuotaStore::decode(user_quota_store_bytes)?),
-            quota_order_store: RefCell::new(QuotaOrderStore::decode(quota_order_store_bytes)?),
-            registration_store: RefCell::new(RegistrationStore::decode(registration_store_bytes)?),
-            quota_import_store: RefCell::new(QuotaImportStore::decode(quota_import_store_bytes)?),
-            registration_approval_store: RefCell::new(registration_approval_store),
-        })
+        fn decode_or_default<T>(bytes: Option<Vec<u8>>) -> Result<RefCell<T>, String>
+        where
+            T: Default + StableState,
+        {
+            let inner = if let Some(bytes) = bytes {
+                T::decode(bytes)?
+            } else {
+                T::default()
+            };
+            Ok(RefCell::new(inner))
+        }
     }
 }
 
 static INIT: Once = Once::new();
 
-pub(crate) fn canister_module_init() {
+fn guard_func() -> Result<(), String> {
     INIT.call_once(|| {
-        ICLogger::init();
+        ICLogger::init("registrar");
     });
-    ensure_current_canister_id_match(CANISTER_NAME_REGISTRAR);
+    ensure_current_canister_id_match(CanisterNames::Registrar)
+}
+
+#[derive(CandidType, Deserialize)]
+pub struct InitArgs {
+    dev_named_canister_ids: HashMap<CanisterNames, Principal>,
 }
 
 #[init]
-fn init_function() {
-    canister_module_init();
+#[candid_method(init)]
+#[cfg(feature = "dev_env")]
+fn init_function(args: Option<InitArgs>) {
+    info!("init function called");
+    if let Some(args) = args {
+        update_dev_named_canister_ids(&args.dev_named_canister_ids);
+    }
+
+    guard_func().unwrap();
 }
 
-#[pre_upgrade]
+#[init]
+#[candid_method(init)]
+#[cfg(not(feature = "dev_env"))]
+fn init_function() {
+    info!("init function called");
+    guard_func().unwrap();
+}
+
+#[pre_upgrade(guard = "guard_func")]
 fn pre_upgrade() {
     STATE.with(|s| {
         let bytes = s.encode();
@@ -165,14 +196,13 @@ fn pre_upgrade() {
     });
 }
 
-#[post_upgrade]
+#[post_upgrade(guard = "guard_func")]
 fn post_upgrade() {
     STATE.with(|s| match storage::stable_restore::<(Vec<u8>,)>() {
         Ok(bytes) => {
             let new_state = State::decode(bytes.0).expect("Decoding stable memory failed");
 
             s.replace(new_state);
-            canister_module_init();
             info!("Loaded state after upgrade");
         }
         Err(e) => api::trap(format!("Failed to restored state after upgrade: {:?}", e).as_str()),

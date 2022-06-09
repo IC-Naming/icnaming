@@ -3,7 +3,9 @@ use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 
 use candid::{decode_args, encode_args, CandidType, Deserialize, Principal};
-use log::info;
+use common::errors::{NamingError, ServiceResult};
+use common::AuthPrincipal;
+use log::{debug, info};
 
 use common::state::StableState;
 
@@ -69,17 +71,17 @@ impl UserQuotaStore {
         }
     }
 
-    pub fn get_quota(&self, principal: &Principal, quota_type: &QuotaType) -> Option<u32> {
+    pub fn get_quota(&self, principal: &AuthPrincipal, quota_type: &QuotaType) -> Option<u32> {
         self.user_quotas
-            .get(principal)
+            .get(&principal.0)
             .and_then(|quotas| quotas.get(quota_type).cloned())
     }
 
-    pub fn add_quota(&mut self, principal: Principal, quota_type: QuotaType, diff: u32) {
+    pub fn add_quota(&mut self, principal: AuthPrincipal, quota_type: QuotaType, diff: u32) {
         assert!(diff > 0);
         let quotas = self
             .user_quotas
-            .entry(principal.clone())
+            .entry(principal.0)
             .or_insert(HashMap::new());
         // increment the quota
         let old_value = quotas.entry(quota_type.clone()).or_insert(0);
@@ -87,11 +89,16 @@ impl UserQuotaStore {
         info!("updated quotas {} {} {}", principal, quota_type, *old_value);
     }
 
-    pub fn sub_quota(&mut self, principal: &Principal, quota_type: &QuotaType, diff: u32) -> bool {
+    pub fn sub_quota(
+        &mut self,
+        principal: &AuthPrincipal,
+        quota_type: &QuotaType,
+        diff: u32,
+    ) -> ServiceResult<()> {
         assert!(diff > 0);
         let quotas = self
             .user_quotas
-            .entry(principal.clone())
+            .entry(principal.0)
             .or_insert(HashMap::new());
         let quota_value = quotas.get(quota_type).cloned().unwrap_or(0);
         if quota_value >= diff {
@@ -102,9 +109,9 @@ impl UserQuotaStore {
                 quotas.insert(quota_type.clone(), new_value);
             }
             info!("updated quotas {} {} {}", principal, quota_type, new_value);
-            true
+            Ok(())
         } else {
-            false
+            Err(NamingError::InsufficientQuota)
         }
     }
 
@@ -114,20 +121,23 @@ impl UserQuotaStore {
 
     pub fn transfer_quota(
         &mut self,
-        from: &Principal,
-        to: &Principal,
-        quota_type: &QuotaType,
-        diff: u32,
-    ) -> bool {
-        assert!(diff > 0);
-        let from_quotas = self.user_quotas.get_mut(from);
+        from: &AuthPrincipal,
+        details: &TransferQuotaDetails,
+    ) -> ServiceResult<()> {
+        let TransferQuotaDetails {
+            to,
+            quota_type,
+            diff,
+        } = details;
+        assert!(*diff > 0);
+        let from_quotas = self.user_quotas.get_mut(&from.0);
         if from_quotas.is_none() {
-            return false;
+            return Err(NamingError::InsufficientQuota);
         }
         let from_quotas = from_quotas.unwrap();
         let quota_value = from_quotas.get(quota_type).cloned().unwrap_or(0);
-        if quota_value < diff {
-            return false;
+        if quota_value < *diff {
+            return Err(NamingError::InsufficientQuota);
         }
         let new_value = quota_value - diff;
         if new_value == 0 {
@@ -142,8 +152,59 @@ impl UserQuotaStore {
             "transfer quotas {} {} {} with diff {}",
             from, to, quota_type, diff
         );
-        true
+        Ok(())
     }
+
+    pub fn batch_transfer_quota(
+        &mut self,
+        from: AuthPrincipal,
+        details: &[TransferQuotaDetails],
+    ) -> ServiceResult<()> {
+        let mut diff_map = HashMap::new();
+        for detail in details {
+            let quota_type = detail.quota_type.clone();
+            let diff = detail.diff;
+            if diff == 0 {
+                debug!("failed to transfer quota since diff is 0");
+                return Err(NamingError::ValueShouldBeInRangeError {
+                    field: "diff".to_string(),
+                    min: 1,
+                    max: 10000,
+                });
+            }
+            let entry = diff_map.entry(quota_type).or_insert(0);
+            *entry += diff;
+        }
+
+        if diff_map.is_empty() {
+            return Err(NamingError::InsufficientQuota);
+        }
+
+        let from_quotas = self.user_quotas.get_mut(&from.0);
+        if from_quotas.is_none() {
+            return Err(NamingError::InsufficientQuota);
+        }
+        let from_quotas = from_quotas.unwrap();
+        for (quota_type, diff_total) in diff_map.iter() {
+            let quota_value = from_quotas.get(quota_type).cloned().unwrap_or(0);
+            if quota_value < *diff_total {
+                debug!("failed to transfer quota since quota is not enough");
+                return Err(NamingError::InsufficientQuota);
+            }
+        }
+
+        for details in details {
+            self.transfer_quota(&from, details).unwrap();
+        }
+        Ok(())
+    }
+}
+
+#[derive(Debug, CandidType, Deserialize)]
+pub struct TransferQuotaDetails {
+    pub to: Principal,
+    pub quota_type: QuotaType,
+    pub diff: u32,
 }
 
 #[cfg(test)]

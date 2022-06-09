@@ -1,7 +1,35 @@
 type BooleanActorResponse = variant { Ok : bool; Err : ErrorInfo };
+type CallbackStrategy = record { token : Token; callback : func () -> () };
+type CanisterNames = variant {
+  NamingMarketplace;
+  RegistrarControlGateway;
+  DICP;
+  CyclesMinting;
+  Registrar;
+  MysteryBox;
+  Registry;
+  Ledger;
+  Favorites;
+  Resolver;
+};
 type ErrorInfo = record { code : nat32; message : text };
 type GetFavoritesResponse = variant { Ok : vec text; Err : ErrorInfo };
 type GetStatsResponse = variant { Ok : Stats; Err : ErrorInfo };
+type HttpRequest = record {
+  url : text;
+  method : text;
+  body : vec nat8;
+  headers : vec record { text; text };
+};
+type HttpResponse = record {
+  body : vec nat8;
+  headers : vec record { text; text };
+  streaming_strategy : opt StreamingStrategy;
+  status_code : nat16;
+};
+type InitArgs = record {
+  dev_named_canister_ids : vec record { CanisterNames; principal };
+};
 type StateExportData = record { state_data : vec nat8 };
 type StateExportResponse = variant { Ok : StateExportData; Err : ErrorInfo };
 type Stats = record {
@@ -9,11 +37,20 @@ type Stats = record {
   cycles_balance : nat64;
   favorite_count : nat64;
 };
-service : {
+type StreamingStrategy = variant { Callback : CallbackStrategy };
+type Token = record {
+  key : text;
+  sha256 : opt vec nat8;
+  index : nat;
+  content_encoding : text;
+};
+service : (opt InitArgs) -> {
   add_favorite : (text) -> (BooleanActorResponse);
   export_state : () -> (StateExportResponse);
   get_favorites : () -> (GetFavoritesResponse) query;
   get_stats : () -> (GetStatsResponse) query;
+  get_wasm_info : () -> (vec record { text; text }) query;
+  http_request : (HttpRequest) -> (HttpResponse) query;
   load_state : (StateExportData) -> (BooleanActorResponse);
   remove_favorite : (text) -> (BooleanActorResponse);
 }

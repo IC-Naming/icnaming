@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::fmt::{Debug, Formatter};
 
 use candid::{decode_args, encode_args, CandidType, Deserialize, Principal};
+use common::naming::{FirstLevelName, NormalizedName};
 
 use common::state::StableState;
 
@@ -68,6 +69,10 @@ impl RegistrationStore {
         &self.registrations
     }
 
+    pub fn get_registration(&self, name: &FirstLevelName) -> Option<&Registration> {
+        self.registrations.get(name.0.get_name())
+    }
+
     pub fn add_registration(&mut self, registration: Registration) {
         self.registrations
             .insert(registration.name.clone(), registration);
@@ -78,8 +83,16 @@ impl RegistrationStore {
         });
     }
 
-    pub fn has_registration(&self, name: &str) -> bool {
-        self.registrations.contains_key(name)
+    pub fn has_registration(&self, name: &FirstLevelName) -> bool {
+        self.registrations.contains_key(name.0.get_name())
+    }
+
+    pub fn update_expired_at(&mut self, name: &FirstLevelName, expired_at: u64) {
+        self.registrations
+            .entry(name.0.get_name().clone())
+            .and_modify(|registration| {
+                registration.expired_at = expired_at;
+            });
     }
 }
 

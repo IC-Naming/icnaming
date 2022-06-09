@@ -4,7 +4,6 @@ import {ledger as name} from "../../canisters/names";
 import {canister} from "../../utils";
 import {IdentityInfo} from "../../utils/identity";
 
-
 // Imports and re-exports candid interface
 import {idlFactory} from './ledger.did.js';
 export {idlFactory} from './ledger.did.js';

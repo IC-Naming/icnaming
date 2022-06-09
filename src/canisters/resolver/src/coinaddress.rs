@@ -2,10 +2,12 @@
 //! the bitcoin and litecoin addresses.
 //! source from https://github.com/viraptor/coinaddress/blob/master/src/lib.rs
 
-use ic_crypto_sha256::Sha256;
 use num_bigint::BigUint;
 use num_integer::Integer;
 use num_traits::{ToPrimitive, Zero};
+use sha2::Digest;
+use sha2::Sha256;
+use std::io::Write;
 
 #[derive(PartialEq, Debug)]
 pub enum ValidationError {
@@ -69,11 +71,11 @@ fn double_sha256(chunk: &[u8]) -> Vec<u8> {
     // sha256 for twice
     let mut hasher = Sha256::new();
     hasher.write(chunk);
-    let mut hash = hasher.finish();
+    let mut hash = hasher.finalize();
 
     let mut hasher = Sha256::new();
     hasher.write(&hash);
-    hash = hasher.finish();
+    hash = hasher.finalize();
     // to vec
     hash.to_vec()
 }

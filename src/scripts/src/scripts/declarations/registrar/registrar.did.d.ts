@@ -1,6 +1,21 @@
 import type { Principal } from '@dfinity/principal';
+export interface BatchTransferRequest { 'items' : Array<TransferQuotaDetails> }
 export type BooleanActorResponse = { 'Ok' : boolean } |
   { 'Err' : ErrorInfo };
+export interface CallbackStrategy {
+  'token' : Token,
+  'callback' : [Principal, string],
+}
+export type CanisterNames = { 'NamingMarketplace' : null } |
+  { 'RegistrarControlGateway' : null } |
+  { 'DICP' : null } |
+  { 'CyclesMinting' : null } |
+  { 'Registrar' : null } |
+  { 'MysteryBox' : null } |
+  { 'Registry' : null } |
+  { 'Ledger' : null } |
+  { 'Favorites' : null } |
+  { 'Resolver' : null };
 export interface ErrorInfo { 'code' : number, 'message' : string }
 export type GetAllDetailsActorResponse = { 'Ok' : Array<RegistrationDetails> } |
   { 'Err' : ErrorInfo };
@@ -10,12 +25,9 @@ export type GetNameExpiresActorResponse = { 'Ok' : bigint } |
   { 'Err' : ErrorInfo };
 export interface GetNameOrderResponse {
   'status' : NameOrderStatus,
-  'payment_memo' : PaymentMemo,
   'name' : string,
+  'created_at' : bigint,
   'price_icp_in_e8s' : bigint,
-  'payment_account_id' : Array<number>,
-  'quota_type' : QuotaType,
-  'payment_id' : bigint,
   'created_user' : Principal,
   'years' : number,
 }
@@ -31,10 +43,32 @@ export type GetPendingOrderActorResponse = {
   { 'Err' : ErrorInfo };
 export type GetPriceTableResponse = { 'Ok' : PriceTable } |
   { 'Err' : ErrorInfo };
+export type GetPublicResolverActorResponse = { 'Ok' : string } |
+  { 'Err' : ErrorInfo };
 export type GetQuotaActorResponse = { 'Ok' : number } |
   { 'Err' : ErrorInfo };
-export type GetStatsActorResponse = { 'Ok' : Stats } |
+export type GetStatsResponse = { 'Ok' : Stats } |
   { 'Err' : ErrorInfo };
+export interface HttpRequest {
+  'url' : string,
+  'method' : string,
+  'body' : Array<number>,
+  'headers' : Array<[string, string]>,
+}
+export interface HttpResponse {
+  'body' : Array<number>,
+  'headers' : Array<[string, string]>,
+  'streaming_strategy' : [] | [StreamingStrategy],
+  'status_code' : number,
+}
+export interface ImportNameRegistrationItem {
+  'owner' : Principal,
+  'name' : string,
+  'years' : number,
+}
+export interface ImportNameRegistrationRequest {
+  'items' : Array<ImportNameRegistrationItem>,
+}
 export interface ImportQuotaItem {
   'owner' : Principal,
   'diff' : number,
@@ -48,11 +82,13 @@ export type ImportQuotaResponse = { 'Ok' : ImportQuotaStatus } |
   { 'Err' : ErrorInfo };
 export type ImportQuotaStatus = { 'Ok' : null } |
   { 'AlreadyExists' : null };
+export interface InitArgs {
+  'dev_named_canister_ids' : Array<[CanisterNames, Principal]>,
+}
 export type NameOrderStatus = { 'New' : null } |
   { 'WaitingToRefund' : null } |
   { 'Done' : null } |
   { 'Canceled' : null };
-export type PaymentMemo = { 'ICP' : bigint };
 export interface PriceTable {
   'icp_xdr_conversion_rate' : bigint,
   'items' : Array<PriceTableItem>,
@@ -75,6 +111,11 @@ export interface RegistrationDto {
   'created_at' : bigint,
   'expired_at' : bigint,
 }
+export interface RenewNameRequest {
+  'name' : string,
+  'approve_amount' : bigint,
+  'years' : number,
+}
 export interface StateExportData { 'state_data' : Array<number> }
 export type StateExportResponse = { 'Ok' : StateExportData } |
   { 'Err' : ErrorInfo };
@@ -94,14 +135,26 @@ export interface Stats {
   'user_quota_order_count' : Array<[string, bigint]>,
   'registration_count' : bigint,
 }
+export type StreamingStrategy = { 'Callback' : CallbackStrategy };
 export type SubmitOrderActorResponse = { 'Ok' : SubmitOrderResponse } |
   { 'Err' : ErrorInfo };
 export interface SubmitOrderRequest { 'name' : string, 'years' : number }
 export interface SubmitOrderResponse { 'order' : GetNameOrderResponse }
+export interface Token {
+  'key' : string,
+  'sha256' : [] | [Array<number>],
+  'index' : bigint,
+  'content_encoding' : string,
+}
 export interface TransferFromQuotaRequest {
   'to' : Principal,
   'diff' : number,
   'from' : Principal,
+  'quota_type' : QuotaType,
+}
+export interface TransferQuotaDetails {
+  'to' : Principal,
+  'diff' : number,
   'quota_type' : QuotaType,
 }
 export interface _SERVICE {
@@ -112,8 +165,10 @@ export interface _SERVICE {
       BooleanActorResponse
     >,
   'available' : (arg_0: string) => Promise<BooleanActorResponse>,
+  'batch_transfer_quota' : (arg_0: BatchTransferRequest) => Promise<
+      BooleanActorResponse
+    >,
   'cancel_order' : () => Promise<BooleanActorResponse>,
-  'confirm_pay_order' : (arg_0: bigint) => Promise<BooleanActorResponse>,
   'export_state' : () => Promise<StateExportResponse>,
   'get_all_details' : (arg_0: GetPageInput) => Promise<
       GetAllDetailsActorResponse
@@ -127,13 +182,20 @@ export interface _SERVICE {
   'get_owner' : (arg_0: string) => Promise<GetOwnerActorResponse>,
   'get_pending_order' : () => Promise<GetPendingOrderActorResponse>,
   'get_price_table' : () => Promise<GetPriceTableResponse>,
+  'get_public_resolver' : () => Promise<GetPublicResolverActorResponse>,
   'get_quota' : (arg_0: Principal, arg_1: QuotaType) => Promise<
       GetQuotaActorResponse
     >,
-  'get_stats' : () => Promise<GetStatsActorResponse>,
+  'get_stats' : () => Promise<GetStatsResponse>,
+  'get_wasm_info' : () => Promise<Array<[string, string]>>,
+  'http_request' : (arg_0: HttpRequest) => Promise<HttpResponse>,
   'import_quota' : (arg_0: ImportQuotaRequest) => Promise<ImportQuotaResponse>,
+  'import_registrations' : (arg_0: ImportNameRegistrationRequest) => Promise<
+      BooleanActorResponse
+    >,
   'load_state' : (arg_0: StateExportData) => Promise<BooleanActorResponse>,
-  'refund_order' : () => Promise<BooleanActorResponse>,
+  'pay_my_order' : () => Promise<BooleanActorResponse>,
+  'reclaim_name' : (arg_0: string) => Promise<BooleanActorResponse>,
   'register_for' : (arg_0: string, arg_1: Principal, arg_2: bigint) => Promise<
       BooleanActorResponse
     >,
@@ -143,8 +205,8 @@ export interface _SERVICE {
   'register_with_quota' : (arg_0: string, arg_1: QuotaType) => Promise<
       BooleanActorResponse
     >,
+  'renew_name' : (arg_0: RenewNameRequest) => Promise<BooleanActorResponse>,
   'run_tasks' : () => Promise<BooleanActorResponse>,
-  'set_maintaining_time' : (arg_0: bigint) => Promise<BooleanActorResponse>,
   'sub_quota' : (arg_0: Principal, arg_1: QuotaType, arg_2: number) => Promise<
       BooleanActorResponse
     >,

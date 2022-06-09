@@ -1,0 +1,41 @@
+image: docker.io/kentsday/dfx_rust:bullseye-dfx-0.9.3-gitpod-5
+ports:
+  - port: 8000
+    visibility: public
+    onOpen: ignore
+tasks:
+  - name: dfx dev
+    init: |
+      . ~/fix_gitpod_path.sh
+      cd src
+      ./start.sh
+      ./sh_setup_dev.sh
+      ./sh_reinstall.sh
+      dfx stop
+
+    command: |
+      . ~/fix_gitpod_path.sh
+
+      pip3 install pipenv && \
+      pip3 install pre-commit && \
+      pre-commit install
+
+      cd src
+
+      ./start.sh
+      ./sh_setup_dev.sh
+vscode:
+  extensions:
+    - matklad.rust-analyzer
+    - GitHub.copilot
+    - panicbit.cargo
+    - bungcip.better-toml
+    - usernamehw.errorlens
+    - ms-azuretools.vscode-docker
+jetbrains:
+  pycharm:
+    plugins:
+      - org.rust.lang
+      - ru.adelf.idea.dotenv
+      - com.chrisrm.idea.MaterialThemeUI
+      - com.mallowigi

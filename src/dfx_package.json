@@ -5,15 +5,7 @@
   "envs": [
     {
       "name": "dev",
-      "feature": "dev_canister"
-    },
-    {
-      "name": "staging",
-      "feature": "staging_canister"
-    },
-    {
-      "name": "production",
-      "feature": "production_canister"
+      "canister_env": "dev"
     }
   ]
 }

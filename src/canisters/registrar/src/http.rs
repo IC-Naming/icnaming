@@ -5,7 +5,7 @@ use serde_bytes::ByteBuf;
 use common::http::{HeaderField, HttpRequest, HttpResponse};
 use common::metrics_encoder::MetricsEncoder;
 
-use crate::service::encode_metrics;
+use crate::stats_service::encode_metrics;
 
 #[query]
 #[candid_method(query, rename = "http_request")]
@@ -16,7 +16,7 @@ fn http_request(req: HttpRequest) -> HttpResponse {
             let now;
             now = ic_cdk::api::time();
             let mut writer = MetricsEncoder::new(vec![], (now / 1_000_000) as i64);
-            match encode_metrics(&mut writer) {
+            match encode_metrics(&mut writer, now) {
                 Ok(()) => {
                     let body = writer.into_inner();
                     HttpResponse {

@@ -1,30 +1,18 @@
-use crate::named_canister_ids::{
-    CANISTER_NAME_CYCLES_MINTING, CANISTER_NAME_ICNAMING_LEDGER, CANISTER_NAME_LEDGER,
-    CANISTER_NAME_REGISTRAR, CANISTER_NAME_REGISTRY, CANISTER_NAME_RESOLVER,
-};
-
 use super::*;
+use crate::named_canister_ids::CanisterNames;
 
+#[derive(Default)]
 pub struct RegistrarApi;
-
-impl RegistrarApi {
-    pub fn new() -> Self {
-        RegistrarApi
-    }
-}
 
 #[async_trait]
 impl IRegistrarApi for RegistrarApi {
-    async fn import_quota(
-        &self,
-        request: ImportQuotaRequest,
-    ) -> ICNSActorResult<ImportQuotaStatus> {
-        call_canister_as_icns_result(CANISTER_NAME_REGISTRAR, "import_quota", (request,)).await
+    async fn import_quota(&self, request: ImportQuotaRequest) -> ActorResult<ImportQuotaStatus> {
+        call_canister_as_icns_result(CanisterNames::Registrar, "import_quota", (request,)).await
     }
 
-    async fn register_from_gateway(&self, name: String, owner: Principal) -> ICNSActorResult<bool> {
+    async fn register_from_gateway(&self, name: String, owner: Principal) -> ActorResult<bool> {
         call_canister_as_icns_result(
-            CANISTER_NAME_REGISTRAR,
+            CanisterNames::Registrar,
             "register_from_gateway",
             (name, owner),
         )
@@ -32,13 +20,8 @@ impl IRegistrarApi for RegistrarApi {
     }
 }
 
+#[derive(Default)]
 pub struct RegistryApi;
-
-impl RegistryApi {
-    pub fn new() -> RegistryApi {
-        Self
-    }
-}
 
 #[async_trait]
 impl IRegistryApi for RegistryApi {
@@ -49,9 +32,9 @@ impl IRegistryApi for RegistryApi {
         sub_owner: Principal,
         ttl: u64,
         resolver: Principal,
-    ) -> ICNSActorResult<RegistryDto> {
+    ) -> ActorResult<RegistryDto> {
         call_canister_as_icns_result(
-            CANISTER_NAME_REGISTRY,
+            CanisterNames::Registry,
             "set_subdomain_owner",
             (label, parent_name, sub_owner, ttl, resolver),
         )
@@ -63,9 +46,9 @@ impl IRegistryApi for RegistryApi {
         name: String,
         owner: Principal,
         resolver: Principal,
-    ) -> ICNSActorResult<bool> {
+    ) -> ActorResult<bool> {
         call_canister_as_icns_result(
-            CANISTER_NAME_REGISTRY,
+            CanisterNames::Registry,
             "reclaim_name",
             (name, owner, resolver),
         )
@@ -77,102 +60,40 @@ impl IRegistryApi for RegistryApi {
         name: String,
         new_owner: Principal,
         resolver: Principal,
-    ) -> ICNSActorResult<bool> {
+    ) -> ActorResult<bool> {
         call_canister_as_icns_result(
-            CANISTER_NAME_REGISTRY,
+            CanisterNames::Registry,
             "transfer",
             (name, new_owner, resolver),
         )
         .await
     }
 
-    async fn get_resolver(&self, label: &str) -> ICNSActorResult<Principal> {
-        call_canister_as_icns_result(CANISTER_NAME_REGISTRY, "get_resolver", (label,)).await
+    async fn get_resolver(&self, label: &str) -> ActorResult<Principal> {
+        call_canister_as_icns_result(CanisterNames::Registry, "get_resolver", (label,)).await
     }
 
-    async fn get_users(&self, name: &str) -> ICNSActorResult<RegistryUsers> {
-        call_canister_as_icns_result(CANISTER_NAME_REGISTRY, "get_users", (name,)).await
+    async fn get_users(&self, name: &str) -> ActorResult<RegistryUsers> {
+        call_canister_as_icns_result(CanisterNames::Registry, "get_users", (name,)).await
     }
 }
 
+#[derive(Default)]
 pub struct ResolverApi;
-
-impl ResolverApi {
-    pub fn new() -> Self {
-        Self
-    }
-}
 
 #[async_trait]
 impl IResolverApi for ResolverApi {
-    async fn ensure_resolver_created(&self, name: String) -> ICNSActorResult<bool> {
-        call_canister_as_icns_result(CANISTER_NAME_RESOLVER, "ensure_resolver_created", (name,))
+    async fn ensure_resolver_created(&self, name: String) -> ActorResult<bool> {
+        call_canister_as_icns_result(CanisterNames::Resolver, "ensure_resolver_created", (name,))
             .await
     }
 
-    async fn remove_resolvers(&self, names: Vec<String>) -> ICNSActorResult<bool> {
-        call_canister_as_icns_result(CANISTER_NAME_RESOLVER, "remove_resolvers", (names,)).await
+    async fn remove_resolvers(&self, names: Vec<String>) -> ActorResult<bool> {
+        call_canister_as_icns_result(CanisterNames::Resolver, "remove_resolvers", (names,)).await
     }
 }
 
-pub struct ICNamingLedgerApi;
-
-impl ICNamingLedgerApi {
-    pub fn new() -> Self {
-        Self
-    }
-}
-
-#[async_trait]
-impl IICNamingLedgerApi for ICNamingLedgerApi {
-    async fn add_payment(&self, request: AddPaymentRequest) -> ICNSActorResult<AddPaymentResponse> {
-        call_canister_as_result(CANISTER_NAME_ICNAMING_LEDGER, "add_payment", (request,)).await
-    }
-
-    async fn verify_payment(
-        &self,
-        request: VerifyPaymentRequest,
-    ) -> ICNSActorResult<VerifyPaymentResponse> {
-        call_canister_as_result(CANISTER_NAME_ICNAMING_LEDGER, "verify_payment", (request,)).await
-    }
-
-    async fn get_tip_of_ledger(
-        &self,
-        request: GetTipOfLedgerRequest,
-    ) -> ICNSActorResult<GetTipOfLedgerResponse> {
-        call_canister_as_result_no_logging(
-            CANISTER_NAME_ICNAMING_LEDGER,
-            "get_tip_of_ledger",
-            (request,),
-        )
-        .await
-    }
-
-    async fn refund_payment(
-        &self,
-        request: RefundPaymentRequest,
-    ) -> ICNSActorResult<RefundPaymentResponse> {
-        call_canister_as_result_no_logging(
-            CANISTER_NAME_ICNAMING_LEDGER,
-            "refund_payment",
-            (request,),
-        )
-        .await
-    }
-
-    async fn sync_icp_payment(
-        &self,
-        request: SyncICPPaymentRequest,
-    ) -> ICNSActorResult<SyncICPPaymentResponse> {
-        call_canister_as_result(
-            CANISTER_NAME_ICNAMING_LEDGER,
-            "sync_icp_payment",
-            (request,),
-        )
-        .await
-    }
-}
-
+#[derive(Default)]
 pub struct CyclesMintingApi;
 
 impl CyclesMintingApi {
@@ -185,13 +106,54 @@ impl CyclesMintingApi {
 impl ICyclesMintingApi for CyclesMintingApi {
     async fn get_icp_xdr_conversion_rate(
         &self,
-    ) -> ICNSActorResult<IcpXdrConversionRateCertifiedResponse> {
+    ) -> ActorResult<IcpXdrConversionRateCertifiedResponse> {
         call_canister_as_result_no_logging(
-            CANISTER_NAME_CYCLES_MINTING,
+            CanisterNames::CyclesMinting,
             "get_icp_xdr_conversion_rate",
             (),
         )
         .await
+    }
+}
+
+#[derive(Debug, Default)]
+pub struct DICPApi {}
+
+#[async_trait]
+impl IDICPApi for DICPApi {
+    async fn transfer_from(
+        &self,
+        spender_sub_account: Option<Subaccount>,
+        from: String,
+        to: String,
+        value: Nat,
+        nonce: Option<u64>,
+    ) -> ActorResult<TransactionResponse> {
+        call_canister_as_icns_result(
+            CanisterNames::DICP,
+            "transferFrom",
+            (spender_sub_account, from, to, value, nonce),
+        )
+        .await
+    }
+
+    async fn transfer(
+        &self,
+        from_sub_account: Option<Subaccount>,
+        to: String,
+        value: Nat,
+        nonce: Option<u64>,
+    ) -> ActorResult<TransactionResponse> {
+        call_canister_as_icns_result(
+            CanisterNames::DICP,
+            "transfer",
+            (from_sub_account, to, value, nonce),
+        )
+        .await
+    }
+
+    async fn balance_of(&self, token_holder: String) -> ActorResult<Nat> {
+        call_canister_as_result(CanisterNames::DICP, "balanceOf", (token_holder,)).await
     }
 }
 
@@ -200,7 +162,7 @@ pub struct LedgerApi;
 
 #[async_trait]
 impl ILedgerApi for LedgerApi {
-    async fn transfer(&self, args: TransferArgs) -> ICNSActorResult<TransferResult> {
-        call_canister_as_result(CANISTER_NAME_LEDGER, "transfer", (args,)).await
+    async fn transfer(&self, args: TransferArgs) -> ActorResult<TransferResult> {
+        call_canister_as_result(CanisterNames::Ledger, "transfer", (args,)).await
     }
 }

@@ -1,7 +1,8 @@
 use log::{debug, error};
 use std::collections::HashSet;
 
-use common::errors::{ICNSError, ICNSResult};
+use common::errors::{NamingError, ServiceResult};
+use common::naming::{FirstLevelName, NormalizedName};
 
 use crate::state::NAME_LOCKER;
 
@@ -45,21 +46,21 @@ impl NameLocker {
     }
 }
 
-pub fn try_lock_name(name: &str) -> ICNSResult<()> {
+pub fn try_lock_name(name: &FirstLevelName) -> ServiceResult<()> {
     NAME_LOCKER.with(|locker| {
         let mut locker = locker.borrow_mut();
-        if locker.is_locked(name) {
-            Err(ICNSError::Conflict)
+        if locker.is_locked(name.0.get_name()) {
+            Err(NamingError::Conflict)
         } else {
-            locker.lock(name);
+            locker.lock(name.0.get_name());
             Ok(())
         }
     })
 }
 
-pub fn unlock_name(name: &str) {
+pub fn unlock_name(name: &FirstLevelName) {
     NAME_LOCKER.with(|locker| {
         let mut locker = locker.borrow_mut();
-        locker.unlock(name);
+        locker.unlock(name.0.get_name());
     });
 }

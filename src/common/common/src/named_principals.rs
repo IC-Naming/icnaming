@@ -2,6 +2,7 @@ use std::collections::{HashMap, HashSet};
 use std::fmt::Display;
 use std::str::FromStr;
 
+use crate::constants::*;
 use candid::Principal;
 use log::{debug, info};
 
@@ -27,36 +28,19 @@ impl Display for NamedPrincipals {
 
 impl NamedPrincipals {
     pub fn new() -> NamedPrincipals {
-        let (administrator, state_exporter, timer_trigger) = {
-            #[cfg(feature = "dev_canister")]
-            {
-                (
-                    include_str!("../../../configs/dev/principal_registrar_admin.in"),
-                    include_str!("../../../configs/dev/principal_state_exporter.in"),
-                    include_str!("../../../configs/dev/principal_timer_trigger.in"),
-                )
-            }
-            #[cfg(feature = "staging_canister")]
-            {
-                (
-                    include_str!("../../../configs/staging/principal_registrar_admin.in"),
-                    include_str!("../../../configs/staging/principal_state_exporter.in"),
-                    include_str!("../../../configs/staging/principal_timer_trigger.in"),
-                )
-            }
-            #[cfg(feature = "production_canister")]
-            {
-                (
-                    include_str!("../../../configs/production/principal_registrar_admin.in"),
-                    include_str!("../../../configs/production/principal_state_exporter.in"),
-                    include_str!("../../../configs/production/principal_timer_trigger.in"),
-                )
-            }
-        };
         let mut map = HashMap::new();
-        map.insert(PRINCIPAL_NAME_ADMIN, lines_hashset(administrator));
-        map.insert(PRINCIPAL_NAME_STATE_EXPORTER, lines_hashset(state_exporter));
-        map.insert(PRINCIPAL_NAME_TIMER_TRIGGER, lines_hashset(timer_trigger));
+        map.insert(
+            PRINCIPAL_NAME_ADMIN,
+            lines_hashset(NAMING_PRINCIPAL_NAME_ADMIN),
+        );
+        map.insert(
+            PRINCIPAL_NAME_STATE_EXPORTER,
+            lines_hashset(NAMING_PRINCIPAL_NAME_STATE_EXPORTER),
+        );
+        map.insert(
+            PRINCIPAL_NAME_TIMER_TRIGGER,
+            lines_hashset(NAMING_PRINCIPAL_NAME_TIMER_TRIGGER),
+        );
 
         let result = NamedPrincipals { principals: map };
         info!("named principals: {}", &result);
@@ -64,10 +48,13 @@ impl NamedPrincipals {
     }
 }
 
-fn lines_hashset(s: &str) -> HashSet<Principal> {
+pub(crate) fn lines_hashset(s: &str) -> HashSet<Principal> {
     let mut set = HashSet::new();
-    for line in s.lines() {
+    for line in s.split("||||") {
         if line.starts_with("#") {
+            continue;
+        }
+        if line.is_empty() {
             continue;
         }
         let principal = Principal::from_str(line).unwrap();
@@ -79,8 +66,7 @@ fn lines_hashset(s: &str) -> HashSet<Principal> {
 pub fn is_named_principal(name: &str, principal: &Principal) -> bool {
     let result =
         NAME_DPRINCIPALS.with(|store| store.principals.get(name).unwrap().contains(principal));
-    #[cfg(feature = "dev_canister")]
-    {
+    if is_dev_env() {
         debug!("is_named_principal({}, {}) = {}", name, principal, result);
         if !result {
             NAME_DPRINCIPALS.with(|store| {
@@ -100,3 +86,4 @@ pub fn get_named_principals(name: &str) -> HashSet<Principal> {
 pub const PRINCIPAL_NAME_ADMIN: &str = "user:administrator";
 pub const PRINCIPAL_NAME_STATE_EXPORTER: &str = "app:state_exporter";
 pub const PRINCIPAL_NAME_TIMER_TRIGGER: &str = "app:timer_trigger";
+pub const PRINCIPAL_DICP_RECEIVER: &str = "wallet:dicp_receiver";

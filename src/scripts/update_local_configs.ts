@@ -1,29 +1,43 @@
-import {canister} from "~/utils";
-import fs from "fs";
-import {identities} from "~/utils/identity";
-import logger from "node-color-log";
+import { canister } from '~/utils'
+import fs from 'fs'
+import { identities } from '~/utils/identity'
+import {get_dfx_json} from "~/utils/dfx_json";
 
 (async () => {
-    await canister.create_all();
-    const names = ["registrar", "resolver", "registry", "icnaming_ledger", "cycles_minting", "favorites", "ledger", "registrar_control_gateway"]
-    let dir = `./configs/dev`;
-    // create dir if not exists
-    if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, {recursive: true});
-    }
+  await canister.create_all()
+  const dfxJson = get_dfx_json()
+  const names = dfxJson.canisters.keys()
+  const dir = './env_configs'
+  // create dir if not exists
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true })
+  }
 
-    for (let name of names) {
-        let id = canister.get_id(name);
-        let file = `${dir}/canister_ids_${name}.in`;
-        fs.writeFileSync(file, id);
-    }
+  let envFileContent = ''
+  for (const name of names) {
+    const envName = `NAMING_CANISTER_IDS_${name.toUpperCase()}`
+    const value = canister.get_id(name)
+    envFileContent += `export ${envName}=${value}\n`
+  }
+  // write env file
+  fs.writeFileSync(`${dir}/dev.canister_ids.env`, envFileContent)
 
-    logger.debug("local canister ids updated");
-
-    let registrar_admin = `# main node\n${identities.main.principal_text}`;
-    fs.writeFileSync(`./configs/dev/principal_registrar_admin.in`, registrar_admin);
-    let state_exporter = `${registrar_admin}\n# state exporter node \n${identities.state_exporter.principal_text}`;
-    fs.writeFileSync(`./configs/dev/principal_state_exporter.in`, state_exporter);
-    let timer_trigger = `${registrar_admin}\n# timer_trigger node\n${identities.timer_trigger.principal_text}`;
-    fs.writeFileSync(`./configs/dev/principal_timer_trigger.in`, timer_trigger);
-})();
+  const principalContent = `export NAMING_PRINCIPAL_NAME_ADMIN="
+# main node
+${identities.main.principal_text}
+"
+export NAMING_PRINCIPAL_NAME_STATE_EXPORTER="
+# main node
+${identities.main.principal_text}
+# state exporter node
+${identities.state_exporter.principal_text}
+"
+export NAMING_PRINCIPAL_NAME_TIMER_TRIGGER="
+# main node
+${identities.main.principal_text}
+# timer_trigger node
+${identities.timer_trigger.principal_text}
+"
+`
+  fs.writeFileSync(`${dir}/dev.principals.env`, principalContent)
+})()

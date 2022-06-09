@@ -1,14 +1,14 @@
 use std::sync::Arc;
 
 use candid::{CandidType, Deserialize, Principal};
-use ic_cdk::api;
-use log::{info};
+
+use log::info;
 
 use common::canister_api::ic_impl::RegistrarApi;
 use common::canister_api::IRegistrarApi;
 use common::dto::{ImportQuotaRequest, ImportQuotaStatus};
-use common::errors::ICNSResult;
-use common::metrics_encoder::MetricsEncoder;
+use common::errors::ServiceResult;
+
 use common::permissions::must_be_system_owner;
 
 use crate::quota_import_store::ImportError;
@@ -32,39 +32,20 @@ pub enum AssignNameResult {
     FailFromRegistrar,
 }
 
-impl GatewayService {
-    pub fn new() -> Self {
+impl Default for GatewayService {
+    fn default() -> Self {
         Self {
-            registrar_api: Arc::new(RegistrarApi::new()),
+            registrar_api: Arc::new(RegistrarApi::default()),
         }
     }
-    pub(crate) fn get_stats(&self, _now: u64) -> Stats {
-        let mut stats = Stats::default();
-        stats.cycles_balance = api::canister_balance();
-        STATE.with(|s| {
-            {
-                let store = s.name_assignment_store.borrow();
-                let assignments = store.get_assignments();
-                stats.name_assignments_count = assignments.len() as u64;
-            }
-            {
-                let store = s.quota_import_store.borrow();
-                let acceptable_file_hashes = store.get_acceptable_file_hashes();
-                stats.acceptable_file_hashes_count = acceptable_file_hashes.len() as u64;
+}
 
-                let imported_file_hashes = store.get_imported_file_hashes();
-                stats.imported_file_hashes_count = imported_file_hashes.len() as u64;
-            }
-        });
-
-        stats
-    }
-
+impl GatewayService {
     pub async fn import_quota(
         &self,
         caller: &Principal,
         file_content: Vec<u8>,
-    ) -> ICNSResult<ImportQuotaResult> {
+    ) -> ServiceResult<ImportQuotaResult> {
         must_be_system_owner(caller)?;
         let parse_result = STATE.with(|s| {
             let store = s.quota_import_store.borrow();
@@ -109,7 +90,7 @@ impl GatewayService {
         now: u64,
         name: String,
         owner: Principal,
-    ) -> ICNSResult<AssignNameResult> {
+    ) -> ServiceResult<AssignNameResult> {
         must_be_system_owner(caller)?;
 
         let name_assigned = STATE.with(|s| {
@@ -139,42 +120,6 @@ impl GatewayService {
             Ok(AssignNameResult::FailFromRegistrar)
         }
     }
-}
-
-pub fn encode_metrics(w: &mut MetricsEncoder<Vec<u8>>) -> std::io::Result<()> {
-    let service = GatewayService::new();
-    let now = api::time();
-    let stats = service.get_stats(now);
-    w.encode_gauge(
-        "icnaming_registrar_control_gateway_cycles_balance",
-        stats.cycles_balance as f64,
-        "Cycles balance",
-    )?;
-    w.encode_gauge(
-        "icnaming_registrar_control_gateway_acceptable_file_hashes_count",
-        stats.acceptable_file_hashes_count as f64,
-        "Acceptable file hashes count",
-    )?;
-    w.encode_gauge(
-        "icnaming_registrar_control_gateway_imported_file_hashes_count",
-        stats.imported_file_hashes_count as f64,
-        "Imported file hashes count",
-    )?;
-    w.encode_gauge(
-        "icnaming_registrar_control_gateway_name_assignments_count",
-        stats.name_assignments_count as f64,
-        "Assigned names count",
-    )?;
-
-    Ok(())
-}
-
-#[derive(CandidType, Deserialize, Default)]
-pub struct Stats {
-    cycles_balance: u64,
-    acceptable_file_hashes_count: u64,
-    imported_file_hashes_count: u64,
-    name_assignments_count: u64,
 }
 
 #[cfg(test)]

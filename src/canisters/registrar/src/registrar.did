@@ -1,4 +1,18 @@
+type BatchTransferRequest = record { items : vec TransferQuotaDetails };
 type BooleanActorResponse = variant { Ok : bool; Err : ErrorInfo };
+type CallbackStrategy = record { token : Token; callback : func () -> () };
+type CanisterNames = variant {
+  NamingMarketplace;
+  RegistrarControlGateway;
+  DICP;
+  CyclesMinting;
+  Registrar;
+  MysteryBox;
+  Registry;
+  Ledger;
+  Favorites;
+  Resolver;
+};
 type ErrorInfo = record { code : nat32; message : text };
 type GetAllDetailsActorResponse = variant {
   Ok : vec RegistrationDetails;
@@ -11,12 +25,9 @@ type GetDetailsActorResponse = variant {
 type GetNameExpiresActorResponse = variant { Ok : nat64; Err : ErrorInfo };
 type GetNameOrderResponse = record {
   status : NameOrderStatus;
-  payment_memo : PaymentMemo;
   name : text;
+  created_at : nat64;
   price_icp_in_e8s : nat;
-  payment_account_id : vec nat8;
-  quota_type : QuotaType;
-  payment_id : nat64;
   created_user : principal;
   years : nat32;
 };
@@ -29,8 +40,29 @@ type GetPendingOrderActorResponse = variant {
   Err : ErrorInfo;
 };
 type GetPriceTableResponse = variant { Ok : PriceTable; Err : ErrorInfo };
+type GetPublicResolverActorResponse = variant { Ok : text; Err : ErrorInfo };
 type GetQuotaActorResponse = variant { Ok : nat32; Err : ErrorInfo };
-type GetStatsActorResponse = variant { Ok : Stats; Err : ErrorInfo };
+type GetStatsResponse = variant { Ok : Stats; Err : ErrorInfo };
+type HttpRequest = record {
+  url : text;
+  method : text;
+  body : vec nat8;
+  headers : vec record { text; text };
+};
+type HttpResponse = record {
+  body : vec nat8;
+  headers : vec record { text; text };
+  streaming_strategy : opt StreamingStrategy;
+  status_code : nat16;
+};
+type ImportNameRegistrationItem = record {
+  owner : principal;
+  name : text;
+  years : nat32;
+};
+type ImportNameRegistrationRequest = record {
+  items : vec ImportNameRegistrationItem;
+};
 type ImportQuotaItem = record {
   owner : principal;
   diff : nat32;
@@ -42,8 +74,10 @@ type ImportQuotaRequest = record {
 };
 type ImportQuotaResponse = variant { Ok : ImportQuotaStatus; Err : ErrorInfo };
 type ImportQuotaStatus = variant { Ok; AlreadyExists };
+type InitArgs = record {
+  dev_named_canister_ids : vec record { CanisterNames; principal };
+};
 type NameOrderStatus = variant { New; WaitingToRefund; Done; Canceled };
-type PaymentMemo = variant { ICP : nat64 };
 type PriceTable = record {
   icp_xdr_conversion_rate : nat64;
   items : vec PriceTableItem;
@@ -65,6 +99,11 @@ type RegistrationDto = record {
   created_at : nat64;
   expired_at : nat64;
 };
+type RenewNameRequest = record {
+  name : text;
+  approve_amount : nat64;
+  years : nat32;
+};
 type StateExportData = record { state_data : vec nat8 };
 type StateExportResponse = variant { Ok : StateExportData; Err : ErrorInfo };
 type Stats = record {
@@ -83,24 +122,36 @@ type Stats = record {
   user_quota_order_count : vec record { text; nat64 };
   registration_count : nat64;
 };
+type StreamingStrategy = variant { Callback : CallbackStrategy };
 type SubmitOrderActorResponse = variant {
   Ok : SubmitOrderResponse;
   Err : ErrorInfo;
 };
 type SubmitOrderRequest = record { name : text; years : nat32 };
 type SubmitOrderResponse = record { order : GetNameOrderResponse };
+type Token = record {
+  key : text;
+  sha256 : opt vec nat8;
+  index : nat;
+  content_encoding : text;
+};
 type TransferFromQuotaRequest = record {
   to : principal;
   diff : nat32;
   from : principal;
   quota_type : QuotaType;
 };
-service : {
+type TransferQuotaDetails = record {
+  to : principal;
+  diff : nat32;
+  quota_type : QuotaType;
+};
+service : (opt InitArgs) -> {
   add_quota : (principal, QuotaType, nat32) -> (BooleanActorResponse);
   approve : (text, principal) -> (BooleanActorResponse);
   available : (text) -> (BooleanActorResponse) query;
+  batch_transfer_quota : (BatchTransferRequest) -> (BooleanActorResponse);
   cancel_order : () -> (BooleanActorResponse);
-  confirm_pay_order : (nat64) -> (BooleanActorResponse);
   export_state : () -> (StateExportResponse);
   get_all_details : (GetPageInput) -> (GetAllDetailsActorResponse) query;
   get_details : (text) -> (GetDetailsActorResponse) query;
@@ -110,16 +161,23 @@ service : {
   get_owner : (text) -> (GetOwnerActorResponse) query;
   get_pending_order : () -> (GetPendingOrderActorResponse) query;
   get_price_table : () -> (GetPriceTableResponse);
+  get_public_resolver : () -> (GetPublicResolverActorResponse) query;
   get_quota : (principal, QuotaType) -> (GetQuotaActorResponse) query;
-  get_stats : () -> (GetStatsActorResponse) query;
+  get_stats : () -> (GetStatsResponse) query;
+  get_wasm_info : () -> (vec record { text; text }) query;
+  http_request : (HttpRequest) -> (HttpResponse) query;
   import_quota : (ImportQuotaRequest) -> (ImportQuotaResponse);
+  import_registrations : (ImportNameRegistrationRequest) -> (
+      BooleanActorResponse,
+    );
   load_state : (StateExportData) -> (BooleanActorResponse);
-  refund_order : () -> (BooleanActorResponse);
+  pay_my_order : () -> (BooleanActorResponse);
+  reclaim_name : (text) -> (BooleanActorResponse);
   register_for : (text, principal, nat64) -> (BooleanActorResponse);
   register_from_gateway : (text, principal) -> (BooleanActorResponse);
   register_with_quota : (text, QuotaType) -> (BooleanActorResponse);
+  renew_name : (RenewNameRequest) -> (BooleanActorResponse);
   run_tasks : () -> (BooleanActorResponse);
-  set_maintaining_time : (nat64) -> (BooleanActorResponse);
   sub_quota : (principal, QuotaType, nat32) -> (BooleanActorResponse);
   submit_order : (SubmitOrderRequest) -> (SubmitOrderActorResponse);
   transfer : (text, principal) -> (BooleanActorResponse);

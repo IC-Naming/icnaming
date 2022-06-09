@@ -1,9 +1,9 @@
 use candid::Principal;
 use rstest::*;
 
-use common::constants::{DEFAULT_TTL, TOP_LABEL};
-use common::errors::ICNSError;
-use common::named_canister_ids::{get_named_get_canister_id, CANISTER_NAME_RESOLVER};
+use common::constants::{DEFAULT_TTL, NAMING_TOP_LABEL};
+use common::errors::NamingError;
+use common::named_canister_ids::{get_named_get_canister_id, CanisterNames};
 use test_common::canister_api::*;
 use test_common::ic_api::init_test;
 use test_common::user::*;
@@ -27,12 +27,12 @@ fn service() -> RegistriesService {
 
 #[fixture]
 fn resolver() -> Principal {
-    get_named_get_canister_id(CANISTER_NAME_RESOLVER)
+    get_named_get_canister_id(CanisterNames::Resolver)
 }
 
 pub(crate) fn create_registry(_name: String, _owner: Principal) -> Registry {
     Registry::new(
-        TOP_LABEL.to_string(),
+        NAMING_TOP_LABEL.to_string(),
         top_owner(),
         DEFAULT_TTL,
         Principal::anonymous(),
@@ -44,8 +44,8 @@ fn add_test_registry() -> Registry {
     STATE.with(|s| {
         let mut store = s.registry_store.borrow_mut();
         let registries = store.get_registries_mut();
-        let registry = create_registry("icp".to_string(), top_owner());
-        registries.insert("icp".to_string(), registry.clone());
+        let registry = create_registry(NAMING_TOP_LABEL.to_string(), top_owner());
+        registries.insert(NAMING_TOP_LABEL.to_string(), registry.clone());
         registry
     })
 }
@@ -55,20 +55,20 @@ mod add_top_name {
 
     #[rstest]
     fn test_add_top_name(_init_test: (), mut service: RegistriesService, top_owner: Principal) {
-        let icp_registry = create_registry(TOP_LABEL.to_string(), top_owner);
+        let icp_registry = create_registry(NAMING_TOP_LABEL.to_string(), top_owner);
         let result = service.set_top_name(icp_registry);
         assert!(result.is_ok());
-        let icp_registry = create_registry(TOP_LABEL.to_string(), top_owner);
+        let icp_registry = create_registry(NAMING_TOP_LABEL.to_string(), top_owner);
         let result = service.set_top_name(icp_registry).err().unwrap();
-        assert_eq!(result, ICNSError::TopNameAlreadyExists);
+        assert_eq!(result, NamingError::TopNameAlreadyExists);
 
         STATE.with(|s| {
             let store = s.registry_store.borrow();
             let registries = store.get_registries();
             assert_eq!(registries.len(), 1);
-            let item = get_registry(&registries, &TOP_LABEL.to_string()).unwrap();
+            let item = get_registry(&registries, &NAMING_TOP_LABEL.to_string()).unwrap();
             info!("{:?}", item);
-            assert_eq!(item.get_name(), TOP_LABEL.to_string());
+            assert_eq!(item.get_name(), NAMING_TOP_LABEL.to_string());
             assert_eq!(item.get_owner(), &top_owner);
             assert_eq!(item.get_ttl(), DEFAULT_TTL);
             assert_eq!(item.get_resolver(), Principal::anonymous());
@@ -78,6 +78,7 @@ mod add_top_name {
 
 mod add_subdomain_to_registries {
     use super::*;
+    use test_common::create_test_name;
 
     #[rstest]
     async fn test_add_subdomain_to_registries(
@@ -91,14 +92,14 @@ mod add_subdomain_to_registries {
             .returning(|_name| Ok(true));
         service.resolver_api = Arc::new(mock_resolver_api);
         service
-            .set_top_name(create_registry(TOP_LABEL.to_string(), top_owner))
+            .set_top_name(create_registry(NAMING_TOP_LABEL.to_string(), top_owner))
             .unwrap();
 
         let sub_owner = Principal::from_text("2vxsx-fae").unwrap();
         let result = service
             .set_subdomain_owner(
                 "test".to_string(),
-                "icp".to_string(),
+                NAMING_TOP_LABEL.to_string(),
                 top_owner,
                 sub_owner,
                 128,
@@ -107,15 +108,16 @@ mod add_subdomain_to_registries {
             .await;
         println!("{:?}", result);
         assert!(result.is_ok());
-        assert!(service.check_exist("test.icp".to_string()));
+        let name = create_test_name("test");
+        assert!(service.check_exist(&name));
 
         STATE.with(|s| {
             let store = s.registry_store.borrow();
             let registries = store.get_registries();
             assert_eq!(registries.len(), 2);
-            let item = get_registry(&registries, &"test.icp".to_string()).unwrap();
+            let item = get_registry(&registries, &name).unwrap();
             info!("{:?}", item);
-            assert_eq!(item.get_name(), "test.icp".to_string());
+            assert_eq!(item.get_name(), name);
             assert_eq!(item.get_owner(), &sub_owner);
             assert_eq!(item.get_ttl(), 128);
             assert_eq!(item.get_resolver(), Principal::anonymous());
@@ -162,7 +164,7 @@ mod approval {
 
         // assert
         assert!(result.is_err());
-        assert_eq!(result.err().unwrap(), ICNSError::PermissionDenied);
+        assert_eq!(result.err().unwrap(), NamingError::PermissionDenied);
     }
 
     #[rstest]
@@ -205,7 +207,7 @@ mod approval {
 
         // assert
         assert!(result.is_err());
-        assert_eq!(result.err().unwrap(), ICNSError::PermissionDenied);
+        assert_eq!(result.err().unwrap(), NamingError::PermissionDenied);
     }
 }
 
@@ -255,7 +257,7 @@ mod set_record {
         assert!(result.is_err());
         assert_eq!(
             result.err().unwrap(),
-            ICNSError::RegistryNotFoundError {
+            NamingError::RegistryNotFoundError {
                 name: name.to_string()
             }
         );
@@ -284,12 +286,13 @@ mod set_record {
 
         // assert
         assert!(result.is_err());
-        assert_eq!(result.err().unwrap(), ICNSError::PermissionDenied);
+        assert_eq!(result.err().unwrap(), NamingError::PermissionDenied);
     }
 }
 
 mod reclaim {
     use super::*;
+    use common::named_canister_ids::CanisterNames;
 
     #[rstest]
     fn test_reclaim_success(
@@ -298,17 +301,19 @@ mod reclaim {
         mock_user1: Principal,
         resolver: Principal,
     ) {
-        let caller = get_named_get_canister_id(CANISTER_NAME_REGISTRAR);
+        let caller = get_named_get_canister_id(CanisterNames::Registrar);
 
         // act
-        service.reclaim_name("nice.icp", &caller, &mock_user1, &resolver);
+        service
+            .reclaim_name("nice.ic", &caller, &mock_user1, &resolver)
+            .unwrap();
 
         // assert
         STATE.with(|s| {
             let store = s.registry_store.borrow();
             let registries = store.get_registries();
-            let registry = registries.get("nice.icp").unwrap();
-            assert_eq!(registry.get_name(), "nice.icp");
+            let registry = registries.get("nice.ic").unwrap();
+            assert_eq!(registry.get_name(), "nice.ic");
             assert_eq!(registry.get_resolver(), resolver);
             assert_eq!(registry.get_owner(), &mock_user1);
             assert_eq!(registry.get_ttl(), DEFAULT_TTL);
@@ -323,14 +328,14 @@ mod reclaim {
         mock_user2: Principal,
         resolver: Principal,
     ) {
-        let caller = get_named_get_canister_id(CANISTER_NAME_REGISTRAR);
+        let caller = get_named_get_canister_id(CanisterNames::Registrar);
         STATE.with(|s| {
             let mut store = s.registry_store.borrow_mut();
             let registries = store.get_registries_mut();
             registries.insert(
-                "nice.icp".to_string(),
+                "nice.ic".to_string(),
                 Registry::new(
-                    "nice.icp".to_string(),
+                    "nice.ic".to_string(),
                     resolver.clone(),
                     0,
                     mock_user2.clone(),
@@ -338,14 +343,16 @@ mod reclaim {
             );
         });
         // act
-        service.reclaim_name("nice.icp", &caller, &mock_user1, &resolver);
+        service
+            .reclaim_name("nice.ic", &caller, &mock_user1, &resolver)
+            .unwrap();
 
         // assert
         STATE.with(|s| {
             let store = s.registry_store.borrow();
             let registries = store.get_registries();
-            let registry = registries.get("nice.icp").unwrap();
-            assert_eq!(registry.get_name(), "nice.icp");
+            let registry = registries.get("nice.ic").unwrap();
+            assert_eq!(registry.get_name(), "nice.ic");
             assert_eq!(registry.get_resolver(), resolver);
             assert_eq!(registry.get_owner(), &mock_user1);
             assert_eq!(registry.get_ttl(), DEFAULT_TTL);
@@ -361,9 +368,9 @@ mod reclaim {
     ) {
         let _caller = mock_user1;
         // act
-        let result = service.reclaim_name("nice.icp", &mock_user1, &mock_user1, &resolver);
+        let result = service.reclaim_name("nice.ic", &mock_user1, &mock_user1, &resolver);
 
-        assert_eq!(result.err().unwrap(), ICNSError::Unauthorized);
+        assert_eq!(result.err().unwrap(), NamingError::Unauthorized);
     }
 }
 
@@ -381,14 +388,14 @@ mod reset_name {
         mock_user1: Principal,
     ) {
         let names = vec![
-            "ssub1.sub1.nice.icp",
-            "sub1.nice.icp",
-            "sub2.nice.icp",
-            "nice.icp",
-            "wownice.icp",
-            "icp",
+            "ssub1.sub1.nice.ic",
+            "sub1.nice.ic",
+            "sub2.nice.ic",
+            "nice.ic",
+            "wownice.ic",
+            "ic",
         ];
-        let resolver = get_named_get_canister_id(CANISTER_NAME_RESOLVER);
+        let resolver = get_named_get_canister_id(CanisterNames::Resolver);
 
         STATE.with(|s| {
             let mut store = s.registry_store.borrow_mut();
@@ -404,10 +411,10 @@ mod reset_name {
             .returning(|mut names| {
                 names.sort();
                 let mut expected = vec![
-                    "ssub1.sub1.nice.icp",
-                    "sub1.nice.icp",
-                    "sub2.nice.icp",
-                    "nice.icp",
+                    "ssub1.sub1.nice.ic",
+                    "sub1.nice.ic",
+                    "sub2.nice.ic",
+                    "nice.ic",
                 ];
                 expected.sort();
                 assert_eq!(names, expected);
@@ -417,9 +424,9 @@ mod reset_name {
         service.resolver_api = Arc::new(mock_resolver_api);
 
         // act
-        let caller = get_named_get_canister_id(CANISTER_NAME_REGISTRAR);
-        let resolver = get_named_get_canister_id(CANISTER_NAME_RESOLVER);
-        let result = service.reset_name("nice.icp", &caller, resolver).await;
+        let caller = get_named_get_canister_id(CanisterNames::Registrar);
+        let resolver = get_named_get_canister_id(CanisterNames::Resolver);
+        let result = service.reset_name("nice.ic", &caller, resolver).await;
 
         // assert
         assert!(result.is_ok());
@@ -427,10 +434,10 @@ mod reset_name {
             let store = s.registry_store.borrow();
             let registries = store.get_registries();
             assert_eq!(registries.len(), 3);
-            registries.get("icp").unwrap();
-            registries.get("wownice.icp").unwrap();
-            let registry = registries.get("nice.icp").unwrap();
-            assert_eq!(registry.get_name(), "nice.icp");
+            registries.get("ic").unwrap();
+            registries.get("wownice.ic").unwrap();
+            let registry = registries.get("nice.ic").unwrap();
+            assert_eq!(registry.get_name(), "nice.ic");
             assert_eq!(registry.get_resolver(), resolver);
             assert_eq!(registry.get_owner(), &mock_user1);
             assert_eq!(registry.get_ttl(), DEFAULT_TTL);
@@ -444,14 +451,14 @@ mod reset_name {
         mock_user1: Principal,
     ) {
         let names = vec![
-            "ssub1.sub1.nice.icp",
-            "sub1.nice.icp",
-            "sub2.nice.icp",
-            "nice.icp",
-            "wownice.icp",
+            "ssub1.sub1.nice.ic",
+            "sub1.nice.ic",
+            "sub2.nice.ic",
+            "nice.ic",
+            "wownice.ic",
             "icp",
         ];
-        let resolver = get_named_get_canister_id(CANISTER_NAME_RESOLVER);
+        let resolver = get_named_get_canister_id(CanisterNames::Resolver);
 
         STATE.with(|s| {
             let mut store = s.registry_store.borrow_mut();
@@ -467,22 +474,22 @@ mod reset_name {
             .returning(|mut names| {
                 names.sort();
                 let mut expected = vec![
-                    "ssub1.sub1.nice.icp",
-                    "sub1.nice.icp",
-                    "sub2.nice.icp",
-                    "nice.icp",
+                    "ssub1.sub1.nice.ic",
+                    "sub1.nice.ic",
+                    "sub2.nice.ic",
+                    "nice.ic",
                 ];
                 expected.sort();
                 assert_eq!(names, expected);
-                Err(ErrorInfo::from(ICNSError::PermissionDenied))
+                Err(ErrorInfo::from(NamingError::PermissionDenied))
             });
 
         service.resolver_api = Arc::new(mock_resolver_api);
 
         // act
-        let caller = get_named_get_canister_id(CANISTER_NAME_REGISTRAR);
-        let resolver = get_named_get_canister_id(CANISTER_NAME_RESOLVER);
-        let result = service.reset_name("nice.icp", &caller, resolver).await;
+        let caller = get_named_get_canister_id(CanisterNames::Registrar);
+        let resolver = get_named_get_canister_id(CanisterNames::Resolver);
+        let result = service.reset_name("nice.ic", &caller, resolver).await;
 
         // assert
         assert!(result.is_err());

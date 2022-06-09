@@ -4,7 +4,7 @@ components = [
     "rustc",
     "rust-std",
     "rustfmt",
-    #    "llvm-tools-preview",
+    "llvm-tools-preview",
+    "clippy",
 ]
 targets = ["wasm32-unknown-unknown"]
-profile = "minimal"

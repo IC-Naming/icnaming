@@ -1,34 +1,34 @@
 use std::fmt::{Debug, Display, Formatter};
+use std::io::Write;
 use std::str::FromStr;
 
 use async_trait::async_trait;
-use candid::{CandidType, Deserialize, Principal};
+use candid::{CandidType, Nat, Principal};
 use ic_cdk::api::call::RejectionCode;
 use ic_cdk::call;
-use ic_crypto_sha256::Sha224;
 use log::{debug, error};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use crate::cycles_minting_types::IcpXdrConversionRateCertifiedResponse;
 use crate::dto::*;
-use crate::errors::{ErrorInfo, ICNSActorResult, ICNSError};
-use crate::icnaming_ledger_types::*;
-use crate::named_canister_ids::get_named_get_canister_id;
+use crate::errors::{ActorResult, ErrorInfo, NamingError};
+use crate::named_canister_ids::{get_named_get_canister_id, CanisterNames};
+use sha2::{Digest, Sha224};
 
 pub mod ic_impl;
 
 async fn call_core<T, TResult>(
-    canister_name: &str,
+    canister_name: CanisterNames,
     method: &str,
     args: T,
     logging: bool,
-) -> Result<TResult, ICNSError>
+) -> Result<TResult, NamingError>
 where
     T: candid::utils::ArgumentEncoder,
     TResult: for<'a> Deserialize<'a> + CandidType + Debug,
 {
     if logging {
-        debug!("Calling {}::{}", canister_name, method);
+        debug!("Calling {:?}::{}", canister_name, method);
     }
     let canister_id = get_named_get_canister_id(canister_name);
     let call_result: Result<(TResult,), (RejectionCode, String)> =
@@ -37,10 +37,10 @@ where
         let (code, message) = call_result.err().unwrap();
         let code_string = format!("{:?}", code);
         error!(
-            "{}::{} failed with code {}: {}",
+            "{:?}::{} failed with code {}: {}",
             canister_name, method, code_string, message
         );
-        return Err(ICNSError::CanisterCallError {
+        return Err(NamingError::CanisterCallError {
             message,
             rejection_code: code_string,
         });
@@ -48,7 +48,7 @@ where
     let result = call_result.unwrap();
     if logging {
         debug!(
-            "Call canister {} with method {} result: {:?}",
+            "Call canister {:?} with method {} result: {:?}",
             canister_name, method, result
         );
     }
@@ -56,15 +56,15 @@ where
 }
 
 async fn call_canister_as_icns_result<T, TResult>(
-    canister_name: &str,
+    canister_name: CanisterNames,
     method: &str,
     args: T,
-) -> ICNSActorResult<TResult>
+) -> ActorResult<TResult>
 where
     T: candid::utils::ArgumentEncoder,
     TResult: for<'a> Deserialize<'a> + CandidType + Debug,
 {
-    let result = call_core::<T, ICNSActorResult<TResult>>(canister_name, method, args, true).await;
+    let result = call_core::<T, ActorResult<TResult>>(canister_name, method, args, true).await;
     match result {
         Ok(result) => result,
         Err(error) => Err(ErrorInfo::from(error)),
@@ -72,10 +72,10 @@ where
 }
 
 async fn call_canister_as_result<T, TResult>(
-    canister_name: &str,
+    canister_name: CanisterNames,
     method: &str,
     args: T,
-) -> ICNSActorResult<TResult>
+) -> ActorResult<TResult>
 where
     T: candid::utils::ArgumentEncoder,
     TResult: for<'a> Deserialize<'a> + CandidType + Debug,
@@ -86,10 +86,10 @@ where
 }
 
 async fn call_canister_as_result_no_logging<T, TResult>(
-    canister_name: &str,
+    canister_name: CanisterNames,
     method: &str,
     args: T,
-) -> ICNSActorResult<TResult>
+) -> ActorResult<TResult>
 where
     T: candid::utils::ArgumentEncoder,
     TResult: for<'a> Deserialize<'a> + CandidType + Debug,
@@ -108,65 +108,73 @@ pub trait IRegistryApi {
         sub_owner: Principal,
         ttl: u64,
         resolver: Principal,
-    ) -> ICNSActorResult<RegistryDto>;
+    ) -> ActorResult<RegistryDto>;
 
     async fn reclaim_name(
         &self,
         name: String,
         owner: Principal,
         resolver: Principal,
-    ) -> ICNSActorResult<bool>;
+    ) -> ActorResult<bool>;
 
     async fn transfer(
         &self,
         name: String,
         new_owner: Principal,
         resolver: Principal,
-    ) -> ICNSActorResult<bool>;
+    ) -> ActorResult<bool>;
 
-    async fn get_resolver(&self, label: &str) -> ICNSActorResult<Principal>;
-    async fn get_users(&self, name: &str) -> ICNSActorResult<RegistryUsers>;
+    async fn get_resolver(&self, label: &str) -> ActorResult<Principal>;
+    async fn get_users(&self, name: &str) -> ActorResult<RegistryUsers>;
 }
 
 #[async_trait]
 pub trait IResolverApi {
-    async fn ensure_resolver_created(&self, name: String) -> ICNSActorResult<bool>;
-    async fn remove_resolvers(&self, names: Vec<String>) -> ICNSActorResult<bool>;
+    async fn ensure_resolver_created(&self, name: String) -> ActorResult<bool>;
+    async fn remove_resolvers(&self, names: Vec<String>) -> ActorResult<bool>;
 }
 
 #[async_trait]
 pub trait IRegistrarApi {
-    async fn import_quota(&self, request: ImportQuotaRequest)
-        -> ICNSActorResult<ImportQuotaStatus>;
-    async fn register_from_gateway(&self, name: String, owner: Principal) -> ICNSActorResult<bool>;
-}
-
-#[async_trait]
-pub trait IICNamingLedgerApi {
-    async fn add_payment(&self, request: AddPaymentRequest) -> ICNSActorResult<AddPaymentResponse>;
-    async fn verify_payment(
-        &self,
-        request: VerifyPaymentRequest,
-    ) -> ICNSActorResult<VerifyPaymentResponse>;
-    async fn get_tip_of_ledger(
-        &self,
-        request: GetTipOfLedgerRequest,
-    ) -> ICNSActorResult<GetTipOfLedgerResponse>;
-    async fn refund_payment(
-        &self,
-        request: RefundPaymentRequest,
-    ) -> ICNSActorResult<RefundPaymentResponse>;
-    async fn sync_icp_payment(
-        &self,
-        request: SyncICPPaymentRequest,
-    ) -> ICNSActorResult<SyncICPPaymentResponse>;
+    async fn import_quota(&self, request: ImportQuotaRequest) -> ActorResult<ImportQuotaStatus>;
+    async fn register_from_gateway(&self, name: String, owner: Principal) -> ActorResult<bool>;
 }
 
 #[async_trait]
 pub trait ICyclesMintingApi {
     async fn get_icp_xdr_conversion_rate(
         &self,
-    ) -> ICNSActorResult<IcpXdrConversionRateCertifiedResponse>;
+    ) -> ActorResult<IcpXdrConversionRateCertifiedResponse>;
+}
+
+pub type TransactionId = String;
+
+#[derive(CandidType, Debug, Clone, Deserialize)]
+pub struct TransactionResponse {
+    #[serde(rename = "txId")]
+    pub tx_id: TransactionId,
+}
+
+#[async_trait]
+pub trait IDICPApi {
+    async fn transfer_from(
+        &self,
+        spender_sub_account: Option<Subaccount>,
+        from: String,
+        to: String,
+        value: Nat,
+        created_at: Option<u64>,
+    ) -> ActorResult<TransactionResponse>;
+
+    async fn transfer(
+        &self,
+        from_sub_account: Option<Subaccount>,
+        to: String,
+        value: Nat,
+        created_at: Option<u64>,
+    ) -> ActorResult<TransactionResponse>;
+
+    async fn balance_of(&self, token_holder: String) -> ActorResult<Nat>;
 }
 
 #[derive(Serialize, Deserialize, CandidType, Clone, Hash, Debug, PartialEq, Eq, Copy)]
@@ -187,14 +195,14 @@ pub struct AccountIdentifier {
 impl AccountIdentifier {
     pub fn new(account: Principal, sub_account: Option<Subaccount>) -> AccountIdentifier {
         let mut hash = Sha224::new();
-        hash.write(ACCOUNT_DOMAIN_SEPERATOR);
-        hash.write(account.as_slice());
+        let _ = hash.write(ACCOUNT_DOMAIN_SEPERATOR).unwrap();
+        let _ = hash.write(account.as_slice()).unwrap();
 
-        let sub_account = sub_account.unwrap_or(EMPTY_SUBACCOUNT.clone());
-        hash.write(&sub_account.0[..]);
+        let sub_account = sub_account.unwrap_or(EMPTY_SUBACCOUNT);
+        let _ = hash.write(&sub_account.0[..]).unwrap();
 
         AccountIdentifier {
-            hash: hash.finish(),
+            hash: hash.finalize().into(),
         }
     }
 
@@ -359,5 +367,5 @@ pub enum TransferResult {
 
 #[async_trait]
 pub trait ILedgerApi {
-    async fn transfer(&self, args: TransferArgs) -> ICNSActorResult<TransferResult>;
+    async fn transfer(&self, args: TransferArgs) -> ActorResult<TransferResult>;
 }

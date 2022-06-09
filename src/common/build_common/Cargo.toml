@@ -1,0 +1,13 @@
+[package]
+name = "build_common"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+env-file-reader = "0.3.0"
+vergen = { version = "7", default-features = false, features = ["build", "git"] }
+anyhow = "1.0.57"
+hex = "0.4.3"
+flate2 = "1.0"

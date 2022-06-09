@@ -1,6 +1,7 @@
 use std::collections::HashSet;
 
 use candid::Principal;
+use common::TimeInNs;
 use rstest::*;
 
 use common::constants::*;
@@ -8,8 +9,7 @@ use common::dto::RegistryUsers;
 use test_common::canister_api::mock_registry_api;
 use test_common::canister_api::MockRegistryApi;
 use test_common::ic_api::init_test;
-use test_common::ic_api::test_wrapper::set_caller;
-use test_common::ic_api::test_wrapper::TestICApi;
+use test_common::user::*;
 
 use super::*;
 
@@ -26,7 +26,7 @@ fn add_test_resolver(name: &str) {
 
 #[fixture]
 fn service() -> ResolverService {
-    let service = ResolverService::new();
+    let service = ResolverService::default();
     service
 }
 
@@ -35,7 +35,7 @@ mod ensure_resolver_created {
 
     #[rstest]
     fn test_ensure_resolver_created(_init_test: (), mut service: ResolverService) {
-        let name = "nice.icp";
+        let name = "nice.ic";
 
         // act
         let result = service.ensure_resolver_created(name);
@@ -52,7 +52,7 @@ mod ensure_resolver_created {
 
     #[rstest]
     fn test_ensure_resolver_created_already_exists(_init_test: (), mut service: ResolverService) {
-        let name = "nice.icp";
+        let name = "nice.ic";
 
         // act
         service.ensure_resolver_created(name).unwrap();
@@ -76,7 +76,7 @@ mod get_record_value {
 
     #[rstest]
     fn test_get_record_value_not_found(_init_test: (), service: ResolverService) {
-        let name = "nice.icp";
+        let name = "nice.ic";
 
         // act
         let result = service.get_record_value(name);
@@ -89,7 +89,7 @@ mod get_record_value {
 
     #[rstest]
     fn test_get_record_value_found(_init_test: (), service: ResolverService) {
-        let name = "nice.icp";
+        let name = "nice.ic";
         add_test_resolver(name);
 
         // act
@@ -106,8 +106,13 @@ mod set_record {
     use super::*;
 
     #[rstest]
-    async fn test_set_record_value_key_invalid(_init_test: (), mut service: ResolverService) {
-        let name = "nice.icp";
+    async fn test_set_record_value_key_invalid(
+        _init_test: (),
+        mut service: ResolverService,
+        mock_now: u64,
+        mock_user1: Principal,
+    ) {
+        let name = "nice.ic";
         let mut patch_values: HashMap<String, String> = HashMap::new();
         let invalid_resolver_key = "not_found";
         patch_values.insert(invalid_resolver_key.to_string(), "icns".to_string());
@@ -115,7 +120,10 @@ mod set_record {
         add_test_resolver(name);
 
         // act
-        let result = service.set_record_value(name, patch_values).await;
+        let call_context = CallContext::new(mock_user1, TimeInNs(mock_now));
+        let result = service
+            .set_record_value(call_context, name, patch_values)
+            .await;
 
         // assert
         assert!(result.is_err());
@@ -123,7 +131,7 @@ mod set_record {
             Err(e) => {
                 assert_eq!(
                     e,
-                    ICNSError::InvalidResolverKey {
+                    NamingError::InvalidResolverKey {
                         key: invalid_resolver_key.to_string()
                     }
                 );
@@ -133,8 +141,13 @@ mod set_record {
     }
 
     #[rstest]
-    async fn test_set_record_value_value_invalid(_init_test: (), mut service: ResolverService) {
-        let name = "nice.icp";
+    async fn test_set_record_value_value_invalid(
+        _init_test: (),
+        mut service: ResolverService,
+        mock_now: u64,
+        mock_user1: Principal,
+    ) {
+        let name = "nice.ic";
         let mut patch_values: HashMap<String, String> = HashMap::new();
         let mut value = String::new();
         for _ in 0..(RESOLVER_VALUE_MAX_LENGTH + 1) {
@@ -146,7 +159,10 @@ mod set_record {
         add_test_resolver(name);
 
         // act
-        let result = service.set_record_value(name, patch_values).await;
+        let call_context = CallContext::new(mock_user1, TimeInNs(mock_now));
+        let result = service
+            .set_record_value(call_context, name, patch_values)
+            .await;
 
         // assert
         assert!(result.is_err());
@@ -154,7 +170,7 @@ mod set_record {
             Err(e) => {
                 assert_eq!(
                     e,
-                    ICNSError::ValueMaxLengthError {
+                    NamingError::ValueMaxLengthError {
                         max: RESOLVER_VALUE_MAX_LENGTH
                     }
                 );
@@ -168,8 +184,10 @@ mod set_record {
         _init_test: (),
         mut service: ResolverService,
         mut mock_registry_api: MockRegistryApi,
+        mock_now: u64,
+        mock_user1: Principal,
     ) {
-        let name = "nice.icp";
+        let name = "nice.ic";
         let mut patch_values: HashMap<String, String> = HashMap::new();
         patch_values.insert(RESOLVER_KEY_GITHUB.to_string(), "icns".to_string());
         let owner = Principal::from_text("rrkah-fqaaa-aaaaa-aaaaq-cai").unwrap();
@@ -186,17 +204,18 @@ mod set_record {
                 })
             });
         service.registry_api = Arc::new(mock_registry_api);
-        service.request_context = Arc::new(TestICApi {});
-        set_caller(Principal::anonymous());
 
         // act
-        let result = service.set_record_value(name, patch_values).await;
+        let call_context = CallContext::new(Principal::anonymous(), TimeInNs(mock_now));
+        let result = service
+            .set_record_value(call_context, name, patch_values)
+            .await;
 
         // assert
         assert!(result.is_err());
         match result {
             Err(e) => {
-                assert_eq!(e, ICNSError::PermissionDenied {});
+                assert_eq!(e, NamingError::Unauthorized {});
             }
             _ => assert!(false),
         }
@@ -207,8 +226,10 @@ mod set_record {
         _init_test: (),
         mut service: ResolverService,
         mut mock_registry_api: MockRegistryApi,
+        mock_now: u64,
+        mock_user1: Principal,
     ) {
-        let name = "nice.icp";
+        let name = "nice.ic";
         let mut patch_values: HashMap<String, String> = HashMap::new();
         let icp_addr = "rrkah-fqaaa-aaaaa-aaaaq-cai";
         patch_values.insert(RESOLVER_KEY_ICP.to_string(), icp_addr.to_string());
@@ -228,11 +249,12 @@ mod set_record {
                 })
             });
         service.registry_api = Arc::new(mock_registry_api);
-        service.request_context = Arc::new(TestICApi {});
-        set_caller(owner);
 
         // act
-        let result = service.set_record_value(name, patch_values).await;
+        let call_context = CallContext::new(owner, TimeInNs(mock_now));
+        let result = service
+            .set_record_value(call_context, name, patch_values)
+            .await;
 
         // assert
         assert!(result.is_ok());
@@ -247,8 +269,9 @@ mod set_record {
         _init_test: (),
         mut service: ResolverService,
         mut mock_registry_api: MockRegistryApi,
+        mock_now: u64,
     ) {
-        let name = "nice.icp";
+        let name = "nice.ic";
         let mut patch_values: HashMap<String, String> = HashMap::new();
         patch_values.insert(RESOLVER_KEY_GITHUB.to_string(), "icns".to_string());
         let owner = Principal::from_text("rrkah-fqaaa-aaaaa-aaaaq-cai").unwrap();
@@ -262,11 +285,12 @@ mod set_record {
                 })
             });
         service.registry_api = Arc::new(mock_registry_api);
-        service.request_context = Arc::new(TestICApi {});
-        set_caller(owner);
 
         // act
-        let result = service.set_record_value(name, patch_values).await;
+        let call_context = CallContext::new(owner, TimeInNs(mock_now));
+        let result = service
+            .set_record_value(call_context, name, patch_values)
+            .await;
 
         // assert
         assert!(result.is_ok());
@@ -329,24 +353,25 @@ mod validate_value {
 }
 
 mod remove_resolvers {
-    use common::named_canister_ids::get_named_get_canister_id;
+    use common::named_canister_ids::{get_named_get_canister_id, CanisterNames};
 
     use super::*;
 
     #[rstest]
-    fn test_remove_resolvers_success(service: ResolverService) {
+    fn test_remove_resolvers_success(service: ResolverService, mock_now: u64) {
         STATE.with(|s| {
             let mut store = s.resolver_store.borrow_mut();
-            store.ensure_created("test1.icp");
-            store.ensure_created("test2.icp");
-            store.ensure_created("app.test3.icp");
-            store.ensure_created("app.nice.icp");
+            store.ensure_created("test1.ic");
+            store.ensure_created("test2.ic");
+            store.ensure_created("app.test3.ic");
+            store.ensure_created("app.nice.ic");
         });
 
         // act
-        let caller = get_named_get_canister_id(CANISTER_NAME_REGISTRY);
-        let names = vec!["app.test3.icp".to_string(), "test2.icp".to_string()];
-        let result = service.remove_resolvers(&caller, names);
+        let caller = get_named_get_canister_id(CanisterNames::Registry);
+        let names = vec!["app.test3.ic".to_string(), "test2.ic".to_string()];
+        let call_context = CallContext::new(caller, TimeInNs(mock_now));
+        let result = service.remove_resolvers(call_context, names);
 
         // assert
         assert!(result.is_ok());
@@ -355,17 +380,18 @@ mod remove_resolvers {
             let store = s.resolver_store.borrow();
             let resolvers = store.get_resolvers();
             assert_eq!(resolvers.len(), 2);
-            resolvers.get("test1.icp").unwrap();
-            resolvers.get("app.nice.icp").unwrap();
+            resolvers.get("test1.ic").unwrap();
+            resolvers.get("app.nice.ic").unwrap();
         })
     }
 
     #[rstest]
-    fn test_remove_resolvers_success_even_not_found(service: ResolverService) {
+    fn test_remove_resolvers_success_even_not_found(service: ResolverService, mock_now: u64) {
         // act
-        let caller = get_named_get_canister_id(CANISTER_NAME_REGISTRY);
-        let names = vec!["app.test3.icp".to_string(), "test2.icp".to_string()];
-        let result = service.remove_resolvers(&caller, names);
+        let names = vec!["app.test3.ic".to_string(), "test2.ic".to_string()];
+        let caller = get_named_get_canister_id(CanisterNames::Registry);
+        let call_context = CallContext::new(caller, TimeInNs(mock_now));
+        let result = service.remove_resolvers(call_context, names);
 
         // assert
         assert!(result.is_ok());
@@ -374,11 +400,11 @@ mod remove_resolvers {
     #[rstest]
     fn test_remove_resolvers_failed_not_admin(service: ResolverService) {
         // act
-        let names = vec!["app.test3.icp".to_string(), "test2.icp".to_string()];
-        let result = service.remove_resolvers(&Principal::anonymous(), names);
+        let names = vec!["app.test3.ic".to_string(), "test2.ic".to_string()];
+        let result = service.remove_resolvers(CallContext::anonymous(), names);
 
         // assert
         assert!(result.is_err());
-        assert_eq!(result.unwrap_err(), ICNSError::Unauthorized);
+        assert_eq!(result.unwrap_err(), NamingError::Unauthorized);
     }
 }

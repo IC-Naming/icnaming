@@ -9,28 +9,28 @@ Feature: Query Api
     Given Check result of "<name>" is '<status>'
     Examples: Rainbow colours
       | name                                                                            | status                                                                       |
-      | hello.icp                                                                       | Ok                                                                           |
-      | 012345678901234567890123456789012345678901234567890123456789012345678912345.icp | name is invalid, reason: "second level name must be less than 64 characters" |
-      | www.hello.icp                                                                   | name is invalid, reason: "it must be second level name"                      |
+      | hello.ic                                                                       | Ok                                                                           |
+      | 012345678901234567890123456789012345678901234567890123456789012345678912345.ic | name is invalid, reason: "second level name must be less than 64 characters" |
+      | www.hello.ic                                                                   | name is invalid, reason: "it must be second level name"                      |
       | icp                                                                             | name is invalid, reason: "it must be second level name"                      |
-      | hello.com                                                                       | name is invalid, reason: "top level of name must be icp"                     |
-      | hel!lo.icp                                                                      | name is invalid, reason: "name must be alphanumeric or -"                    |
-      | hello .icp                                                                      | name is invalid, reason: "name must be alphanumeric or -"                    |
-      | 你好.icp                                                                          | name is invalid, reason: "name must be alphanumeric or -"                    |
-      | icp.icp                                                                         | Registration has been taken                                                  |
+      | hello.com                                                                       | name is invalid, reason: "top level of name must be ic"                     |
+      | hel!lo.ic                                                                      | name is invalid, reason: "name must be alphanumeric or -"                    |
+      | hello .ic                                                                      | name is invalid, reason: "name must be alphanumeric or -"                    |
+      | 你好.ic                                                                         | name is invalid, reason: "name must be alphanumeric or -"                   |
+      | icp.ic                                                                         | Registration has been taken                                                  |
 
   Scenario: Check availability of a name which is already taken
-    Given Name "hello.icp" is already taken
-    When Check availability of "hello.icp"
-    Then Check result of "hello.icp" is 'Registration has been taken'
+    Given Name "hello.ic" is already taken
+    When Check availability of "hello.ic"
+    Then Check result of "hello.ic" is 'Registration has been taken'
 
   Scenario: Get details of a name
-    When Name "hello.icp" is already taken
-    And get_owner result "hello.icp" is the same as "main" identity
-    Then get_name_expires "hello.icp" result is about in "1" years
-    And registrar get_details "hello.icp" result is
+    When Name "hello.ic" is already taken
+    And get_owner result "hello.ic" is the same as "main" identity
+    Then get_name_expires "hello.ic" result is about in "1" years
+    And registrar get_details "hello.ic" result is
       | key        | value     |
       | owner      | main      |
-      | name       | hello.icp |
+      | name       | hello.ic |
       | expired_at | 1         |
       | created_at | 0         |

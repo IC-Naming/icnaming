@@ -51,10 +51,7 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE/src
           dfx start --background
-          chmod a+x ./sh_setup_dev.sh
           ./sh_setup_dev.sh
-
-          chmod a+x ./sh_dev_package.sh
           ./sh_dev_package.sh
       - name: Archive artifacts
         uses: actions/upload-artifact@v3
@@ -97,10 +94,7 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE/src
           dfx start --background
-          chmod a+x ./sh_setup_dev.sh
           ./sh_setup_dev.sh
-
-          chmod a+x ./sh_package.sh
           ./sh_package.sh
       - name: Archive artifacts
         uses: actions/upload-artifact@v3
@@ -138,7 +132,7 @@ jobs:
       - uses: Swatinem/rust-cache@v1
         with:
           working-directory: "src"
-      - name: unit test
+      - name: unit nextest run
         run: |
           cd $GITHUB_WORKSPACE/src
-          cargo test
+          cargo nextest run

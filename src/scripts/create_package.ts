@@ -6,41 +6,52 @@ import logger from "node-color-log";
 
 const package_dir = "package"
 // dir to save packages build by diff feature
-const package_features_dir = "package_feature"
-const canister_ids_dir = "canister_ids"
+const package_canister_env_dir = "package_canister_env"
 
 const build_all = async (build_context: BuildContext) => {
     // reset package_feature dir
-    if (fs.existsSync(package_features_dir)) {
-        fs.rmSync(package_features_dir, {recursive: true})
+    if (fs.existsSync(package_canister_env_dir)) {
+        fs.rmSync(package_canister_env_dir, {recursive: true})
     }
-    fs.mkdirSync(package_features_dir)
+    fs.mkdirSync(package_canister_env_dir)
 
     // distinct feature
-    let features = build_context.features;
+    let canister_envs = build_context.canister_envs;
+
+    const declarations_target_dir = `${package_canister_env_dir}/declarations`
+    fs.mkdirSync(declarations_target_dir, {recursive: true})
+
+    for (let [name, canister_json] of Object.entries(build_context.canisters)) {
+
+        // copy copy_ts_declarations
+        if (canister_json.pack_config?.copy_ts_declarations != false) {
+            const source_dir = `./scripts/src/scripts/declarations/${name}`
+            fs.cpSync(source_dir, `${declarations_target_dir}/${name}`, {recursive: true, force: true})
+        }
+    }
 
     // build each canister by each feature
-    for (const feature of features) {
+    for (const canisterEnv of canister_envs) {
         // make a feature dif
-        const feature_dir = `${package_features_dir}/${feature}`
-        fs.mkdirSync(feature_dir)
+        const canister_env_dir = `${package_canister_env_dir}/${canisterEnv}`
+        fs.mkdirSync(canister_env_dir)
 
-        logger.debug(`build feature: ${feature}`);
+        logger.debug(`build canister_env: ${canisterEnv}`);
         for (let [name, canister_json] of Object.entries(build_context.canisters)) {
-            canister.build(name, feature);
+            canister.build(name, canisterEnv);
             // copy wasm files to feature dir
             const wasm_path = get_wasm_path(canister_json);
-            fs.copyFileSync(wasm_path, `${feature_dir}/${name}.wasm`);
+            fs.copyFileSync(wasm_path, `${canister_env_dir}/${name}.wasm`);
 
             // copy did files to feature dir
             const did_path = canister_json.candid;
-            fs.copyFileSync(did_path, `${feature_dir}/${name}.did`);
+            fs.copyFileSync(did_path, `${canister_env_dir}/${name}.did`);
         }
     }
 }
 
 const clean = async () => {
-    let found = fs.existsSync(package_dir);
+    const found = fs.existsSync(package_dir);
     if (found) {
         logger.info("Cleaning package directory")
         fs.rmSync(package_dir, {recursive: true});
@@ -51,15 +62,15 @@ const clean = async () => {
 
 const check = async (build_context: BuildContext) => {
     // ensure every wasm file in package_feature dir must be < 2MB, check recursive
-    for (let feature of build_context.features) {
-        const feature_dir = `${package_features_dir}/${feature}`
+    for (let feature of build_context.canister_envs) {
+        const feature_dir = `${package_canister_env_dir}/${feature}`
         const files = fs.readdirSync(feature_dir);
         for (const file of files) {
             if (file.endsWith(".wasm")) {
                 const file_path = `${feature_dir}/${file}`
                 const stat = fs.statSync(file_path);
                 if (stat.size > 2 * 1024 * 1024) {
-                    logger.error(`WASM file size of ${file} is ${stat.size} bytes, must be < 2MB`);
+                    logger.warn(`WASM file size of ${file} is ${stat.size} bytes, must be < 2MB`);
                 }
             }
         }
@@ -70,7 +81,7 @@ const check = async (build_context: BuildContext) => {
 
 const create = async (build_context: BuildContext) => {
 
-    let out_dfx_json = {
+    const out_dfx_json = {
         "defaults": {
             "build": {
                 "args": "",
@@ -86,13 +97,17 @@ const create = async (build_context: BuildContext) => {
                 "providers": ["https://ic0.app"],
                 "type": "persistent"
             },
+            "staging": {
+                "providers": ["https://ic0.app"],
+                "type": "persistent"
+            },
         },
         "version": 1
     };
 
-    let canister_node = {};
+    const canister_node = {};
 
-    for (let name of Object.keys(build_context.canisters)) {
+    for (const name of Object.keys(build_context.canisters)) {
         canister_node[name] = {
             "candid": `assets/${name}.did`,
             "wasm": `assets/${name}.wasm`,
@@ -108,7 +123,7 @@ const create = async (build_context: BuildContext) => {
         fs.mkdirSync(env_dir);
 
         // copy canister_ids
-        const source_canister_ids_json = `${canister_ids_dir}/${env.name}.json`;
+        const source_canister_ids_json = `./canister_ids.json`;
         const dest_canister_ids_json = `${env_dir}/canister_ids.json`;
         fs.copyFileSync(source_canister_ids_json, dest_canister_ids_json);
         logger.debug(`copy canister_ids.json from ${source_canister_ids_json} to ${dest_canister_ids_json}`);
@@ -118,13 +133,14 @@ const create = async (build_context: BuildContext) => {
         fs.mkdirSync(env_assets_dir);
 
         // copy files from package_feature dir to env dir
-        let feature = env.feature;
-        const feature_dir = `${package_features_dir}/${feature}`;
-        const files = fs.readdirSync(feature_dir);
-        for (const file of files) {
-            fs.copyFileSync(`${feature_dir}/${file}`, `${env_assets_dir}/${file}`);
-        }
-        logger.debug(`copy files from ${feature_dir} to ${env_assets_dir}`);
+        let canister_env = env.canister_env;
+        const canister_env_dir = `${package_canister_env_dir}/${canister_env}`;
+        fs.cpSync(canister_env_dir, env_assets_dir, {recursive: true, force: true})
+
+        // copy declarations
+        const env_declarations_dir = `${env_dir}/scripts/src/scripts/declarations`;
+        fs.mkdirSync(env_declarations_dir, {recursive: true});
+        fs.cpSync(`${package_canister_env_dir}/declarations`, env_declarations_dir, {recursive: true, force: true})
 
         // out dfx.json
         const dest_dfx_json = `${env_dir}/dfx.json`;
@@ -144,8 +160,8 @@ const create_zip = async (build_context: BuildContext) => {
     // create zip file for each env
     for (const env of build_context.envs) {
         const env_dir = `${package_dir}/${env.name}`;
-        let output_zip = fs.createWriteStream(`${env_dir}.zip`);
-        let archive = archiver("zip", {
+        const output_zip = fs.createWriteStream(`${env_dir}.zip`);
+        const archive = archiver("zip", {
             zlib: {level: 9}
         });
 
@@ -160,21 +176,21 @@ const create_zip = async (build_context: BuildContext) => {
 interface BuildContext {
     canisters: Map<string, DfxJsonCanister>
     envs: DfxPackageEnv[],
-    features: string[]
+    canister_envs: string[]
 }
 
 (async () => {
-    let dfxJson = get_dfx_json();
+    const dfxJson = get_dfx_json();
     const dfxPackageJson = get_dfx_package_json();
     // join canisters keys as string
-    let canisters_keys = Array.from(dfxJson.canisters.keys()).join(", ");
+    const canisters_keys = Array.from(dfxJson.canisters.keys()).join(", ");
     logger.info(`There are canister listed in dfx.json: ${canisters_keys}`);
 
     // filter canister those not exclude in package
-    let exclude_canisters: string[] = [];
-    let canisters = {};
+    const exclude_canisters: string[] = [];
+    const canisters = {};
 
-    for (let [name, canister] of dfxJson.canisters.entries()) {
+    for (const [name, canister] of dfxJson.canisters.entries()) {
         if (canister.pack_config?.exclude_in_package) {
             exclude_canisters.push(name);
             continue;
@@ -186,21 +202,12 @@ interface BuildContext {
         logger.info(`Exclude canisters: ${exclude_canisters.join(", ")}`);
     }
 
-    // receive process argv includes 'dev_package'
-    // e.g. ts-node -r tsconfig-paths/register scripts/create_package.ts dev_package
-    logger.debug(process.argv);
-    let dev_package = process.argv.includes("dev_package");
-    logger.info(`dev_package: ${dev_package}`);
-    let envs: DfxPackageEnv[] = dev_package ? [{
-        name: "dev",
-        feature: "dev_canister"
-    }] : dfxPackageJson.envs;
-
-    let build_context: BuildContext = {
+    const build_context: BuildContext = {
         canisters: canisters as Map<string, DfxJsonCanister>,
-        envs: envs,
-        features: [...new Set(envs.map(env => env.feature))]
+        envs: dfxPackageJson.envs,
+        canister_envs: [...new Set(dfxPackageJson.envs.map(env => env.canister_env))]
     };
+    logger.debug(`build_context: ${JSON.stringify(build_context, null, 2)}`);
 
     await clean();
     await build_all(build_context);

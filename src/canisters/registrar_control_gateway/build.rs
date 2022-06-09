@@ -1,9 +1,11 @@
+use anyhow::Result;
+use build_common::generate_envs;
+use flate2::write::ZlibEncoder;
+use sha2::Digest;
 use std::fs;
 use std::io::{Read, Write};
 
-use flate2::write::ZlibEncoder;
-
-fn main() {
+fn main() -> Result<()> {
     // create zlib encode bytes for each txt file in ../../quota_import_data/
     // and create get hash for each source file and write to ../../quota_import_data/*.hash
 
@@ -39,7 +41,9 @@ fn main() {
         let data = fs::read(file).unwrap();
         {
             let file_name = file_name.replace(".csv", ".hash");
-            let hash = ic_crypto_sha256::Sha256::hash(&data);
+            let mut sha256 = sha2::Sha256::new();
+            sha256.update(&data);
+            let hash = sha256.finalize().to_vec();
             let hash = hex::encode(hash);
             hashes.push(hash.clone());
 
@@ -90,6 +94,7 @@ fn main() {
             found_start = true;
             new_contents.push_str(line);
             new_contents.push_str("\n");
+            new_contents.push_str("#[rustfmt::skip]\n");
             new_contents.push_str(&content);
             new_contents.push_str("\n");
         }
@@ -106,4 +111,7 @@ fn main() {
 
     let mut file = fs::File::create("src/build_gen.rs").unwrap();
     file.write_all(new_contents.as_bytes()).unwrap();
+
+    generate_envs()?;
+    Ok(())
 }

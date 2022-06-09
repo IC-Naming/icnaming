@@ -2,7 +2,7 @@ use rstest::*;
 
 use crate::constants::{PAGE_INPUT_MAX_LIMIT, PAGE_INPUT_MAX_OFFSET};
 use crate::dto::*;
-use crate::errors::ICNSError;
+use crate::errors::NamingError;
 use crate::test_common::test::init_test;
 
 #[fixture]
@@ -30,7 +30,7 @@ mod get_page_input {
         };
         assert_eq!(
             input.validate(),
-            Err(ICNSError::ValueShouldBeInRangeError {
+            Err(NamingError::ValueShouldBeInRangeError {
                 field: "limit".to_string(),
                 min: 1,
                 max: PAGE_INPUT_MAX_LIMIT,
@@ -46,7 +46,7 @@ mod get_page_input {
         };
         assert_eq!(
             input.validate(),
-            Err(ICNSError::ValueShouldBeInRangeError {
+            Err(NamingError::ValueShouldBeInRangeError {
                 field: "offset".to_string(),
                 min: 0,
                 max: PAGE_INPUT_MAX_OFFSET,

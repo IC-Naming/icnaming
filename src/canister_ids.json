@@ -1,0 +1,27 @@
+{
+  "registry": {
+    "local": "",
+    "staging": "eqs6x-hyaaa-aaaam-aafka-cai",
+    "ic": "f542z-iqaaa-aaaam-aafnq-cai"
+  },
+  "registrar": {
+    "local": "",
+    "staging": "ecujo-liaaa-aaaam-aafja-cai",
+    "ic": "ft6xr-taaaa-aaaam-aafmq-cai"
+  },
+  "resolver": {
+    "local": "",
+    "staging": "extyd-kaaaa-aaaam-aafkq-cai",
+    "ic": "fi3lu-jyaaa-aaaam-aafoa-cai"
+  },
+  "favorites": {
+    "local": "",
+    "staging": "elxcs-5aaaa-aaaam-aafiq-cai",
+    "ic": "fu7rf-6yaaa-aaaam-aafma-cai"
+  },
+  "registrar_control_gateway": {
+    "local": "",
+    "staging": "efvp2-gqaaa-aaaam-aafjq-cai",
+    "ic": "f254n-fiaaa-aaaam-aafna-cai"
+  }
+}

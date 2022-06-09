@@ -1,27 +1,18 @@
-import "../setup"
-import {canister} from "../utils";
-import {registry as name} from "./names";
-import {ReInstallOptions} from "~/utils/canister";
-
+import '../setup'
+import { canister } from '../utils'
+import { registry as name } from './names'
+import { ReInstallOptions } from '~/utils/canister'
+import { reinstall_with_dev_ids } from './installUtils'
 
 const build = () => {
-    canister.build(name)
+  canister.build(name)
 }
-
-const reinstall_by_dfx = async () => {
-    await canister.reinstall_code(name);
-}
-const init = () => {
-}
-
 
 export const reinstall = async (options?: ReInstallOptions) => {
-    if (options?.build) {
-        build();
-
-    }
-    await reinstall_by_dfx();
-    if (options?.init) {
-        init();
-    }
+  if (options?.build) {
+    build()
+  }
+  await reinstall_with_dev_ids(name)
+  if (options?.init) {
+  }
 }
