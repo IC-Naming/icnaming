@@ -1,13 +1,12 @@
 import { Actor, HttpAgent } from "@dfinity/agent";
 import { actorFactory } from "../../utils/actorFactory";
-import { favorites as name } from "../../canisters/names";
+import { dicp as name } from "../../canisters/names";
 import { canister, identity } from '@deland-labs/ic-dev-kit'
 
 // Imports and re-exports candid interface
-import { idlFactory } from './favorites.did.js';
-export { idlFactory } from './favorites.did.js';
+import { idlFactory } from '@deland-labs/dft_all_features_client'
 // CANISTER_ID is replaced by webpack based on node environment
-export const canisterId = process.env.FAVORITES_CANISTER_ID;
+export const canisterId = process.env.DICP_CANISTER_ID;
 
 export const createActor = (canisterId, options) => {
   const agent = new HttpAgent({ ...options?.agentOptions });
@@ -29,8 +28,8 @@ export const createActor = (canisterId, options) => {
 };
 
 /**
- * A ready-to-use agent for the favorites canister
- * @type {import("@dfinity/agent").ActorSubclass<import("./favorites.did.js")._SERVICE>}
+ * A ready-to-use agent for the dicp canister
+ * @type {import("@dfinity/agent").ActorSubclass<import("./dicp.did.js")._SERVICE>}
  */
-export const favorites = actorFactory.createActor(idlFactory, canister.get_id(name), identity.identityFactory.getIdentity());
-export const createFavorites = (identity_info) => createActor(canister.get_id(name), { agentOptions: identity_info.agentOptions });
+export const dicp = actorFactory.createActor(idlFactory, canister.get_id(name), identity.identityFactory.getIdentity()!);
+export const createDicp = (identity_info) => createActor(canister.get_id(name), { agentOptions: identity_info.agentOptions });

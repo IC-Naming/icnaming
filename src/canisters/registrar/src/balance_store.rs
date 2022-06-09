@@ -1,5 +1,5 @@
 use candid::{decode_args, encode_args, Nat};
-use candid::{CandidType, Deserialize, Principal};
+use candid::{CandidType, Deserialize};
 use common::state::StableState;
 use common::TimeInNs;
 use log::debug;

@@ -1,4 +1,3 @@
-import { reinstall as reinstall_ledger } from './scripts/canisters/ledger'
 import { reinstall as reinstall_favorites } from './scripts/canisters/favorites'
 import { reinstall as reinstall_registrar } from './scripts/canisters/registrar'
 import { reinstall as reinstall_registrar_control_gateway } from './scripts/canisters/registrar_control_gateway'
@@ -11,97 +10,51 @@ export const reinstall_all = async (options?: CanisterReinstallOptions) => {
   // recode time of cost
   const start = Date.now()
 
-  if (options && options.one_by_one) {
+  console.info('reinstall all in parallel')
+  const jobs: Promise<void>[] = []
 
-    if (options && options.canisters?.dicp) {
-      await reinstall_dicp({
-        ...options
-      })
-    }
-
-    if (options && options.canisters?.favorites) {
-      await reinstall_favorites({
-        ...options
-      })
-    }
-
-    if (options && options.canisters?.registrar) {
-      await reinstall_registrar({
-        ...options
-      })
-    }
-
-    if (options && options.canisters?.registrar_control_gateway) {
-      await reinstall_registrar_control_gateway({
-        ...options
-      })
-    }
-
-    if (options && options.canisters?.resolver) {
-      await reinstall_resolver({
-        ...options
-      })
-    }
-
-    if (options && options.canisters?.registry) {
-      await reinstall_registry({
-        ...options
-      })
-    }
-
-    if (options && options.canisters?.cycles_minting) {
-      await reinstall_cycles_minting({
-        ...options
-      })
-    }
-  } else {
-    console.info('reinstall all in parallel')
-    const jobs: Promise<void>[] = []
-
-    if (options && options.canisters?.dicp) {
-      jobs.push(reinstall_dicp({
-        ...options
-      }))
-    }
-
-    if (options && options.canisters?.favorites) {
-      jobs.push(reinstall_favorites({
-        ...options
-      }))
-    }
-
-    if (options && options.canisters?.registrar) {
-      jobs.push(reinstall_registrar({
-        ...options
-      }))
-    }
-
-    if (options && options.canisters?.registrar_control_gateway) {
-      jobs.push(reinstall_registrar_control_gateway({
-        ...options
-      }))
-    }
-
-    if (options && options.canisters?.resolver) {
-      jobs.push(reinstall_resolver({
-        ...options
-      }))
-    }
-
-    if (options && options.canisters?.registry) {
-      jobs.push(reinstall_registry({
-        ...options
-      }))
-    }
-
-    if (options && options.canisters?.cycles_minting) {
-      jobs.push(reinstall_cycles_minting({
-        ...options
-      }))
-    }
-
-    await Promise.all(jobs)
+  if (options && options.canisters?.dicp) {
+    jobs.push(reinstall_dicp({
+      ...options
+    }))
   }
+
+  if (options && options.canisters?.favorites) {
+    jobs.push(reinstall_favorites({
+      ...options
+    }))
+  }
+
+  if (options && options.canisters?.registrar) {
+    jobs.push(reinstall_registrar({
+      ...options
+    }))
+  }
+
+  if (options && options.canisters?.registrar_control_gateway) {
+    jobs.push(reinstall_registrar_control_gateway({
+      ...options
+    }))
+  }
+
+  if (options && options.canisters?.resolver) {
+    jobs.push(reinstall_resolver({
+      ...options
+    }))
+  }
+
+  if (options && options.canisters?.registry) {
+    jobs.push(reinstall_registry({
+      ...options
+    }))
+  }
+
+  if (options && options.canisters?.cycles_minting) {
+    jobs.push(reinstall_cycles_minting({
+      ...options
+    }))
+  }
+  await Promise.all(jobs)
 
   const end = Date.now()
   console.info(`reinstall all in ${end - start} ms`)
@@ -110,19 +63,17 @@ export const reinstall_all = async (options?: CanisterReinstallOptions) => {
 }
 
 export interface CanisterReinstallOptionsCanisters {
-    ledger?: boolean;
-    dicp?: boolean;
-    favorites?: boolean;
-    registrar?: boolean;
-    registrar_control_gateway?: boolean;
-    resolver?: boolean;
-    registry?: boolean;
-    cycles_minting?: boolean;
+  dicp?: boolean;
+  favorites?: boolean;
+  registrar?: boolean;
+  registrar_control_gateway?: boolean;
+  resolver?: boolean;
+  registry?: boolean;
+  cycles_minting?: boolean;
 }
 
 export interface CanisterReinstallOptions {
-    build?: boolean;
-    init?: boolean;
-    one_by_one?: boolean;
-    canisters?: CanisterReinstallOptionsCanisters;
+  build?: boolean;
+  init?: boolean;
+  canisters?: CanisterReinstallOptionsCanisters;
 }
