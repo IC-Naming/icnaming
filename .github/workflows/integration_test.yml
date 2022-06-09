@@ -1,0 +1,68 @@
+name: build
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  create_dev_package:
+    runs-on: ubuntu-latest
+    container:
+      image: docker.io/kentsday/dfx_rust:bullseye-dfx-0.10.0-1
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: collect feature file names
+        id: set-features
+        run: |
+          # list features in $GITHUB_WORKSPACE/src/scripts/features without file extension
+          # join the filenames with quotes into a json array
+          # save result into env var FEATURES
+          # e.g. from nice.feature, nice_test.feature, nice_test_2.feature to ["nice.feature", "nice_test.feature", "nice_test_2.feature"]
+          cd $GITHUB_WORKSPACE/src/scripts/features
+          FEATURES=$(ls -1 *.feature | sed -e 's/\.feature//g' | tr '\n' ',' | sed -e 's/,$//g')
+          # append " to the beginning and end FEATURES
+          FEATURES="[\"$FEATURES\"]"
+          # replace , with ","
+          FEATURES=$(echo $FEATURES | sed -e 's/,/\",\"/g')
+          echo $FEATURES
+          echo "::set-output name=features::$FEATURES"
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "16"
+          cache: "npm"
+          cache-dependency-path: "src/package-lock.json"
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          target: "wasm32-unknown-unknown"
+      - uses: Swatinem/rust-cache@v1
+        with:
+          working-directory: "src"
+      - name: run package
+        run: |
+          cd $GITHUB_WORKSPACE/src
+          dfx start --background
+          ./sh_setup_dev.sh
+          ./sh_dev_package.sh
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: "dev"
+          path: src/package/dev/
+    outputs:
+      features: ${{ steps.set-features.outputs.features }}
+  it:
+    uses: ./.github/workflows/run_integration_test.yml
+    needs:
+      - create_dev_package
+    with:
+      features: ${{ needs.create_dev_package.outputs.features }}
