@@ -1,4 +1,3 @@
-import '~/setup'
 import { Then, When } from '@cucumber/cucumber'
 import { createRegistry, registry } from '~/declarations/registry'
 import { Result } from '~/utils/Result'
@@ -68,7 +67,7 @@ When(/^I update registry "([^"]*)" with values$/,
   })
 When(/^User "([^"]*)" set registry owner for "([^"]*)" to "([^"]*)"$/,
   async function (user: string, name: string, new_owner: string) {
-    const registry = createRegistry(identities.get_identity_info(user))
+    const registry = createRegistry(identity.identityFactory.getIdentity(user))
     await registry.set_owner(name, identities.get_principal(new_owner))
   })
 When(/^I update registry "([^"]*)" resolver to "([^"]*)"$/,

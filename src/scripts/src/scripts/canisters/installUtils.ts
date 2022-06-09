@@ -1,5 +1,5 @@
 import { InitArgs, } from '~/declarations/registrar/registrar.did'
-import { canister } from '../utils'
+import { canister } from '@deland-labs/ic-dev-kit';
 import { IDL } from '@dfinity/candid'
 const init = ({ IDL }) => {
     const CanisterNames = IDL.Variant({

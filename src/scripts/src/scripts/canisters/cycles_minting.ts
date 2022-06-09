@@ -1,5 +1,4 @@
-import '../setup'
-import { canister } from '../utils'
+import { canister } from '@deland-labs/ic-dev-kit'
 import { cycles_minting as name } from './names'
 import { ReInstallOptions } from '~/utils/canister'
 

@@ -1,4 +1,3 @@
-import '~/setup'
 import { ledger } from '../../src/scripts/declarations/ledger'
 import { dicp } from '../../src/scripts/declarations/dicp'
 import { _SERVICE as ledgerActor, Tokens } from '../../src/scripts/declarations/ledger/ledger.did'
@@ -56,7 +55,7 @@ export const ledger_transfer_to = async (actor: ledgerActor, to: number[], balan
 }
 
 export const get_balance_e8s = async (user: string): Promise<BigInt> => {
-  const account_id = identities.get_identity_info(user).account_id_bytes
+  const account_id = identity.identityFactory.getIdentity(user).account_id_bytes
   const balance_result: Tokens = await ledger.account_balance({
     account: account_id
   })

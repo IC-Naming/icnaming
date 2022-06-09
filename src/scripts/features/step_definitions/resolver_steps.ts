@@ -1,4 +1,3 @@
-import '~/setup'
 import { Given, Then, When } from '@cucumber/cucumber'
 import { createResolver, resolver } from '~/declarations/resolver'
 import {
@@ -46,7 +45,7 @@ async function update_resolver (resolver: any, data, name: string) {
 
 Given(/^User "([^"]*)" update resolver "([^"]*)" with values$/,
   async function (user: string, name: string, data) {
-    const identityInfo = identities.get_identity_info(user)
+    const identityInfo = identity.identityFactory.getIdentity(user)
     const resolver = createResolver(identityInfo)
     await update_resolver(resolver, data, name)
   })

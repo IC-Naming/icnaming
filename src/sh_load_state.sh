@@ -1,1 +1,1 @@
-ts-node -r tsconfig-paths/register scripts/load_state.ts
+npx ts-node -r tsconfig-paths/register scripts/index.ts load-state

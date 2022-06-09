@@ -1,7 +1,7 @@
 import { Actor, HttpAgent } from "@dfinity/agent";
 import {actorFactory} from "../../utils/actorFactory";
 import {registrar_control_gateway as name} from "../../canisters/names";
-import {canister} from "../../utils";
+import {canister} from "@deland-labs/ic-dev-kit";
 
 // Imports and re-exports candid interface
 import { idlFactory } from './registrar_control_gateway.did.js';

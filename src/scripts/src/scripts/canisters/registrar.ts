@@ -1,5 +1,4 @@
-import '../setup'
-import { canister } from '../utils'
+import { canister } from '@deland-labs/ic-dev-kit'
 import { registrar as name } from './names'
 import { ReInstallOptions } from '~/utils/canister'
 import { reinstall_with_dev_ids } from './installUtils'
@@ -13,8 +12,4 @@ export const reinstall = async (options?: ReInstallOptions) => {
     build()
   }
   await reinstall_with_dev_ids(name)
-
-  if (options?.init) {
-
-  }
 }

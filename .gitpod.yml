@@ -32,6 +32,7 @@ vscode:
     - bungcip.better-toml
     - usernamehw.errorlens
     - ms-azuretools.vscode-docker
+    - dbaeumer.vscode-eslint
 jetbrains:
   pycharm:
     plugins:

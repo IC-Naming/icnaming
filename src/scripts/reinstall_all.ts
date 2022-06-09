@@ -1,4 +1,3 @@
-import '~/setup'
 import { reinstall_all } from './src/tasks'
 import logger from 'node-color-log';
 
@@ -13,7 +12,8 @@ import logger from 'node-color-log';
       registry: true,
       resolver: true,
       favorites: true,
-      cycles_minting: true
+      cycles_minting: true,
+      dicp: true,
     }
   })
 })().then(() => {

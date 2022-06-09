@@ -1,7 +1,7 @@
 import { Actor, HttpAgent } from "@dfinity/agent";
 import {actorFactory} from "../../utils/actorFactory";
 import {mystery_box as name} from "../../canisters/names";
-import {canister} from "../../utils";
+import { canister } from '@deland-labs/ic-dev-kit'
 
 // Imports and re-exports candid interface
 import { idlFactory } from './mystery_box.did.js';

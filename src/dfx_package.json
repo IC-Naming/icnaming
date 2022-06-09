@@ -1,11 +1,30 @@
 {
   "canisters": {
-
+    "dicp": {
+      "exclude_in_pacakge": true
+    },
+    "mystery_box": {
+      "exclude_in_pacakge": true
+    },
+    "naming_marketplace": {
+      "exclude_in_pacakge": true
+    },
+    "cycles_minting": {
+      "exclude_in_pacakge": true
+    }
   },
   "envs": [
     {
       "name": "dev",
       "canister_env": "dev"
+    },
+    {
+      "name": "staging",
+      "canister_env": "staging"
+    },
+    {
+      "name": "production",
+      "canister_env": "production"
     }
   ]
 }

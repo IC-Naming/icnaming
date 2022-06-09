@@ -1,13 +1,12 @@
-import '~/setup'
 import { Then, When } from '@cucumber/cucumber'
-import { identities } from '~/utils/identity'
+import { identity } from '@deland-labs/ic-dev-kit'
 import { createFavorites } from '~/declarations/favorites'
 import { Result } from '~/utils/Result'
 import { expect } from 'chai'
 
 When(/^User "([^"]*)" add some favorites$/,
   async function (user: string, data) {
-    const identityInfo = identities.get_identity_info(user)
+    const identityInfo = identity.identityFactory.getIdentity(user)
     const favorites = createFavorites(identityInfo)
     const rows = data.rows()
     for (const row of rows) {
@@ -17,7 +16,7 @@ When(/^User "([^"]*)" add some favorites$/,
   })
 Then(/^User "([^"]*)" should see the favorites$/,
   async function (user: string, data) {
-    const identityInfo = identities.get_identity_info(user)
+    const identityInfo = identity.identityFactory.getIdentity(user)
     const favorites = createFavorites(identityInfo)
     const result = await new Result(favorites.get_favorites()).unwrap()
 
@@ -30,7 +29,7 @@ Then(/^User "([^"]*)" should see the favorites$/,
   })
 When(/^User "([^"]*)" delete a favorite "([^"]*)"$/,
   async function (user: string, favorite: string) {
-    const identityInfo = identities.get_identity_info(user)
+    const identityInfo = identity.identityFactory.getIdentity(user)
     const favorites = createFavorites(identityInfo)
     await new Result(favorites.remove_favorite(favorite)).unwrap()
   })

@@ -1,4 +1,3 @@
-import '~/setup'
 import { DataTable, Given, Then, When } from '@cucumber/cucumber'
 import { createRegistrar, registrar } from '~/declarations/registrar'
 import { registrar_control_gateway } from '~/declarations/registrar_control_gateway'
@@ -43,7 +42,7 @@ let global_renew_name_result: RenewNameResult
 async function submit_order (user: string | null, name: string, years: string) {
   let actor
   if (user) {
-    const identityInfo = identities.get_identity_info(user)
+    const identityInfo = identity.identityFactory.getIdentity(user)
     actor = createRegistrar(identityInfo)
   } else {
     actor = registrar
@@ -60,7 +59,7 @@ async function pay_to_pending_order (user: string | null, amount: string) {
   let current_registrar
   let current_dicp
   if (user) {
-    const identityInfo = identities.get_identity_info(user)
+    const identityInfo = identity.identityFactory.getIdentity(user)
     current_registrar = createRegistrar(identityInfo)
     current_dicp = createDicp(identityInfo)
   } else {
@@ -92,7 +91,7 @@ async function pay_to_pending_order (user: string | null, amount: string) {
 async function ensure_no_pending_order (user: string | null) {
   let actor
   if (user) {
-    const identityInfo = identities.get_identity_info(user)
+    const identityInfo = identity.identityFactory.getIdentity(user)
     actor = createRegistrar(identityInfo)
   } else {
     actor = registrar
@@ -108,7 +107,7 @@ async function ensure_no_pending_order (user: string | null) {
 async function ensure_pending_order (user: string | null, name: string, years: string, status: string | null) {
   let actor
   if (user) {
-    const identityInfo = identities.get_identity_info(user)
+    const identityInfo = identity.identityFactory.getIdentity(user)
     actor = createRegistrar(identityInfo)
   } else {
     actor = registrar
@@ -247,7 +246,7 @@ Then(/^get_name_expires "([^"]*)" result is about in "([^"]*)" years$/,
 Then(/^get_owner result "([^"]*)" is the same as "([^"]*)" identity$/,
   async function (name: string, user: string) {
     const owner = await new Result(registrar.get_owner(name)).unwrap()
-    const identityInfo = identities.get_identity_info(user)
+    const identityInfo = identity.identityFactory.getIdentity(user)
     expect(owner.toText()).to.equal(identityInfo.principal_text)
   })
 
@@ -366,7 +365,7 @@ function to_quota_type (source: string): QuotaType {
 When(/^User "([^"]*)" register name "([^"]*)" with quote "([^"]*)"$/,
   async function (user: string, name: string, quota_string: string) {
     const quotaType = to_quota_type(quota_string)
-    const identityInfo = identities.get_identity_info(user)
+    const identityInfo = identity.identityFactory.getIdentity(user)
     const registrar = createRegistrar(identityInfo)
     global_register_with_quota_response = await registrar.register_with_quota(name, quotaType)
   })
@@ -384,7 +383,7 @@ Then(/^Register with quota result in status '([^']*)'$/,
   })
 When(/^User "([^"]*)" register name "([^"]*)" with quote "([^"]*)" for "([^"]*)" with "([^"]*)" years$/,
   async function (user: string, name: string, quota_string: string, user_for: string, years: string) {
-    const identityInfo = identities.get_identity_info(user)
+    const identityInfo = identity.identityFactory.getIdentity(user)
     const registrar = createRegistrar(identityInfo)
 
     const userForIdentityInfo = identities.get_identity_info(user_for)
@@ -426,7 +425,7 @@ Then(/^Last quota import status "([^"]*)"$/,
 
 Given(/^admin assign name "([^"]*)" to user "([^"]*)"$/,
   async function (name: string, user: string) {
-    global_assign_name_result = await registrar_control_gateway.assign_name(name, identities.get_identity_info(user).identity.getPrincipal())
+    global_assign_name_result = await registrar_control_gateway.assign_name(name, identity.identityFactory.getIdentity(user).identity.getPrincipal())
   })
 Then(/^last assign name status is "([^"]*)"$/,
   function (status: string) {
@@ -440,7 +439,7 @@ Then(/^last assign name status is "([^"]*)"$/,
   })
 When(/^User "([^"]*)" transfer name "([^"]*)" to User "([^"]*)"$/,
   async function (user: string, name: string, new_owner: string) {
-    const registrar = createRegistrar(identities.get_identity_info(user))
+    const registrar = createRegistrar(identity.identityFactory.getIdentity(user))
     const new_owner_principal = identities.get_principal(new_owner)
     global_transfer_result = await registrar.transfer(name, new_owner_principal)
   })
@@ -450,13 +449,13 @@ Then(/^last name transfer result status is "([^"]*)"$/,
   })
 Given(/^User "([^"]*)" approve name "([^"]*)" to User "([^"]*)"$/,
   async function (user: string, name: string, to: string) {
-    const registrar = createRegistrar(identities.get_identity_info(user))
+    const registrar = createRegistrar(identity.identityFactory.getIdentity(user))
     const to_principal = get_principal(to)
     await new Result(registrar.approve(name, to_principal)).unwrap()
   })
 When(/^User "([^"]*)" transfer name "([^"]*)" by transfer_from$/,
   async function (user: string, name: string) {
-    const registrar = createRegistrar(identities.get_identity_info(user))
+    const registrar = createRegistrar(identity.identityFactory.getIdentity(user))
     global_transfer_from_result = await registrar.transfer_from(name)
   })
 Then(/^last name transfer_from result status is "([^"]*)"$/,
@@ -465,7 +464,7 @@ Then(/^last name transfer_from result status is "([^"]*)"$/,
   })
 When(/^User "([^"]*)" transfer name "([^"]*)" to user "([^"]*)"$/,
   async function (user: string, name: string, to: string) {
-    const registrar = createRegistrar(identities.get_identity_info(user))
+    const registrar = createRegistrar(identity.identityFactory.getIdentity(user))
     const to_principal = get_principal(to)
     global_transfer_by_admin_result = await registrar.transfer_by_admin(name, to_principal)
   })
@@ -486,7 +485,7 @@ Then(/^Get last registrations result is$/,
   })
 When(/^User "([^"]*)" reclaim name "([^"]*)"$/,
   async function (user: string, name: string) {
-    const registrar = createRegistrar(identities.get_identity_info(user))
+    const registrar = createRegistrar(identity.identityFactory.getIdentity(user))
     const result = await registrar.reclaim_name(name)
     logger.debug(`reclaim_name result: ${JSON.stringify(result)}`)
   })
@@ -501,7 +500,7 @@ interface BatchTransferQuotaDetails {
 When(/^User "([^"]*)" transfer quota as below by batch$/,
   async function (user: string, data: DataTable) {
     const items: BatchTransferQuotaDetails[] = data.hashes()
-    const registrar = createRegistrar(identities.get_identity_info(user))
+    const registrar = createRegistrar(identity.identityFactory.getIdentity(user))
     const request_items = items.map(item => {
       const quota_type = {}
       quota_type[item.quota_type1] = parseInt(item.quota_type2)
@@ -518,8 +517,8 @@ When(/^User "([^"]*)" transfer quota as below by batch$/,
   })
 When(/^User "([^"]*)" renew name "([^"]*)" for "([^"]*)" years and pay "([^"]*)"$/,
   async function (user: string, name: string, years: string, approve_amount: string) {
-    const registrar = createRegistrar(identities.get_identity_info(user))
-    const dicp = createDicp(identities.get_identity_info(user))
+    const registrar = createRegistrar(identity.identityFactory.getIdentity(user))
+    const dicp = createDicp(identity.identityFactory.getIdentity(user))
     const amount = toICPe8s(approve_amount)
     {
       const result = await dicp.approve([], get_id('registrar'), amount, [])

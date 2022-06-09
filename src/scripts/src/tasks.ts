@@ -1,4 +1,3 @@
-import './scripts/setup'
 import { reinstall as reinstall_ledger } from './scripts/canisters/ledger'
 import { reinstall as reinstall_favorites } from './scripts/canisters/favorites'
 import { reinstall as reinstall_registrar } from './scripts/canisters/registrar'
@@ -13,11 +12,6 @@ export const reinstall_all = async (options?: CanisterReinstallOptions) => {
   const start = Date.now()
 
   if (options && options.one_by_one) {
-    if (options && options.canisters?.ledger) {
-      await reinstall_ledger({
-        ...options
-      })
-    }
 
     if (options && options.canisters?.dicp) {
       await reinstall_dicp({
@@ -63,11 +57,6 @@ export const reinstall_all = async (options?: CanisterReinstallOptions) => {
   } else {
     console.info('reinstall all in parallel')
     const jobs: Promise<void>[] = []
-    if (options && options.canisters?.ledger) {
-      jobs.push(reinstall_ledger({
-        ...options
-      }))
-    }
 
     if (options && options.canisters?.dicp) {
       jobs.push(reinstall_dicp({

@@ -1,4 +1,6 @@
 import type { Principal } from '@dfinity/principal';
+import type { ActorMethod } from '@dfinity/agent';
+
 export type BooleanActorResponse = { 'Ok' : boolean } |
   { 'Err' : ErrorInfo };
 export interface CallbackStrategy {
@@ -47,16 +49,16 @@ export interface Token {
   'content_encoding' : string,
 }
 export interface _SERVICE {
-  'ensure_resolver_created' : (arg_0: string) => Promise<BooleanActorResponse>,
-  'export_state' : () => Promise<StateExportResponse>,
-  'get_record_value' : (arg_0: string) => Promise<GetRecordValueResponse>,
-  'get_stats' : () => Promise<GetStatsResponse>,
-  'get_wasm_info' : () => Promise<Array<[string, string]>>,
-  'http_request' : (arg_0: HttpRequest) => Promise<HttpResponse>,
-  'load_state' : (arg_0: StateExportData) => Promise<BooleanActorResponse>,
-  'remove_resolvers' : (arg_0: Array<string>) => Promise<BooleanActorResponse>,
-  'set_record_value' : (
-      arg_0: string,
-      arg_1: Array<[string, string]>,
-    ) => Promise<BooleanActorResponse>,
+  'ensure_resolver_created' : ActorMethod<[string], BooleanActorResponse>,
+  'export_state' : ActorMethod<[], StateExportResponse>,
+  'get_record_value' : ActorMethod<[string], GetRecordValueResponse>,
+  'get_stats' : ActorMethod<[], GetStatsResponse>,
+  'get_wasm_info' : ActorMethod<[], Array<[string, string]>>,
+  'http_request' : ActorMethod<[HttpRequest], HttpResponse>,
+  'load_state' : ActorMethod<[StateExportData], BooleanActorResponse>,
+  'remove_resolvers' : ActorMethod<[Array<string>], BooleanActorResponse>,
+  'set_record_value' : ActorMethod<
+    [string, Array<[string, string]>],
+    BooleanActorResponse,
+  >,
 }

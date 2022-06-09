@@ -40,15 +40,10 @@
       "package": "mystery_box",
       "candid": "canisters/mystery_box/src/mystery_box.did"
     },
-    "ledger": {
-      "type": "custom",
-      "candid": "scripts/wasm/ledger.public.did",
-      "wasm": "scripts/wasm/ledger-canister.wasm"
-    },
     "dicp": {
       "type": "custom",
-      "candid": "scripts/wasm/dft_basic.did",
-      "wasm": "scripts/wasm/dft_basic.wasm"
+      "candid": "node_modules/@deland-labs/dft_all_features_server/index.did",
+      "wasm": "node_modules/@deland-labs/dft_all_features_server/index.wasm"
     }
   },
   "defaults": {

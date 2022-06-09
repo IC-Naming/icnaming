@@ -10,6 +10,7 @@
   "dependencies": {
     "@cucumber/cucumber": "^7.1.0",
     "@cucumber/pretty-formatter": "^1.0.0-alpha.1",
+    "@deland-labs/dft_all_features_client": "^0.6.0",
     "@dfinity/agent": "^0.11.0",
     "@dfinity/authentication": "^0.11.0",
     "@dfinity/candid": "^0.11.0",
@@ -19,6 +20,7 @@
     "archiver": "^5.3.0",
     "btoa": "^1.2.1",
     "chai": "^4.3.6",
+    "commander": "^9.3.0",
     "crc": "^4.0.0",
     "js-sha256": "^0.9.0",
     "minimist": "^1.2.6",
@@ -35,22 +37,23 @@
     "yargs": "^17.0.0"
   },
   "devDependencies": {
+    "@deland-labs/dft_all_features_server": "^0.6.0",
     "@deland-labs/ic-bin-tools": "^0.1.1",
     "@deland-labs/ic-dev-kit": "^0.5.9",
-    "@typescript-eslint/eslint-plugin": "5.22.0",
-    "@typescript-eslint/parser": "5.22.0",
     "@types/archiver": "^5.3.1",
     "@types/base64-js": "^1.2.5",
     "@types/chai": "^4.3.0",
     "@types/debug": "^4.1.7",
-    "@types/node": "^16.11.21",
+    "@types/node": "^16.11.39",
     "@types/shelljs": "^0.8.11",
+    "@typescript-eslint/eslint-plugin": "5.22.0",
+    "@typescript-eslint/parser": "5.22.0",
     "eslint": "8.15.0",
     "eslint-config-standard": "17.0.0",
     "eslint-plugin-import": "2.26.0",
     "eslint-plugin-n": "15.2.0",
     "eslint-plugin-promise": "6.0.0",
-    "typescript": "4.6.4",
-    "ts-node": "^10.4.0"
+    "ts-node": "^10.4.0",
+    "typescript": "4.6.4"
   }
 }

@@ -1,21 +1,13 @@
 import {Actor, HttpAgent} from "@dfinity/agent";
 import {actorFactory} from "../../utils/actorFactory";
 import {ledger as name} from "../../canisters/names";
-import {canister} from "../../utils";
-import {IdentityInfo} from "../../utils/identity";
+import {canister} from "@deland-labs/ic_ledger_client";
 
 // Imports and re-exports candid interface
-import {idlFactory} from './ledger.did.js';
-export {idlFactory} from './ledger.did.js';
+import {idlFactory} from '@deland-labs/ic_ledger_client';
 // CANISTER_ID is replaced by webpack based on node environment
 export const canisterId = process.env.LEDGER_CANISTER_ID;
 
-/**
- *
- * @param {string | import("@dfinity/principal").Principal} canisterId Canister ID of Agent
- * @param {{agentOptions?: import("@dfinity/agent").HttpAgentOptions; actorOptions?: import("@dfinity/agent").ActorConfig}} [options]
- * @return {import("@dfinity/agent").ActorSubclass<import("./ledger.did.js")._SERVICE>}
- */
 export const createActor = (canisterId, options) => {
     const agent = new HttpAgent({...options?.agentOptions});
 

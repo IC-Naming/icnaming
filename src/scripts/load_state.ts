@@ -1,5 +1,3 @@
-import '~/setup'
-
 import fs from 'fs'
 import logger from 'node-color-log'
 import { registrar } from '~/declarations/registrar'

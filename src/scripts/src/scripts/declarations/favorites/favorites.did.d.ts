@@ -1,4 +1,6 @@
 import type { Principal } from '@dfinity/principal';
+import type { ActorMethod } from '@dfinity/agent';
+
 export type BooleanActorResponse = { 'Ok' : boolean } |
   { 'Err' : ErrorInfo };
 export interface CallbackStrategy {
@@ -51,12 +53,12 @@ export interface Token {
   'content_encoding' : string,
 }
 export interface _SERVICE {
-  'add_favorite' : (arg_0: string) => Promise<BooleanActorResponse>,
-  'export_state' : () => Promise<StateExportResponse>,
-  'get_favorites' : () => Promise<GetFavoritesResponse>,
-  'get_stats' : () => Promise<GetStatsResponse>,
-  'get_wasm_info' : () => Promise<Array<[string, string]>>,
-  'http_request' : (arg_0: HttpRequest) => Promise<HttpResponse>,
-  'load_state' : (arg_0: StateExportData) => Promise<BooleanActorResponse>,
-  'remove_favorite' : (arg_0: string) => Promise<BooleanActorResponse>,
+  'add_favorite' : ActorMethod<[string], BooleanActorResponse>,
+  'export_state' : ActorMethod<[], StateExportResponse>,
+  'get_favorites' : ActorMethod<[], GetFavoritesResponse>,
+  'get_stats' : ActorMethod<[], GetStatsResponse>,
+  'get_wasm_info' : ActorMethod<[], Array<[string, string]>>,
+  'http_request' : ActorMethod<[HttpRequest], HttpResponse>,
+  'load_state' : ActorMethod<[StateExportData], BooleanActorResponse>,
+  'remove_favorite' : ActorMethod<[string], BooleanActorResponse>,
 }
