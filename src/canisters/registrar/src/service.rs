@@ -992,7 +992,7 @@ impl RegistrarService {
                 return Some(NameStatus {
                     registered: true,
                     available: false,
-                    reserved: false,
+                    kept: false,
                     details: Some(registration.into()),
                 });
             }
@@ -1004,7 +1004,7 @@ impl RegistrarService {
         // check reserved names
         if RESERVED_NAMES.contains(&name.0.get_current_level().unwrap().as_str()) {
             return Ok(NameStatus {
-                reserved: true,
+                kept: true,
                 registered: false,
                 available: false,
                 details: None,
@@ -1014,7 +1014,7 @@ impl RegistrarService {
         return Ok(NameStatus {
             registered: false,
             available: true,
-            reserved: false,
+            kept: false,
             details: None,
         });
     }
@@ -1212,7 +1212,7 @@ pub struct ImportNameRegistrationRequest {
 #[derive(Debug, Deserialize, CandidType)]
 pub struct NameStatus {
     pub available: bool,
-    pub reserved: bool,
+    pub kept: bool,
     pub registered: bool,
     pub details: Option<RegistrationDetails>,
 }

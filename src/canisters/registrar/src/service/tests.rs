@@ -252,7 +252,7 @@ mod get_name_status {
             .unwrap();
         assert_eq!(result.available, true);
         assert_eq!(result.registered, false);
-        assert_eq!(result.reserved, false);
+        assert_eq!(result.kept, false);
         assert_eq!(result.details, None);
     }
 
@@ -263,7 +263,7 @@ mod get_name_status {
             .unwrap();
         assert_eq!(result.available, false);
         assert_eq!(result.registered, false);
-        assert_eq!(result.reserved, true);
+        assert_eq!(result.kept, true);
         assert_eq!(result.details, None);
     }
 
@@ -278,7 +278,7 @@ mod get_name_status {
         let result = service.get_name_status(name.as_str()).unwrap();
         assert_eq!(result.available, false);
         assert_eq!(result.registered, true);
-        assert_eq!(result.reserved, false);
+        assert_eq!(result.kept, false);
         assert_eq!(
             result.details.unwrap(),
             RegistrationDetails::from(&registration)
