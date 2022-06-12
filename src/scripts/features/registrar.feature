@@ -40,19 +40,19 @@ Feature: Query Api
     Given Name "hello.ic" is already taken
     When get_name_status "hello.ic" result
     Then Check get_name_status is
-      | key        | value        |
-      | kept       | false       |
-      | registered | true |
-      | available  | false  |
+      | key        | value |
+      | kept       | false |
+      | registered | true  |
+      | available  | false |
     When get_name_status "icp.ic" result
     Then Check get_name_status is
-      | key        | value        |
-      | kept       | true       |
+      | key        | value |
+      | kept       | true  |
       | registered | false |
-      | available  | false  |
+      | available  | false |
     When get_name_status "s5x2s36.ic" result
     Then Check get_name_status is
-      | key        | value        |
-      | kept       | false       |
+      | key        | value |
+      | kept       | false |
       | registered | false |
       | available  | true  |
