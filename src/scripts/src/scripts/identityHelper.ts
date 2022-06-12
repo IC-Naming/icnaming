@@ -6,6 +6,9 @@ const getIdentity = (user: string): IdentityInfo => {
 }
 
 const getPrincipal = (user: string): Principal => {
+    if (user == "anonymous") {
+        return Principal.anonymous();
+    }
     let userPrincipal = getIdentity(user);
     if (userPrincipal) {
         return userPrincipal.identity.getPrincipal();
