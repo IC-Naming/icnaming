@@ -72,6 +72,7 @@ fn main() -> Result<()> {
     // update source code in src/quota_import_store.rs
     // update section between // -- auto-generated ACCEPTABLE_HASHES build.rs --
 
+    hashes.sort();
     let content = format!(
         "pub const ACCEPTABLE_HASHES: &[&str] = &[{}];",
         hashes

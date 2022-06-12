@@ -242,6 +242,50 @@ mod available {
     }
 }
 
+mod get_name_status {
+    use super::*;
+
+    #[rstest]
+    fn test_get_name_status_available(service: RegistrarService) {
+        let result = service
+            .get_name_status(create_test_name("nice").as_str())
+            .unwrap();
+        assert_eq!(result.available, true);
+        assert_eq!(result.registered, false);
+        assert_eq!(result.reserved, false);
+        assert_eq!(result.details, None);
+    }
+
+    #[rstest]
+    fn test_get_name_status_reserved(service: RegistrarService) {
+        let result = service
+            .get_name_status(create_test_name("icnaming").as_str())
+            .unwrap();
+        assert_eq!(result.available, false);
+        assert_eq!(result.registered, false);
+        assert_eq!(result.reserved, true);
+        assert_eq!(result.details, None);
+    }
+
+    #[rstest]
+    fn test_get_name_status_registered(service: RegistrarService) {
+        let name = create_test_name("nice");
+        let registration = Registration::new(Principal::anonymous(), name.to_string(), 0, 0);
+        STATE.with(|s| {
+            let mut store = s.registration_store.borrow_mut();
+            store.add_registration(registration.clone());
+        });
+        let result = service.get_name_status(name.as_str()).unwrap();
+        assert_eq!(result.available, false);
+        assert_eq!(result.registered, true);
+        assert_eq!(result.reserved, false);
+        assert_eq!(
+            result.details.unwrap(),
+            RegistrationDetails::from(&registration)
+        );
+    }
+}
+
 mod get_name_expires {
     use super::*;
 

@@ -40,7 +40,7 @@ use crate::name_order_store::GetNameOrderResponse;
 use crate::periodic_tasks_runner::run_periodic_tasks;
 use crate::registration_store::{RegistrationDetails, RegistrationDto};
 use crate::service::{
-    BatchTransferRequest, ImportNameRegistrationRequest, PriceTable, RegistrarService,
+    BatchTransferRequest, ImportNameRegistrationRequest, NameStatus, PriceTable, RegistrarService,
     RenewNameRequest, SubmitOrderRequest, SubmitOrderResponse,
 };
 
@@ -583,6 +583,29 @@ async fn import_registrations(request: ImportNameRegistrationRequest) -> Boolean
     let service = RegistrarService::default();
     let result = service.import_registrations(call_context, request).await;
     BooleanActorResponse::new(result)
+}
+
+#[query(name = "get_name_status")]
+#[candid_method(query)]
+fn get_name_status(name: String) -> GetNameStatueActorResponse {
+    let service = RegistrarService::default();
+    let result = service.get_name_status(name.as_str());
+    GetNameStatueActorResponse::new(result)
+}
+
+#[derive(CandidType)]
+pub enum GetNameStatueActorResponse {
+    Ok(NameStatus),
+    Err(ErrorInfo),
+}
+
+impl GetNameStatueActorResponse {
+    pub fn new(result: ServiceResult<NameStatus>) -> GetNameStatueActorResponse {
+        match result {
+            Ok(data) => GetNameStatueActorResponse::Ok(data),
+            Err(err) => GetNameStatueActorResponse::Err(err.into()),
+        }
+    }
 }
 
 candid::export_service!();
