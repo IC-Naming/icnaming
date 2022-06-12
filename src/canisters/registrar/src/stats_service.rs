@@ -5,8 +5,6 @@ use ic_cdk::api;
 
 use common::metrics_encoder::MetricsEncoder;
 
-use crate::name_order_store::NameOrderStatus;
-
 use crate::state::*;
 use crate::user_quota_store::QuotaType;
 
@@ -67,37 +65,10 @@ impl StatsService {
                 stats.user_quota_count = user_quota_count_stats;
             }
             {
-                let store = s.name_order_store.borrow();
-                let orders = store.get_all_orders();
-                let mut count_by_status = HashMap::new();
-                count_by_status.insert(format!("{:?}", NameOrderStatus::New).to_lowercase(), 0);
-                count_by_status.insert(format!("{:?}", NameOrderStatus::Done).to_lowercase(), 0);
-                count_by_status.insert(
-                    format!("{:?}", NameOrderStatus::WaitingToRefund).to_lowercase(),
-                    0,
-                );
-                count_by_status
-                    .insert(format!("{:?}", NameOrderStatus::Canceled).to_lowercase(), 0);
-
-                for (_, order) in orders {
-                    let status: &NameOrderStatus = order.order_status();
-                    let count = count_by_status
-                        .entry(format!("{:?}", status).to_lowercase())
-                        .or_insert(0);
-                    *count += 1;
-                }
-
-                stats.user_name_order_count_by_status = count_by_status;
-            }
-            {
                 let store = s.registration_store.borrow();
                 let count = store.get_registrations().len();
 
                 stats.registration_count = count as u64;
-            }
-            {
-                let store = s.payment_store.borrow();
-                stats.payment_version = store.get_payment_version_synced_up_to().unwrap_or(0);
             }
         });
         MERTRICS_COUNTER.with(|c| {
@@ -105,9 +76,7 @@ impl StatsService {
             stats.last_xdr_permyriad_per_icp = counter.last_xdr_permyriad_per_icp;
             stats.last_timestamp_seconds_xdr_permyriad_per_icp =
                 counter.last_timestamp_seconds_xdr_permyriad_per_icp;
-            stats.name_order_placed_count = counter.name_order_placed_count;
             stats.name_order_paid_count = counter.name_order_paid_count;
-            stats.name_order_cancelled_count = counter.name_order_cancelled_count;
             stats.new_registered_name_count = counter.new_registered_name_count;
         });
 
@@ -118,20 +87,6 @@ impl StatsService {
 pub fn encode_metrics(w: &mut MetricsEncoder<Vec<u8>>, now: u64) -> std::io::Result<()> {
     let service = StatsService::default();
     let stats = service.get_stats(now);
-    for (status, count) in stats.user_quota_order_count.iter() {
-        w.encode_gauge(
-            format!("icnaming_registrar_quota_order_status_{}", status).as_str(),
-            *count as f64,
-            format!("Number of quota orders with status {}", status).as_str(),
-        )?;
-    }
-    for (status, count) in stats.user_name_order_count_by_status.iter() {
-        w.encode_gauge(
-            format!("icnaming_registrar_name_order_status_{}", status).as_str(),
-            *count as f64,
-            format!("Number of name orders with status {}", status).as_str(),
-        )?;
-    }
     for (t, count) in stats.user_quota_count.iter() {
         if count > &0u64 {
             w.encode_gauge(
@@ -162,29 +117,14 @@ pub fn encode_metrics(w: &mut MetricsEncoder<Vec<u8>>, now: u64) -> std::io::Res
         "Last timestamp seconds XDR permyriad per ICP",
     )?;
     w.encode_counter(
-        "icnaming_registrar_name_order_placed_count",
-        stats.name_order_placed_count as f64,
-        "Number of name orders placed",
-    )?;
-    w.encode_counter(
         "icnaming_registrar_name_order_paid_count",
         stats.name_order_paid_count as f64,
         "Number of name orders paid",
     )?;
     w.encode_counter(
-        "icnaming_registrar_name_order_cancelled_count",
-        stats.name_order_cancelled_count as f64,
-        "Number of name orders cancelled",
-    )?;
-    w.encode_counter(
         "icnaming_registrar_new_registered_name_count",
         stats.new_registered_name_count as f64,
         "Number of new registered names",
-    )?;
-    w.encode_gauge(
-        "icnaming_registrar_payment_version",
-        stats.payment_version as f64,
-        "Payment version synced",
     )?;
     w.encode_gauge(
         "icnaming_registrar_cycles_balance",
@@ -199,17 +139,11 @@ pub fn encode_metrics(w: &mut MetricsEncoder<Vec<u8>>, now: u64) -> std::io::Res
 pub struct Stats {
     cycles_balance: u64,
     user_count: u64,
-    // obsolete: user_quota_order_count
-    user_quota_order_count: HashMap<String, u64>,
     user_quota_count: HashMap<String, u64>,
-    user_name_order_count_by_status: HashMap<String, u64>,
     registration_count: u64,
     last_xdr_permyriad_per_icp: u64,
     last_timestamp_seconds_xdr_permyriad_per_icp: u64,
-    name_order_placed_count: u64,
     name_order_paid_count: u64,
-    name_order_cancelled_count: u64,
     new_registered_name_count: u64,
-    payment_version: u64,
     name_lock_count: u64,
 }

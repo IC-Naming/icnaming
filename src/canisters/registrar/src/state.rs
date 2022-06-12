@@ -16,8 +16,6 @@ use common::named_canister_ids::{
 use common::state::StableState;
 
 use crate::name_locker::NameLocker;
-use crate::name_order_store::NameOrderStore;
-use crate::payment_store::PaymentStore;
 use crate::quota_import_store::QuotaImportStore;
 use crate::registration_approval_store::RegistrationApprovalStore;
 use crate::registration_store::{Registration, RegistrationStore};
@@ -55,8 +53,6 @@ impl MetricsCounter {
 pub struct State {
     // NOTE: When adding new persistent fields here, ensure that these fields
     // are being persisted in the `replace` method below.
-    pub name_order_store: RefCell<NameOrderStore>,
-    pub payment_store: RefCell<PaymentStore>,
     pub settings: RefCell<Settings>,
     pub user_quota_store: RefCell<UserQuotaStore>,
     pub registration_store: RefCell<RegistrationStore>,
@@ -70,9 +66,6 @@ impl State {
         self.settings.replace(new_state.settings.take());
         self.registration_store
             .replace(new_state.registration_store.take());
-        self.name_order_store
-            .replace(new_state.name_order_store.take());
-        self.payment_store.replace(new_state.payment_store.take());
         self.user_quota_store
             .replace(new_state.user_quota_store.take());
         self.quota_import_store
@@ -90,8 +83,6 @@ pub type EncodedState = (
     Option<Vec<u8>>,
     Option<Vec<u8>>,
     Option<Vec<u8>>,
-    Option<Vec<u8>>,
-    Option<Vec<u8>>,
 );
 
 impl StableState for State {
@@ -99,8 +90,6 @@ impl StableState for State {
         encode_args((
             self.settings.borrow().encode(),
             self.registration_store.borrow().encode(),
-            self.name_order_store.borrow().encode(),
-            self.payment_store.borrow().encode(),
             self.user_quota_store.borrow().encode(),
             self.quota_import_store.borrow().encode(),
             self.registration_approval_store.borrow().encode(),
@@ -113,8 +102,6 @@ impl StableState for State {
         let (
             settings_bytes,
             registration_store_bytes,
-            name_order_store_bytes,
-            payment_store_bytes,
             user_quota_store_bytes,
             quota_import_store_bytes,
             registration_approval_store_bytes,
@@ -122,8 +109,6 @@ impl StableState for State {
         ): EncodedState = decode_args(&bytes).unwrap();
 
         return Ok(State {
-            name_order_store: decode_or_default::<NameOrderStore>(name_order_store_bytes)?,
-            payment_store: decode_or_default::<PaymentStore>(payment_store_bytes)?,
             settings: decode_or_default::<Settings>(settings_bytes)?,
             user_quota_store: decode_or_default::<UserQuotaStore>(user_quota_store_bytes)?,
             registration_store: decode_or_default::<RegistrationStore>(registration_store_bytes)?,

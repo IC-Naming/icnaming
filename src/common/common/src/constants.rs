@@ -81,10 +81,7 @@ pub const MAX_REGISTRY_OPERATOR_COUNT: usize = 10;
 pub const MAX_COUNT_USER_FAVORITES: usize = 100;
 pub const MAX_LENGTH_USER_FAVORITES: usize = 256;
 
-pub const MAX_QUOTA_ORDER_AMOUNT_EACH_TYPE: u32 = 10;
 pub const MAX_LENGTH_OF_NAME_QUOTA_TYPE: u8 = 7;
-pub const EXPIRE_TIME_OF_NAME_ORDER_IN_NS: u64 = 60 * 60 * 24 * 3 * 1_000_000_000;
-pub const EXPIRE_TIME_OF_NAME_ORDER_AVAILABILITY_CHECK_IN_NS: u64 = 60 * 60 * 24 * 1_000_000_000;
 
 pub const NAMING_ENV_DEV: &str = "dev";
 pub const NAMING_ENV_STAGING: &str = "staging";

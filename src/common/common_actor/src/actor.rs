@@ -6,7 +6,7 @@ use common::dto::{
     from_state_export_data, to_state_export_data, GetStatsResponse, LoadStateRequest,
     StateExportResponse,
 };
-use common::errors::{BooleanActorResponse, ErrorInfo, NamingError, ServiceResult};
+use common::errors::{BooleanActorResponse, ErrorInfo, NamingError};
 use common::named_principals::PRINCIPAL_NAME_STATE_EXPORTER;
 use common::permissions::{must_be_named_principal, must_be_system_owner};
 use common::state::StableState;

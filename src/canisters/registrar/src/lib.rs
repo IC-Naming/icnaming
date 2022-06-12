@@ -1,7 +1,5 @@
 mod http;
 mod name_locker;
-mod name_order_store;
-mod payment_store;
 mod periodic_tasks_runner;
 mod quota_import_store;
 mod registration_approval_store;
@@ -36,13 +34,9 @@ use common::named_principals::PRINCIPAL_NAME_TIMER_TRIGGER;
 use common::permissions::must_be_named_principal;
 use common::{CallContext, TimeInNs};
 
-use crate::name_order_store::GetNameOrderResponse;
 use crate::periodic_tasks_runner::run_periodic_tasks;
 use crate::registration_store::{RegistrationDetails, RegistrationDto};
-use crate::service::{
-    BatchTransferRequest, ImportNameRegistrationRequest, NameStatus, PriceTable, RegistrarService,
-    RenewNameRequest, SubmitOrderRequest, SubmitOrderResponse,
-};
+use crate::service::*;
 
 use crate::user_quota_store::{QuotaType, TransferQuotaDetails};
 
@@ -157,16 +151,6 @@ pub async fn register_with_quota(name: String, quota_type: QuotaType) -> Boolean
     BooleanActorResponse::new(result)
 }
 
-#[update(name = "pay_my_order")]
-#[candid_method(update)]
-pub async fn pay_my_order() -> BooleanActorResponse {
-    let caller = api::caller();
-    let now = api::time();
-    let service = RegistrarService::default();
-    let result = service.pay_my_order(caller, TimeInNs(now)).await;
-    BooleanActorResponse::new(result)
-}
-
 #[update(name = "register_from_gateway")]
 #[candid_method(update)]
 pub async fn register_from_gateway(name: String, owner: Principal) -> BooleanActorResponse {
@@ -178,6 +162,17 @@ pub async fn register_from_gateway(name: String, owner: Principal) -> BooleanAct
         .register_from_gateway(&caller, &name, owner, TimeInNs(api::time()))
         .await;
     BooleanActorResponse::new(result)
+}
+
+#[update(name = "register_with_payment")]
+#[candid_method(update)]
+pub async fn register_with_payment(
+    request: RegisterNameWithPaymentRequest,
+) -> GetDetailsActorResponse {
+    let call_context = CallContext::from_ic();
+    let service = RegistrarService::default();
+    let result = service.register_with_payment(call_context, request).await;
+    GetDetailsActorResponse::new(result)
 }
 
 #[query(name = "get_names")]
@@ -360,73 +355,6 @@ impl GetQuotaActorResponse {
             Err(err) => GetQuotaActorResponse::Err(err.into()),
         }
     }
-}
-
-#[query(name = "get_pending_order")]
-#[candid_method(query)]
-pub fn get_pending_order() -> GetPendingOrderActorResponse {
-    let caller = &api::caller();
-    debug!("get_pending_order: caller: {}", caller);
-
-    let service = RegistrarService::default();
-    let result = service.get_pending_order(caller);
-    GetPendingOrderActorResponse::new(result)
-}
-
-#[derive(CandidType)]
-pub enum GetPendingOrderActorResponse {
-    Ok(Option<GetNameOrderResponse>),
-    Err(ErrorInfo),
-}
-
-impl GetPendingOrderActorResponse {
-    pub fn new(
-        result: ServiceResult<Option<GetNameOrderResponse>>,
-    ) -> GetPendingOrderActorResponse {
-        match result {
-            Ok(order) => GetPendingOrderActorResponse::Ok(order),
-            Err(err) => GetPendingOrderActorResponse::Err(err.into()),
-        }
-    }
-}
-
-#[update(name = "submit_order")]
-#[candid_method(update)]
-pub async fn submit_order(request: SubmitOrderRequest) -> SubmitOrderActorResponse {
-    let caller = &api::caller();
-    debug!("submit_order: caller: {}", caller);
-    let now = api::time();
-
-    let service = RegistrarService::default();
-    let result = service.submit_order(caller, now, request).await;
-    SubmitOrderActorResponse::new(result)
-}
-
-#[derive(CandidType)]
-pub enum SubmitOrderActorResponse {
-    Ok(SubmitOrderResponse),
-    Err(ErrorInfo),
-}
-
-impl SubmitOrderActorResponse {
-    pub fn new(result: ServiceResult<SubmitOrderResponse>) -> SubmitOrderActorResponse {
-        match result {
-            Ok(order) => SubmitOrderActorResponse::Ok(order),
-            Err(err) => SubmitOrderActorResponse::Err(err.into()),
-        }
-    }
-}
-
-#[update(name = "cancel_order")]
-#[candid_method(update)]
-pub async fn cancel_order() -> BooleanActorResponse {
-    let caller = &api::caller();
-    debug!("cancel_order: caller: {}", caller);
-    let now = api::time();
-
-    let service = RegistrarService::default();
-    let result = service.cancel_order(caller, now);
-    BooleanActorResponse::new(result)
 }
 
 #[update(name = "transfer")]

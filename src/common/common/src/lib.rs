@@ -77,6 +77,7 @@ impl Display for AuthPrincipal {
     }
 }
 
+#[derive(Debug)]
 pub struct CallContext {
     pub caller: Principal,
     pub now: TimeInNs,
