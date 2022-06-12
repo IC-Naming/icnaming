@@ -1,4 +1,6 @@
 import type { Principal } from '@dfinity/principal';
+import type { ActorMethod } from '@dfinity/agent';
+
 export type AssignNameResponse = { 'Ok' : AssignNameResult } |
   { 'Err' : ErrorInfo };
 export type AssignNameResult = { 'Ok' : null } |
@@ -60,13 +62,11 @@ export interface Token {
   'content_encoding' : string,
 }
 export interface _SERVICE {
-  'assign_name' : (arg_0: string, arg_1: Principal) => Promise<
-      AssignNameResponse
-    >,
-  'export_state' : () => Promise<StateExportResponse>,
-  'get_stats' : () => Promise<GetStatsResponse>,
-  'get_wasm_info' : () => Promise<Array<[string, string]>>,
-  'http_request' : (arg_0: HttpRequest) => Promise<HttpResponse>,
-  'import_quota' : (arg_0: Array<number>) => Promise<ImportQuotaResponse>,
-  'load_state' : (arg_0: StateExportData) => Promise<BooleanActorResponse>,
+  'assign_name' : ActorMethod<[string, Principal], AssignNameResponse>,
+  'export_state' : ActorMethod<[], StateExportResponse>,
+  'get_stats' : ActorMethod<[], GetStatsResponse>,
+  'get_wasm_info' : ActorMethod<[], Array<[string, string]>>,
+  'http_request' : ActorMethod<[HttpRequest], HttpResponse>,
+  'import_quota' : ActorMethod<[Array<number>], ImportQuotaResponse>,
+  'load_state' : ActorMethod<[StateExportData], BooleanActorResponse>,
 }

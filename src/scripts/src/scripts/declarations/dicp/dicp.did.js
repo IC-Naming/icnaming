@@ -1,5 +1,5 @@
 export const idlFactory = ({ IDL }) => {
-  const CandidTokenFee = IDL.Record({
+  const TokenFee = IDL.Record({
     'rate' : IDL.Nat32,
     'minimum' : IDL.Nat,
     'rateDecimals' : IDL.Nat8,
@@ -12,12 +12,9 @@ export const idlFactory = ({ IDL }) => {
     'node_max_memory_size_bytes' : IDL.Opt(IDL.Nat32),
   });
   const ErrorInfo = IDL.Record({ 'code' : IDL.Nat32, 'message' : IDL.Text });
+  const BooleanResult = IDL.Variant({ 'Ok' : IDL.Bool, 'Err' : ErrorInfo });
   const OperationResult = IDL.Variant({
-    'Ok' : IDL.Record({
-      'txId' : IDL.Text,
-      'error' : IDL.Opt(ErrorInfo),
-      'blockHeight' : IDL.Nat,
-    }),
+    'Ok' : IDL.Record({ 'txId' : IDL.Text, 'blockHeight' : IDL.Nat }),
     'Err' : ErrorInfo,
   });
   const ArchiveInfo = IDL.Record({
@@ -26,7 +23,7 @@ export const idlFactory = ({ IDL }) => {
     'canisterId' : IDL.Principal,
     'endBlockHeight' : IDL.Nat,
   });
-  const CandidOperation = IDL.Variant({
+  const Operation = IDL.Variant({
     'FeeToModify' : IDL.Record({
       'newFeeTo' : IDL.Text,
       'caller' : IDL.Principal,
@@ -38,8 +35,13 @@ export const idlFactory = ({ IDL }) => {
       'caller' : IDL.Principal,
       'spender' : IDL.Text,
     }),
-    'FeeModify' : IDL.Record({
-      'newFee' : CandidTokenFee,
+    'RemoveMinter' : IDL.Record({
+      'minter' : IDL.Principal,
+      'caller' : IDL.Principal,
+    }),
+    'FeeModify' : IDL.Record({ 'newFee' : TokenFee, 'caller' : IDL.Principal }),
+    'AddMinter' : IDL.Record({
+      'minter' : IDL.Principal,
       'caller' : IDL.Principal,
     }),
     'Transfer' : IDL.Record({
@@ -54,17 +56,17 @@ export const idlFactory = ({ IDL }) => {
       'caller' : IDL.Principal,
     }),
   });
-  const CandidTransaction = IDL.Record({
+  const Transaction = IDL.Record({
     'createdAt' : IDL.Nat64,
-    'operation' : CandidOperation,
+    'operation' : Operation,
   });
-  const CandidBlock = IDL.Record({
-    'transaction' : CandidTransaction,
+  const Block = IDL.Record({
+    'transaction' : Transaction,
     'timestamp' : IDL.Nat64,
-    'parentHash' : IDL.Opt(IDL.Vec(IDL.Nat8)),
+    'parentHash' : IDL.Vec(IDL.Nat8),
   });
   const BlockResult = IDL.Variant({
-    'Ok' : CandidBlock,
+    'Ok' : Block,
     'Err' : ErrorInfo,
     'Forward' : IDL.Principal,
   });
@@ -77,7 +79,7 @@ export const idlFactory = ({ IDL }) => {
     'chainLength' : IDL.Nat,
     'certificate' : IDL.Opt(IDL.Vec(IDL.Nat8)),
     'archivedBlocks' : IDL.Vec(ArchivedBlocksRange),
-    'blocks' : IDL.Vec(CandidBlock),
+    'blocks' : IDL.Vec(Block),
     'firstBlockIndex' : IDL.Nat,
   });
   const HttpRequest = IDL.Record({
@@ -98,24 +100,36 @@ export const idlFactory = ({ IDL }) => {
     'streaming_strategy' : IDL.Opt(StreamingStrategy),
     'status_code' : IDL.Nat16,
   });
-  const CandidTokenMetadata = IDL.Record({
-    'fee' : CandidTokenFee,
+  const TokenMetadata = IDL.Record({
+    'fee' : TokenFee,
     'decimals' : IDL.Nat8,
     'name' : IDL.Text,
     'symbol' : IDL.Text,
   });
-  const BooleanResult = IDL.Variant({ 'Ok' : IDL.Bool, 'Err' : ErrorInfo });
   const TokenInfo = IDL.Record({
+    'fee' : TokenFee,
+    'chainLength' : IDL.Nat,
     'certificate' : IDL.Opt(IDL.Vec(IDL.Nat8)),
     'owner' : IDL.Principal,
     'allowanceSize' : IDL.Nat64,
-    'cycles' : IDL.Nat64,
-    'blockHeight' : IDL.Nat,
     'holders' : IDL.Nat64,
-    'storages' : IDL.Vec(IDL.Principal),
+    'archiveCanisters' : IDL.Vec(IDL.Principal),
     'feeTo' : IDL.Text,
   });
+  const TokenMetrics = IDL.Record({
+    'chainLength' : IDL.Nat,
+    'certificate' : IDL.Opt(IDL.Vec(IDL.Nat8)),
+    'allowanceSize' : IDL.Nat64,
+    'localBlockCount' : IDL.Nat,
+    'holders' : IDL.Nat64,
+    'cyclesBalance' : IDL.Nat,
+  });
   return IDL.Service({
+    'addMinter' : IDL.Func(
+        [IDL.Principal, IDL.Opt(IDL.Nat64)],
+        [BooleanResult],
+        [],
+      ),
     'allowance' : IDL.Func([IDL.Text, IDL.Text], [IDL.Nat], ['query']),
     'allowancesOf' : IDL.Func(
         [IDL.Text],
@@ -129,30 +143,71 @@ export const idlFactory = ({ IDL }) => {
       ),
     'archives' : IDL.Func([], [IDL.Vec(ArchiveInfo)], ['query']),
     'balanceOf' : IDL.Func([IDL.Text], [IDL.Nat], ['query']),
+    'batchMint' : IDL.Func(
+        [IDL.Vec(IDL.Tuple(IDL.Text, IDL.Nat)), IDL.Opt(IDL.Nat64)],
+        [IDL.Vec(OperationResult)],
+        [],
+      ),
+    'batchTransfer' : IDL.Func(
+        [
+          IDL.Opt(IDL.Vec(IDL.Nat8)),
+          IDL.Vec(IDL.Tuple(IDL.Text, IDL.Nat)),
+          IDL.Opt(IDL.Nat64),
+        ],
+        [IDL.Vec(OperationResult)],
+        [],
+      ),
+    'batchTransferFrom' : IDL.Func(
+        [
+          IDL.Opt(IDL.Vec(IDL.Nat8)),
+          IDL.Text,
+          IDL.Vec(IDL.Tuple(IDL.Text, IDL.Nat)),
+          IDL.Opt(IDL.Nat64),
+        ],
+        [IDL.Vec(OperationResult)],
+        [],
+      ),
     'blockByHeight' : IDL.Func([IDL.Nat], [BlockResult], ['query']),
     'blocksByQuery' : IDL.Func(
         [IDL.Nat, IDL.Nat64],
         [QueryBlocksResult],
         ['query'],
       ),
+    'burn' : IDL.Func(
+        [IDL.Opt(IDL.Vec(IDL.Nat8)), IDL.Nat, IDL.Opt(IDL.Nat64)],
+        [OperationResult],
+        [],
+      ),
+    'burnFrom' : IDL.Func(
+        [IDL.Opt(IDL.Vec(IDL.Nat8)), IDL.Text, IDL.Nat, IDL.Opt(IDL.Nat64)],
+        [OperationResult],
+        [],
+      ),
     'decimals' : IDL.Func([], [IDL.Nat8], ['query']),
     'desc' : IDL.Func([], [IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text))], ['query']),
-    'fee' : IDL.Func([], [CandidTokenFee], ['query']),
+    'fee' : IDL.Func([], [TokenFee], ['query']),
     'http_request' : IDL.Func([HttpRequest], [HttpResponse], ['query']),
     'logo' : IDL.Func([], [IDL.Vec(IDL.Nat8)], ['query']),
-    'meta' : IDL.Func([], [CandidTokenMetadata], ['query']),
+    'meta' : IDL.Func([], [TokenMetadata], ['query']),
+    'mint' : IDL.Func(
+        [IDL.Text, IDL.Nat, IDL.Opt(IDL.Nat64)],
+        [OperationResult],
+        [],
+      ),
+    'minters' : IDL.Func([], [IDL.Vec(IDL.Principal)], ['query']),
     'name' : IDL.Func([], [IDL.Text], ['query']),
     'owner' : IDL.Func([], [IDL.Principal], ['query']),
+    'removeMinter' : IDL.Func(
+        [IDL.Principal, IDL.Opt(IDL.Nat64)],
+        [BooleanResult],
+        [],
+      ),
     'setDesc' : IDL.Func(
         [IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text))],
         [BooleanResult],
         [],
       ),
-    'setFee' : IDL.Func(
-        [CandidTokenFee, IDL.Opt(IDL.Nat64)],
-        [BooleanResult],
-        [],
-      ),
+    'setFee' : IDL.Func([TokenFee, IDL.Opt(IDL.Nat64)], [BooleanResult], []),
     'setFeeTo' : IDL.Func([IDL.Text, IDL.Opt(IDL.Nat64)], [BooleanResult], []),
     'setLogo' : IDL.Func([IDL.Opt(IDL.Vec(IDL.Nat8))], [BooleanResult], []),
     'setOwner' : IDL.Func(
@@ -162,6 +217,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'symbol' : IDL.Func([], [IDL.Text], ['query']),
     'tokenInfo' : IDL.Func([], [TokenInfo], ['query']),
+    'tokenMetrics' : IDL.Func([], [TokenMetrics], ['query']),
     'totalSupply' : IDL.Func([], [IDL.Nat], ['query']),
     'transfer' : IDL.Func(
         [IDL.Opt(IDL.Vec(IDL.Nat8)), IDL.Text, IDL.Nat, IDL.Opt(IDL.Nat64)],
@@ -182,7 +238,7 @@ export const idlFactory = ({ IDL }) => {
   });
 };
 export const init = ({ IDL }) => {
-  const CandidTokenFee = IDL.Record({
+  const TokenFee = IDL.Record({
     'rate' : IDL.Nat32,
     'minimum' : IDL.Nat,
     'rateDecimals' : IDL.Nat8,
@@ -201,7 +257,7 @@ export const init = ({ IDL }) => {
     IDL.Text,
     IDL.Nat8,
     IDL.Nat,
-    CandidTokenFee,
+    TokenFee,
     IDL.Opt(IDL.Principal),
     IDL.Opt(ArchiveOptions),
   ];

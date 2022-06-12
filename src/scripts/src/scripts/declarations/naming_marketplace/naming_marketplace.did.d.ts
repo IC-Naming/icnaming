@@ -1,4 +1,6 @@
 import type { Principal } from '@dfinity/principal';
+import type { ActorMethod } from '@dfinity/agent';
+
 export type CyclesResponse = { 'Refunded' : [string, [] | [bigint]] } |
   { 'CanisterCreated' : Principal } |
   { 'ToppedUp' : null };
@@ -28,16 +30,17 @@ export interface TransactionNotification {
   'block_height' : bigint,
 }
 export interface _SERVICE {
-  'get_average_icp_xdr_conversion_rate' : () => Promise<
-      IcpXdrConversionRateCertifiedResponse
-    >,
-  'get_icp_xdr_conversion_rate' : () => Promise<
-      IcpXdrConversionRateCertifiedResponse
-    >,
-  'set_authorized_subnetwork_list' : (
-      arg_0: SetAuthorizedSubnetworkListArgs,
-    ) => Promise<undefined>,
-  'transaction_notification' : (arg_0: TransactionNotification) => Promise<
-      Result
-    >,
+  'get_average_icp_xdr_conversion_rate' : ActorMethod<
+    [],
+    IcpXdrConversionRateCertifiedResponse,
+  >,
+  'get_icp_xdr_conversion_rate' : ActorMethod<
+    [],
+    IcpXdrConversionRateCertifiedResponse,
+  >,
+  'set_authorized_subnetwork_list' : ActorMethod<
+    [SetAuthorizedSubnetworkListArgs],
+    undefined,
+  >,
+  'transaction_notification' : ActorMethod<[TransactionNotification], Result>,
 }

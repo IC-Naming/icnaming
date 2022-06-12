@@ -1,4 +1,4 @@
-image: docker.io/kentsday/dfx_rust:bullseye-dfx-0.9.3-gitpod-5
+image: docker.io/kentsday/dfx_rust:bullseye-dfx-0.10.0-gitpod-1
 ports:
   - port: 8000
     visibility: public
@@ -18,6 +18,7 @@ tasks:
 
       pip3 install pipenv && \
       pip3 install pre-commit && \
+      export PATH=$PATH:/home/gitpod/.local/bin && \
       pre-commit install
 
       cd src
@@ -32,6 +33,7 @@ vscode:
     - bungcip.better-toml
     - usernamehw.errorlens
     - ms-azuretools.vscode-docker
+    - dbaeumer.vscode-eslint
 jetbrains:
   pycharm:
     plugins:

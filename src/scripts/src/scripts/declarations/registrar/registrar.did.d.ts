@@ -1,4 +1,6 @@
 import type { Principal } from '@dfinity/principal';
+import type { ActorMethod } from '@dfinity/agent';
+
 export interface BatchTransferRequest { 'items' : Array<TransferQuotaDetails> }
 export type BooleanActorResponse = { 'Ok' : boolean } |
   { 'Err' : ErrorInfo };
@@ -158,75 +160,68 @@ export interface TransferQuotaDetails {
   'quota_type' : QuotaType,
 }
 export interface _SERVICE {
-  'add_quota' : (arg_0: Principal, arg_1: QuotaType, arg_2: number) => Promise<
-      BooleanActorResponse
-    >,
-  'approve' : (arg_0: string, arg_1: Principal) => Promise<
-      BooleanActorResponse
-    >,
-  'available' : (arg_0: string) => Promise<BooleanActorResponse>,
-  'batch_transfer_quota' : (arg_0: BatchTransferRequest) => Promise<
-      BooleanActorResponse
-    >,
-  'cancel_order' : () => Promise<BooleanActorResponse>,
-  'export_state' : () => Promise<StateExportResponse>,
-  'get_all_details' : (arg_0: GetPageInput) => Promise<
-      GetAllDetailsActorResponse
-    >,
-  'get_details' : (arg_0: string) => Promise<GetDetailsActorResponse>,
-  'get_last_registrations' : () => Promise<GetAllDetailsActorResponse>,
-  'get_name_expires' : (arg_0: string) => Promise<GetNameExpiresActorResponse>,
-  'get_names' : (arg_0: Principal, arg_1: GetPageInput) => Promise<
-      GetNamesActorResponse
-    >,
-  'get_owner' : (arg_0: string) => Promise<GetOwnerActorResponse>,
-  'get_pending_order' : () => Promise<GetPendingOrderActorResponse>,
-  'get_price_table' : () => Promise<GetPriceTableResponse>,
-  'get_public_resolver' : () => Promise<GetPublicResolverActorResponse>,
-  'get_quota' : (arg_0: Principal, arg_1: QuotaType) => Promise<
-      GetQuotaActorResponse
-    >,
-  'get_stats' : () => Promise<GetStatsResponse>,
-  'get_wasm_info' : () => Promise<Array<[string, string]>>,
-  'http_request' : (arg_0: HttpRequest) => Promise<HttpResponse>,
-  'import_quota' : (arg_0: ImportQuotaRequest) => Promise<ImportQuotaResponse>,
-  'import_registrations' : (arg_0: ImportNameRegistrationRequest) => Promise<
-      BooleanActorResponse
-    >,
-  'load_state' : (arg_0: StateExportData) => Promise<BooleanActorResponse>,
-  'pay_my_order' : () => Promise<BooleanActorResponse>,
-  'reclaim_name' : (arg_0: string) => Promise<BooleanActorResponse>,
-  'register_for' : (arg_0: string, arg_1: Principal, arg_2: bigint) => Promise<
-      BooleanActorResponse
-    >,
-  'register_from_gateway' : (arg_0: string, arg_1: Principal) => Promise<
-      BooleanActorResponse
-    >,
-  'register_with_quota' : (arg_0: string, arg_1: QuotaType) => Promise<
-      BooleanActorResponse
-    >,
-  'renew_name' : (arg_0: RenewNameRequest) => Promise<BooleanActorResponse>,
-  'run_tasks' : () => Promise<BooleanActorResponse>,
-  'sub_quota' : (arg_0: Principal, arg_1: QuotaType, arg_2: number) => Promise<
-      BooleanActorResponse
-    >,
-  'submit_order' : (arg_0: SubmitOrderRequest) => Promise<
-      SubmitOrderActorResponse
-    >,
-  'transfer' : (arg_0: string, arg_1: Principal) => Promise<
-      BooleanActorResponse
-    >,
-  'transfer_by_admin' : (arg_0: string, arg_1: Principal) => Promise<
-      BooleanActorResponse
-    >,
-  'transfer_from' : (arg_0: string) => Promise<BooleanActorResponse>,
-  'transfer_from_quota' : (arg_0: TransferFromQuotaRequest) => Promise<
-      BooleanActorResponse
-    >,
-  'transfer_quota' : (
-      arg_0: Principal,
-      arg_1: QuotaType,
-      arg_2: number,
-    ) => Promise<BooleanActorResponse>,
-  'unlock_names' : (arg_0: Array<string>) => Promise<BooleanActorResponse>,
+  'add_quota' : ActorMethod<
+    [Principal, QuotaType, number],
+    BooleanActorResponse,
+  >,
+  'approve' : ActorMethod<[string, Principal], BooleanActorResponse>,
+  'available' : ActorMethod<[string], BooleanActorResponse>,
+  'batch_transfer_quota' : ActorMethod<
+    [BatchTransferRequest],
+    BooleanActorResponse,
+  >,
+  'cancel_order' : ActorMethod<[], BooleanActorResponse>,
+  'export_state' : ActorMethod<[], StateExportResponse>,
+  'get_all_details' : ActorMethod<[GetPageInput], GetAllDetailsActorResponse>,
+  'get_details' : ActorMethod<[string], GetDetailsActorResponse>,
+  'get_last_registrations' : ActorMethod<[], GetAllDetailsActorResponse>,
+  'get_name_expires' : ActorMethod<[string], GetNameExpiresActorResponse>,
+  'get_names' : ActorMethod<[Principal, GetPageInput], GetNamesActorResponse>,
+  'get_owner' : ActorMethod<[string], GetOwnerActorResponse>,
+  'get_pending_order' : ActorMethod<[], GetPendingOrderActorResponse>,
+  'get_price_table' : ActorMethod<[], GetPriceTableResponse>,
+  'get_public_resolver' : ActorMethod<[], GetPublicResolverActorResponse>,
+  'get_quota' : ActorMethod<[Principal, QuotaType], GetQuotaActorResponse>,
+  'get_stats' : ActorMethod<[], GetStatsResponse>,
+  'get_wasm_info' : ActorMethod<[], Array<[string, string]>>,
+  'http_request' : ActorMethod<[HttpRequest], HttpResponse>,
+  'import_quota' : ActorMethod<[ImportQuotaRequest], ImportQuotaResponse>,
+  'import_registrations' : ActorMethod<
+    [ImportNameRegistrationRequest],
+    BooleanActorResponse,
+  >,
+  'load_state' : ActorMethod<[StateExportData], BooleanActorResponse>,
+  'pay_my_order' : ActorMethod<[], BooleanActorResponse>,
+  'reclaim_name' : ActorMethod<[string], BooleanActorResponse>,
+  'register_for' : ActorMethod<
+    [string, Principal, bigint],
+    BooleanActorResponse,
+  >,
+  'register_from_gateway' : ActorMethod<
+    [string, Principal],
+    BooleanActorResponse,
+  >,
+  'register_with_quota' : ActorMethod<
+    [string, QuotaType],
+    BooleanActorResponse,
+  >,
+  'renew_name' : ActorMethod<[RenewNameRequest], BooleanActorResponse>,
+  'run_tasks' : ActorMethod<[], BooleanActorResponse>,
+  'sub_quota' : ActorMethod<
+    [Principal, QuotaType, number],
+    BooleanActorResponse,
+  >,
+  'submit_order' : ActorMethod<[SubmitOrderRequest], SubmitOrderActorResponse>,
+  'transfer' : ActorMethod<[string, Principal], BooleanActorResponse>,
+  'transfer_by_admin' : ActorMethod<[string, Principal], BooleanActorResponse>,
+  'transfer_from' : ActorMethod<[string], BooleanActorResponse>,
+  'transfer_from_quota' : ActorMethod<
+    [TransferFromQuotaRequest],
+    BooleanActorResponse,
+  >,
+  'transfer_quota' : ActorMethod<
+    [Principal, QuotaType, number],
+    BooleanActorResponse,
+  >,
+  'unlock_names' : ActorMethod<[Array<string>], BooleanActorResponse>,
 }

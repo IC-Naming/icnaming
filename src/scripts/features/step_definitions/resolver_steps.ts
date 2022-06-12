@@ -1,4 +1,4 @@
-import '~/setup'
+import "./setup"
 import { Given, Then, When } from '@cucumber/cucumber'
 import { createResolver, resolver } from '~/declarations/resolver'
 import {
@@ -8,7 +8,7 @@ import {
 import { expect } from 'chai'
 import { Result } from '~/utils/Result'
 import { assert_remote_result } from './utils'
-import { identities } from '~/utils/identity'
+import { identities } from '~/identityHelper'
 
 let global_ensure_resolver_created_result: EnsureResolverCreatedResult
 let global_update_record_value_result: UpdateRecordValueResult
@@ -39,14 +39,14 @@ Then(/^get_record_value "([^"]*)" should be as below$/,
     }
   })
 
-async function update_resolver (resolver: any, data, name: string) {
+async function update_resolver(resolver: any, data, name: string) {
   const rows = data.rows()
   global_update_record_value_result = await resolver.set_record_value(name, rows)
 }
 
 Given(/^User "([^"]*)" update resolver "([^"]*)" with values$/,
   async function (user: string, name: string, data) {
-    const identityInfo = identities.get_identity_info(user)
+    const identityInfo = identities.getIdentity(user)
     const resolver = createResolver(identityInfo)
     await update_resolver(resolver, data, name)
   })

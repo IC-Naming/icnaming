@@ -1,5 +1,4 @@
-import '../setup'
-import { canister } from '../utils'
+import { canister } from '@deland-labs/ic-dev-kit'
 import { favorites as name } from './names'
 import { ReInstallOptions } from 'scripts/src/scripts/utils/canister'
 import { reinstall_with_dev_ids } from './installUtils'

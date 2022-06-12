@@ -1,2 +1,4 @@
+pwd
 ./sh_did.sh
-ts-node -r tsconfig-paths/register scripts/generate.ts
+npx icdev update-did
+npx icdev generate -o "scripts/src/scripts/declarations/"

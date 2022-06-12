@@ -1,7 +1,6 @@
-import { Actor, getDefaultAgent, HttpAgent, Identity } from '@dfinity/agent'
+import { Actor, HttpAgent, Identity } from '@dfinity/agent'
 import { Principal } from '@dfinity/principal'
-import { IdentityInfo } from './identity'
-import { get_id } from './canister'
+import { canister, IdentityInfo, } from '@deland-labs/ic-dev-kit'
 import logger from 'node-color-log'
 // import dfxConfig from "../../dfx.json";
 export const IC_HOST = 'https://ic0.app'
@@ -22,24 +21,24 @@ class ActorFactory {
   // actor cache, cache by canisterDid, canisterId and identity
   private _actorCache: { [canisterDid: string]: { [canisterId: string]: { [identity: string]: any } } } = {}
 
-  public static getInstance () {
+  public static getInstance() {
     return this._instance
   }
 
   _isAuthenticated: boolean = false
 
-  createActorByName<T> (canisterDid: any, canisterName: string, identity_info: IdentityInfo): T {
-    const canister_id = get_id(canisterName)
-    return this.createActor(canisterDid, canister_id, identity_info.identity)
+  createActorByName<T>(canisterDid: any, canisterName: string, identity_info: IdentityInfo): T {
+    const canister_id = canister.get_id(canisterName)
+    return this.createActor(canisterDid, canister_id, identity_info)
   }
 
-  createActor<T> (canisterDid: any, canisterId: string | Principal, identity?: Identity) {
+  createActor<T>(canisterDid: any, canisterId: string | Principal, identity_info: IdentityInfo) {
     const canister_id = canisterId.toString()
-    const identity_str = identity ? identity.toString() : 'default'
+    const identity_str = identity_info.identity.toString();
     // find actor from cache
     if (!(this._actorCache[canisterDid] && this._actorCache[canisterDid][canister_id] && this._actorCache[canisterDid][canister_id][identity_str])) {
       logger.info('Creating actor for canisterId: ' + canister_id + ' identity: ' + identity_str)
-      const agent = getDefaultAgent()
+      const agent = new HttpAgent(identity_info.agentOptions)
       const actor = Actor.createActor<T>(canisterDid, {
         agent,
         canisterId
@@ -76,7 +75,7 @@ class ActorFactory {
      * Once a user has authenticated and has an identity pass this identity
      * to create a new actor with it, so they pass their Principal to the backend.
      */
-  async authenticateWithIdentity (identity: Identity) {
+  async authenticateWithIdentity(identity: Identity) {
     ActorFactory._agent = new HttpAgent({
       host,
       identity
@@ -88,7 +87,7 @@ class ActorFactory {
    * Once a user has authenticated and has an identity pass this identity
    * to create a new actor with it, so they pass their Principal to the backend.
    */
-  async authenticateWithAgent (agent: HttpAgent) {
+  async authenticateWithAgent(agent: HttpAgent) {
     ActorFactory._agent = agent
     this._isAuthenticated = true
   }
@@ -96,7 +95,7 @@ class ActorFactory {
   /*
      * If a user unauthenticates, recreate the actor without an identity.
      */
-  unauthenticateActor () {
+  unauthenticateActor() {
     ActorFactory._agent = undefined
     this._isAuthenticated = false
   }

@@ -1,12 +1,8 @@
-import { canister } from '~/utils'
 import fs from 'fs'
-import { identities } from '~/utils/identity'
-import {get_dfx_json} from "~/utils/dfx_json";
+import { identity, dfxJson, canister } from '@deland-labs/ic-dev-kit';
 
 (async () => {
-  await canister.create_all()
-  const dfxJson = get_dfx_json()
-  const names = dfxJson.canisters.keys()
+  const names = dfxJson.get_dfx_json().canisters.keys()
   const dir = './env_configs'
   // create dir if not exists
   if (!fs.existsSync(dir)) {
@@ -24,19 +20,19 @@ import {get_dfx_json} from "~/utils/dfx_json";
 
   const principalContent = `export NAMING_PRINCIPAL_NAME_ADMIN="
 # main node
-${identities.main.principal_text}
+${identity.identityFactory.getPrincipal()?.toText()}
 "
 export NAMING_PRINCIPAL_NAME_STATE_EXPORTER="
 # main node
-${identities.main.principal_text}
+${identity.identityFactory.getPrincipal()?.toText()}
 # state exporter node
-${identities.state_exporter.principal_text}
+${identity.identityFactory.getPrincipal("icnaming_state_exporter")?.toText()}
 "
 export NAMING_PRINCIPAL_NAME_TIMER_TRIGGER="
 # main node
-${identities.main.principal_text}
+${identity.identityFactory.getPrincipal()?.toText()}
 # timer_trigger node
-${identities.timer_trigger.principal_text}
+${identity.identityFactory.getPrincipal("icnaming_timer_trigger")?.toText()}
 "
 `
   fs.writeFileSync(`${dir}/dev.principals.env`, principalContent)

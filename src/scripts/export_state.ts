@@ -1,4 +1,3 @@
-import '~/setup'
 import logger from 'node-color-log'
 import { registrar } from '~/declarations/registrar'
 import { resolver } from '~/declarations/resolver'

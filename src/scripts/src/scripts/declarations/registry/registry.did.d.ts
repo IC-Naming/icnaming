@@ -1,4 +1,6 @@
 import type { Principal } from '@dfinity/principal';
+import type { ActorMethod } from '@dfinity/agent';
+
 export type BooleanActorResponse = { 'Ok' : boolean } |
   { 'Err' : ErrorInfo };
 export interface CallbackStrategy {
@@ -67,44 +69,37 @@ export interface Token {
   'content_encoding' : string,
 }
 export interface _SERVICE {
-  'export_state' : () => Promise<StateExportResponse>,
-  'get_controlled_names' : (arg_0: Principal, arg_1: GetPageInput) => Promise<
-      GetControlledNamesResponse
-    >,
-  'get_details' : (arg_0: string) => Promise<GetDetailsResponse>,
-  'get_owner' : (arg_0: string) => Promise<GetOwnerResponse>,
-  'get_resolver' : (arg_0: string) => Promise<GetOwnerResponse>,
-  'get_stats' : () => Promise<GetStatsResponse>,
-  'get_ttl' : (arg_0: string) => Promise<GetTtlResponse>,
-  'get_users' : (arg_0: string) => Promise<GetUsersResponse>,
-  'get_wasm_info' : () => Promise<Array<[string, string]>>,
-  'http_request' : (arg_0: HttpRequest) => Promise<HttpResponse>,
-  'load_state' : (arg_0: StateExportData) => Promise<BooleanActorResponse>,
-  'reclaim_name' : (
-      arg_0: string,
-      arg_1: Principal,
-      arg_2: Principal,
-    ) => Promise<BooleanActorResponse>,
-  'set_approval' : (arg_0: string, arg_1: Principal, arg_2: boolean) => Promise<
-      BooleanActorResponse
-    >,
-  'set_owner' : (arg_0: string, arg_1: Principal) => Promise<
-      BooleanActorResponse
-    >,
-  'set_record' : (arg_0: string, arg_1: bigint, arg_2: Principal) => Promise<
-      BooleanActorResponse
-    >,
-  'set_resolver' : (arg_0: string, arg_1: Principal) => Promise<
-      BooleanActorResponse
-    >,
-  'set_subdomain_owner' : (
-      arg_0: string,
-      arg_1: string,
-      arg_2: Principal,
-      arg_3: bigint,
-      arg_4: Principal,
-    ) => Promise<GetDetailsResponse>,
-  'transfer' : (arg_0: string, arg_1: Principal, arg_2: Principal) => Promise<
-      BooleanActorResponse
-    >,
+  'export_state' : ActorMethod<[], StateExportResponse>,
+  'get_controlled_names' : ActorMethod<
+    [Principal, GetPageInput],
+    GetControlledNamesResponse,
+  >,
+  'get_details' : ActorMethod<[string], GetDetailsResponse>,
+  'get_owner' : ActorMethod<[string], GetOwnerResponse>,
+  'get_resolver' : ActorMethod<[string], GetOwnerResponse>,
+  'get_stats' : ActorMethod<[], GetStatsResponse>,
+  'get_ttl' : ActorMethod<[string], GetTtlResponse>,
+  'get_users' : ActorMethod<[string], GetUsersResponse>,
+  'get_wasm_info' : ActorMethod<[], Array<[string, string]>>,
+  'http_request' : ActorMethod<[HttpRequest], HttpResponse>,
+  'load_state' : ActorMethod<[StateExportData], BooleanActorResponse>,
+  'reclaim_name' : ActorMethod<
+    [string, Principal, Principal],
+    BooleanActorResponse,
+  >,
+  'set_approval' : ActorMethod<
+    [string, Principal, boolean],
+    BooleanActorResponse,
+  >,
+  'set_owner' : ActorMethod<[string, Principal], BooleanActorResponse>,
+  'set_record' : ActorMethod<[string, bigint, Principal], BooleanActorResponse>,
+  'set_resolver' : ActorMethod<[string, Principal], BooleanActorResponse>,
+  'set_subdomain_owner' : ActorMethod<
+    [string, string, Principal, bigint, Principal],
+    GetDetailsResponse,
+  >,
+  'transfer' : ActorMethod<
+    [string, Principal, Principal],
+    BooleanActorResponse,
+  >,
 }

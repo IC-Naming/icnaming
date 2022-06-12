@@ -1,1 +1,1 @@
-ts-node -r tsconfig-paths/register scripts/reinstall_all.ts
+npx ts-node -r tsconfig-paths/register scripts/index.ts reinstall-all
