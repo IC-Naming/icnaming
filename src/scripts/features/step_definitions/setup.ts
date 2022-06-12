@@ -1,3 +1,3 @@
-import { setDefaultTimeout } from '@cucumber/cucumber'
+import {setDefaultTimeout} from '@cucumber/cucumber'
 
 setDefaultTimeout(60000)

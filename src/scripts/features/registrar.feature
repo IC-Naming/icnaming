@@ -8,15 +8,15 @@ Feature: Query Api
     Given Check availability of "<name>"
     Given Check result of "<name>" is '<status>'
     Examples: Rainbow colours
-      | name                                                                            | status                                                                       |
+      | name                                                                           | status                                                                       |
       | hello.ic                                                                       | Ok                                                                           |
       | 012345678901234567890123456789012345678901234567890123456789012345678912345.ic | name is invalid, reason: "second level name must be less than 64 characters" |
       | www.hello.ic                                                                   | name is invalid, reason: "it must be second level name"                      |
-      | icp                                                                             | name is invalid, reason: "it must be second level name"                      |
-      | hello.com                                                                       | name is invalid, reason: "top level of name must be ic"                     |
+      | icp                                                                            | name is invalid, reason: "it must be second level name"                      |
+      | hello.com                                                                      | name is invalid, reason: "top level of name must be ic"                      |
       | hel!lo.ic                                                                      | name is invalid, reason: "name must be alphanumeric or -"                    |
       | hello .ic                                                                      | name is invalid, reason: "name must be alphanumeric or -"                    |
-      | 你好.ic                                                                         | name is invalid, reason: "name must be alphanumeric or -"                   |
+      | 你好.ic                                                                          | name is invalid, reason: "name must be alphanumeric or -"                    |
       | icp.ic                                                                         | Registration has been taken                                                  |
 
   Scenario: Check availability of a name which is already taken
@@ -29,8 +29,24 @@ Feature: Query Api
     And get_owner result "hello.ic" is the same as "main" identity
     Then get_name_expires "hello.ic" result is about in "1" years
     And registrar get_details "hello.ic" result is
-      | key        | value     |
-      | owner      | main      |
+      | key        | value    |
+      | owner      | main     |
       | name       | hello.ic |
-      | expired_at | 1         |
-      | created_at | 0         |
+      | expired_at | 1        |
+      | created_at | 0        |
+
+
+    @dev
+  Scenario Outline: Get name status
+    Given Name "hello.ic" is already taken
+    When get_name_status "<name>" result
+    Then Check get_name_status is
+      | key        | value        |
+      | kept       | <kept>       |
+      | registered | <registered> |
+      | available  | <available>  |
+    Examples: Rainbow colours
+      | name       | kept  | registered | available |
+      | hello.ic   | false | true       | false     |
+      | icp.ic     | true  | false      | false     |
+      | s5x2s36.ic | false | false      | true      |
