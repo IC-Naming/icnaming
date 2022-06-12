@@ -41,7 +41,7 @@
     "@deland-labs/ic-dev-kit": "^0.6.0",
     "@types/archiver": "^5.3.1",
     "@types/base64-js": "^1.2.5",
-    "@types/chai": "^4.3.0",
+    "@types/chai": "4.3.1",
     "@types/debug": "^4.1.7",
     "@types/node": "^16.11.39",
     "@types/shelljs": "^0.8.11",
