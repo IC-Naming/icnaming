@@ -36,17 +36,23 @@ Feature: Query Api
       | created_at | 0        |
 
 
-    @dev
-  Scenario Outline: Get name status
+  Scenario: Get name status
     Given Name "hello.ic" is already taken
-    When get_name_status "<name>" result
+    When get_name_status "hello.ic" result
     Then Check get_name_status is
       | key        | value        |
-      | kept       | <kept>       |
-      | registered | <registered> |
-      | available  | <available>  |
-    Examples: Rainbow colours
-      | name       | kept  | registered | available |
-      | hello.ic   | false | true       | false     |
-      | icp.ic     | true  | false      | false     |
-      | s5x2s36.ic | false | false      | true      |
+      | kept       | false       |
+      | registered | true |
+      | available  | false  |
+    When get_name_status "icp.ic" result
+    Then Check get_name_status is
+      | key        | value        |
+      | kept       | true       |
+      | registered | false |
+      | available  | false  |
+    When get_name_status "s5x2s36.ic" result
+    Then Check get_name_status is
+      | key        | value        |
+      | kept       | false       |
+      | registered | false |
+      | available  | true  |

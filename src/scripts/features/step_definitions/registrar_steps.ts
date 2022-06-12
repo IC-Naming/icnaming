@@ -1,10 +1,10 @@
 import "./setup"
-import {DataTable, Given, Then, When} from '@cucumber/cucumber'
-import {createRegistrar, registrar} from '~/declarations/registrar'
-import {registrar_control_gateway} from '~/declarations/registrar_control_gateway'
-import {createDicp, dicp} from '~/declarations/dicp'
-import {assert, expect} from 'chai'
-import {reinstall_all} from '~/../tasks'
+import { DataTable, Given, Then, When } from '@cucumber/cucumber'
+import { createRegistrar, registrar } from '~/declarations/registrar'
+import { registrar_control_gateway } from '~/declarations/registrar_control_gateway'
+import { createDicp, dicp } from '~/declarations/dicp'
+import { assert, expect } from 'chai'
+import { reinstall_all } from '~/../tasks'
 import {
     BooleanActorResponse as AvailableResult,
     BooleanActorResponse as RegisterWithQuotaResult,
@@ -17,12 +17,12 @@ import {
     SubmitOrderActorResponse as SubmitOrderResult,
     GetNameStatueActorResponse
 } from '~/declarations/registrar/registrar.did'
-import {identities} from '~/identityHelper'
-import {OptionalResult, Result} from '~/utils/Result'
-import {assert_remote_result} from './utils'
+import { identities } from '~/identityHelper'
+import { OptionalResult, Result } from '~/utils/Result'
+import { assert_remote_result } from './utils'
 import logger from 'node-color-log'
 import fs from 'fs'
-import {canister, utils} from '@deland-labs/ic-dev-kit'
+import { canister, utils } from '@deland-labs/ic-dev-kit'
 import {
     AssignNameResponse,
     ImportQuotaResponse
@@ -567,9 +567,9 @@ Then(/^Check get_name_status is$/,
         const target = data.rowsHash()
         if ('Ok' in global_get_name_status_result) {
             const actual = global_get_name_status_result.Ok
-            expect(actual.kept).to.equal(target.kept)
-            expect(actual.registered).to.equal(target.registered)
-            expect(actual.available).to.equal(target.available)
+            expect(actual.kept.toString()).to.equal(target.kept, "kept")
+            expect(actual.registered.toString()).to.equal(target.registered, "registered")
+            expect(actual.available.toString()).to.equal(target.available, "keavailablept")
         } else {
             expect.fail(`get_name_status result is not Ok: ${JSON.stringify(global_get_name_status_result)}`)
         }
