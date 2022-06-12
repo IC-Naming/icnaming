@@ -33,6 +33,8 @@ export interface GetNameOrderResponse {
   'created_user' : Principal,
   'years' : number,
 }
+export type GetNameStatueActorResponse = { 'Ok' : NameStatus } |
+  { 'Err' : ErrorInfo };
 export type GetNamesActorResponse = { 'Ok' : GetPageOutput } |
   { 'Err' : ErrorInfo };
 export type GetOwnerActorResponse = { 'Ok' : Principal } |
@@ -91,6 +93,12 @@ export type NameOrderStatus = { 'New' : null } |
   { 'WaitingToRefund' : null } |
   { 'Done' : null } |
   { 'Canceled' : null };
+export interface NameStatus {
+  'kept' : boolean,
+  'available' : boolean,
+  'details' : [] | [RegistrationDetails],
+  'registered' : boolean,
+}
 export interface PriceTable {
   'icp_xdr_conversion_rate' : bigint,
   'items' : Array<PriceTableItem>,
@@ -176,6 +184,7 @@ export interface _SERVICE {
   'get_details' : ActorMethod<[string], GetDetailsActorResponse>,
   'get_last_registrations' : ActorMethod<[], GetAllDetailsActorResponse>,
   'get_name_expires' : ActorMethod<[string], GetNameExpiresActorResponse>,
+  'get_name_status' : ActorMethod<[string], GetNameStatueActorResponse>,
   'get_names' : ActorMethod<[Principal, GetPageInput], GetNamesActorResponse>,
   'get_owner' : ActorMethod<[string], GetOwnerActorResponse>,
   'get_pending_order' : ActorMethod<[], GetPendingOrderActorResponse>,

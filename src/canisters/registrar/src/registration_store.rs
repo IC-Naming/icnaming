@@ -109,7 +109,7 @@ impl StableState for RegistrationStore {
 }
 
 /// Details of a registration
-#[derive(CandidType)]
+#[derive(Debug, Deserialize, CandidType, Eq, PartialEq)]
 pub struct RegistrationDetails {
     /// The owner of the registration
     owner: Principal,

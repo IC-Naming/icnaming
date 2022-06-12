@@ -3,20 +3,18 @@ use std::fmt::{Debug, Formatter};
 use std::ops::Deref;
 use std::str::FromStr;
 use std::sync::Arc;
-use time::{OffsetDateTime, Time};
 
-use candid::{CandidType, Deserialize, Nat, Principal};
-
+use candid::{CandidType, Deserialize, Nat, Principal, Service};
 use log::{debug, error, info, trace};
 use num_bigint::BigUint;
 use num_traits::ToPrimitive;
+use time::{OffsetDateTime, Time};
 
 use common::canister_api::ic_impl::{CyclesMintingApi, DICPApi, RegistryApi};
 use common::canister_api::{ICyclesMintingApi, IDICPApi, IRegistryApi};
 use common::constants::*;
 use common::dto::{GetPageInput, GetPageOutput, ImportQuotaRequest, ImportQuotaStatus};
 use common::errors::{NamingError, ServiceResult};
-
 use common::named_canister_ids::{get_named_get_canister_id, CanisterNames};
 use common::named_principals::PRINCIPAL_NAME_TIMER_TRIGGER;
 use common::naming::{normalize_name, FirstLevelName, NameParseResult, NormalizedName};
@@ -32,7 +30,6 @@ use crate::registration_store::{Registration, RegistrationDetails, RegistrationD
 use crate::reserved_list::RESERVED_NAMES;
 use crate::state::*;
 use crate::token_service::TokenService;
-
 use crate::user_quota_store::{QuotaType, TransferQuotaDetails};
 
 #[derive(Deserialize, CandidType)]
@@ -986,6 +983,41 @@ impl RegistrarService {
         self.token_service.complete_transaction(local_tx_id);
         Ok(true)
     }
+
+    pub fn get_name_status(&self, name: &str) -> ServiceResult<NameStatus> {
+        let name = validate_name(name)?;
+        if let Some(status) = STATE.with(|s| {
+            let registration_store = s.registration_store.borrow();
+            if let Some(registration) = registration_store.get_registration(&name) {
+                return Some(NameStatus {
+                    registered: true,
+                    available: false,
+                    kept: false,
+                    details: Some(registration.into()),
+                });
+            }
+            return None;
+        }) {
+            return Ok(status);
+        }
+
+        // check reserved names
+        if RESERVED_NAMES.contains(&name.0.get_current_level().unwrap().as_str()) {
+            return Ok(NameStatus {
+                kept: true,
+                registered: false,
+                available: false,
+                details: None,
+            });
+        }
+
+        return Ok(NameStatus {
+            registered: false,
+            available: true,
+            kept: false,
+            details: None,
+        });
+    }
 }
 
 fn ensure_no_pending_name_order(caller: &Principal) -> ServiceResult<()> {
@@ -1175,6 +1207,14 @@ pub struct ImportNameRegistrationItem {
 #[derive(Debug, Deserialize, CandidType)]
 pub struct ImportNameRegistrationRequest {
     pub items: Vec<ImportNameRegistrationItem>,
+}
+
+#[derive(Debug, Deserialize, CandidType)]
+pub struct NameStatus {
+    pub available: bool,
+    pub kept: bool,
+    pub registered: bool,
+    pub details: Option<RegistrationDetails>,
 }
 
 #[cfg(test)]
