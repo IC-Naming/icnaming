@@ -46,7 +46,7 @@ export const reinstall_canisters = async (names: string[]): Promise<void> => {
 
 export const assert_remote_result = (result: any, status?: string) => {
     if (!status || status === 'Ok') {
-        expect('Ok' in result).to.be.true
+        expect('Ok' in result).to.be.equal(true, `Expected Ok but got ${JSON.stringify(result)}`)
     } else {
         if ('Err' in result) {
             expect(result.Err.message).to.be.equal(status)

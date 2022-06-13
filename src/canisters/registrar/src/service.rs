@@ -365,6 +365,11 @@ impl RegistrarService {
 
         // validate request.approve_price is within the range of register_price 5%
         if request.approve_amount < amount * 95 / 100 {
+            debug!(
+                "register_with_payment: approve_amount is too low: {} < {}",
+                request.approve_amount,
+                amount * 95 / 100
+            );
             return Err(NamingError::InvalidApproveAmount);
         }
 
@@ -373,7 +378,7 @@ impl RegistrarService {
             .transfer_from(
                 caller.0.to_text().as_str(),
                 DICP_RECEIVER.deref(),
-                Nat::from(amount),
+                request.approve_amount.clone(),
                 call_context.now,
             )
             .await;

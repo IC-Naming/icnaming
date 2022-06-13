@@ -3,37 +3,35 @@ Feature: Register a name with payment
 
   Background:
     Given Reinstall registrar related canisters
+    And User "user1" balance is set to be "21 icp"
 
-  Scenario: Submit a name with 6 characters
-    When I submit a order to register name "hello.ic" for "3" years
-    Then Order submitting result in status 'name is invalid, reason: "the name need to be at least 6 characters long"'
+  Scenario: Submit a name with 5 characters
+    When User "user1" register name "hello.ic" for "10" years and pay "3 icp"
+    Then Last register_with_payment result is 'name is invalid, reason: "the name need to be at least 6 characters long"'
 
-  Scenario: Submit a order
-    When I submit a order to register name "what-a-nice-day.ic" for "3" years
-    Then I found my pending order with "what-a-nice-day.ic" for "3" years
+  Scenario: Register name with payment success
+    When User "user1" register name "7654321.ic" for "10" years and pay "10 icp"
+    Then Last register_with_payment result is 'Ok'
+    And registrar get_details "7654321.ic" result is
+      | key        | value      |
+      | owner      | user1      |
+      | name       | 7654321.ic |
+      | expired_at | 10         |
+      | created_at | 0          |
+    And User "user1" balance is "11 icp"
 
-  Scenario: Cancel pending order
-    Given I submit a order to register name "what-a-nice-day.ic" for "3" years
-    When I cancel my pending order
-    Then I found there is no pending order
-    And I submit a order to register name "what-a-nice-day.ic" for "3" years
-    And I found my pending order as bellow
-      | key              | value               |
-      | name             | what-a-nice-day.ic |
-      | years            | 3                   |
-      | price_icp_in_e8s | 300_000_000         |
-      | quota_type       | LenGte(7)           |
+  Scenario: Register name with insufficient payment
+    When User "user1" register name "7654321.ic" for "10" years and pay "1 icp"
+    Then Last register_with_payment result is 'price changed, please refresh and try again'
+    And name "7654321.ic" is available
+    And User "user1" balance is "21 icp"
 
-  Scenario Outline: Submit a order and waiting for payment
-    Given I submit a order to register name "<name>" for "<years>" years
-    Then I found my pending order as bellow
-      | key              | value              |
-      | name             | <name>             |
-      | years            | <years>            |
-      | price_icp_in_e8s | <price_icp_in_e8s> |
-      | quota_type       | <quota_type>       |
-    Examples:
-      | name         | years | price_icp_in_e8s | quota_type |
-      | s6d9w5r1.ic | 3     | 300_000_000      | LenGte(7)  |
-      | 6s3d2f1.ic  | 3     | 300_000_000      | LenGte(7)  |
-      | 365214.ic   | 3     | 330_000_000      | LenGte(6)  |
+  Scenario: Register name with payment success when 95% price changed
+    When User "user1" register name "7654321.ic" for "10" years and pay "9.5 icp"
+    Then registrar get_details "7654321.ic" result is
+      | key        | value      |
+      | owner      | user1      |
+      | name       | 7654321.ic |
+      | expired_at | 10         |
+      | created_at | 0          |
+    And User "user1" balance is "11.5 icp"

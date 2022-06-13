@@ -1,10 +1,10 @@
 import "./setup"
-import { DataTable, Given, Then, When } from '@cucumber/cucumber'
-import { createRegistrar, registrar } from '~/declarations/registrar'
-import { registrar_control_gateway } from '~/declarations/registrar_control_gateway'
-import { createDicp, dicp } from '~/declarations/dicp'
-import { assert, expect } from 'chai'
-import { reinstall_all } from '~/../tasks'
+import {DataTable, Given, Then, When} from '@cucumber/cucumber'
+import {createRegistrar, registrar} from '~/declarations/registrar'
+import {registrar_control_gateway} from '~/declarations/registrar_control_gateway'
+import {createDicp, dicp} from '~/declarations/dicp'
+import {assert, expect} from 'chai'
+import {reinstall_all} from '~/../tasks'
 import {
     BooleanActorResponse as AvailableResult,
     BooleanActorResponse as RegisterWithQuotaResult,
@@ -12,23 +12,21 @@ import {
     BooleanActorResponse as TransferFromResult,
     BooleanActorResponse as TransferByAdminResult,
     BooleanActorResponse as RenewNameResult,
-    GetNameOrderResponse,
     QuotaType,
-    SubmitOrderActorResponse as SubmitOrderResult,
-    GetNameStatueActorResponse
+    GetDetailsActorResponse as RegisterWithPaymentResponse,
+    GetNameStatueActorResponse,
 } from '~/declarations/registrar/registrar.did'
-import { identities } from '~/identityHelper'
-import { OptionalResult, Result } from '~/utils/Result'
-import { assert_remote_result } from './utils'
+import {identities} from '~/identityHelper'
+import {Result} from '~/utils/Result'
+import {assert_remote_result} from './utils'
 import logger from 'node-color-log'
 import fs from 'fs'
-import { canister, utils } from '@deland-labs/ic-dev-kit'
+import {canister, utils} from '@deland-labs/ic-dev-kit'
 import {
     AssignNameResponse,
     ImportQuotaResponse
 } from '~/declarations/registrar_control_gateway/registrar_control_gateway.did'
 
-let global_submit_order_result: SubmitOrderResult
 let global_available_response: AvailableResult
 let global_register_with_quota_response: RegisterWithQuotaResult
 let global_quota_import_response: ImportQuotaResponse
@@ -38,88 +36,7 @@ let global_transfer_from_result: TransferFromResult
 let global_transfer_by_admin_result: TransferByAdminResult
 let global_renew_name_result: RenewNameResult
 let global_get_name_status_result: GetNameStatueActorResponse
-
-async function submit_order(user: string | null, name: string, years: string) {
-    let actor
-    if (user) {
-        const identityInfo = identities.getIdentity(user)
-        actor = createRegistrar(identityInfo)
-    } else {
-        actor = registrar
-    }
-    const call = actor.submit_order({
-        name,
-        years: parseInt(years)
-    })
-
-    global_submit_order_result = await call
-}
-
-async function pay_to_pending_order(user: string | null, amount: string) {
-    let current_registrar
-    let current_dicp
-    if (user) {
-        const identityInfo = identities.getIdentity(user)
-        current_registrar = createRegistrar(identityInfo)
-        current_dicp = createDicp(identityInfo)
-    } else {
-        current_registrar = registrar
-        current_dicp = dicp
-    }
-    const optionalResult: OptionalResult<GetNameOrderResponse> = new OptionalResult(current_registrar.get_pending_order())
-    const order = await optionalResult.unwrap()
-    const e8s = utils.toICPe8s(amount)
-    console.debug(`Pay for order: ${JSON.stringify(order)} with amount: ${e8s}`)
-    const sub_account = []
-    const to = canister.get_id('registrar')
-    const created_at = []
-    const approve_result = await current_dicp.approve(
-        sub_account,
-        to,
-        e8s,
-        created_at
-    )
-    if ('Err' in approve_result) {
-        assert(false, approve_result.Err.message)
-    } else {
-        logger.debug(`Approve result: ${JSON.stringify(approve_result)}`)
-    }
-    const pay_result = await current_registrar.pay_my_order()
-    logger.debug(`Pay result: ${JSON.stringify(pay_result)}`)
-}
-
-async function ensure_no_pending_order(user: string | null) {
-    let actor
-    if (user) {
-        const identityInfo = identities.getIdentity(user)
-        actor = createRegistrar(identityInfo)
-    } else {
-        actor = registrar
-    }
-    const get_pending_order_result = await actor.get_pending_order()
-    if ('Err' in get_pending_order_result) {
-        assert(false, get_pending_order_result.Err.message)
-    } else {
-        assert(get_pending_order_result.Ok.length === 0, 'Pending order found')
-    }
-}
-
-async function ensure_pending_order(user: string | null, name: string, years: string, status: string | null) {
-    let actor
-    if (user) {
-        const identityInfo = identities.getIdentity(user)
-        actor = createRegistrar(identityInfo)
-    } else {
-        actor = registrar
-    }
-    const order = await new OptionalResult(actor.get_pending_order()).unwrap() as GetNameOrderResponse
-    logger.debug(`Order: ${JSON.stringify(order)}`)
-    assert(order.name === name, 'Name not match')
-    assert(order.years === parseInt(years), 'Years not match')
-    if (status) {
-        expect(status in order.status).to.be.true
-    }
-}
+let global_register_with_payment_result: RegisterWithPaymentResponse
 
 function diff_less_than(a: bigint, b: bigint, diff: bigint): boolean {
     if (a > b) {
@@ -163,50 +80,10 @@ Given(/^Reinstall registrar related canisters$/,
             }
         })
     })
-When(/^I submit a order to register name "([^"]*)" for "([^"]*)" years$/,
-    async function (name: string, years: string) {
-        await submit_order(null, name, years)
-    })
-Then(/^I found my pending order with "([^"]*)" for "([^"]*)" years$/,
-    async function (name: string, years: string) {
-        await ensure_pending_order(null, name, years, null)
-    })
-When(/^I cancel my pending order$/,
-    async function () {
-        const cancel_result = await registrar.cancel_order()
-        if ('Err' in cancel_result) {
-            assert(false, cancel_result.Err.message)
-        }
-    })
-Then(/^I found there is no pending order$/,
-    async function () {
-        await ensure_no_pending_order(null)
-    })
-When(/^Pay for my pending order with amount "([^"]*)"$/,
-    async function (amount: string) {
-        await pay_to_pending_order(null, amount)
-    })
-
 Then(/^name "([^"]*)" is available$/,
     async function (name: string) {
         const available_result = await new Result(registrar.available(name)).unwrap()
         assert(available_result, 'Name not available')
-    })
-Given(/^User "([^"]*)" submit a order to register name "([^"]*)" for "([^"]*)" years$/,
-    async function (user: string, name: string, years: string) {
-        await submit_order(user, name, years)
-    })
-When(/^User "([^"]*)" pay for my pending order with amount "([^"]*)"$/,
-    async function (user: string, amount: string) {
-        await pay_to_pending_order(user, amount)
-    })
-Then(/^User "([^"]*)" found there is no pending order$/,
-    async function (user: string) {
-        await ensure_no_pending_order(user)
-    })
-Then(/^User "([^"]*)" found my pending order with "([^"]*)" for "([^"]*)" years, status "([^"]*)"$/,
-    async function (user: string, name: string, years: string, status: string) {
-        await ensure_pending_order(user, name, years, status)
     })
 When(/^Check availability of "([^"]*)"$/,
     async function (name: string) {
@@ -390,21 +267,7 @@ When(/^User "([^"]*)" register name "([^"]*)" with quote "([^"]*)" for "([^"]*)"
 
         await registrar.register_for(name, userForIdentityInfo.identity.getPrincipal(), BigInt(parseInt(years)))
     })
-Then(/^Order submitting result in status '([^']*)'$/,
-    function (status: string) {
-        assert_remote_result(global_submit_order_result, status)
-    })
 
-Then(/^I found my pending order as bellow$/,
-    async function (data: DataTable
-    ) {
-        const registrar = createRegistrar(identities.main)
-        const order: GetNameOrderResponse = await new OptionalResult(registrar.get_pending_order()).unwrap()
-        const rows = data.rowsHash()
-        expect(order.name).to.equal(rows.name)
-        expect(order.price_icp_in_e8s).to.equal(utils.toICPe8s(rows.price_icp_in_e8s))
-        expect(order.years).to.equal(parseInt(rows.years))
-    })
 When(/^admin import quota file "([^"]*)"$/,
     async function (filename: string) {
         // read file from ../../quota_import_data/filename as bytes
@@ -573,4 +436,20 @@ Then(/^Check get_name_status is$/,
         } else {
             expect.fail(`get_name_status result is not Ok: ${JSON.stringify(global_get_name_status_result)}`)
         }
+    });
+When(/^User "([^"]*)" register name "([^"]*)" for "([^"]*)" years and pay "([^"]*)"$/,
+    async function (user: string, name: string, years: string, approve_amount: string) {
+        const registrar = createRegistrar(identities.getIdentity(user))
+        const dicp = createDicp(identities.getIdentity(user))
+        const amount = utils.toICPe8s(approve_amount)
+        await dicp.approve([], canister.get_id('registrar'), amount, [])
+        global_register_with_payment_result = await registrar.register_with_payment({
+            name: name,
+            years: parseInt(years),
+            approve_amount: amount
+        });
+    });
+Then(/^Last register_with_payment result is '([^']*)'$/,
+    function (status: string) {
+        assert_remote_result(global_register_with_payment_result, status)
     });

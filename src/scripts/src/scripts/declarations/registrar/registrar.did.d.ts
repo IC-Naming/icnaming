@@ -25,14 +25,6 @@ export type GetDetailsActorResponse = { 'Ok' : RegistrationDetails } |
   { 'Err' : ErrorInfo };
 export type GetNameExpiresActorResponse = { 'Ok' : bigint } |
   { 'Err' : ErrorInfo };
-export interface GetNameOrderResponse {
-  'status' : NameOrderStatus,
-  'name' : string,
-  'created_at' : bigint,
-  'price_icp_in_e8s' : bigint,
-  'created_user' : Principal,
-  'years' : number,
-}
 export type GetNameStatueActorResponse = { 'Ok' : NameStatus } |
   { 'Err' : ErrorInfo };
 export type GetNamesActorResponse = { 'Ok' : GetPageOutput } |
@@ -41,10 +33,6 @@ export type GetOwnerActorResponse = { 'Ok' : Principal } |
   { 'Err' : ErrorInfo };
 export interface GetPageInput { 'offset' : bigint, 'limit' : bigint }
 export interface GetPageOutput { 'items' : Array<RegistrationDto> }
-export type GetPendingOrderActorResponse = {
-    'Ok' : [] | [GetNameOrderResponse]
-  } |
-  { 'Err' : ErrorInfo };
 export type GetPriceTableResponse = { 'Ok' : PriceTable } |
   { 'Err' : ErrorInfo };
 export type GetPublicResolverActorResponse = { 'Ok' : string } |
@@ -89,10 +77,6 @@ export type ImportQuotaStatus = { 'Ok' : null } |
 export interface InitArgs {
   'dev_named_canister_ids' : Array<[CanisterNames, Principal]>,
 }
-export type NameOrderStatus = { 'New' : null } |
-  { 'WaitingToRefund' : null } |
-  { 'Done' : null } |
-  { 'Canceled' : null };
 export interface NameStatus {
   'kept' : boolean,
   'available' : boolean,
@@ -110,6 +94,11 @@ export interface PriceTableItem {
 }
 export type QuotaType = { 'LenEq' : number } |
   { 'LenGte' : number };
+export interface RegisterNameWithPaymentRequest {
+  'name' : string,
+  'approve_amount' : bigint,
+  'years' : number,
+}
 export interface RegistrationDetails {
   'owner' : Principal,
   'name' : string,
@@ -134,22 +123,13 @@ export interface Stats {
   'new_registered_name_count' : bigint,
   'cycles_balance' : bigint,
   'last_xdr_permyriad_per_icp' : bigint,
-  'name_order_cancelled_count' : bigint,
   'user_quota_count' : Array<[string, bigint]>,
-  'name_order_placed_count' : bigint,
   'name_order_paid_count' : bigint,
-  'user_name_order_count_by_status' : Array<[string, bigint]>,
   'last_timestamp_seconds_xdr_permyriad_per_icp' : bigint,
   'name_lock_count' : bigint,
-  'payment_version' : bigint,
-  'user_quota_order_count' : Array<[string, bigint]>,
   'registration_count' : bigint,
 }
 export type StreamingStrategy = { 'Callback' : CallbackStrategy };
-export type SubmitOrderActorResponse = { 'Ok' : SubmitOrderResponse } |
-  { 'Err' : ErrorInfo };
-export interface SubmitOrderRequest { 'name' : string, 'years' : number }
-export interface SubmitOrderResponse { 'order' : GetNameOrderResponse }
 export interface Token {
   'key' : string,
   'sha256' : [] | [Array<number>],
@@ -178,7 +158,6 @@ export interface _SERVICE {
     [BatchTransferRequest],
     BooleanActorResponse,
   >,
-  'cancel_order' : ActorMethod<[], BooleanActorResponse>,
   'export_state' : ActorMethod<[], StateExportResponse>,
   'get_all_details' : ActorMethod<[GetPageInput], GetAllDetailsActorResponse>,
   'get_details' : ActorMethod<[string], GetDetailsActorResponse>,
@@ -187,7 +166,6 @@ export interface _SERVICE {
   'get_name_status' : ActorMethod<[string], GetNameStatueActorResponse>,
   'get_names' : ActorMethod<[Principal, GetPageInput], GetNamesActorResponse>,
   'get_owner' : ActorMethod<[string], GetOwnerActorResponse>,
-  'get_pending_order' : ActorMethod<[], GetPendingOrderActorResponse>,
   'get_price_table' : ActorMethod<[], GetPriceTableResponse>,
   'get_public_resolver' : ActorMethod<[], GetPublicResolverActorResponse>,
   'get_quota' : ActorMethod<[Principal, QuotaType], GetQuotaActorResponse>,
@@ -200,7 +178,6 @@ export interface _SERVICE {
     BooleanActorResponse,
   >,
   'load_state' : ActorMethod<[StateExportData], BooleanActorResponse>,
-  'pay_my_order' : ActorMethod<[], BooleanActorResponse>,
   'reclaim_name' : ActorMethod<[string], BooleanActorResponse>,
   'register_for' : ActorMethod<
     [string, Principal, bigint],
@@ -209,6 +186,10 @@ export interface _SERVICE {
   'register_from_gateway' : ActorMethod<
     [string, Principal],
     BooleanActorResponse,
+  >,
+  'register_with_payment' : ActorMethod<
+    [RegisterNameWithPaymentRequest],
+    GetDetailsActorResponse,
   >,
   'register_with_quota' : ActorMethod<
     [string, QuotaType],
@@ -220,7 +201,6 @@ export interface _SERVICE {
     [Principal, QuotaType, number],
     BooleanActorResponse,
   >,
-  'submit_order' : ActorMethod<[SubmitOrderRequest], SubmitOrderActorResponse>,
   'transfer' : ActorMethod<[string, Principal], BooleanActorResponse>,
   'transfer_by_admin' : ActorMethod<[string, Principal], BooleanActorResponse>,
   'transfer_from' : ActorMethod<[string], BooleanActorResponse>,
