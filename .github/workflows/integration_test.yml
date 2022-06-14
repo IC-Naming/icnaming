@@ -37,7 +37,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: "16"
-          cache: "npm"
+          # cache: "npm" https://github.com/bahmutov/npm-install/issues/80
           cache-dependency-path: "src/package-lock.json"
       - uses: actions-rs/toolchain@v1
         with:

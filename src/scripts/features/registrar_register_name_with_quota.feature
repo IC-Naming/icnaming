@@ -13,11 +13,11 @@ Feature: Register a name with quota
   Scenario: Register a name with quota
     When User "user1" register name "hello.ic" with quote "LenGte(3)"
     Then registrar get_details "hello.ic" result is
-      | key        | value     |
-      | owner      | user1     |
+      | key        | value    |
+      | owner      | user1    |
       | name       | hello.ic |
-      | expired_at | 1         |
-      | created_at | 0         |
+      | expired_at | 1        |
+      | created_at | 0        |
     And  User quota status should be as below
       | user  | quota_type1 | quota_type2 | value |
       | user1 | LenGte      | 3           | 9     |
@@ -29,11 +29,11 @@ Feature: Register a name with quota
   Scenario: Register a name for other user
     When User "user1" register name "hello.ic" with quote "LenGte(4)" for "user2" with "3" years
     Then registrar get_details "hello.ic" result is
-      | key        | value     |
-      | owner      | user2     |
+      | key        | value    |
+      | owner      | user2    |
       | name       | hello.ic |
-      | expired_at | 3         |
-      | created_at | 0         |
+      | expired_at | 3        |
+      | created_at | 0        |
 
     And  User quota status should be as below
       | user  | quota_type1 | quota_type2 | value |
@@ -55,7 +55,7 @@ Feature: Register a name with quota
     And User "user1" register name "hello2.ic" with quote "LenGte(3)"
     And User "user1" register name "hello3.ic" with quote "LenGte(3)"
     Then Get last registrations result is
-      | name |
+      | name      |
       | hello3.ic |
       | hello2.ic |
       | hello1.ic |

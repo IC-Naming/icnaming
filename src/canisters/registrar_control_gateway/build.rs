@@ -24,7 +24,7 @@ fn main() -> Result<()> {
         let mut contents = String::new();
         file.read_to_string(&mut contents).unwrap();
         let mut lines = contents.lines();
-        let mut line = lines.next().unwrap();
+        let line = lines.next().unwrap();
         let mut cols = line.split(",");
         let mut col = cols.next().unwrap();
         col = cols.next().unwrap();

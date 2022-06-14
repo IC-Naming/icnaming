@@ -8,8 +8,8 @@
     "test-report": "cucumber-js -p report"
   },
   "dependencies": {
-    "@cucumber/cucumber": "^7.1.0",
-    "@cucumber/pretty-formatter": "^1.0.0-alpha.1",
+    "@cucumber/cucumber": "^8.0.0",
+    "@cucumber/pretty-formatter": "^1.0.0-alpha.2",
     "@deland-labs/dft_all_features_client": "^0.6.0",
     "@dfinity/agent": "^0.11.0",
     "@dfinity/authentication": "^0.11.0",
@@ -38,7 +38,7 @@
   "devDependencies": {
     "@deland-labs/dft_all_features_server": "^0.6.0",
     "@deland-labs/ic-bin-tools": "^0.1.1",
-    "@deland-labs/ic-dev-kit": "^0.6.0",
+    "@deland-labs/ic-dev-kit": "^0.6.1",
     "@types/archiver": "^5.3.1",
     "@types/base64-js": "^1.2.5",
     "@types/chai": "^4.3.1",

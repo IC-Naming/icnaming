@@ -79,24 +79,6 @@ export const idlFactory = ({ IDL }) => {
     'Ok' : IDL.Principal,
     'Err' : ErrorInfo,
   });
-  const NameOrderStatus = IDL.Variant({
-    'New' : IDL.Null,
-    'WaitingToRefund' : IDL.Null,
-    'Done' : IDL.Null,
-    'Canceled' : IDL.Null,
-  });
-  const GetNameOrderResponse = IDL.Record({
-    'status' : NameOrderStatus,
-    'name' : IDL.Text,
-    'created_at' : IDL.Nat64,
-    'price_icp_in_e8s' : IDL.Nat,
-    'created_user' : IDL.Principal,
-    'years' : IDL.Nat32,
-  });
-  const GetPendingOrderActorResponse = IDL.Variant({
-    'Ok' : IDL.Opt(GetNameOrderResponse),
-    'Err' : ErrorInfo,
-  });
   const PriceTableItem = IDL.Record({
     'len' : IDL.Nat8,
     'price_in_icp_e8s' : IDL.Nat64,
@@ -123,15 +105,10 @@ export const idlFactory = ({ IDL }) => {
     'new_registered_name_count' : IDL.Nat64,
     'cycles_balance' : IDL.Nat64,
     'last_xdr_permyriad_per_icp' : IDL.Nat64,
-    'name_order_cancelled_count' : IDL.Nat64,
     'user_quota_count' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Nat64)),
-    'name_order_placed_count' : IDL.Nat64,
     'name_order_paid_count' : IDL.Nat64,
-    'user_name_order_count_by_status' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Nat64)),
     'last_timestamp_seconds_xdr_permyriad_per_icp' : IDL.Nat64,
     'name_lock_count' : IDL.Nat64,
-    'payment_version' : IDL.Nat64,
-    'user_quota_order_count' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Nat64)),
     'registration_count' : IDL.Nat64,
   });
   const GetStatsResponse = IDL.Variant({ 'Ok' : Stats, 'Err' : ErrorInfo });
@@ -183,19 +160,15 @@ export const idlFactory = ({ IDL }) => {
   const ImportNameRegistrationRequest = IDL.Record({
     'items' : IDL.Vec(ImportNameRegistrationItem),
   });
+  const RegisterNameWithPaymentRequest = IDL.Record({
+    'name' : IDL.Text,
+    'approve_amount' : IDL.Nat,
+    'years' : IDL.Nat32,
+  });
   const RenewNameRequest = IDL.Record({
     'name' : IDL.Text,
     'approve_amount' : IDL.Nat64,
     'years' : IDL.Nat32,
-  });
-  const SubmitOrderRequest = IDL.Record({
-    'name' : IDL.Text,
-    'years' : IDL.Nat32,
-  });
-  const SubmitOrderResponse = IDL.Record({ 'order' : GetNameOrderResponse });
-  const SubmitOrderActorResponse = IDL.Variant({
-    'Ok' : SubmitOrderResponse,
-    'Err' : ErrorInfo,
   });
   const TransferFromQuotaRequest = IDL.Record({
     'to' : IDL.Principal,
@@ -216,7 +189,6 @@ export const idlFactory = ({ IDL }) => {
         [BooleanActorResponse],
         [],
       ),
-    'cancel_order' : IDL.Func([], [BooleanActorResponse], []),
     'export_state' : IDL.Func([], [StateExportResponse], []),
     'get_all_details' : IDL.Func(
         [GetPageInput],
@@ -245,11 +217,6 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'get_owner' : IDL.Func([IDL.Text], [GetOwnerActorResponse], ['query']),
-    'get_pending_order' : IDL.Func(
-        [],
-        [GetPendingOrderActorResponse],
-        ['query'],
-      ),
     'get_price_table' : IDL.Func([], [GetPriceTableResponse], []),
     'get_public_resolver' : IDL.Func(
         [],
@@ -275,7 +242,6 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'load_state' : IDL.Func([StateExportData], [BooleanActorResponse], []),
-    'pay_my_order' : IDL.Func([], [BooleanActorResponse], []),
     'reclaim_name' : IDL.Func([IDL.Text], [BooleanActorResponse], []),
     'register_for' : IDL.Func(
         [IDL.Text, IDL.Principal, IDL.Nat64],
@@ -285,6 +251,11 @@ export const idlFactory = ({ IDL }) => {
     'register_from_gateway' : IDL.Func(
         [IDL.Text, IDL.Principal],
         [BooleanActorResponse],
+        [],
+      ),
+    'register_with_payment' : IDL.Func(
+        [RegisterNameWithPaymentRequest],
+        [GetDetailsActorResponse],
         [],
       ),
     'register_with_quota' : IDL.Func(
@@ -297,11 +268,6 @@ export const idlFactory = ({ IDL }) => {
     'sub_quota' : IDL.Func(
         [IDL.Principal, QuotaType, IDL.Nat32],
         [BooleanActorResponse],
-        [],
-      ),
-    'submit_order' : IDL.Func(
-        [SubmitOrderRequest],
-        [SubmitOrderActorResponse],
         [],
       ),
     'transfer' : IDL.Func(

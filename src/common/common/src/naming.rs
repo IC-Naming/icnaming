@@ -17,6 +17,12 @@ impl Display for NormalizedName {
 #[serde(transparent)]
 pub struct FirstLevelName(pub NameParseResult);
 
+impl FirstLevelName {
+    pub fn get_name_len(&self) -> u8 {
+        self.0.get_name_len()
+    }
+}
+
 impl Display for FirstLevelName {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.0.name)

@@ -1,23 +1,23 @@
-use std::cmp::min;
 use std::fmt::{Debug, Formatter};
 use std::ops::Deref;
 use std::str::FromStr;
 use std::sync::Arc;
 
-use candid::{CandidType, Deserialize, Nat, Principal, Service};
+use candid::{CandidType, Deserialize, Nat, Principal};
+use ic_cdk::call;
 use log::{debug, error, info, trace};
 use num_bigint::BigUint;
 use num_traits::ToPrimitive;
 use time::{OffsetDateTime, Time};
 
-use common::canister_api::ic_impl::{CyclesMintingApi, DICPApi, RegistryApi};
+use common::canister_api::ic_impl::{CyclesMintingApi, RegistryApi};
 use common::canister_api::{ICyclesMintingApi, IDICPApi, IRegistryApi};
 use common::constants::*;
 use common::dto::{GetPageInput, GetPageOutput, ImportQuotaRequest, ImportQuotaStatus};
 use common::errors::{NamingError, ServiceResult};
 use common::named_canister_ids::{get_named_get_canister_id, CanisterNames};
 use common::named_principals::PRINCIPAL_NAME_TIMER_TRIGGER;
-use common::naming::{normalize_name, FirstLevelName, NameParseResult, NormalizedName};
+use common::naming::{normalize_name, FirstLevelName, NameParseResult};
 use common::permissions::{
     is_admin, must_be_in_named_canister, must_be_named_canister, must_be_system_owner,
 };
@@ -25,22 +25,17 @@ use common::permissions::{must_be_named_principal, must_not_anonymous};
 use common::{AuthPrincipal, CallContext, TimeInNs};
 
 use crate::name_locker::{try_lock_name, unlock_name};
-use crate::name_order_store::{GetNameOrderResponse, NameOrder};
 use crate::registration_store::{Registration, RegistrationDetails, RegistrationDto};
 use crate::reserved_list::RESERVED_NAMES;
 use crate::state::*;
 use crate::token_service::TokenService;
 use crate::user_quota_store::{QuotaType, TransferQuotaDetails};
 
-#[derive(Deserialize, CandidType)]
-pub struct SubmitOrderRequest {
+#[derive(Deserialize, CandidType, Debug)]
+pub struct RegisterNameWithPaymentRequest {
     pub name: String,
     pub years: u32,
-}
-
-#[derive(Deserialize, CandidType)]
-pub struct SubmitOrderResponse {
-    pub order: GetNameOrderResponse,
+    pub approve_amount: Nat,
 }
 
 pub struct RegistrarService {
@@ -267,62 +262,6 @@ impl RegistrarService {
         }
     }
 
-    pub async fn pay_my_order(&self, caller: Principal, now: TimeInNs) -> ServiceResult<bool> {
-        must_not_anonymous(&caller)?;
-        let order = STATE.with(|s| {
-            let name_order_store = s.name_order_store.borrow();
-            if let Some(order) = name_order_store.get_order(&caller) {
-                return Ok(order.clone());
-            }
-            Err(NamingError::OrderNotFound)
-        })?;
-        let first_level_name = validate_name(order.name()).unwrap();
-
-        let amount = order.price_icp_in_e8s();
-        if let Err(s) = STATE.with(|s| {
-            let mut name_order_store = s.name_order_store.borrow_mut();
-            name_order_store.add_handling_name(&first_level_name)
-        }) {
-            error!("error adding handling name: {}", s);
-            return Err(NamingError::Conflict);
-        };
-        let result = self
-            .token_service
-            .transfer_from(
-                caller.to_text().as_str(),
-                DICP_RECEIVER.deref(),
-                amount.clone(),
-                now,
-            )
-            .await;
-        STATE.with(|s| {
-            let mut name_order_store = s.name_order_store.borrow_mut();
-            name_order_store
-                .remove_handling_name(&first_level_name)
-                .unwrap();
-        });
-        if let Err(e) = result {
-            error!("error transferring: {:?}", e);
-            return Err(e);
-        }
-        let local_tx_id = result.unwrap();
-        let context: RegisterCoreContext = (&order).into();
-        let registration_result = self.register_core(context).await;
-        if registration_result.is_ok() {
-            info!("registered success: {:?}", order);
-            STATE.with(|s| {
-                let mut name_order_store = s.name_order_store.borrow_mut();
-                name_order_store.remove_name_order(&caller);
-            });
-            self.token_service.complete_transaction(local_tx_id);
-            Ok(true)
-        } else {
-            error!("registered failed: {:?}", order);
-            let _ = self.token_service.refund(local_tx_id).await;
-            Err(registration_result.err().unwrap())
-        }
-    }
-
     pub async fn register_with_quota(
         &mut self,
         name: String,
@@ -401,39 +340,18 @@ impl RegistrarService {
         todo!("clean up")
     }
 
-    pub fn has_pending_order(&self, caller: &Principal) -> ServiceResult<bool> {
-        must_not_anonymous(caller)?;
-        Ok(STATE.with(|s| {
-            let name_order_store = s.name_order_store.borrow();
-            name_order_store.has_name_order(caller)
-        }))
-    }
-
-    pub fn get_pending_order(
+    pub async fn register_with_payment(
         &self,
-        caller: &Principal,
-    ) -> ServiceResult<Option<GetNameOrderResponse>> {
-        must_not_anonymous(caller)?;
-        Ok(STATE.with(|s| {
-            let name_order_store = s.name_order_store.borrow();
-            name_order_store.get_order(caller).map(|order| order.into())
-        }))
-    }
-
-    pub async fn submit_order(
-        &self,
-        caller: &Principal,
-        now: u64,
-        request: SubmitOrderRequest,
-    ) -> ServiceResult<SubmitOrderResponse> {
+        call_context: CallContext,
+        request: RegisterNameWithPaymentRequest,
+    ) -> ServiceResult<RegistrationDetails> {
         // check
-        must_not_anonymous(caller)?;
-        ensure_no_pending_name_order(caller)?;
+        let caller = call_context.must_not_anonymous()?;
         let name_result = self.available(request.name.as_str())?;
         validate_year(request.years)?;
-        let name_length = name_result.0.get_name_len();
+        let name_len = name_result.get_name_len();
         let length_limit = 6;
-        if name_length < length_limit {
+        if name_len < length_limit {
             return Err(NamingError::InvalidName {
                 reason: format!(
                     "the name need to be at least {} characters long",
@@ -445,24 +363,53 @@ impl RegistrarService {
         let quota_type_len = name_result.0.get_quota_type_len();
         let amount = self.get_name_price(years, quota_type_len).await?;
 
-        ensure_no_pending_name_order(caller)?;
-
-        // place name order
-        let get_order_result: GetNameOrderResponse = STATE.with(|s| {
-            let mut name_order_store = s.name_order_store.borrow_mut();
-            name_order_store.add_name_order(
-                caller,
-                request.name.as_str(),
-                request.years,
-                Nat::from(amount),
-                now,
+        // validate request.approve_price is within the range of register_price 5%
+        if request.approve_amount < amount * 95 / 100 {
+            debug!(
+                "register_with_payment: approve_amount is too low: {} < {}",
+                request.approve_amount,
+                amount * 95 / 100
             );
-            name_order_store.get_order(caller).unwrap().into()
-        });
+            return Err(NamingError::InvalidApproveAmount);
+        }
 
-        Ok(SubmitOrderResponse {
-            order: get_order_result,
-        })
+        let result = self
+            .token_service
+            .transfer_from(
+                caller.0.to_text().as_str(),
+                DICP_RECEIVER.deref(),
+                request.approve_amount.clone(),
+                call_context.now,
+            )
+            .await;
+        if let Err(e) = result {
+            error!("error transferring: {:?}", e);
+            return Err(e);
+        }
+        let local_tx_id = result.unwrap();
+        let context = RegisterCoreContext::new(
+            name_result.0.get_name().to_string(),
+            caller.clone(),
+            years,
+            call_context.now,
+            false,
+        );
+        let registration_result = self.register_core(context).await;
+        if registration_result.is_ok() {
+            info!(
+                "registered success, call_context: {:?}, request: {:?}",
+                call_context, request
+            );
+            self.token_service.complete_transaction(local_tx_id);
+            self.get_details(name_result.0.get_name())
+        } else {
+            error!(
+                "registered failed, call_context: {:?}, request: {:?}",
+                call_context, request
+            );
+            let _ = self.token_service.refund(local_tx_id).await;
+            Err(registration_result.err().unwrap())
+        }
     }
 
     async fn get_name_price(&self, years: u32, quota_type_len: u8) -> ServiceResult<u64> {
@@ -479,25 +426,6 @@ impl RegistrarService {
             price_per_year, amount, icp_xdr_conversion_rate
         );
         Ok(amount)
-    }
-
-    pub fn cancel_order(&self, caller: &Principal, now: u64) -> ServiceResult<bool> {
-        must_not_anonymous(caller)?;
-        STATE.with(|s| {
-            let mut name_order_store = s.name_order_store.borrow_mut();
-            let order = name_order_store.get_order(caller);
-            if order.is_none() {
-                return Err(NamingError::OrderNotFound);
-            }
-            name_order_store.cancel_name_order(caller);
-            Ok(true)
-        })?;
-
-        STATE.with(|s| {
-            let mut name_order_store = s.name_order_store.borrow_mut();
-            name_order_store.remove_name_order(caller);
-            Ok(true)
-        })
     }
 
     pub fn add_quota(
@@ -607,48 +535,6 @@ impl RegistrarService {
             import_quota_store.add_imported_file_hash(hash);
             Ok(ImportQuotaStatus::Ok)
         })
-    }
-
-    pub fn cancel_expired_orders(&self, now: u64) -> ServiceResult<bool> {
-        let (need_check_orders, expired_order) = STATE.with(|s| {
-            let store = s.name_order_store.borrow();
-            (
-                store.get_need_to_be_check_name_availability_principals(now),
-                store.get_expired_quota_order_user_principals(now),
-            )
-        });
-
-        // log count
-        info!(
-            "need_check_orders: {}, expired_order: {}",
-            need_check_orders.len(),
-            expired_order.len()
-        );
-
-        // cancel expired orders
-        for user in expired_order {
-            self.cancel_order(&user, now)?;
-        }
-
-        let mut need_to_be_cancel_users = vec![];
-        // check orders
-        STATE.with(|s| {
-            let store = s.registration_store.borrow();
-            let name_order_store = s.name_order_store.borrow();
-            for user in need_check_orders.iter() {
-                let user_order = name_order_store.get_order(user).unwrap();
-                let name = user_order.name();
-                if store.registrations.contains_key(name) {
-                    need_to_be_cancel_users.push(user);
-                }
-            }
-        });
-
-        info!("need_to_be_cancel_users: {}", need_to_be_cancel_users.len());
-        for user in need_to_be_cancel_users {
-            self.cancel_order(user, now)?;
-        }
-        Ok(true)
     }
 
     fn is_name_owner(&self, name: &FirstLevelName, caller: &Principal) -> ServiceResult<Principal> {
@@ -947,14 +833,6 @@ impl RegistrarService {
             }
         })?;
 
-        if let Err(s) = STATE.with(|s| {
-            let mut name_order_store = s.name_order_store.borrow_mut();
-            name_order_store.add_handling_name(&first_level_name)
-        }) {
-            error!("error adding handling name: {}", s);
-            return Err(NamingError::Conflict);
-        };
-
         let result = self
             .token_service
             .transfer_from(
@@ -964,12 +842,6 @@ impl RegistrarService {
                 now,
             )
             .await;
-        STATE.with(|s| {
-            let mut name_order_store = s.name_order_store.borrow_mut();
-            name_order_store
-                .remove_handling_name(&first_level_name)
-                .unwrap();
-        });
         if let Err(e) = result {
             error!("error transferring: {:?}", e);
             return Err(e);
@@ -1018,16 +890,6 @@ impl RegistrarService {
             details: None,
         });
     }
-}
-
-fn ensure_no_pending_name_order(caller: &Principal) -> ServiceResult<()> {
-    STATE.with(|state| {
-        let store = state.name_order_store.borrow();
-        if store.get_order(caller).is_some() {
-            return Err(NamingError::PendingOrder);
-        };
-        Ok(())
-    })
 }
 
 fn get_price_in_xdr_permyriad(len: u8) -> BigUint {
@@ -1170,18 +1032,6 @@ impl RegisterCoreContext {
             Ok(())
         })?;
         Ok(first_level_name)
-    }
-}
-
-impl From<&NameOrder> for RegisterCoreContext {
-    fn from(order: &NameOrder) -> Self {
-        RegisterCoreContext::new(
-            order.name().to_string(),
-            AuthPrincipal(order.created_user()),
-            order.years(),
-            TimeInNs(order.created_at()),
-            false,
-        )
     }
 }
 

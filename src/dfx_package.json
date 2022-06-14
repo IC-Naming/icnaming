@@ -1,16 +1,16 @@
 {
   "canisters": {
     "dicp": {
-      "exclude_in_pacakge": true
+      "exclude_in_package": true
     },
     "mystery_box": {
-      "exclude_in_pacakge": true
+      "exclude_in_package": true
     },
     "naming_marketplace": {
-      "exclude_in_pacakge": true
+      "exclude_in_package": true
     },
     "cycles_minting": {
-      "exclude_in_pacakge": true
+      "exclude_in_package": true
     }
   },
   "envs": [
