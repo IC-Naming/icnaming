@@ -36,7 +36,7 @@ rstest = "0.14.0"
 hex = "0.4.3"
 flate2 = "1.0"
 sha2 = "0.10.2"
-anyhow = "1.0.57"
+anyhow = "1.0.58"
 build_common = { path = "../../common/build_common" }
 
 
