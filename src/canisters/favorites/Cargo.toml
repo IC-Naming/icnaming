@@ -22,7 +22,7 @@ url = "2.2.2"
 env_logger = "0.9.0"
 test_common = { path = "../../common/test_common" }
 rstest = "0.14.0"
-async-std = { version = "1.11", features = ["attributes"] }
+async-std = { version = "1.12", features = ["attributes"] }
 
 [build-dependencies]
 anyhow = "1.0.58"
