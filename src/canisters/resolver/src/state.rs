@@ -16,6 +16,7 @@ use common::named_canister_ids::{
 use common::state::StableState;
 
 use crate::resolver_store::ResolverStore;
+use crate::reverse_resolver_store::ReverseResolverStore;
 
 thread_local! {
     pub static STATE : State = State::default();
@@ -26,24 +27,34 @@ pub struct State {
     // NOTE: When adding new persistent fields here, ensure that these fields
     // are being persisted in the `replace` method below.
     pub(crate) resolver_store: RefCell<ResolverStore>,
+    pub reverse_resolver_store: RefCell<ReverseResolverStore>,
 }
 
 impl State {
     pub fn replace(&self, new_state: State) {
         self.resolver_store.replace(new_state.resolver_store.take());
+        self.reverse_resolver_store
+            .replace(new_state.reverse_resolver_store.take());
     }
 }
 
 impl StableState for State {
     fn encode(&self) -> Vec<u8> {
-        encode_args((self.resolver_store.borrow().encode(),)).unwrap()
+        encode_args((
+            self.resolver_store.borrow().encode(),
+            self.reverse_resolver_store.borrow().encode(),
+        ))
+        .unwrap()
     }
 
     fn decode(bytes: Vec<u8>) -> Result<Self, String> {
-        let (resolver_store_bytes,) = decode_args(&bytes).unwrap();
+        let (resolver_store_bytes, reverse_resolver_store_bytes) = decode_args(&bytes).unwrap();
 
         Ok(State {
             resolver_store: RefCell::new(ResolverStore::decode(resolver_store_bytes)?),
+            reverse_resolver_store: RefCell::new(ReverseResolverStore::decode(
+                reverse_resolver_store_bytes,
+            )?),
         })
     }
 }

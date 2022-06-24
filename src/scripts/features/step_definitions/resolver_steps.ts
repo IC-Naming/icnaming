@@ -1,5 +1,5 @@
 import "./setup"
-import {Given, Then, When} from '@cucumber/cucumber'
+import {DataTable, Given, Then, When} from '@cucumber/cucumber'
 import {createResolver, resolver} from '~/declarations/resolver'
 import {
     BooleanActorResponse as EnsureResolverCreatedResult,
@@ -9,6 +9,7 @@ import {expect} from 'chai'
 import {Result} from '~/utils/Result'
 import {assert_remote_result} from './utils'
 import {identities} from '~/identityHelper'
+import {Principal} from "@dfinity/principal"
 
 let global_ensure_resolver_created_result: EnsureResolverCreatedResult
 let global_update_record_value_result: UpdateRecordValueResult
@@ -23,13 +24,13 @@ Then(/^ensure_resolver_created result in status "([^"]*)"$/,
         assert_remote_result(global_ensure_resolver_created_result, status)
     })
 Then(/^get_record_value "([^"]*)" should be as below$/,
-    async function (name: string, data) {
+    async function (name: string, data: DataTable) {
         const results = await new Result(resolver.get_record_value(name)).unwrap()
         const rows = data.rows()
         if (rows.length == 0) {
-            expect(results.length).to.equal(0)
+            expect(results.length).to.equal(0, "expected no results")
         } else {
-            expect(results.length).to.equal(rows.length)
+            expect(results.length).to.equal(rows.length, "expected same number of results")
             for (const item of results) {
                 const target_row = rows.find(row => {
                     return row[0] = item[0]
@@ -60,3 +61,18 @@ Then(/^update_record_value result in status '([^']*)'$/,
     function (status: string) {
         assert_remote_result(global_update_record_value_result, status)
     })
+Then(/^Reverse resolve name "([^"]*)" should be "([^"]*)"$/,
+    async function (principal: string, name: string) {
+        let result = await resolver.reverse_resolve_principal(Principal.fromText(principal));
+        if ('Err' in result) {
+            expect.fail(`Reverse resolve name ${principal} failed: ${result.Err}`)
+        } else {
+            if (name === "none") {
+                expect(result.Ok.length).to.equal(0);
+            } else {
+                let item = result.Ok[0];
+                expect(item).to.equal(name);
+            }
+        }
+    })
+;

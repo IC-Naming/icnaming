@@ -33,6 +33,10 @@ type HttpResponse = record {
 type InitArgs = record {
   dev_named_canister_ids : vec record { CanisterNames; principal };
 };
+type ReverseResolvePrincipalResponse = variant {
+  Ok : opt text;
+  Err : ErrorInfo;
+};
 type StateExportData = record { state_data : vec nat8 };
 type StateExportResponse = variant { Ok : StateExportData; Err : ErrorInfo };
 type Stats = record { cycles_balance : nat64; resolver_count : nat64 };
@@ -52,6 +56,9 @@ service : (opt InitArgs) -> {
   http_request : (HttpRequest) -> (HttpResponse) query;
   load_state : (StateExportData) -> (BooleanActorResponse);
   remove_resolvers : (vec text) -> (BooleanActorResponse);
+  reverse_resolve_principal : (principal) -> (
+      ReverseResolvePrincipalResponse,
+    ) query;
   set_record_value : (text, vec record { text; text }) -> (
       BooleanActorResponse,
     );
