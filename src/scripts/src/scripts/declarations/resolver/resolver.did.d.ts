@@ -37,6 +37,8 @@ export interface HttpResponse {
 export interface InitArgs {
   'dev_named_canister_ids' : Array<[CanisterNames, Principal]>,
 }
+export type ReverseResolvePrincipalResponse = { 'Ok' : [] | [string] } |
+  { 'Err' : ErrorInfo };
 export interface StateExportData { 'state_data' : Array<number> }
 export type StateExportResponse = { 'Ok' : StateExportData } |
   { 'Err' : ErrorInfo };
@@ -57,6 +59,10 @@ export interface _SERVICE {
   'http_request' : ActorMethod<[HttpRequest], HttpResponse>,
   'load_state' : ActorMethod<[StateExportData], BooleanActorResponse>,
   'remove_resolvers' : ActorMethod<[Array<string>], BooleanActorResponse>,
+  'reverse_resolve_principal' : ActorMethod<
+    [Principal],
+    ReverseResolvePrincipalResponse,
+  >,
   'set_record_value' : ActorMethod<
     [string, Array<[string, string]>],
     BooleanActorResponse,

@@ -56,6 +56,10 @@ export const idlFactory = ({ IDL }) => {
     'streaming_strategy' : IDL.Opt(StreamingStrategy),
     'status_code' : IDL.Nat16,
   });
+  const ReverseResolvePrincipalResponse = IDL.Variant({
+    'Ok' : IDL.Opt(IDL.Text),
+    'Err' : ErrorInfo,
+  });
   return IDL.Service({
     'ensure_resolver_created' : IDL.Func(
         [IDL.Text],
@@ -80,6 +84,11 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(IDL.Text)],
         [BooleanActorResponse],
         [],
+      ),
+    'reverse_resolve_principal' : IDL.Func(
+        [IDL.Principal],
+        [ReverseResolvePrincipalResponse],
+        ['query'],
       ),
     'set_record_value' : IDL.Func(
         [IDL.Text, IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text))],

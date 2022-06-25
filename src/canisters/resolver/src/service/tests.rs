@@ -102,13 +102,12 @@ mod get_record_value {
     }
 }
 
-mod set_record {
+mod set_record_validation {
     use super::*;
 
     #[rstest]
-    async fn test_set_record_value_key_invalid(
+    async fn test_set_record_validation_key_invalid(
         _init_test: (),
-        mut service: ResolverService,
         mock_now: u64,
         mock_user1: Principal,
     ) {
@@ -120,10 +119,13 @@ mod set_record {
         add_test_resolver(name);
 
         // act
-        let call_context = CallContext::new(mock_user1, TimeInNs(mock_now));
-        let result = service
-            .set_record_value(call_context, name, patch_values)
-            .await;
+        let result = SetRecordValueValidator::new(
+            must_not_anonymous(&mock_user1).unwrap(),
+            name.to_string(),
+            patch_values,
+        )
+        .validate()
+        .await;
 
         // assert
         assert!(result.is_err());
@@ -141,9 +143,8 @@ mod set_record {
     }
 
     #[rstest]
-    async fn test_set_record_value_value_invalid(
+    async fn test_set_record_validation_value_invalid(
         _init_test: (),
-        mut service: ResolverService,
         mock_now: u64,
         mock_user1: Principal,
     ) {
@@ -159,10 +160,13 @@ mod set_record {
         add_test_resolver(name);
 
         // act
-        let call_context = CallContext::new(mock_user1, TimeInNs(mock_now));
-        let result = service
-            .set_record_value(call_context, name, patch_values)
-            .await;
+        let result = SetRecordValueValidator::new(
+            must_not_anonymous(&mock_user1).unwrap(),
+            name.to_string(),
+            patch_values,
+        )
+        .validate()
+        .await;
 
         // assert
         assert!(result.is_err());
@@ -180,9 +184,8 @@ mod set_record {
     }
 
     #[rstest]
-    async fn test_set_record_value_permission_deny(
+    async fn test_set_record_validation_permission_deny(
         _init_test: (),
-        mut service: ResolverService,
         mut mock_registry_api: MockRegistryApi,
         mock_now: u64,
         mock_user1: Principal,
@@ -203,26 +206,29 @@ mod set_record {
                     operators: HashSet::new(),
                 })
             });
-        service.registry_api = Arc::new(mock_registry_api);
 
         // act
-        let call_context = CallContext::new(Principal::anonymous(), TimeInNs(mock_now));
-        let result = service
-            .set_record_value(call_context, name, patch_values)
-            .await;
+        let mut context = SetRecordValueValidator::new(
+            must_not_anonymous(&mock_user1).unwrap(),
+            name.to_string(),
+            patch_values,
+        );
+        context.registry_api = Arc::new(mock_registry_api);
+
+        let result = context.validate().await;
 
         // assert
         assert!(result.is_err());
         match result {
             Err(e) => {
-                assert_eq!(e, NamingError::Unauthorized {});
+                assert_eq!(e, NamingError::PermissionDenied {});
             }
             _ => assert!(false),
         }
     }
 
     #[rstest]
-    async fn test_set_record_value_success(
+    async fn test_set_record_validation_success(
         _init_test: (),
         mut service: ResolverService,
         mut mock_registry_api: MockRegistryApi,
@@ -248,33 +254,59 @@ mod set_record {
                     operators: HashSet::new(),
                 })
             });
-        service.registry_api = Arc::new(mock_registry_api);
 
         // act
-        let call_context = CallContext::new(owner, TimeInNs(mock_now));
-        let result = service
-            .set_record_value(call_context, name, patch_values)
-            .await;
+        let mut context = SetRecordValueValidator::new(
+            must_not_anonymous(&owner).unwrap(),
+            name.to_string(),
+            patch_values,
+        );
+        context.registry_api = Arc::new(mock_registry_api);
+
+        let result = context.validate().await;
 
         // assert
-        assert!(result.is_ok());
-        let value_map = service.get_record_value(name).unwrap();
-        assert_eq!(value_map.len(), 2);
-        assert_eq!(value_map.get(RESOLVER_KEY_ICP).unwrap(), &icp_addr);
-        assert!(value_map.get(RESOLVER_KEY_TWITTER).is_none());
+        assert!(result.is_ok(), "{:?}", result);
+        let result = result.unwrap();
+        assert_eq!(
+            result.update_primary_name_input,
+            UpdatePrimaryNameInput::DoNothing
+        );
+        assert_eq!(result.update_records_input.len(), 2);
+        assert_eq!(
+            result.update_records_input.get(RESOLVER_KEY_ICP).unwrap(),
+            &UpdateRecordInput::Set(icp_addr.to_string())
+        );
+        assert_eq!(
+            result
+                .update_records_input
+                .get(RESOLVER_KEY_TWITTER)
+                .unwrap(),
+            &UpdateRecordInput::Remove
+        );
     }
 
     #[rstest]
-    async fn test_set_record_value_not_found(
+    async fn test_set_record_validation_update_primary_name(
         _init_test: (),
         mut service: ResolverService,
         mut mock_registry_api: MockRegistryApi,
         mock_now: u64,
+        mock_user1: Principal,
     ) {
         let name = "nice.ic";
         let mut patch_values: HashMap<String, String> = HashMap::new();
-        patch_values.insert(RESOLVER_KEY_GITHUB.to_string(), "icns".to_string());
+        let icp_addr = "rrkah-fqaaa-aaaaa-aaaaq-cai";
+        patch_values.insert(
+            RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL.to_string(),
+            icp_addr.to_string(),
+        );
+        // enter blank value to remove the key
+        patch_values.insert(RESOLVER_KEY_TWITTER.to_string(), "".to_string());
         let owner = Principal::from_text("rrkah-fqaaa-aaaaa-aaaaq-cai").unwrap();
+
+        // add resolver
+        add_test_resolver(name);
 
         let _ctx = mock_registry_api
             .expect_get_users()
@@ -284,19 +316,119 @@ mod set_record {
                     operators: HashSet::new(),
                 })
             });
-        service.registry_api = Arc::new(mock_registry_api);
 
         // act
-        let call_context = CallContext::new(owner, TimeInNs(mock_now));
-        let result = service
-            .set_record_value(call_context, name, patch_values)
-            .await;
+        let mut context = SetRecordValueValidator::new(
+            must_not_anonymous(&owner).unwrap(),
+            name.to_string(),
+            patch_values,
+        );
+        context.registry_api = Arc::new(mock_registry_api);
+
+        let result = context.validate().await;
 
         // assert
-        assert!(result.is_ok());
-        let value_map = service.get_record_value(name).unwrap();
-        assert_eq!(value_map.len(), 1);
-        assert_eq!(value_map.get(RESOLVER_KEY_GITHUB).unwrap(), "icns");
+        assert!(result.is_ok(), "{:?}", result);
+        let result = result.unwrap();
+        assert_eq!(
+            result.update_primary_name_input,
+            UpdatePrimaryNameInput::Set(owner.clone())
+        );
+    }
+
+    #[rstest]
+    async fn test_set_record_validation_remove_primary_name(
+        _init_test: (),
+        mut service: ResolverService,
+        mut mock_registry_api: MockRegistryApi,
+        mock_now: u64,
+        mock_user1: Principal,
+    ) {
+        let name = "nice.ic";
+        let mut patch_values: HashMap<String, String> = HashMap::new();
+        patch_values.insert(
+            RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL.to_string(),
+            "".to_string(),
+        );
+        // enter blank value to remove the key
+        patch_values.insert(RESOLVER_KEY_TWITTER.to_string(), "".to_string());
+        let owner = Principal::from_text("rrkah-fqaaa-aaaaa-aaaaq-cai").unwrap();
+
+        // add resolver
+        add_test_resolver(name);
+
+        let _ctx = mock_registry_api
+            .expect_get_users()
+            .returning(move |_name| {
+                Ok(RegistryUsers {
+                    owner,
+                    operators: HashSet::new(),
+                })
+            });
+
+        // act
+        let mut context = SetRecordValueValidator::new(
+            must_not_anonymous(&owner).unwrap(),
+            name.to_string(),
+            patch_values,
+        );
+        context.registry_api = Arc::new(mock_registry_api);
+
+        let result = context.validate().await;
+
+        // assert
+        assert!(result.is_ok(), "{:?}", result);
+        let result = result.unwrap();
+        assert_eq!(
+            result.update_primary_name_input,
+            UpdatePrimaryNameInput::Remove(owner.clone())
+        );
+    }
+
+    #[rstest]
+    async fn test_set_record_validation_operator_cannot_update_primary_name(
+        _init_test: (),
+        mut mock_registry_api: MockRegistryApi,
+        mock_user1: Principal,
+    ) {
+        let name = "nice.ic";
+        let mut patch_values: HashMap<String, String> = HashMap::new();
+        patch_values.insert(
+            RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL.to_string(),
+            "".to_string(),
+        );
+        // enter blank value to remove the key
+        patch_values.insert(RESOLVER_KEY_TWITTER.to_string(), "".to_string());
+        let owner = Principal::from_text("rrkah-fqaaa-aaaaa-aaaaq-cai").unwrap();
+
+        // add resolver
+        add_test_resolver(name);
+
+        let _ctx = mock_registry_api
+            .expect_get_users()
+            .returning(move |_name| {
+                let mut set = HashSet::new();
+                set.insert(mock_user1.clone());
+                Ok(RegistryUsers {
+                    owner,
+                    operators: set,
+                })
+            });
+
+        // act
+        let mut context = SetRecordValueValidator::new(
+            must_not_anonymous(&mock_user1).unwrap(),
+            name.to_string(),
+            patch_values,
+        );
+        context.registry_api = Arc::new(mock_registry_api);
+
+        let result = context.validate().await;
+
+        // assert
+        assert!(result.is_err());
+        let result = result.err().unwrap();
+        assert_eq!(result, NamingError::PermissionDenied);
     }
 }
 

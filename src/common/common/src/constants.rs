@@ -18,11 +18,11 @@ pub const PAGE_INPUT_MAX_OFFSET: usize = 10_000;
 pub const RESOLVER_KEY_ETH: &str = "token.eth";
 pub const RESOLVER_KEY_BTC: &str = "token.btc";
 // obsolete: split into two keys RESOLVER_KEY_ICP_PRINCIPAL and RESOLVER_KEY_ICP_ACCOUNT_ID
-pub const RESOLVER_KEY_ICP: &str = "token.ic";
+pub const RESOLVER_KEY_ICP: &str = "token.icp";
 pub const RESOLVER_KEY_LTC: &str = "token.ltc";
-pub const RESOLVER_KEY_ICP_CANISTER: &str = "canister.ic";
-pub const RESOLVER_KEY_ICP_PRINCIPAL: &str = "principal.ic";
-pub const RESOLVER_KEY_ICP_ACCOUNT_ID: &str = "account_id.ic";
+pub const RESOLVER_KEY_ICP_CANISTER: &str = "canister.icp";
+pub const RESOLVER_KEY_ICP_PRINCIPAL: &str = "principal.icp";
+pub const RESOLVER_KEY_ICP_ACCOUNT_ID: &str = "account_id.icp";
 pub const RESOLVER_KEY_EMAIL: &str = "email";
 pub const RESOLVER_KEY_URL: &str = "url";
 pub const RESOLVER_KEY_AVATAR: &str = "avatar";
@@ -31,9 +31,12 @@ pub const RESOLVER_KEY_NOTICE: &str = "notice";
 pub const RESOLVER_KEY_KEYWORDS: &str = "keywords";
 pub const RESOLVER_KEY_TWITTER: &str = "com.twitter";
 pub const RESOLVER_KEY_GITHUB: &str = "com.github";
+pub const RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL: &str =
+    "settings.reverse_resolution.principal";
 
 pub const RESOLVER_VALUE_MAX_LENGTH: usize = 512;
 
+#[derive(Eq, PartialEq, Hash, Debug)]
 pub enum ResolverKey {
     Eth,
     Btc,
@@ -50,6 +53,7 @@ pub enum ResolverKey {
     Keywords,
     Twitter,
     Github,
+    SettingReverseResolutionPrincipal,
 }
 
 impl FromStr for ResolverKey {
@@ -72,6 +76,9 @@ impl FromStr for ResolverKey {
             RESOLVER_KEY_KEYWORDS => Ok(ResolverKey::Keywords),
             RESOLVER_KEY_TWITTER => Ok(ResolverKey::Twitter),
             RESOLVER_KEY_GITHUB => Ok(ResolverKey::Github),
+            RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL => {
+                Ok(ResolverKey::SettingReverseResolutionPrincipal)
+            }
             _ => Err(NamingError::InvalidResolverKey { key: s.to_string() }),
         }
     }

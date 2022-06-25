@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use candid::{decode_args, encode_args, CandidType, Deserialize};
+use log::debug;
 
 use common::state::StableState;
 
@@ -27,7 +28,12 @@ impl Resolver {
         self.string_value_map.insert(key, value);
     }
     pub fn remove_record_value(&mut self, key: String) {
-        self.string_value_map.remove(&key);
+        let value = self.string_value_map.remove(&key);
+        if let Some(value) = value {
+            debug!("Removed record key: {} with value: {}", key, value);
+        } else {
+            debug!("Removed record key: {} with no value", key);
+        }
     }
 
     pub(crate) fn get_record_value(&self) -> &HashMap<String, String> {
@@ -72,9 +78,8 @@ impl ResolverStore {
                 .insert(name.to_string(), Resolver::new(name.to_string()));
         }
     }
-    pub fn clean_up_names(&mut self, names: &Vec<String>) {
-        for name in names {
-            self.resolvers.remove(name);
-        }
+
+    pub fn remove_resolver(&mut self, name: &str) -> Option<Resolver> {
+        self.resolvers.remove(name)
     }
 }

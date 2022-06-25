@@ -4,6 +4,7 @@ mod resolver_store;
 mod service;
 mod state;
 
+mod reverse_resolver_store;
 #[path = "../../../common/common_actor/src/actor.rs"]
 mod shared_actor;
 mod stats_service;
@@ -13,7 +14,7 @@ use common::http::*;
 use stats_service::*;
 use std::collections::HashMap;
 
-use candid::{candid_method, CandidType};
+use candid::{candid_method, CandidType, Principal};
 use common::CallContext;
 use ic_cdk::{api, caller};
 use ic_cdk_macros::*;
@@ -29,7 +30,7 @@ use crate::state::InitArgs;
 ///
 /// * `name` - a name. e.g. `hello.ic`
 #[update(name = "ensure_resolver_created")]
-#[candid_method(update, rename = "ensure_resolver_created")]
+#[candid_method(update)]
 fn ensure_resolver_created(name: String) -> BooleanActorResponse {
     let call_context = CallContext::from_ic();
     let result = if let Err(e) = call_context.must_be_named_canister(CanisterNames::Registry) {
@@ -47,7 +48,7 @@ fn ensure_resolver_created(name: String) -> BooleanActorResponse {
 /// * `name` - a name. e.g. `hello.ic`
 /// * `values` - a list of values. e.g. `canister.ic`
 #[update(name = "set_record_value")]
-#[candid_method(update, rename = "set_record_value")]
+#[candid_method(update)]
 async fn set_record_value(
     name: String,
     patch_values: HashMap<String, String>,
@@ -65,20 +66,11 @@ async fn set_record_value(
 ///
 /// * `name` - a name. e.g. `hello.ic`
 #[query(name = "get_record_value")]
-#[candid_method(query, rename = "get_record_value")]
+#[candid_method(query)]
 fn get_record_value(name: String) -> GetRecordValueResponse {
     let service = ResolverService::default();
     let result = service.get_record_value(name.as_str());
     GetRecordValueResponse::new(result)
-}
-
-#[update(name = "remove_resolvers")]
-#[candid_method(update, rename = "remove_resolvers")]
-fn remove_resolvers(names: Vec<String>) -> BooleanActorResponse {
-    let call_context = CallContext::from_ic();
-    let service = ResolverService::default();
-    let result = service.remove_resolvers(call_context, names);
-    BooleanActorResponse::new(result)
 }
 
 #[derive(CandidType)]
@@ -92,6 +84,38 @@ impl GetRecordValueResponse {
         match result {
             Ok(values) => GetRecordValueResponse::Ok(values),
             Err(err) => GetRecordValueResponse::Err(err.into()),
+        }
+    }
+}
+
+#[update(name = "remove_resolvers")]
+#[candid_method(update)]
+fn remove_resolvers(names: Vec<String>) -> BooleanActorResponse {
+    let call_context = CallContext::from_ic();
+    let service = ResolverService::default();
+    let result = service.remove_resolvers(call_context, names);
+    BooleanActorResponse::new(result)
+}
+
+#[query(name = "reverse_resolve_principal")]
+#[candid_method(query)]
+fn reverse_resolve_principal(principal: Principal) -> ReverseResolvePrincipalResponse {
+    let service = ResolverService::default();
+    let result = service.reverse_resolve_principal(principal);
+    ReverseResolvePrincipalResponse::new(result)
+}
+
+#[derive(CandidType)]
+pub enum ReverseResolvePrincipalResponse {
+    Ok(Option<String>),
+    Err(ErrorInfo),
+}
+
+impl ReverseResolvePrincipalResponse {
+    pub fn new(result: ServiceResult<Option<String>>) -> Self {
+        match result {
+            Ok(name) => ReverseResolvePrincipalResponse::Ok(name),
+            Err(err) => ReverseResolvePrincipalResponse::Err(err.into()),
         }
     }
 }

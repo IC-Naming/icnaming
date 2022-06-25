@@ -1,4 +1,4 @@
-@registrar @dev
+@registrar
 Feature: Register a name with payment
 
   Background:
