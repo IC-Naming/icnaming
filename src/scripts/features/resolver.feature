@@ -35,9 +35,13 @@ Feature: Query Api
 
   Scenario: Update resolver values with invalid key
     When I update resolver "hello.ic" with values
-      | key         | value                       |
-      | invalid.key | qsgjb-riaaa-aaaaa-aaaga-cai |
-    Then update_record_value result in status 'invalid resolver key: "invalid.key"'
+      | key                                                               | value                       |
+      | 12345678901234567890123456789012345678901234567890123456789012345 | qsgjb-riaaa-aaaaa-aaaga-cai |
+    Then update_record_value result in status 'Length of key must be less than 64'
+
+  Scenario: Update resolver values with too many keys
+    When I update resolver "hello.ic" with "31" keys
+    Then update_record_value result in status 'Too many resolver keys, max is 30'
 
   Scenario: Delete resolver value by setting value to None
     Given I update resolver "hello.ic" with values

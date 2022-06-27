@@ -10,7 +10,8 @@ use log::{debug, info};
 use common::canister_api::ic_impl::RegistryApi;
 use common::canister_api::IRegistryApi;
 use common::constants::{
-    ResolverKey, RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL, RESOLVER_VALUE_MAX_LENGTH,
+    WellKnownResolverKey, RESOLVER_ITEM_MAX_COUNT, RESOLVER_KEY_MAX_LENGTH,
+    RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL, RESOLVER_VALUE_MAX_LENGTH,
 };
 use common::dto::IRegistryUsers;
 use common::errors::*;
@@ -60,7 +61,18 @@ impl ResolverService {
     ) -> ServiceResult<bool> {
         let caller = call_context.must_not_anonymous()?;
 
-        let mut context = SetRecordValueValidator::new(caller, name.to_string(), patch_value);
+        let resolver = STATE.with(|s| {
+            let resolver_store = s.resolver_store.borrow();
+            let resolvers = resolver_store.get_resolvers();
+            if let Ok(resolver) = get_resolver(resolvers, name) {
+                resolver.clone()
+            } else {
+                Resolver::new(name.to_string())
+            }
+        });
+
+        let mut context =
+            SetRecordValueValidator::new(caller, name.to_string(), patch_value, resolver);
         let input = context.validate().await?;
 
         input.update_state()?;
@@ -151,29 +163,50 @@ pub struct SetRecordValueValidator {
     caller: AuthPrincipal,
     name: String,
     patch_value: HashMap<String, String>,
+    resolver: Resolver,
     pub registry_api: Arc<dyn IRegistryApi>,
 }
 
 impl SetRecordValueValidator {
-    pub fn new(caller: AuthPrincipal, name: String, patch_value: HashMap<String, String>) -> Self {
+    pub fn new(
+        caller: AuthPrincipal,
+        name: String,
+        patch_value: HashMap<String, String>,
+        resolver: Resolver,
+    ) -> Self {
         Self {
             caller,
             name,
             patch_value,
             registry_api: Arc::new(RegistryApi::default()),
+            resolver,
         }
     }
 
-    fn validate_key_value(&self, resolver_key: &ResolverKey, value: &str) -> ServiceResult<String> {
+    fn validate_key_value(&self, key: &str, value: &str) -> ServiceResult<String> {
         if !value.is_empty() {
-            let max_length = RESOLVER_VALUE_MAX_LENGTH;
-            let normalized_value = normalize_value(&resolver_key, value);
-            // update value
-            if normalized_value.len() > max_length {
-                return Err(NamingError::ValueMaxLengthError { max: max_length });
+            {
+                let max_length = RESOLVER_VALUE_MAX_LENGTH;
+                if value.len() > max_length {
+                    return Err(NamingError::ValueMaxLengthError { max: max_length });
+                }
             }
-            validate_value(&resolver_key, &normalized_value)?;
-            Ok(normalized_value)
+
+            {
+                let max_length = RESOLVER_KEY_MAX_LENGTH;
+                if key.len() > max_length {
+                    return Err(NamingError::KeyMaxLengthError { max: max_length });
+                }
+            }
+
+            if let Some(resolver_key) = WellKnownResolverKey::parse(key) {
+                let normalized_value = normalize_value(&resolver_key, value);
+                validate_well_known_value(&resolver_key, &normalized_value)?;
+                Ok(normalized_value)
+            } else {
+                debug!("Not well-Unknown resolver key {}", key);
+                Ok(value.to_string())
+            }
         } else {
             Ok(value.to_string())
         }
@@ -188,11 +221,23 @@ impl SetRecordValueValidator {
             .cloned();
 
         for (key, value) in self.patch_value.iter() {
-            let resolver_key = ResolverKey::from_str(key)?;
-            let valid_value = self.validate_key_value(&resolver_key, value)?;
+            let valid_value = self.validate_key_value(key, value)?;
             if key != RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL {
                 patch_values.push((key.clone(), valid_value));
             }
+        }
+
+        // validate max item count
+        let mut count_new = self.resolver.string_value_map().len();
+        for (key, _) in patch_values.iter() {
+            if !self.resolver.contains_key(key) {
+                count_new += 1;
+            }
+        }
+        if count_new > RESOLVER_ITEM_MAX_COUNT {
+            return Err(NamingError::TooManyResolverKeys {
+                max: RESOLVER_ITEM_MAX_COUNT as u32,
+            });
         }
 
         // check permission
@@ -309,16 +354,16 @@ impl SetRecordValueInput {
     }
 }
 
-fn normalize_value(key: &ResolverKey, value: &str) -> String {
+fn normalize_value(key: &WellKnownResolverKey, value: &str) -> String {
     match key {
-        ResolverKey::Eth => value.to_lowercase(),
+        WellKnownResolverKey::Eth => value.to_lowercase(),
         _ => value.to_string(),
     }
 }
 
-fn validate_value(key: &ResolverKey, value: &str) -> ServiceResult<()> {
+fn validate_well_known_value(key: &WellKnownResolverKey, value: &str) -> ServiceResult<()> {
     match key {
-        ResolverKey::Eth => {
+        WellKnownResolverKey::Eth => {
             // validate value should be a valid eth address
             if !is_valid_eth_address(value) {
                 return Err(NamingError::InvalidResolverValueFormat {
@@ -327,7 +372,7 @@ fn validate_value(key: &ResolverKey, value: &str) -> ServiceResult<()> {
                 });
             }
         }
-        ResolverKey::Btc => {
+        WellKnownResolverKey::Btc => {
             // validate value should be a valid btc address
             if !is_valid_btc_address(value) {
                 return Err(NamingError::InvalidResolverValueFormat {
@@ -336,7 +381,7 @@ fn validate_value(key: &ResolverKey, value: &str) -> ServiceResult<()> {
                 });
             }
         }
-        ResolverKey::Icp => {
+        WellKnownResolverKey::Icp => {
             // validate value should be a valid icp address
             if !is_valid_icp_address(value) {
                 return Err(NamingError::InvalidResolverValueFormat {
@@ -345,7 +390,7 @@ fn validate_value(key: &ResolverKey, value: &str) -> ServiceResult<()> {
                 });
             }
         }
-        ResolverKey::Ltc => {
+        WellKnownResolverKey::Ltc => {
             // validate value should be a valid ltc address
             if !is_valid_ltc_address(value) {
                 return Err(NamingError::InvalidResolverValueFormat {
@@ -354,10 +399,10 @@ fn validate_value(key: &ResolverKey, value: &str) -> ServiceResult<()> {
                 });
             }
         }
-        ResolverKey::IcpCanister => {
+        WellKnownResolverKey::IcpCanister => {
             // do nothing validate since, it would be able to set custom domain for canister
         }
-        ResolverKey::IcpPrincipal => {
+        WellKnownResolverKey::IcpPrincipal => {
             if !is_valid_icp_principal(value) {
                 return Err(NamingError::InvalidResolverValueFormat {
                     value: value.to_string(),
@@ -365,7 +410,7 @@ fn validate_value(key: &ResolverKey, value: &str) -> ServiceResult<()> {
                 });
             }
         }
-        ResolverKey::IcpAccountId => {
+        WellKnownResolverKey::IcpAccountId => {
             if !is_valid_icp_account_id(value) {
                 return Err(NamingError::InvalidResolverValueFormat {
                     value: value.to_string(),
@@ -373,31 +418,37 @@ fn validate_value(key: &ResolverKey, value: &str) -> ServiceResult<()> {
                 });
             }
         }
-        ResolverKey::Email => {
+        WellKnownResolverKey::Email => {
             // do nothing
         }
-        ResolverKey::Url => {
+        WellKnownResolverKey::Url => {
             // do nothing
         }
-        ResolverKey::Avatar => {
+        WellKnownResolverKey::Avatar => {
             // do nothing
         }
-        ResolverKey::Description => {
+        WellKnownResolverKey::Description => {
             // do nothing
         }
-        ResolverKey::Notice => {
+        WellKnownResolverKey::Notice => {
             // do nothing
         }
-        ResolverKey::Keywords => {
+        WellKnownResolverKey::Keywords => {
             // do nothing
         }
-        ResolverKey::Twitter => {
+        WellKnownResolverKey::Twitter => {
             // do nothing
         }
-        ResolverKey::Github => {
+        WellKnownResolverKey::Github => {
             // do nothing
         }
-        ResolverKey::SettingReverseResolutionPrincipal => {
+        WellKnownResolverKey::Location => {
+            // do nothing
+        }
+        WellKnownResolverKey::DisplayName => {
+            // do nothing
+        }
+        WellKnownResolverKey::SettingReverseResolutionPrincipal => {
             if !is_valid_icp_principal(value) {
                 return Err(NamingError::InvalidResolverValueFormat {
                     value: value.to_string(),

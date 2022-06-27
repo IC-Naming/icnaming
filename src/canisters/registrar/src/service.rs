@@ -16,7 +16,7 @@ use common::constants::*;
 use common::dto::{GetPageInput, GetPageOutput, ImportQuotaRequest, ImportQuotaStatus};
 use common::errors::{NamingError, ServiceResult};
 use common::named_canister_ids::{get_named_get_canister_id, CanisterNames};
-use common::named_principals::PRINCIPAL_NAME_TIMER_TRIGGER;
+use common::named_principals::{PRINCIPAL_NAME_STATE_EXPORTER, PRINCIPAL_NAME_TIMER_TRIGGER};
 use common::naming::{normalize_name, FirstLevelName, NameParseResult};
 use common::permissions::{
     is_admin, must_be_in_named_canister, must_be_named_canister, must_be_system_owner,
@@ -99,10 +99,10 @@ impl RegistrarService {
 
     pub(crate) fn get_all_details(
         &self,
-        caller: &Principal,
+        caller: CallContext,
         input: &GetPageInput,
     ) -> ServiceResult<Vec<RegistrationDetails>> {
-        must_be_system_owner(caller)?;
+        caller.must_be_named_principal(PRINCIPAL_NAME_STATE_EXPORTER)?;
         input.validate()?;
         let items = STATE.with(|s| {
             let store = s.registration_store.borrow();

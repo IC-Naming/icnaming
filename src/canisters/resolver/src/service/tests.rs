@@ -106,14 +106,14 @@ mod set_record_validation {
     use super::*;
 
     #[rstest]
-    async fn test_set_record_validation_key_invalid(
+    async fn test_set_record_validation_key_too_long(
         _init_test: (),
         mock_now: u64,
         mock_user1: Principal,
     ) {
         let name = "nice.ic";
         let mut patch_values: HashMap<String, String> = HashMap::new();
-        let invalid_resolver_key = "not_found";
+        let invalid_resolver_key = "a".repeat(RESOLVER_KEY_MAX_LENGTH + 1);
         patch_values.insert(invalid_resolver_key.to_string(), "icns".to_string());
         // add resolver
         add_test_resolver(name);
@@ -123,6 +123,7 @@ mod set_record_validation {
             must_not_anonymous(&mock_user1).unwrap(),
             name.to_string(),
             patch_values,
+            Resolver::new(name.to_string()),
         )
         .validate()
         .await;
@@ -133,8 +134,8 @@ mod set_record_validation {
             Err(e) => {
                 assert_eq!(
                     e,
-                    NamingError::InvalidResolverKey {
-                        key: invalid_resolver_key.to_string()
+                    NamingError::KeyMaxLengthError {
+                        max: RESOLVER_KEY_MAX_LENGTH,
                     }
                 );
             }
@@ -164,6 +165,7 @@ mod set_record_validation {
             must_not_anonymous(&mock_user1).unwrap(),
             name.to_string(),
             patch_values,
+            Resolver::new(name.to_string()),
         )
         .validate()
         .await;
@@ -176,6 +178,47 @@ mod set_record_validation {
                     e,
                     NamingError::ValueMaxLengthError {
                         max: RESOLVER_VALUE_MAX_LENGTH
+                    }
+                );
+            }
+            _ => assert!(false),
+        }
+    }
+
+    #[rstest]
+    async fn test_set_record_validation_too_many_items(
+        _init_test: (),
+        mock_now: u64,
+        mock_user1: Principal,
+    ) {
+        let name = "nice.ic";
+        let mut patch_values: HashMap<String, String> = HashMap::new();
+        patch_values.insert(RESOLVER_KEY_GITHUB.to_string(), "icns".to_string());
+        // add resolver
+        add_test_resolver(name);
+
+        // act
+        let mut resolver = Resolver::new(name.to_string());
+        for i in 0..RESOLVER_ITEM_MAX_COUNT {
+            resolver.set_record_value(format!("{}", i), format!("{}", i));
+        }
+        let result = SetRecordValueValidator::new(
+            must_not_anonymous(&mock_user1).unwrap(),
+            name.to_string(),
+            patch_values,
+            resolver,
+        )
+        .validate()
+        .await;
+
+        // assert
+        assert!(result.is_err());
+        match result {
+            Err(e) => {
+                assert_eq!(
+                    e,
+                    NamingError::TooManyResolverKeys {
+                        max: RESOLVER_ITEM_MAX_COUNT as u32,
                     }
                 );
             }
@@ -212,6 +255,7 @@ mod set_record_validation {
             must_not_anonymous(&mock_user1).unwrap(),
             name.to_string(),
             patch_values,
+            Resolver::new(name.to_string()),
         );
         context.registry_api = Arc::new(mock_registry_api);
 
@@ -260,6 +304,7 @@ mod set_record_validation {
             must_not_anonymous(&owner).unwrap(),
             name.to_string(),
             patch_values,
+            Resolver::new(name.to_string()),
         );
         context.registry_api = Arc::new(mock_registry_api);
 
@@ -322,6 +367,7 @@ mod set_record_validation {
             must_not_anonymous(&owner).unwrap(),
             name.to_string(),
             patch_values,
+            Resolver::new(name.to_string()),
         );
         context.registry_api = Arc::new(mock_registry_api);
 
@@ -371,6 +417,7 @@ mod set_record_validation {
             must_not_anonymous(&owner).unwrap(),
             name.to_string(),
             patch_values,
+            Resolver::new(name.to_string()),
         );
         context.registry_api = Arc::new(mock_registry_api);
 
@@ -420,6 +467,7 @@ mod set_record_validation {
             must_not_anonymous(&mock_user1).unwrap(),
             name.to_string(),
             patch_values,
+            Resolver::new(name.to_string()),
         );
         context.registry_api = Arc::new(mock_registry_api);
 
@@ -440,7 +488,7 @@ mod validate_value {
     #[case("1A1zP1eP5QGefi2DMPTfTL5SLmv7Divf2a", false)]
     #[case("1A1zP1eP5QGefi2DMPTfTL5SLmv7Divf", false)]
     fn test_btc_valid_value(#[case] value: String, #[case] expected: bool) {
-        let result = validate_value(&ResolverKey::Btc, &value);
+        let result = validate_well_known_value(&WellKnownResolverKey::Btc, &value);
         assert_eq!(expected, result.is_ok());
     }
 
@@ -449,7 +497,7 @@ mod validate_value {
     #[case("0xb436ef6cc9f24193ccb42f98be2b1db7644845w4", false)]
     #[case("0xb436ef6cc9f24193ccb42f98be2b1db7644845", false)]
     fn test_eth_valid_value(#[case] value: String, #[case] expected: bool) {
-        let result = validate_value(&ResolverKey::Eth, &value);
+        let result = validate_well_known_value(&WellKnownResolverKey::Eth, &value);
         assert_eq!(expected, result.is_ok());
     }
 
@@ -459,7 +507,7 @@ mod validate_value {
     #[case("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa", false)]
     #[case("0XB436EF6CC9F24193CCB42F98BE2B1DB7644845", false)]
     fn test_ltc_valid_value(#[case] value: String, #[case] expected: bool) {
-        let result = validate_value(&ResolverKey::Ltc, &value);
+        let result = validate_well_known_value(&WellKnownResolverKey::Ltc, &value);
         assert_eq!(expected, result.is_ok());
     }
 
@@ -479,7 +527,7 @@ mod validate_value {
     #[case("q3fc5-haaaa-aaaaa-aaahq-cai", true)]
     #[case("aaaaa-aaaaa-aaaaa-aaahq-cai", false)]
     fn test_icp_valid_value(#[case] value: String, #[case] expected: bool) {
-        let result = validate_value(&ResolverKey::Icp, &value);
+        let result = validate_well_known_value(&WellKnownResolverKey::Icp, &value);
         assert_eq!(expected, result.is_ok());
     }
 }

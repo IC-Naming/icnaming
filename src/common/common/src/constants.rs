@@ -29,15 +29,19 @@ pub const RESOLVER_KEY_AVATAR: &str = "avatar";
 pub const RESOLVER_KEY_DESCRIPTION: &str = "description";
 pub const RESOLVER_KEY_NOTICE: &str = "notice";
 pub const RESOLVER_KEY_KEYWORDS: &str = "keywords";
+pub const RESOLVER_KEY_LOCATION: &str = "location";
+pub const RESOLVER_KEY_DISPLAY_NAME: &str = "display_name";
 pub const RESOLVER_KEY_TWITTER: &str = "com.twitter";
 pub const RESOLVER_KEY_GITHUB: &str = "com.github";
 pub const RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL: &str =
     "settings.reverse_resolution.principal";
 
 pub const RESOLVER_VALUE_MAX_LENGTH: usize = 512;
+pub const RESOLVER_KEY_MAX_LENGTH: usize = 64;
+pub const RESOLVER_ITEM_MAX_COUNT: usize = 30;
 
 #[derive(Eq, PartialEq, Hash, Debug)]
-pub enum ResolverKey {
+pub enum WellKnownResolverKey {
     Eth,
     Btc,
     Icp,
@@ -54,32 +58,34 @@ pub enum ResolverKey {
     Twitter,
     Github,
     SettingReverseResolutionPrincipal,
+    Location,
+    DisplayName,
 }
 
-impl FromStr for ResolverKey {
-    type Err = NamingError;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
+impl WellKnownResolverKey {
+    pub fn parse(s: &str) -> Option<WellKnownResolverKey> {
         match s {
-            RESOLVER_KEY_ETH => Ok(ResolverKey::Eth),
-            RESOLVER_KEY_BTC => Ok(ResolverKey::Btc),
-            RESOLVER_KEY_ICP => Ok(ResolverKey::Icp),
-            RESOLVER_KEY_LTC => Ok(ResolverKey::Ltc),
-            RESOLVER_KEY_ICP_CANISTER => Ok(ResolverKey::IcpCanister),
-            RESOLVER_KEY_ICP_PRINCIPAL => Ok(ResolverKey::IcpPrincipal),
-            RESOLVER_KEY_ICP_ACCOUNT_ID => Ok(ResolverKey::IcpAccountId),
-            RESOLVER_KEY_EMAIL => Ok(ResolverKey::Email),
-            RESOLVER_KEY_URL => Ok(ResolverKey::Url),
-            RESOLVER_KEY_AVATAR => Ok(ResolverKey::Avatar),
-            RESOLVER_KEY_DESCRIPTION => Ok(ResolverKey::Description),
-            RESOLVER_KEY_NOTICE => Ok(ResolverKey::Notice),
-            RESOLVER_KEY_KEYWORDS => Ok(ResolverKey::Keywords),
-            RESOLVER_KEY_TWITTER => Ok(ResolverKey::Twitter),
-            RESOLVER_KEY_GITHUB => Ok(ResolverKey::Github),
+            RESOLVER_KEY_ETH => Some(WellKnownResolverKey::Eth),
+            RESOLVER_KEY_BTC => Some(WellKnownResolverKey::Btc),
+            RESOLVER_KEY_ICP => Some(WellKnownResolverKey::Icp),
+            RESOLVER_KEY_LTC => Some(WellKnownResolverKey::Ltc),
+            RESOLVER_KEY_ICP_CANISTER => Some(WellKnownResolverKey::IcpCanister),
+            RESOLVER_KEY_ICP_PRINCIPAL => Some(WellKnownResolverKey::IcpPrincipal),
+            RESOLVER_KEY_ICP_ACCOUNT_ID => Some(WellKnownResolverKey::IcpAccountId),
+            RESOLVER_KEY_EMAIL => Some(WellKnownResolverKey::Email),
+            RESOLVER_KEY_URL => Some(WellKnownResolverKey::Url),
+            RESOLVER_KEY_AVATAR => Some(WellKnownResolverKey::Avatar),
+            RESOLVER_KEY_DESCRIPTION => Some(WellKnownResolverKey::Description),
+            RESOLVER_KEY_NOTICE => Some(WellKnownResolverKey::Notice),
+            RESOLVER_KEY_KEYWORDS => Some(WellKnownResolverKey::Keywords),
+            RESOLVER_KEY_TWITTER => Some(WellKnownResolverKey::Twitter),
+            RESOLVER_KEY_GITHUB => Some(WellKnownResolverKey::Github),
             RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL => {
-                Ok(ResolverKey::SettingReverseResolutionPrincipal)
+                Some(WellKnownResolverKey::SettingReverseResolutionPrincipal)
             }
-            _ => Err(NamingError::InvalidResolverKey { key: s.to_string() }),
+            RESOLVER_KEY_LOCATION => Some(WellKnownResolverKey::Location),
+            RESOLVER_KEY_DISPLAY_NAME => Some(WellKnownResolverKey::DisplayName),
+            _ => None,
         }
     }
 }
