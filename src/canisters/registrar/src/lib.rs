@@ -247,9 +247,9 @@ impl GetDetailsActorResponse {
 #[query(name = "get_all_details")]
 #[candid_method(query)]
 pub fn get_all_details(input: GetPageInput) -> GetAllDetailsActorResponse {
-    let caller = api::caller();
+    let call_context = CallContext::from_ic();
     let service = RegistrarService::default();
-    let result = service.get_all_details(&caller, &input);
+    let result = service.get_all_details(call_context, &input);
     GetAllDetailsActorResponse::new(result)
 }
 

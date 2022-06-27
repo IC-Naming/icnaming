@@ -5,7 +5,7 @@ use log::debug;
 
 use common::state::StableState;
 
-#[derive(CandidType, Deserialize)]
+#[derive(CandidType, Deserialize, Clone)]
 pub struct Resolver {
     name: String,
     string_value_map: HashMap<String, String>,
@@ -37,6 +37,13 @@ impl Resolver {
     }
 
     pub(crate) fn get_record_value(&self) -> &HashMap<String, String> {
+        &self.string_value_map
+    }
+
+    pub fn contains_key(&self, key: &str) -> bool {
+        self.string_value_map.contains_key(key)
+    }
+    pub fn string_value_map(&self) -> &HashMap<String, String> {
         &self.string_value_map
     }
 }

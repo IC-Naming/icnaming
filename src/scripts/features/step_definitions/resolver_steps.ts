@@ -75,4 +75,11 @@ Then(/^Reverse resolve name "([^"]*)" should be "([^"]*)"$/,
             }
         }
     })
-;
+When(/^I update resolver "([^"]*)" with "([^"]*)" keys$/,
+    async function (name: string, keysCount: string) {
+        let items: [string, string][] = [];
+        for (let i = 0; i < parseInt(keysCount); i++) {
+            items.push([`key${i}`, `value${i}`]);
+        }
+        global_update_record_value_result = await resolver.set_record_value(name, items)
+    })

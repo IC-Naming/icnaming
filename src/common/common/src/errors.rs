@@ -35,8 +35,8 @@ pub enum NamingError {
     OperatorShouldNotBeTheSameToOwner,
     #[error("year must be in rang [{min:?},{max:?})")]
     YearsRangeError { min: u32, max: u32 },
-    #[error("invalid resolver key: {key:?}")]
-    InvalidResolverKey { key: String },
+    #[error("Length of key must be less than {max:?}")]
+    KeyMaxLengthError { max: usize },
     #[error("Length of value must be less than {max:?}")]
     ValueMaxLengthError { max: usize },
     #[error("Length of {field:?} must be in range [{min:?}, {max:?})")]
@@ -74,6 +74,8 @@ pub enum NamingError {
     RenewalYearsError { years: u32 },
     #[error("price changed, please refresh and try again")]
     InvalidApproveAmount,
+    #[error("Too many resolver keys, max is {max:?}")]
+    TooManyResolverKeys { max: u32 },
 }
 
 impl NamingError {
@@ -94,7 +96,7 @@ impl NamingError {
             NamingError::ResolverNotFoundError { .. } => 13,
             NamingError::OperatorShouldNotBeTheSameToOwner => 14,
             NamingError::YearsRangeError { .. } => 15,
-            NamingError::InvalidResolverKey { .. } => 16,
+            NamingError::KeyMaxLengthError { .. } => 16,
             NamingError::ValueMaxLengthError { .. } => 17,
             NamingError::ValueShouldBeInRangeError { .. } => 18,
             NamingError::TooManyFavorites { .. } => 19,
@@ -110,6 +112,7 @@ impl NamingError {
             NamingError::InsufficientQuota => 29,
             NamingError::RenewalYearsError { .. } => 30,
             NamingError::InvalidApproveAmount => 31,
+            NamingError::TooManyResolverKeys { .. } => 32,
         }
     }
 }
