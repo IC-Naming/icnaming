@@ -25,7 +25,7 @@ mod get_page_input {
     #[rstest]
     fn test_get_page_input_limit_overflow(_setup: ()) {
         let input = GetPageInput {
-            limit: 100_000,
+            limit: PAGE_INPUT_MAX_LIMIT + 1,
             offset: 0,
         };
         assert_eq!(
@@ -42,7 +42,7 @@ mod get_page_input {
     fn test_get_page_input_offset_overflow(_setup: ()) {
         let input = GetPageInput {
             limit: 100,
-            offset: 100_000,
+            offset: PAGE_INPUT_MAX_OFFSET + 1,
         };
         assert_eq!(
             input.validate(),

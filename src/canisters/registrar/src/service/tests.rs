@@ -332,32 +332,6 @@ mod get_names {
             }
         }
     }
-
-    #[rstest]
-    fn test_get_names_invalid_page(service: RegistrarService) {
-        let owner = Principal::anonymous();
-        let input = GetPageInput {
-            limit: 0,
-            offset: 0,
-        };
-        let result = service.get_names(&owner, &input);
-        assert!(result.is_err());
-        match result {
-            Err(e) => {
-                assert_eq!(
-                    e,
-                    NamingError::ValueShouldBeInRangeError {
-                        field: "limit".to_string(),
-                        min: 1,
-                        max: 100,
-                    }
-                )
-            }
-            _ => {
-                assert!(false);
-            }
-        }
-    }
 }
 
 mod register {
