@@ -10,9 +10,9 @@ use std::str::FromStr;
 // const default ttl
 pub const DEFAULT_TTL: u64 = 60 * 10;
 pub const PAGE_INPUT_MIN_LIMIT: usize = 1;
-pub const PAGE_INPUT_MAX_LIMIT: usize = 100;
+pub const PAGE_INPUT_MAX_LIMIT: usize = 100_000;
 pub const PAGE_INPUT_MIN_OFFSET: usize = 0;
-pub const PAGE_INPUT_MAX_OFFSET: usize = 10_000;
+pub const PAGE_INPUT_MAX_OFFSET: usize = 10_000_000;
 
 // resolver keys
 pub const RESOLVER_KEY_ETH: &str = "token.eth";
