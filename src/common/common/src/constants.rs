@@ -33,8 +33,19 @@ pub const RESOLVER_KEY_LOCATION: &str = "location";
 pub const RESOLVER_KEY_DISPLAY_NAME: &str = "display_name";
 pub const RESOLVER_KEY_TWITTER: &str = "com.twitter";
 pub const RESOLVER_KEY_GITHUB: &str = "com.github";
+pub const RESOLVER_KEY_FACEBOOK: &str = "com.facebook";
+pub const RESOLVER_KEY_MEDIUM: &str = "com.medium";
+pub const RESOLVER_KEY_DISCORD: &str = "com.discord";
+pub const RESOLVER_KEY_TELEGRAM: &str = "com.telegram";
+pub const RESOLVER_KEY_INSTAGRAM: &str = "com.instagram";
+pub const RESOLVER_KEY_REDDIT: &str = "com.reddit";
 pub const RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL: &str =
     "settings.reverse_resolution.principal";
+
+pub const RESOLVER_KEY_DSCVR: &str = "com.dscvr";
+pub const RESOLVER_KEY_DISTRIKT: &str = "com.distrikt";
+pub const RESOLVER_KEY_RELATION: &str = "com.relation";
+pub const RESOLVER_KEY_OPENCHAT: &str = "com.openchat";
 
 pub const RESOLVER_VALUE_MAX_LENGTH: usize = 512;
 pub const RESOLVER_KEY_MAX_LENGTH: usize = 64;
@@ -57,6 +68,16 @@ pub enum WellKnownResolverKey {
     Keywords,
     Twitter,
     Github,
+    Facebook,
+    Medium,
+    Discord,
+    Telegram,
+    Instagram,
+    Reddit,
+    Dscvr,
+    Distrikt,
+    Relation,
+    OpenChat,
     SettingReverseResolutionPrincipal,
     Location,
     DisplayName,
@@ -85,6 +106,16 @@ impl WellKnownResolverKey {
             }
             RESOLVER_KEY_LOCATION => Some(WellKnownResolverKey::Location),
             RESOLVER_KEY_DISPLAY_NAME => Some(WellKnownResolverKey::DisplayName),
+            RESOLVER_KEY_FACEBOOK => Some(WellKnownResolverKey::Facebook),
+            RESOLVER_KEY_MEDIUM => Some(WellKnownResolverKey::Medium),
+            RESOLVER_KEY_DISCORD => Some(WellKnownResolverKey::Discord),
+            RESOLVER_KEY_TELEGRAM => Some(WellKnownResolverKey::Telegram),
+            RESOLVER_KEY_INSTAGRAM => Some(WellKnownResolverKey::Instagram),
+            RESOLVER_KEY_REDDIT => Some(WellKnownResolverKey::Reddit),
+            RESOLVER_KEY_DSCVR => Some(WellKnownResolverKey::Dscvr),
+            RESOLVER_KEY_DISTRIKT => Some(WellKnownResolverKey::Distrikt),
+            RESOLVER_KEY_RELATION => Some(WellKnownResolverKey::Relation),
+            RESOLVER_KEY_OPENCHAT => Some(WellKnownResolverKey::OpenChat),
             _ => None,
         }
     }

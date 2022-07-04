@@ -418,6 +418,14 @@ fn validate_well_known_value(key: &WellKnownResolverKey, value: &str) -> Service
                 });
             }
         }
+        WellKnownResolverKey::SettingReverseResolutionPrincipal => {
+            if !is_valid_icp_principal(value) {
+                return Err(NamingError::InvalidResolverValueFormat {
+                    value: value.to_string(),
+                    format: "it is no a valid principal text".to_string(),
+                });
+            }
+        }
         WellKnownResolverKey::Email => {
             // do nothing
         }
@@ -442,19 +450,41 @@ fn validate_well_known_value(key: &WellKnownResolverKey, value: &str) -> Service
         WellKnownResolverKey::Github => {
             // do nothing
         }
+        WellKnownResolverKey::Facebook => {
+            // do nothing
+        }
+        WellKnownResolverKey::Medium => {
+            // do nothing
+        }
+        WellKnownResolverKey::Discord => {
+            // do nothing
+        }
+        WellKnownResolverKey::Telegram => {
+            // do nothing
+        }
+        WellKnownResolverKey::Instagram => {
+            // do nothing
+        }
+        WellKnownResolverKey::Reddit => {
+            // do nothing
+        }
         WellKnownResolverKey::Location => {
             // do nothing
         }
         WellKnownResolverKey::DisplayName => {
             // do nothing
         }
-        WellKnownResolverKey::SettingReverseResolutionPrincipal => {
-            if !is_valid_icp_principal(value) {
-                return Err(NamingError::InvalidResolverValueFormat {
-                    value: value.to_string(),
-                    format: "it is no a valid principal text".to_string(),
-                });
-            }
+        WellKnownResolverKey::Dscvr => {
+            // do nothing
+        }
+        WellKnownResolverKey::Distrikt => {
+            // do nothing
+        }
+        WellKnownResolverKey::Relation => {
+            // do nothing
+        }
+        WellKnownResolverKey::OpenChat => {
+            // do nothing
         }
     }
     Ok(())
