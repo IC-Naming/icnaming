@@ -1,4 +1,4 @@
-image: docker.io/kentsday/dfx_rust:bullseye-dfx-0.10.0-gitpod-1
+image: docker.io/kentsday/dfx_rust:bullseye-dfx-0.10.1-gitpod-1
 ports:
   - port: 8000
     visibility: public
@@ -34,6 +34,7 @@ vscode:
     - usernamehw.errorlens
     - ms-azuretools.vscode-docker
     - dbaeumer.vscode-eslint
+    - eg2.vscode-npm-script
 jetbrains:
   pycharm:
     plugins:
