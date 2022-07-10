@@ -26,7 +26,7 @@
     "minimist": "^1.2.6",
     "node-color-log": "^9.0.0",
     "node-fetch": "^2.6.7",
-    "protobufjs": "^6.11.3",
+    "protobufjs": "^7.0.0",
     "secp256k1": "4.0.3",
     "sha256": "^0.2.0",
     "shelljs": "^0.8.4",
