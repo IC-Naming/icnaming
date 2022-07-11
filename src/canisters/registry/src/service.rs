@@ -205,22 +205,30 @@ impl RegistriesService {
         STATE.with(|s| {
             let store = s.registry_store.borrow();
             let registries = store.get_registries();
-            let resolver_names = registries.iter().filter_map(|(name, registry)| {
-                if registry.is_owner(&owner) {
-                    Some(name.clone())
-                } else {
-                    None
-                }
-            });
-
-            let resolver_names = resolver_names
-                .into_iter()
+            let items = registries
+                .iter()
+                .filter_map(|(name, registry)| {
+                    if registry.is_owner(&owner) {
+                        Some(name.clone())
+                    } else {
+                        None
+                    }
+                })
                 .skip(page.offset)
-                .take(page.limit);
-            let resolver_names = resolver_names.collect::<Vec<_>>();
-            Ok(GetPageOutput {
-                items: resolver_names,
-            })
+                .take(page.limit)
+                .collect::<Vec<_>>();
+
+            let total = registries
+                .iter()
+                .filter_map(|(name, registry)| {
+                    if registry.is_owner(&owner) {
+                        Some(name.clone())
+                    } else {
+                        None
+                    }
+                })
+                .count() as u32;
+            Ok(GetPageOutput::new(items, total))
         })
     }
     pub fn set_approval(

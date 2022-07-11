@@ -69,19 +69,26 @@ impl RegistrarService {
         input.validate()?;
         must_not_anonymous(owner)?;
 
-        let items = STATE.with(|s| {
+        let result = STATE.with(|s| {
             let store = s.registration_store.borrow();
-            store
+
+            let items = store
                 .get_registrations()
                 .values()
                 .filter(|registration| registration.is_owner(owner))
                 .skip(input.offset)
                 .take(input.limit)
                 .map(|registration| registration.into())
-                .collect()
+                .collect();
+            let total = store
+                .get_registrations()
+                .values()
+                .filter(|registration| registration.is_owner(owner))
+                .count() as u32;
+            GetPageOutput::new(items, total)
         });
 
-        Ok(GetPageOutput::new(items))
+        Ok(result)
     }
 
     pub(crate) fn get_details(&self, name: &str) -> ServiceResult<RegistrationDetails> {
