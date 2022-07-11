@@ -24,7 +24,10 @@ export const idlFactory = ({ IDL }) => {
     'offset' : IDL.Nat64,
     'limit' : IDL.Nat64,
   });
-  const GetPageOutput = IDL.Record({ 'items' : IDL.Vec(IDL.Text) });
+  const GetPageOutput = IDL.Record({
+    'items' : IDL.Vec(IDL.Text),
+    'total_count' : IDL.Nat32,
+  });
   const GetControlledNamesResponse = IDL.Variant({
     'Ok' : GetPageOutput,
     'Err' : ErrorInfo,
