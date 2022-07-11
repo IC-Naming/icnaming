@@ -49,11 +49,17 @@ impl GetPageInput {
 #[derive(CandidType, Deserialize)]
 pub struct GetPageOutput<T> {
     pub items: Vec<T>,
+    pub page_count: u32,
+    pub total_count: u32,
 }
 
 impl<T> GetPageOutput<T> {
-    pub fn new(items: Vec<T>) -> Self {
-        Self { items }
+    pub fn new(items: Vec<T>, page_count: u32, total_count: u32) -> Self {
+        Self {
+            items,
+            page_count,
+            total_count,
+        }
     }
 }
 
