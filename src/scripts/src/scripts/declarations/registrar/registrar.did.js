@@ -70,7 +70,10 @@ export const idlFactory = ({ IDL }) => {
     'created_at' : IDL.Nat64,
     'expired_at' : IDL.Nat64,
   });
-  const GetPageOutput = IDL.Record({ 'items' : IDL.Vec(RegistrationDto) });
+  const GetPageOutput = IDL.Record({
+    'items' : IDL.Vec(RegistrationDto),
+    'total_count' : IDL.Nat32,
+  });
   const GetNamesActorResponse = IDL.Variant({
     'Ok' : GetPageOutput,
     'Err' : ErrorInfo,

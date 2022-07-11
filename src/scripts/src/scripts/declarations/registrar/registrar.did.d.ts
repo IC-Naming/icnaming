@@ -32,7 +32,10 @@ export type GetNamesActorResponse = { 'Ok' : GetPageOutput } |
 export type GetOwnerActorResponse = { 'Ok' : Principal } |
   { 'Err' : ErrorInfo };
 export interface GetPageInput { 'offset' : bigint, 'limit' : bigint }
-export interface GetPageOutput { 'items' : Array<RegistrationDto> }
+export interface GetPageOutput {
+  'items' : Array<RegistrationDto>,
+  'total_count' : number,
+}
 export type GetPriceTableResponse = { 'Ok' : PriceTable } |
   { 'Err' : ErrorInfo };
 export type GetPublicResolverActorResponse = { 'Ok' : string } |

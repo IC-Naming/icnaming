@@ -27,7 +27,10 @@ type GetNameStatueActorResponse = variant { Ok : NameStatus; Err : ErrorInfo };
 type GetNamesActorResponse = variant { Ok : GetPageOutput; Err : ErrorInfo };
 type GetOwnerActorResponse = variant { Ok : principal; Err : ErrorInfo };
 type GetPageInput = record { offset : nat64; limit : nat64 };
-type GetPageOutput = record { items : vec RegistrationDto };
+type GetPageOutput = record {
+  items : vec RegistrationDto;
+  total_count : nat32;
+};
 type GetPriceTableResponse = variant { Ok : PriceTable; Err : ErrorInfo };
 type GetPublicResolverActorResponse = variant { Ok : text; Err : ErrorInfo };
 type GetQuotaActorResponse = variant { Ok : nat32; Err : ErrorInfo };

@@ -25,7 +25,10 @@ export type GetDetailsResponse = { 'Ok' : RegistryDto } |
 export type GetOwnerResponse = { 'Ok' : Principal } |
   { 'Err' : ErrorInfo };
 export interface GetPageInput { 'offset' : bigint, 'limit' : bigint }
-export interface GetPageOutput { 'items' : Array<string> }
+export interface GetPageOutput {
+  'items' : Array<string>,
+  'total_count' : number,
+}
 export type GetStatsResponse = { 'Ok' : Stats } |
   { 'Err' : ErrorInfo };
 export type GetTtlResponse = { 'Ok' : bigint } |
