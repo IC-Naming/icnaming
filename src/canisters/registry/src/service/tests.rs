@@ -501,6 +501,8 @@ mod reset_name {
     }
 }
 
+mod get_controlled_names_count {}
+
 // mod load_state {
 //     use std::fs::File;
 //     use std::io::Write;
