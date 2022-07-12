@@ -217,7 +217,14 @@ impl RegistriesService {
                 .skip(page.offset)
                 .take(page.limit)
                 .collect::<Vec<_>>();
+            Ok(GetPageOutput::new(items))
+        })
+    }
 
+    pub fn get_controlled_names_count(&self, owner: Principal) -> ServiceResult<u32> {
+        STATE.with(|s| {
+            let store = s.registry_store.borrow();
+            let registries = store.get_registries();
             let total = registries
                 .iter()
                 .filter_map(|(name, registry)| {
@@ -228,9 +235,10 @@ impl RegistriesService {
                     }
                 })
                 .count() as u32;
-            Ok(GetPageOutput::new(items, total))
+            Ok(total)
         })
     }
+
     pub fn set_approval(
         &mut self,
         name: &str,

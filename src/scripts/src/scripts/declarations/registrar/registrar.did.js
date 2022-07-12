@@ -70,12 +70,13 @@ export const idlFactory = ({ IDL }) => {
     'created_at' : IDL.Nat64,
     'expired_at' : IDL.Nat64,
   });
-  const GetPageOutput = IDL.Record({
-    'items' : IDL.Vec(RegistrationDto),
-    'total_count' : IDL.Nat32,
-  });
+  const GetPageOutput = IDL.Record({ 'items' : IDL.Vec(RegistrationDto) });
   const GetNamesActorResponse = IDL.Variant({
     'Ok' : GetPageOutput,
+    'Err' : ErrorInfo,
+  });
+  const GetNamesCountActorResponse = IDL.Variant({
+    'Ok' : IDL.Nat32,
     'Err' : ErrorInfo,
   });
   const GetOwnerActorResponse = IDL.Variant({
@@ -217,6 +218,11 @@ export const idlFactory = ({ IDL }) => {
     'get_names' : IDL.Func(
         [IDL.Principal, GetPageInput],
         [GetNamesActorResponse],
+        ['query'],
+      ),
+    'get_names_count' : IDL.Func(
+        [IDL.Principal],
+        [GetNamesCountActorResponse],
         ['query'],
       ),
     'get_owner' : IDL.Func([IDL.Text], [GetOwnerActorResponse], ['query']),

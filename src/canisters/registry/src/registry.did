@@ -13,6 +13,7 @@ type CanisterNames = variant {
   Resolver;
 };
 type ErrorInfo = record { code : nat32; message : text };
+type GetControlledNamesCountResponse = variant { Ok : nat32; Err : ErrorInfo };
 type GetControlledNamesResponse = variant {
   Ok : GetPageOutput;
   Err : ErrorInfo;
@@ -20,7 +21,7 @@ type GetControlledNamesResponse = variant {
 type GetDetailsResponse = variant { Ok : RegistryDto; Err : ErrorInfo };
 type GetOwnerResponse = variant { Ok : principal; Err : ErrorInfo };
 type GetPageInput = record { offset : nat64; limit : nat64 };
-type GetPageOutput = record { items : vec text; total_count : nat32 };
+type GetPageOutput = record { items : vec text };
 type GetStatsResponse = variant { Ok : Stats; Err : ErrorInfo };
 type GetTtlResponse = variant { Ok : nat64; Err : ErrorInfo };
 type GetUsersResponse = variant { Ok : RegistryUsers; Err : ErrorInfo };
@@ -60,6 +61,9 @@ service : (opt InitArgs) -> {
   export_state : () -> (StateExportResponse);
   get_controlled_names : (principal, GetPageInput) -> (
       GetControlledNamesResponse,
+    ) query;
+  get_controlled_names_count : (principal) -> (
+      GetControlledNamesCountResponse,
     ) query;
   get_details : (text) -> (GetDetailsResponse) query;
   get_owner : (text) -> (GetOwnerResponse) query;

@@ -80,15 +80,24 @@ impl RegistrarService {
                 .take(input.limit)
                 .map(|registration| registration.into())
                 .collect();
+            GetPageOutput::new(items)
+        });
+
+        Ok(result)
+    }
+
+    pub(crate) fn get_names_count(&self, owner: &Principal) -> ServiceResult<u32> {
+        must_not_anonymous(owner)?;
+
+        STATE.with(|s| {
+            let store = s.registration_store.borrow();
             let total = store
                 .get_registrations()
                 .values()
                 .filter(|registration| registration.is_owner(owner))
                 .count() as u32;
-            GetPageOutput::new(items, total)
-        });
-
-        Ok(result)
+            Ok(total)
+        })
     }
 
     pub(crate) fn get_details(&self, name: &str) -> ServiceResult<RegistrationDetails> {

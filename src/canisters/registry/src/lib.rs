@@ -162,6 +162,28 @@ impl GetControlledNamesResponse {
     }
 }
 
+#[query(name = "get_controlled_names_count")]
+#[candid_method(query)]
+fn get_controlled_names_count(owner: Principal) -> GetControlledNamesCountResponse {
+    let service = RegistriesService::new();
+    let result = service.get_controlled_names_count(owner);
+    GetControlledNamesCountResponse::new(result)
+}
+#[derive(CandidType)]
+pub enum GetControlledNamesCountResponse {
+    Ok(u32),
+    Err(ErrorInfo),
+}
+
+impl GetControlledNamesCountResponse {
+    pub fn new(result: ServiceResult<u32>) -> GetControlledNamesCountResponse {
+        match result {
+            Ok(data) => GetControlledNamesCountResponse::Ok(data),
+            Err(err) => GetControlledNamesCountResponse::Err(err.into()),
+        }
+    }
+}
+
 /// Get owner and operators of name
 ///
 /// * `name` - a name. e.g. `hello.ic`

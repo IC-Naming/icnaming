@@ -198,6 +198,29 @@ impl GetNamesActorResponse {
     }
 }
 
+#[query(name = "get_names_count")]
+#[candid_method(query)]
+pub fn get_names_count(owner: Principal) -> GetNamesCountActorResponse {
+    let service = RegistrarService::default();
+    let result = service.get_names_count(&owner);
+    GetNamesCountActorResponse::new(result)
+}
+
+#[derive(CandidType)]
+pub enum GetNamesCountActorResponse {
+    Ok(u32),
+    Err(ErrorInfo),
+}
+
+impl GetNamesCountActorResponse {
+    pub fn new(result: ServiceResult<u32>) -> GetNamesCountActorResponse {
+        match result {
+            Ok(count) => GetNamesCountActorResponse::Ok(count),
+            Err(err) => GetNamesCountActorResponse::Err(err.into()),
+        }
+    }
+}
+
 #[query(name = "get_owner")]
 #[candid_method(query)]
 pub fn get_owner(name: String) -> GetOwnerActorResponse {
