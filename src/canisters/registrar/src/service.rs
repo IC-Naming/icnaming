@@ -80,11 +80,6 @@ impl RegistrarService {
                 .take(input.limit)
                 .map(|registration| registration.into())
                 .collect();
-            let total = store
-                .get_registrations()
-                .values()
-                .filter(|registration| registration.is_owner(owner))
-                .count() as u32;
             GetPageOutput::new(items)
         });
 
