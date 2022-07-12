@@ -36,7 +36,7 @@
     "yargs": "17.5.1"
   },
   "devDependencies": {
-    "@deland-labs/dft_all_features_server": "^0.6.0",
+    "@deland-labs/dft_all_features_server": "0.6.0",
     "@deland-labs/ic-bin-tools": "0.1.3",
     "@deland-labs/ic-dev-kit": "0.6.9",
     "@types/archiver": "5.3.1",
