@@ -29,13 +29,12 @@ export type GetNameStatueActorResponse = { 'Ok' : NameStatus } |
   { 'Err' : ErrorInfo };
 export type GetNamesActorResponse = { 'Ok' : GetPageOutput } |
   { 'Err' : ErrorInfo };
+export type GetNamesCountActorResponse = { 'Ok' : number } |
+  { 'Err' : ErrorInfo };
 export type GetOwnerActorResponse = { 'Ok' : Principal } |
   { 'Err' : ErrorInfo };
 export interface GetPageInput { 'offset' : bigint, 'limit' : bigint }
-export interface GetPageOutput {
-  'items' : Array<RegistrationDto>,
-  'total_count' : number,
-}
+export interface GetPageOutput { 'items' : Array<RegistrationDto> }
 export type GetPriceTableResponse = { 'Ok' : PriceTable } |
   { 'Err' : ErrorInfo };
 export type GetPublicResolverActorResponse = { 'Ok' : string } |
@@ -168,6 +167,7 @@ export interface _SERVICE {
   'get_name_expires' : ActorMethod<[string], GetNameExpiresActorResponse>,
   'get_name_status' : ActorMethod<[string], GetNameStatueActorResponse>,
   'get_names' : ActorMethod<[Principal, GetPageInput], GetNamesActorResponse>,
+  'get_names_count' : ActorMethod<[Principal], GetNamesCountActorResponse>,
   'get_owner' : ActorMethod<[string], GetOwnerActorResponse>,
   'get_price_table' : ActorMethod<[], GetPriceTableResponse>,
   'get_public_resolver' : ActorMethod<[], GetPublicResolverActorResponse>,

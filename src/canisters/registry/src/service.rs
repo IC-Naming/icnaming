@@ -239,7 +239,6 @@ impl RegistriesService {
         })
     }
 
-
     pub fn set_approval(
         &mut self,
         name: &str,

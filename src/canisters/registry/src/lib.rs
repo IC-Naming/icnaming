@@ -184,9 +184,6 @@ impl GetControlledNamesCountResponse {
     }
 }
 
-
-
-
 /// Get owner and operators of name
 ///
 /// * `name` - a name. e.g. `hello.ic`

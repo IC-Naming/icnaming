@@ -18,6 +18,8 @@ export type CanisterNames = { 'NamingMarketplace' : null } |
   { 'Favorites' : null } |
   { 'Resolver' : null };
 export interface ErrorInfo { 'code' : number, 'message' : string }
+export type GetControlledNamesCountResponse = { 'Ok' : number } |
+  { 'Err' : ErrorInfo };
 export type GetControlledNamesResponse = { 'Ok' : GetPageOutput } |
   { 'Err' : ErrorInfo };
 export type GetDetailsResponse = { 'Ok' : RegistryDto } |
@@ -25,10 +27,7 @@ export type GetDetailsResponse = { 'Ok' : RegistryDto } |
 export type GetOwnerResponse = { 'Ok' : Principal } |
   { 'Err' : ErrorInfo };
 export interface GetPageInput { 'offset' : bigint, 'limit' : bigint }
-export interface GetPageOutput {
-  'items' : Array<string>,
-  'total_count' : number,
-}
+export interface GetPageOutput { 'items' : Array<string> }
 export type GetStatsResponse = { 'Ok' : Stats } |
   { 'Err' : ErrorInfo };
 export type GetTtlResponse = { 'Ok' : bigint } |
@@ -76,6 +75,10 @@ export interface _SERVICE {
   'get_controlled_names' : ActorMethod<
     [Principal, GetPageInput],
     GetControlledNamesResponse,
+  >,
+  'get_controlled_names_count' : ActorMethod<
+    [Principal],
+    GetControlledNamesCountResponse,
   >,
   'get_details' : ActorMethod<[string], GetDetailsResponse>,
   'get_owner' : ActorMethod<[string], GetOwnerResponse>,

@@ -24,12 +24,13 @@ export const idlFactory = ({ IDL }) => {
     'offset' : IDL.Nat64,
     'limit' : IDL.Nat64,
   });
-  const GetPageOutput = IDL.Record({
-    'items' : IDL.Vec(IDL.Text),
-    'total_count' : IDL.Nat32,
-  });
+  const GetPageOutput = IDL.Record({ 'items' : IDL.Vec(IDL.Text) });
   const GetControlledNamesResponse = IDL.Variant({
     'Ok' : GetPageOutput,
+    'Err' : ErrorInfo,
+  });
+  const GetControlledNamesCountResponse = IDL.Variant({
+    'Ok' : IDL.Nat32,
     'Err' : ErrorInfo,
   });
   const RegistryDto = IDL.Record({
@@ -92,6 +93,11 @@ export const idlFactory = ({ IDL }) => {
     'get_controlled_names' : IDL.Func(
         [IDL.Principal, GetPageInput],
         [GetControlledNamesResponse],
+        ['query'],
+      ),
+    'get_controlled_names_count' : IDL.Func(
+        [IDL.Principal],
+        [GetControlledNamesCountResponse],
         ['query'],
       ),
     'get_details' : IDL.Func([IDL.Text], [GetDetailsResponse], ['query']),

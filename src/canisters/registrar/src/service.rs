@@ -210,7 +210,7 @@ impl RegistrarService {
             quota_owner,
             quota_type,
         )
-            .await
+        .await
     }
 
     pub async fn import_registrations(
@@ -295,7 +295,7 @@ impl RegistrarService {
             &quota_owner,
             quota_type,
         )
-            .await
+        .await
     }
 
     async fn register_with_quota_core(

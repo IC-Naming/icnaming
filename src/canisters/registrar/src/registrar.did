@@ -25,12 +25,10 @@ type GetDetailsActorResponse = variant {
 type GetNameExpiresActorResponse = variant { Ok : nat64; Err : ErrorInfo };
 type GetNameStatueActorResponse = variant { Ok : NameStatus; Err : ErrorInfo };
 type GetNamesActorResponse = variant { Ok : GetPageOutput; Err : ErrorInfo };
+type GetNamesCountActorResponse = variant { Ok : nat32; Err : ErrorInfo };
 type GetOwnerActorResponse = variant { Ok : principal; Err : ErrorInfo };
 type GetPageInput = record { offset : nat64; limit : nat64 };
-type GetPageOutput = record {
-  items : vec RegistrationDto;
-  total_count : nat32;
-};
+type GetPageOutput = record { items : vec RegistrationDto };
 type GetPriceTableResponse = variant { Ok : PriceTable; Err : ErrorInfo };
 type GetPublicResolverActorResponse = variant { Ok : text; Err : ErrorInfo };
 type GetQuotaActorResponse = variant { Ok : nat32; Err : ErrorInfo };
@@ -149,6 +147,7 @@ service : (opt InitArgs) -> {
   get_name_expires : (text) -> (GetNameExpiresActorResponse) query;
   get_name_status : (text) -> (GetNameStatueActorResponse) query;
   get_names : (principal, GetPageInput) -> (GetNamesActorResponse) query;
+  get_names_count : (principal) -> (GetNamesCountActorResponse) query;
   get_owner : (text) -> (GetOwnerActorResponse) query;
   get_price_table : () -> (GetPriceTableResponse);
   get_public_resolver : () -> (GetPublicResolverActorResponse) query;
