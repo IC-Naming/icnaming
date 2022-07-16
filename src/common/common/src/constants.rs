@@ -11,9 +11,9 @@ pub const TOP_LABEL: &str = "ticp";
 pub const TOP_LABEL: &str = "icp";
 
 pub const PAGE_INPUT_MIN_LIMIT: usize = 1;
-pub const PAGE_INPUT_MAX_LIMIT: usize = 100;
+pub const PAGE_INPUT_MAX_LIMIT: usize = 100_000;
 pub const PAGE_INPUT_MIN_OFFSET: usize = 0;
-pub const PAGE_INPUT_MAX_OFFSET: usize = 10_000;
+pub const PAGE_INPUT_MAX_OFFSET: usize = 10_000_000;
 
 pub const DEFAULT_MIN_REGISTRATION_YEAR: u32 = 1;
 pub const DEFAULT_MAX_REGISTRATION_YEAR: u32 = 10;
