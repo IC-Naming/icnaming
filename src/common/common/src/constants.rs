@@ -36,6 +36,8 @@ pub const RESOLVER_KEY_TWITTER: &str = "com.twitter";
 pub const RESOLVER_KEY_GITHUB: &str = "com.github";
 
 pub const RESOLVER_VALUE_MAX_LENGTH: usize = 512;
+pub const RESOLVER_KEY_MAX_LENGTH: usize = 64;
+pub const RESOLVER_ITEM_MAX_COUNT: usize = 30;
 
 pub enum ResolverKey {
     Eth,
@@ -55,27 +57,25 @@ pub enum ResolverKey {
     Github,
 }
 
-impl FromStr for ResolverKey {
-    type Err = ICNSError;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
+impl ResolverKey {
+    pub fn parse(s: &str) -> Option<ResolverKey> {
         match s {
-            RESOLVER_KEY_ETH => Ok(ResolverKey::Eth),
-            RESOLVER_KEY_BTC => Ok(ResolverKey::Btc),
-            RESOLVER_KEY_ICP => Ok(ResolverKey::Icp),
-            RESOLVER_KEY_LTC => Ok(ResolverKey::Ltc),
-            RESOLVER_KEY_ICP_CANISTER => Ok(ResolverKey::IcpCanister),
-            RESOLVER_KEY_ICP_PRINCIPAL => Ok(ResolverKey::IcpPrincipal),
-            RESOLVER_KEY_ICP_ACCOUNT_ID => Ok(ResolverKey::IcpAccountId),
-            RESOLVER_KEY_EMAIL => Ok(ResolverKey::Email),
-            RESOLVER_KEY_URL => Ok(ResolverKey::Url),
-            RESOLVER_KEY_AVATAR => Ok(ResolverKey::Avatar),
-            RESOLVER_KEY_DESCRIPTION => Ok(ResolverKey::Description),
-            RESOLVER_KEY_NOTICE => Ok(ResolverKey::Notice),
-            RESOLVER_KEY_KEYWORDS => Ok(ResolverKey::Keywords),
-            RESOLVER_KEY_TWITTER => Ok(ResolverKey::Twitter),
-            RESOLVER_KEY_GITHUB => Ok(ResolverKey::Github),
-            _ => Err(ICNSError::InvalidResolverKey { key: s.to_string() }),
+            RESOLVER_KEY_ETH => Some(ResolverKey::Eth),
+            RESOLVER_KEY_BTC => Some(ResolverKey::Btc),
+            RESOLVER_KEY_ICP => Some(ResolverKey::Icp),
+            RESOLVER_KEY_LTC => Some(ResolverKey::Ltc),
+            RESOLVER_KEY_ICP_CANISTER => Some(ResolverKey::IcpCanister),
+            RESOLVER_KEY_ICP_PRINCIPAL => Some(ResolverKey::IcpPrincipal),
+            RESOLVER_KEY_ICP_ACCOUNT_ID => Some(ResolverKey::IcpAccountId),
+            RESOLVER_KEY_EMAIL => Some(ResolverKey::Email),
+            RESOLVER_KEY_URL => Some(ResolverKey::Url),
+            RESOLVER_KEY_AVATAR => Some(ResolverKey::Avatar),
+            RESOLVER_KEY_DESCRIPTION => Some(ResolverKey::Description),
+            RESOLVER_KEY_NOTICE => Some(ResolverKey::Notice),
+            RESOLVER_KEY_KEYWORDS => Some(ResolverKey::Keywords),
+            RESOLVER_KEY_TWITTER => Some(ResolverKey::Twitter),
+            RESOLVER_KEY_GITHUB => Some(ResolverKey::Github),
+            _ => None,
         }
     }
 }

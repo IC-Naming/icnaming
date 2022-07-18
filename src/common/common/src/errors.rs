@@ -70,6 +70,10 @@ pub enum ICNSError {
     InsufficientQuota,
     #[error("System is maintaining, please try again later")]
     SystemMaintaining,
+    #[error("Length of key must be less than {max:?}")]
+    KeyMaxLengthError { max: usize },
+    #[error("Too many resolver keys, max is {max:?}")]
+    TooManyResolverKeys { max: u32 },
 }
 
 impl ICNSError {
@@ -105,6 +109,8 @@ impl ICNSError {
             ICNSError::Conflict => 28,
             ICNSError::InsufficientQuota => 29,
             ICNSError::SystemMaintaining => 30,
+            ICNSError::KeyMaxLengthError { .. } => 31,
+            ICNSError::TooManyResolverKeys { .. } => 32,
         }
     }
 }

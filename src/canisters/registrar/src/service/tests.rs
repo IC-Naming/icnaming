@@ -307,7 +307,7 @@ mod get_names {
                     ICNSError::ValueShouldBeInRangeError {
                         field: "limit".to_string(),
                         min: 1,
-                        max: 100,
+                        max: PAGE_INPUT_MAX_LIMIT,
                     }
                 )
             }

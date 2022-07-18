@@ -102,181 +102,7 @@ mod get_record_value {
     }
 }
 
-mod set_record {
-    use super::*;
-
-    #[rstest]
-    async fn test_set_record_value_key_invalid(_init_test: (), mut service: ResolverService) {
-        let name = "nice.icp";
-        let mut patch_values: HashMap<String, String> = HashMap::new();
-        let invalid_resolver_key = "not_found";
-        patch_values.insert(invalid_resolver_key.to_string(), "icns".to_string());
-        // add resolver
-        add_test_resolver(name);
-
-        // act
-        let result = service.set_record_value(name, patch_values).await;
-
-        // assert
-        assert!(result.is_err());
-        match result {
-            Err(e) => {
-                assert_eq!(
-                    e,
-                    ICNSError::InvalidResolverKey {
-                        key: invalid_resolver_key.to_string()
-                    }
-                );
-            }
-            _ => assert!(false),
-        }
-    }
-
-    #[rstest]
-    async fn test_set_record_value_value_invalid(_init_test: (), mut service: ResolverService) {
-        let name = "nice.icp";
-        let mut patch_values: HashMap<String, String> = HashMap::new();
-        let mut value = String::new();
-        for _ in 0..(RESOLVER_VALUE_MAX_LENGTH + 1) {
-            value.push('a');
-        }
-        patch_values.insert(RESOLVER_KEY_GITHUB.to_string(), value);
-
-        // add resolver
-        add_test_resolver(name);
-
-        // act
-        let result = service.set_record_value(name, patch_values).await;
-
-        // assert
-        assert!(result.is_err());
-        match result {
-            Err(e) => {
-                assert_eq!(
-                    e,
-                    ICNSError::ValueMaxLengthError {
-                        max: RESOLVER_VALUE_MAX_LENGTH
-                    }
-                );
-            }
-            _ => assert!(false),
-        }
-    }
-
-    #[rstest]
-    async fn test_set_record_value_permission_deny(
-        _init_test: (),
-        mut service: ResolverService,
-        mut mock_registry_api: MockRegistryApi,
-    ) {
-        let name = "nice.icp";
-        let mut patch_values: HashMap<String, String> = HashMap::new();
-        patch_values.insert(RESOLVER_KEY_GITHUB.to_string(), "icns".to_string());
-        let owner = Principal::from_text("rrkah-fqaaa-aaaaa-aaaaq-cai").unwrap();
-
-        // add resolver
-        add_test_resolver(name);
-
-        let _ctx = mock_registry_api
-            .expect_get_users()
-            .returning(move |_name| {
-                Ok(RegistryUsers {
-                    owner,
-                    operators: HashSet::new(),
-                })
-            });
-        service.registry_api = Arc::new(mock_registry_api);
-        service.request_context = Arc::new(TestICApi {});
-        set_caller(Principal::anonymous());
-
-        // act
-        let result = service.set_record_value(name, patch_values).await;
-
-        // assert
-        assert!(result.is_err());
-        match result {
-            Err(e) => {
-                assert_eq!(e, ICNSError::PermissionDenied {});
-            }
-            _ => assert!(false),
-        }
-    }
-
-    #[rstest]
-    async fn test_set_record_value_success(
-        _init_test: (),
-        mut service: ResolverService,
-        mut mock_registry_api: MockRegistryApi,
-    ) {
-        let name = "nice.icp";
-        let mut patch_values: HashMap<String, String> = HashMap::new();
-        let icp_addr = "rrkah-fqaaa-aaaaa-aaaaq-cai";
-        patch_values.insert(RESOLVER_KEY_ICP.to_string(), icp_addr.to_string());
-        // enter blank value to remove the key
-        patch_values.insert(RESOLVER_KEY_TWITTER.to_string(), "".to_string());
-        let owner = Principal::from_text("rrkah-fqaaa-aaaaa-aaaaq-cai").unwrap();
-
-        // add resolver
-        add_test_resolver(name);
-
-        let _ctx = mock_registry_api
-            .expect_get_users()
-            .returning(move |_name| {
-                Ok(RegistryUsers {
-                    owner,
-                    operators: HashSet::new(),
-                })
-            });
-        service.registry_api = Arc::new(mock_registry_api);
-        service.request_context = Arc::new(TestICApi {});
-        set_caller(owner);
-
-        // act
-        let result = service.set_record_value(name, patch_values).await;
-
-        // assert
-        assert!(result.is_ok());
-        let value_map = service.get_record_value(name).unwrap();
-        assert_eq!(value_map.len(), 2);
-        assert_eq!(value_map.get(RESOLVER_KEY_ICP).unwrap(), &icp_addr);
-        assert!(value_map.get(RESOLVER_KEY_TWITTER).is_none());
-    }
-
-    #[rstest]
-    async fn test_set_record_value_not_found(
-        _init_test: (),
-        mut service: ResolverService,
-        mut mock_registry_api: MockRegistryApi,
-    ) {
-        let name = "nice.icp";
-        let mut patch_values: HashMap<String, String> = HashMap::new();
-        patch_values.insert(RESOLVER_KEY_GITHUB.to_string(), "icns".to_string());
-        let owner = Principal::from_text("rrkah-fqaaa-aaaaa-aaaaq-cai").unwrap();
-
-        let _ctx = mock_registry_api
-            .expect_get_users()
-            .returning(move |_name| {
-                Ok(RegistryUsers {
-                    owner,
-                    operators: HashSet::new(),
-                })
-            });
-        service.registry_api = Arc::new(mock_registry_api);
-        service.request_context = Arc::new(TestICApi {});
-        set_caller(owner);
-
-        // act
-        let result = service.set_record_value(name, patch_values).await;
-
-        // assert
-        assert!(result.is_ok());
-        let value_map = service.get_record_value(name).unwrap();
-        assert_eq!(value_map.len(), 1);
-        assert_eq!(value_map.get(RESOLVER_KEY_GITHUB).unwrap(), "icns");
-    }
-}
-
-mod validate_value {
+mod validate_well_known_value {
     use super::*;
 
     #[rstest]
@@ -284,7 +110,7 @@ mod validate_value {
     #[case("1A1zP1eP5QGefi2DMPTfTL5SLmv7Divf2a", false)]
     #[case("1A1zP1eP5QGefi2DMPTfTL5SLmv7Divf", false)]
     fn test_btc_valid_value(#[case] value: String, #[case] expected: bool) {
-        let result = validate_value(&ResolverKey::Btc, &value);
+        let result = validate_well_known_value(&ResolverKey::Btc, &value);
         assert_eq!(expected, result.is_ok());
     }
 
@@ -293,7 +119,7 @@ mod validate_value {
     #[case("0xb436ef6cc9f24193ccb42f98be2b1db7644845w4", false)]
     #[case("0xb436ef6cc9f24193ccb42f98be2b1db7644845", false)]
     fn test_eth_valid_value(#[case] value: String, #[case] expected: bool) {
-        let result = validate_value(&ResolverKey::Eth, &value);
+        let result = validate_well_known_value(&ResolverKey::Eth, &value);
         assert_eq!(expected, result.is_ok());
     }
 
@@ -303,7 +129,7 @@ mod validate_value {
     #[case("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa", false)]
     #[case("0XB436EF6CC9F24193CCB42F98BE2B1DB7644845", false)]
     fn test_ltc_valid_value(#[case] value: String, #[case] expected: bool) {
-        let result = validate_value(&ResolverKey::Ltc, &value);
+        let result = validate_well_known_value(&ResolverKey::Ltc, &value);
         assert_eq!(expected, result.is_ok());
     }
 
@@ -323,7 +149,7 @@ mod validate_value {
     #[case("q3fc5-haaaa-aaaaa-aaahq-cai", true)]
     #[case("aaaaa-aaaaa-aaaaa-aaahq-cai", false)]
     fn test_icp_valid_value(#[case] value: String, #[case] expected: bool) {
-        let result = validate_value(&ResolverKey::Icp, &value);
+        let result = validate_well_known_value(&ResolverKey::Icp, &value);
         assert_eq!(expected, result.is_ok());
     }
 }

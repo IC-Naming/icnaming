@@ -4,11 +4,13 @@ use std::sync::Arc;
 
 use candid::{CandidType, Deserialize, Principal};
 use ic_cdk::api;
-use log::info;
+use log::{debug, info};
 
 use common::canister_api::ic_impl::RegistryApi;
 use common::canister_api::IRegistryApi;
-use common::constants::{ResolverKey, RESOLVER_VALUE_MAX_LENGTH};
+use common::constants::{
+    ResolverKey, RESOLVER_ITEM_MAX_COUNT, RESOLVER_KEY_MAX_LENGTH, RESOLVER_VALUE_MAX_LENGTH,
+};
 use common::dto::IRegistryUsers;
 use common::errors::*;
 use common::ic_api::wrapper::ICStaticApi;
@@ -66,49 +68,23 @@ impl ResolverService {
         name: &str,
         mut patch_value: HashMap<String, String>,
     ) -> ICNSResult<bool> {
-        let keys = patch_value.keys().cloned().collect::<Vec<_>>();
-        // validate and normalize key and value
-        for key in keys {
-            let resolver_key = ResolverKey::from_str(&key)?;
-            let value = patch_value.get_mut(&key).unwrap();
-            if !value.is_empty() {
-                let max_length = RESOLVER_VALUE_MAX_LENGTH;
-                if let Some(normalized_value) = normalize_value(&resolver_key, value) {
-                    // update value
-                    *value = normalized_value;
-                }
-                if value.len() > max_length {
-                    return Err(ICNSError::ValueMaxLengthError { max: max_length });
-                }
-                validate_value(&resolver_key, value)?;
+        let resolver = STATE.with(|s| {
+            let resolver_store = s.resolver_store.borrow();
+            let resolvers = resolver_store.get_resolvers();
+            if let Ok(resolver) = get_resolver(resolvers, name) {
+                resolver.clone()
+            } else {
+                Resolver::new(name.to_string())
             }
-        }
+        });
 
-        // check permission
         let caller = self.request_context.get_caller();
-        let users = self.registry_api.get_users(&name).await?;
-        if !users.can_operate(&caller) {
-            return Err(ICNSError::PermissionDenied);
-        }
+        let mut context =
+            SetRecordValueValidator::new(caller, name.to_string(), patch_value, resolver);
+        let input = context.validate().await?;
 
-        // set record value
-        STATE.with(|s| {
-            let mut store = s.resolver_store.borrow_mut();
-            store.ensure_created(name);
-
-            let mut resolvers = store.get_resolvers_mut();
-            let resolver = get_resolver_mut(&mut resolvers, name)?;
-            for (key, value) in patch_value.iter() {
-                if value.is_empty() {
-                    info!("Removing resolver record {}:{}", name, key);
-                    resolver.remove_record_value(key.clone());
-                } else {
-                    info!("Setting resolver record {}:{}", name, key);
-                    resolver.set_record_value(key.clone(), value.clone());
-                }
-            }
-            Ok(true)
-        })
+        input.update_state()?;
+        Ok(true)
     }
 
     pub fn ensure_resolver_created(&mut self, name: &str) -> ICNSResult<bool> {
@@ -165,14 +141,153 @@ impl ResolverService {
     }
 }
 
-fn normalize_value(key: &ResolverKey, value: &str) -> Option<String> {
-    match key {
-        ResolverKey::Eth => Some(value.to_lowercase()),
-        _ => None,
+pub struct SetRecordValueValidator {
+    caller: Principal,
+    name: String,
+    patch_value: HashMap<String, String>,
+    resolver: Resolver,
+    pub registry_api: Arc<dyn IRegistryApi>,
+}
+
+impl SetRecordValueValidator {
+    pub fn new(
+        caller: Principal,
+        name: String,
+        patch_value: HashMap<String, String>,
+        resolver: Resolver,
+    ) -> Self {
+        Self {
+            caller,
+            name,
+            patch_value,
+            registry_api: Arc::new(RegistryApi::new()),
+            resolver,
+        }
+    }
+
+    fn validate_key_value(&self, key: &str, value: &str) -> ICNSResult<String> {
+        if !value.is_empty() {
+            {
+                let max_length = RESOLVER_VALUE_MAX_LENGTH;
+                if value.len() > max_length {
+                    return Err(ICNSError::ValueMaxLengthError { max: max_length });
+                }
+            }
+
+            {
+                let max_length = RESOLVER_KEY_MAX_LENGTH;
+                if key.len() > max_length {
+                    return Err(ICNSError::KeyMaxLengthError { max: max_length });
+                }
+            }
+
+            if let Some(resolver_key) = ResolverKey::parse(key) {
+                let normalized_value = normalize_value(&resolver_key, value);
+                validate_well_known_value(&resolver_key, &normalized_value)?;
+                Ok(normalized_value)
+            } else {
+                debug!("Not well-Unknown resolver key {}", key);
+                Ok(value.to_string())
+            }
+        } else {
+            Ok(value.to_string())
+        }
+    }
+
+    pub async fn validate(&self) -> ICNSResult<SetRecordValueInput> {
+        let mut patch_values = vec![];
+        // validate and normalize key and value
+        for (key, value) in self.patch_value.iter() {
+            let valid_value = self.validate_key_value(key, value)?;
+            patch_values.push((key.clone(), valid_value));
+        }
+
+        // validate max item count
+        let mut count_new = self.resolver.string_value_map().len();
+        for (key, _) in patch_values.iter() {
+            if !self.resolver.contains_key(key) {
+                count_new += 1;
+            }
+        }
+        if count_new > RESOLVER_ITEM_MAX_COUNT {
+            return Err(ICNSError::TooManyResolverKeys {
+                max: RESOLVER_ITEM_MAX_COUNT as u32,
+            });
+        }
+
+        // check permission
+        let users = self.registry_api.get_users(&self.name).await?;
+        if !users.can_operate(&self.caller) {
+            debug!("Permission denied for {}", self.caller);
+            return Err(ICNSError::PermissionDenied);
+        }
+
+        Ok(SetRecordValueInput {
+            name: self.name.clone(),
+            update_records_input: patch_values
+                .iter()
+                .map(|(k, v)| {
+                    (
+                        k.clone(),
+                        if v.is_empty() {
+                            UpdateRecordInput::Remove
+                        } else {
+                            UpdateRecordInput::Set(v.clone())
+                        },
+                    )
+                })
+                .collect(),
+        })
     }
 }
 
-fn validate_value(key: &ResolverKey, value: &str) -> ICNSResult<()> {
+#[derive(Eq, PartialEq, Debug)]
+pub enum UpdateRecordInput {
+    Set(String),
+    Remove,
+}
+
+#[derive(Debug)]
+pub struct SetRecordValueInput {
+    pub name: String,
+    pub update_records_input: HashMap<String, UpdateRecordInput>,
+}
+
+impl SetRecordValueInput {
+    pub fn update_state(&self) -> ICNSResult<()> {
+        STATE.with(|s| {
+            // set record value
+            {
+                let mut store = s.resolver_store.borrow_mut();
+                store.ensure_created(&self.name);
+                let mut resolvers = store.get_resolvers_mut();
+                let resolver = get_resolver_mut(&mut resolvers, &self.name)?;
+                for (key, value) in self.update_records_input.iter() {
+                    match value {
+                        UpdateRecordInput::Remove => {
+                            info!("Removing resolver record {}:{}", &self.name, key);
+                            resolver.remove_record_value(key.clone());
+                        }
+                        UpdateRecordInput::Set(value) => {
+                            info!("Setting resolver record {}:{}", &self.name, key);
+                            resolver.set_record_value(key.clone(), value.clone());
+                        }
+                    }
+                }
+            }
+            Ok(())
+        })
+    }
+}
+
+fn normalize_value(key: &ResolverKey, value: &str) -> String {
+    match key {
+        ResolverKey::Eth => value.to_lowercase(),
+        _ => value.to_string(),
+    }
+}
+
+fn validate_well_known_value(key: &ResolverKey, value: &str) -> ICNSResult<()> {
     match key {
         ResolverKey::Eth => {
             // validate value should be a valid eth address
@@ -197,7 +312,7 @@ fn validate_value(key: &ResolverKey, value: &str) -> ICNSResult<()> {
             if !is_valid_icp_address(value) {
                 return Err(ICNSError::InvalidResolverValueFormat {
                     value: value.to_string(),
-                    format: "principal or account id (64 digital hex string)".to_string(),
+                    format: "principal or account id (64 chars hex string)".to_string(),
                 });
             }
         }
