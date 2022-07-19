@@ -317,6 +317,15 @@ pub fn add_quota(quota_owner: Principal, quota_type: QuotaType, diff: u32) -> Bo
     }
 }
 
+#[update(name = "batch_add_quota")]
+#[candid_method(update)]
+pub fn batch_add_quota(request: BatchAddQuotaRequest) -> BooleanActorResponse {
+    let mut service = RegistrarService::default();
+    let context = CallContext::from_ic();
+    let result = service.batch_add_quota(context, request);
+    BooleanActorResponse::new(result)
+}
+
 #[update(name = "import_quota")]
 #[candid_method(update)]
 pub fn import_quota(request: ImportQuotaRequest) -> ImportQuotaResponse {

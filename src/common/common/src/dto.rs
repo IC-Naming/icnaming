@@ -105,6 +105,11 @@ pub struct ImportQuotaItem {
 }
 
 #[derive(Debug, Clone, CandidType, Deserialize)]
+pub struct BatchAddQuotaRequest {
+    pub items: Vec<ImportQuotaItem>,
+}
+
+#[derive(Debug, Clone, CandidType, Deserialize)]
 pub struct ImportQuotaRequest {
     pub items: Vec<ImportQuotaItem>,
     pub hash: Vec<u8>,
