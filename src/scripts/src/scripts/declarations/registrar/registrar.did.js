@@ -20,6 +20,14 @@ export const idlFactory = ({ IDL }) => {
     'Ok' : IDL.Bool,
     'Err' : ErrorInfo,
   });
+  const ImportQuotaItem = IDL.Record({
+    'owner' : IDL.Principal,
+    'diff' : IDL.Nat32,
+    'quota_type' : IDL.Text,
+  });
+  const BatchAddQuotaRequest = IDL.Record({
+    'items' : IDL.Vec(ImportQuotaItem),
+  });
   const TransferQuotaDetails = IDL.Record({
     'to' : IDL.Principal,
     'diff' : IDL.Nat32,
@@ -139,11 +147,6 @@ export const idlFactory = ({ IDL }) => {
     'streaming_strategy' : IDL.Opt(StreamingStrategy),
     'status_code' : IDL.Nat16,
   });
-  const ImportQuotaItem = IDL.Record({
-    'owner' : IDL.Principal,
-    'diff' : IDL.Nat32,
-    'quota_type' : IDL.Text,
-  });
   const ImportQuotaRequest = IDL.Record({
     'hash' : IDL.Vec(IDL.Nat8),
     'items' : IDL.Vec(ImportQuotaItem),
@@ -188,6 +191,11 @@ export const idlFactory = ({ IDL }) => {
       ),
     'approve' : IDL.Func([IDL.Text, IDL.Principal], [BooleanActorResponse], []),
     'available' : IDL.Func([IDL.Text], [BooleanActorResponse], ['query']),
+    'batch_add_quota' : IDL.Func(
+        [BatchAddQuotaRequest],
+        [BooleanActorResponse],
+        [],
+      ),
     'batch_transfer_quota' : IDL.Func(
         [BatchTransferRequest],
         [BooleanActorResponse],

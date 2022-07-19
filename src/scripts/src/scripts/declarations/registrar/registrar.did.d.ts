@@ -1,6 +1,7 @@
 import type { Principal } from '@dfinity/principal';
 import type { ActorMethod } from '@dfinity/agent';
 
+export interface BatchAddQuotaRequest { 'items' : Array<ImportQuotaItem> }
 export interface BatchTransferRequest { 'items' : Array<TransferQuotaDetails> }
 export type BooleanActorResponse = { 'Ok' : boolean } |
   { 'Err' : ErrorInfo };
@@ -156,6 +157,7 @@ export interface _SERVICE {
   >,
   'approve' : ActorMethod<[string, Principal], BooleanActorResponse>,
   'available' : ActorMethod<[string], BooleanActorResponse>,
+  'batch_add_quota' : ActorMethod<[BatchAddQuotaRequest], BooleanActorResponse>,
   'batch_transfer_quota' : ActorMethod<
     [BatchTransferRequest],
     BooleanActorResponse,

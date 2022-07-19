@@ -1,3 +1,4 @@
+type BatchAddQuotaRequest = record { items : vec ImportQuotaItem };
 type BatchTransferRequest = record { items : vec TransferQuotaDetails };
 type BooleanActorResponse = variant { Ok : bool; Err : ErrorInfo };
 type CallbackStrategy = record { token : Token; callback : func () -> () };
@@ -139,6 +140,7 @@ service : (opt InitArgs) -> {
   add_quota : (principal, QuotaType, nat32) -> (BooleanActorResponse);
   approve : (text, principal) -> (BooleanActorResponse);
   available : (text) -> (BooleanActorResponse) query;
+  batch_add_quota : (BatchAddQuotaRequest) -> (BooleanActorResponse);
   batch_transfer_quota : (BatchTransferRequest) -> (BooleanActorResponse);
   export_state : () -> (StateExportResponse);
   get_all_details : (GetPageInput) -> (GetAllDetailsActorResponse) query;
