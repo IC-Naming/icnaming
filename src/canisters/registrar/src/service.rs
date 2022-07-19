@@ -13,7 +13,9 @@ use time::{OffsetDateTime, Time};
 use common::canister_api::ic_impl::{CyclesMintingApi, RegistryApi};
 use common::canister_api::{ICyclesMintingApi, IDICPApi, IRegistryApi};
 use common::constants::*;
-use common::dto::{GetPageInput, GetPageOutput, ImportQuotaRequest, ImportQuotaStatus};
+use common::dto::{
+    BatchAddQuotaRequest, GetPageInput, GetPageOutput, ImportQuotaRequest, ImportQuotaStatus,
+};
 use common::errors::{NamingError, ServiceResult};
 use common::named_canister_ids::{get_named_get_canister_id, CanisterNames};
 use common::named_principals::{PRINCIPAL_NAME_STATE_EXPORTER, PRINCIPAL_NAME_TIMER_TRIGGER};
@@ -220,19 +222,22 @@ impl RegistrarService {
     ) -> ServiceResult<bool> {
         call_context.must_be_system_owner()?;
         for item in request.items {
-            let import_result = self
-                .register_core(RegisterCoreContext::new(
-                    item.name.clone(),
-                    must_not_anonymous(&item.owner)?,
-                    item.years,
-                    call_context.now,
-                    true,
-                ))
-                .await;
-            if let Err(e) = import_result {
-                error!("Failed to import registration: {:?}", e);
+            let context = RegisterCoreContext::new(
+                item.name.clone(),
+                must_not_anonymous(&item.owner)?,
+                item.years,
+                call_context.now,
+                true,
+            );
+            if context.validate().is_ok() {
+                let import_result = self.register_core(context).await;
+                if let Err(e) = import_result {
+                    error!("Failed to import registration: {:?}", e);
+                } else {
+                    info!("Imported registration: {}", item.name);
+                }
             } else {
-                info!("Imported registration: {}", item.name);
+                error!("Failed to validate registration: {}", item.name);
             }
         }
         Ok(true)
@@ -442,6 +447,19 @@ impl RegistrarService {
             price_per_year, amount, icp_xdr_conversion_rate
         );
         Ok(amount)
+    }
+
+    pub fn batch_add_quota(
+        &mut self,
+        call_context: CallContext,
+        request: BatchAddQuotaRequest,
+    ) -> ServiceResult<bool> {
+        let caller = call_context.must_be_system_owner()?;
+        for item in request.items.iter() {
+            let quota_type = QuotaType::from_str(&item.quota_type).unwrap();
+            self.add_quota(&caller.0, item.owner, quota_type, item.diff)?;
+        }
+        Ok(true)
     }
 
     pub fn add_quota(
