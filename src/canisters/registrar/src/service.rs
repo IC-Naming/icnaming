@@ -503,13 +503,9 @@ impl RegistrarService {
         must_not_anonymous(caller)?;
         STATE.with(|s| {
             let user_quota_manager = s.user_quota_store.borrow();
-            let target_user = if is_admin(caller) {
-                quota_owner
-            } else {
-                *caller
-            };
+            let target_user = must_not_anonymous(&quota_owner)?;
             Ok(user_quota_manager
-                .get_quota(&AuthPrincipal(target_user), &quota_type)
+                .get_quota(&target_user, &quota_type)
                 .unwrap_or(0))
         })
     }
