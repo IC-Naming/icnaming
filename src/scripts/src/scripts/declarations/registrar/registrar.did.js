@@ -32,6 +32,16 @@ export const idlFactory = ({ IDL }) => {
     'Ok' : IDL.Nat64,
     'Err' : ErrorInfo,
   });
+  const NameStatus = IDL.Record({
+    'kept' : IDL.Bool,
+    'available' : IDL.Bool,
+    'details' : IDL.Opt(RegistrationDetails),
+    'registered' : IDL.Bool,
+  });
+  const GetNameStatueActorResponse = IDL.Variant({
+    'Ok' : NameStatus,
+    'Err' : ErrorInfo,
+  });
   const RegistrationDto = IDL.Record({
     'name' : IDL.Text,
     'created_at' : IDL.Nat64,
@@ -162,6 +172,11 @@ export const idlFactory = ({ IDL }) => {
     'get_name_expires' : IDL.Func(
         [IDL.Text],
         [GetNameExpiresActorResponse],
+        ['query'],
+      ),
+    'get_name_status' : IDL.Func(
+        [IDL.Text],
+        [GetNameStatueActorResponse],
         ['query'],
       ),
     'get_names' : IDL.Func(

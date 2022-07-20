@@ -20,6 +20,7 @@ type GetNameOrderResponse = record {
   created_user : principal;
   years : nat32;
 };
+type GetNameStatueActorResponse = variant { Ok : NameStatus; Err : ErrorInfo };
 type GetNamesActorResponse = variant { Ok : GetPageOutput; Err : ErrorInfo };
 type GetOwnerActorResponse = variant { Ok : principal; Err : ErrorInfo };
 type GetPageInput = record { offset : nat64; limit : nat64 };
@@ -43,6 +44,12 @@ type ImportQuotaRequest = record {
 type ImportQuotaResponse = variant { Ok : ImportQuotaStatus; Err : ErrorInfo };
 type ImportQuotaStatus = variant { Ok; AlreadyExists };
 type NameOrderStatus = variant { New; WaitingToRefund; Done; Canceled };
+type NameStatus = record {
+  kept : bool;
+  available : bool;
+  details : opt RegistrationDetails;
+  registered : bool;
+};
 type PaymentMemo = variant { ICP : nat64 };
 type PriceTable = record {
   icp_xdr_conversion_rate : nat64;
@@ -106,6 +113,7 @@ service : {
   get_details : (text) -> (GetDetailsActorResponse) query;
   get_last_registrations : () -> (GetAllDetailsActorResponse) query;
   get_name_expires : (text) -> (GetNameExpiresActorResponse) query;
+  get_name_status : (text) -> (GetNameStatueActorResponse) query;
   get_names : (principal, GetPageInput) -> (GetNamesActorResponse) query;
   get_owner : (text) -> (GetOwnerActorResponse) query;
   get_pending_order : () -> (GetPendingOrderActorResponse) query;

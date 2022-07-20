@@ -3,6 +3,7 @@ use ic_cdk::api;
 use ic_cdk_macros::*;
 use log::{debug, error, info};
 
+use crate::service::NameStatus;
 use common::dto::{
     from_state_export_data, to_state_export_data, GetPageInput, GetPageOutput, ImportQuotaRequest,
     ImportQuotaStatus, LoadStateRequest, StateExportResponse,
@@ -678,6 +679,29 @@ async fn set_maintaining_time(time: u64) -> BooleanActorResponse {
     let service = RegistrarService::new();
     let result = service.set_maintaining_time(caller, time);
     BooleanActorResponse::new(result)
+}
+
+#[query(name = "get_name_status")]
+#[candid_method(query)]
+fn get_name_status(name: String) -> GetNameStatueActorResponse {
+    let service = RegistrarService::default();
+    let result = service.get_name_status(name.as_str());
+    GetNameStatueActorResponse::new(result)
+}
+
+#[derive(CandidType)]
+pub enum GetNameStatueActorResponse {
+    Ok(NameStatus),
+    Err(ErrorInfo),
+}
+
+impl GetNameStatueActorResponse {
+    pub fn new(result: ICNSResult<NameStatus>) -> GetNameStatueActorResponse {
+        match result {
+            Ok(data) => GetNameStatueActorResponse::Ok(data),
+            Err(err) => GetNameStatueActorResponse::Err(err.into()),
+        }
+    }
 }
 
 candid::export_service!();

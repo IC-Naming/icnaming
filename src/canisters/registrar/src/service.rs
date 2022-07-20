@@ -1293,6 +1293,43 @@ impl RegistrarService {
         });
         Ok(true)
     }
+
+    pub fn get_name_status(&self, name: &str) -> ICNSResult<NameStatus> {
+        let name = self.validate_name(name)?;
+        if let Some(status) = STATE.with(|s| {
+            let registration_store = s.registration_store.borrow();
+
+            if let Some(registration) = registration_store.get_registrations().get(name.get_name())
+            {
+                return Some(NameStatus {
+                    registered: true,
+                    available: false,
+                    kept: false,
+                    details: Some(registration.into()),
+                });
+            }
+            return None;
+        }) {
+            return Ok(status);
+        }
+
+        // check reserved names
+        if RESERVED_NAMES.contains(&name.get_current_level().unwrap().as_str()) {
+            return Ok(NameStatus {
+                kept: true,
+                registered: false,
+                available: false,
+                details: None,
+            });
+        }
+
+        return Ok(NameStatus {
+            registered: false,
+            available: true,
+            kept: false,
+            details: None,
+        });
+    }
 }
 
 fn apply_quota_order_details(details: &QuotaOrderDetails) {
@@ -1515,6 +1552,14 @@ pub struct Stats {
     new_registered_name_count: u64,
     payment_version: u64,
     name_lock_count: u64,
+}
+
+#[derive(CandidType)]
+pub struct NameStatus {
+    pub available: bool,
+    pub kept: bool,
+    pub registered: bool,
+    pub details: Option<RegistrationDetails>,
 }
 
 #[cfg(test)]
