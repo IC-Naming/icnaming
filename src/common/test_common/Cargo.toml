@@ -9,7 +9,7 @@ edition = "2021"
 ic-cdk = "0.5.3"
 ic-cdk-macros = "0.5.3"
 candid = "0.7.15"
-serde = "1.0.139"
+serde = "1.0.140"
 serde_bytes = "0.11"
 common = { path = "../common" }
 log = "0.4"
