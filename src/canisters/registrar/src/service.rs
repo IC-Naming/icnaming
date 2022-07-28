@@ -1330,6 +1330,10 @@ impl RegistrarService {
             details: None,
         });
     }
+
+    pub fn get_public_resolver(&self) -> String {
+        get_named_get_canister_id(CANISTER_NAME_RESOLVER).to_text()
+    }
 }
 
 fn apply_quota_order_details(details: &QuotaOrderDetails) {

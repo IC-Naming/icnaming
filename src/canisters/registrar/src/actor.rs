@@ -700,6 +700,29 @@ impl GetNameStatueActorResponse {
     }
 }
 
+#[query(name = "get_public_resolver")]
+#[candid_method(query)]
+fn get_public_resolver() -> GetPublicResolverActorResponse {
+    let service = RegistrarService::default();
+    let result = service.get_public_resolver();
+    GetPublicResolverActorResponse::new(Ok(result))
+}
+
+#[derive(CandidType)]
+pub enum GetPublicResolverActorResponse {
+    Ok(String),
+    Err(ErrorInfo),
+}
+
+impl GetPublicResolverActorResponse {
+    pub fn new(result: ICNSResult<String>) -> GetPublicResolverActorResponse {
+        match result {
+            Ok(data) => GetPublicResolverActorResponse::Ok(data),
+            Err(err) => GetPublicResolverActorResponse::Err(err.into()),
+        }
+    }
+}
+
 candid::export_service!();
 
 #[query(name = "__get_candid_interface_tmp_hack")]
