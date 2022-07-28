@@ -1,5 +1,6 @@
 .dfx
 .idea
+.DS_Store
 /src/package/
 node_modules
 
