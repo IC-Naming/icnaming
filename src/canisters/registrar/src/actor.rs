@@ -569,10 +569,6 @@ pub async fn confirm_pay_order(block_height: BlockHeight) -> BooleanActorRespons
 #[candid_method(update, rename = "transfer")]
 async fn transfer(name: String, new_owner: Principal) -> BooleanActorResponse {
     let caller = &api::caller();
-    let now = api::time();
-    if let Err(e) = check_system_is_maintaining(now) {
-        return BooleanActorResponse::new(Err(e.into()));
-    }
 
     let service = RegistrarService::new();
     let result = service.transfer(name.as_str(), caller, new_owner).await;
