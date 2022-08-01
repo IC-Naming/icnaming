@@ -132,7 +132,7 @@ pub const NAMING_ENV_STAGING: &str = "staging";
 pub const NAMING_ENV_PRODUCTION: &str = "production";
 
 #[from_env]
-pub const NAMING_ENV: &str = NAMING_ENV_DEV;
+pub const NAMING_CANISTER_ENV: &str = "dev";
 
 pub enum NamingEnv {
     Dev,
@@ -142,9 +142,9 @@ pub enum NamingEnv {
 
 pub fn is_env(env: NamingEnv) -> bool {
     match env {
-        NamingEnv::Dev => NAMING_ENV == NAMING_ENV_DEV,
-        NamingEnv::Staging => NAMING_ENV == NAMING_ENV_STAGING,
-        NamingEnv::Production => NAMING_ENV == NAMING_ENV_PRODUCTION,
+        NamingEnv::Dev => NAMING_CANISTER_ENV == NAMING_ENV_DEV,
+        NamingEnv::Staging => NAMING_CANISTER_ENV == NAMING_ENV_STAGING,
+        NamingEnv::Production => NAMING_CANISTER_ENV == NAMING_ENV_PRODUCTION,
     }
 }
 
