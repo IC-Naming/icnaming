@@ -8,6 +8,6 @@ edition = "2021"
 [dependencies]
 env-file-reader = "0.3.0"
 vergen = { version = "7", default-features = false, features = ["build", "git"] }
-anyhow = "1.0.58"
+anyhow = "1.0.60"
 hex = "0.4.3"
 flate2 = "1.0"
