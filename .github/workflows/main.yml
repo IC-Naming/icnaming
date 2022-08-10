@@ -14,7 +14,7 @@ jobs:
   create_package:
     runs-on: ubuntu-latest
     container:
-      image: docker.io/kentsday/dfx_rust:bullseye-dfx-0.10.1-1.62.1-1
+      image: docker.io/kentsday/dfx_rust:bullseye-dfx-0.11.1-1.62.1-1
     steps:
       - uses: actions/checkout@v3
         with:
@@ -24,11 +24,6 @@ jobs:
           node-version: "16"
           # cache: "npm" https://github.com/bahmutov/npm-install/issues/80
           cache-dependency-path: "src/package-lock.json"
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          profile: minimal
-          target: "wasm32-unknown-unknown"
       - uses: Swatinem/rust-cache@v1
         with:
           working-directory: "src"
@@ -56,7 +51,7 @@ jobs:
   unit_test:
     runs-on: ubuntu-latest
     container:
-      image: docker.io/kentsday/dfx_rust:bullseye-dfx-0.10.1-1.62.1-1
+      image: docker.io/kentsday/dfx_rust:bullseye-dfx-0.11.1-1.62.1-1
     steps:
       - uses: actions/checkout@v3
         with:
@@ -66,11 +61,6 @@ jobs:
           node-version: "16"
           # cache: "npm" https://github.com/bahmutov/npm-install/issues/80
           cache-dependency-path: "src/package-lock.json"
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          profile: minimal
-          target: "wasm32-unknown-unknown"
       - uses: Swatinem/rust-cache@v1
         with:
           working-directory: "src"
