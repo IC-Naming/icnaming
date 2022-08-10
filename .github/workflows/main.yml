@@ -24,9 +24,6 @@ jobs:
           node-version: "16"
           # cache: "npm" https://github.com/bahmutov/npm-install/issues/80
           cache-dependency-path: "src/package-lock.json"
-      - uses: Swatinem/rust-cache@v1
-        with:
-          working-directory: "src"
       - name: run package
         run: |
           cd $GITHUB_WORKSPACE/src
@@ -61,9 +58,6 @@ jobs:
           node-version: "16"
           # cache: "npm" https://github.com/bahmutov/npm-install/issues/80
           cache-dependency-path: "src/package-lock.json"
-      - uses: Swatinem/rust-cache@v1
-        with:
-          working-directory: "src"
       - name: unit nextest run
         run: |
           cd $GITHUB_WORKSPACE/src
