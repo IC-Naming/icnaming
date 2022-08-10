@@ -13,7 +13,7 @@ crate-type = ["cdylib"]
 ic-cdk = "0.5.5"
 ic-cdk-macros = "0.5.5"
 candid = "0.7.15"
-serde = "1.0.140"
+serde = "1.0.143"
 serde_bytes = "0.11"
 async-trait = "0.1.56"
 common = { path = "../../common/common", default-features = false }
