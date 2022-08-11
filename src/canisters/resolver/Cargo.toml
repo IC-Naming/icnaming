@@ -29,7 +29,7 @@ async-std = { version = "1.12", features = ["attributes"] }
 rstest = "0.15.0"
 
 [build-dependencies]
-anyhow = "1.0.60"
+anyhow = "1.0.61"
 build_common = { path = "../../common/build_common" }
 
 [features]
