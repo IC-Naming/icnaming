@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::fmt::{Debug, Formatter};
 use std::ops::Deref;
 use std::str::FromStr;
@@ -10,8 +11,8 @@ use num_bigint::BigUint;
 use num_traits::ToPrimitive;
 use time::{OffsetDateTime, Time};
 
-use common::canister_api::ic_impl::{CyclesMintingApi, RegistryApi};
-use common::canister_api::{ICyclesMintingApi, IDICPApi, IRegistryApi};
+use common::canister_api::ic_impl::{CyclesMintingApi, RegistryApi, ResolverApi};
+use common::canister_api::{AccountIdentifier, ICyclesMintingApi, IDICPApi, IRegistryApi, IResolverApi};
 use common::constants::*;
 use common::dto::{
     BatchAddQuotaRequest, GetPageInput, GetPageOutput, ImportQuotaRequest, ImportQuotaStatus,
@@ -44,6 +45,7 @@ pub struct RegistrarService {
     pub registry_api: Arc<dyn IRegistryApi>,
     pub cycles_minting_api: Arc<dyn ICyclesMintingApi>,
     pub token_service: TokenService,
+    pub resolver_api: Arc<dyn IResolverApi>,
 }
 
 impl Debug for RegistrarService {
@@ -58,6 +60,7 @@ impl Default for RegistrarService {
             registry_api: Arc::new(RegistryApi),
             cycles_minting_api: Arc::new(CyclesMintingApi),
             token_service: TokenService::default(),
+            resolver_api: Arc::new(ResolverApi),
         }
     }
 }
@@ -269,17 +272,72 @@ impl RegistrarService {
             .await;
         if api_result.is_ok() {
             trace!("registered success from registry {:?}", registration);
-            STATE.with(|s| {
+            let owner_count = STATE.with(|s| {
                 let mut store = s.registration_store.borrow_mut();
                 store.add_registration(registration.clone());
+                store.get_user_own_registration_count(&owner.0)
             });
             MERTRICS_COUNTER.with(|c| {
                 let mut counter = c.borrow_mut();
                 counter.push_registration(registration.clone());
             });
+            todo!();
+            let mut resolver_map = HashMap::new();
+            resolver_map.insert(
+                RESOLVER_KEY_ICP_PRINCIPAL.to_string(),
+                owner.0.to_text()
+            );
+            resolver_map.insert(
+                RESOLVER_KEY_ICP_ACCOUNT_ID.to_string(),
+                AccountIdentifier::new(owner.0,None).to_text()
+            );
+            if owner_count == 1 {
+                resolver_map.insert(
+                    RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL.to_string(),
+                    owner.0.to_text()
+                );
+            }
+
+
+            let api_resolver_result = self
+                .resolver_api
+                .set_record_value(
+                    name,
+                    resolver_map,
+                ).await;
+            debug!("set_record_value: {:?}", api_resolver_result);
             Ok(true)
         } else {
             Err(NamingError::RemoteError(api_result.err().unwrap()))
+        }
+    }
+
+    async fn set_record_value(&self, name:String,owner:&Principal, own_registration_count:usize) -> ServiceResult<bool> {
+        let mut resolver_map = HashMap::new();
+        resolver_map.insert(
+            RESOLVER_KEY_ICP_PRINCIPAL.to_string(),
+            owner.to_text()
+        );
+        resolver_map.insert(
+            RESOLVER_KEY_ICP_ACCOUNT_ID.to_string(),
+            AccountIdentifier::new(owner.clone(),None).to_text()
+        );
+        if own_registration_count == 1 {
+            resolver_map.insert(
+                RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL.to_string(),
+                owner.to_text()
+            );
+        }
+        let api_resolver_result = self
+            .resolver_api
+            .set_record_value(
+                name,
+                resolver_map,
+            ).await;
+        debug!("set_record_value: {:?}", api_resolver_result);
+        return match api_resolver_result {
+            Ok(value) => Ok(value),
+            Err(e) => Err(NamingError::RemoteError(e))
         }
     }
 

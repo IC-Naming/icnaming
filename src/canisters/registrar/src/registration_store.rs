@@ -94,6 +94,12 @@ impl RegistrationStore {
                 registration.expired_at = expired_at;
             });
     }
+
+    pub fn get_user_own_registration_count(&self, user:&Principal) -> usize {
+        self.registrations.values().filter(|registration| {
+            registration.is_owner(user)
+        }).count()
+    }
 }
 
 impl StableState for RegistrationStore {
