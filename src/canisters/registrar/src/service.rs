@@ -272,7 +272,7 @@ impl RegistrarService {
             .await;
         if api_result.is_ok() {
             trace!("registered success from registry {:?}", registration);
-            let owner_count = STATE.with(|s| {
+            let own_registration_count = STATE.with(|s| {
                 let mut store = s.registration_store.borrow_mut();
                 store.add_registration(registration.clone());
                 store.get_user_own_registration_count(&owner.0)
@@ -282,37 +282,14 @@ impl RegistrarService {
                 counter.push_registration(registration.clone());
             });
             todo!();
-            let mut resolver_map = HashMap::new();
-            resolver_map.insert(
-                RESOLVER_KEY_ICP_PRINCIPAL.to_string(),
-                owner.0.to_text()
-            );
-            resolver_map.insert(
-                RESOLVER_KEY_ICP_ACCOUNT_ID.to_string(),
-                AccountIdentifier::new(owner.0,None).to_text()
-            );
-            if owner_count == 1 {
-                resolver_map.insert(
-                    RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL.to_string(),
-                    owner.0.to_text()
-                );
-            }
-
-
-            let api_resolver_result = self
-                .resolver_api
-                .set_record_value(
-                    name,
-                    resolver_map,
-                ).await;
-            debug!("set_record_value: {:?}", api_resolver_result);
+            self.set_record_value(name, &owner.0, own_registration_count).await;
             Ok(true)
         } else {
             Err(NamingError::RemoteError(api_result.err().unwrap()))
         }
     }
 
-    async fn set_record_value(&self, name:String,owner:&Principal, own_registration_count:usize) -> ServiceResult<bool> {
+    async fn set_record_value(&self, name:String,owner:&Principal, own_registration_count:usize)  {
         let mut resolver_map = HashMap::new();
         resolver_map.insert(
             RESOLVER_KEY_ICP_PRINCIPAL.to_string(),
@@ -320,7 +297,7 @@ impl RegistrarService {
         );
         resolver_map.insert(
             RESOLVER_KEY_ICP_ACCOUNT_ID.to_string(),
-            AccountIdentifier::new(owner.clone(),None).to_text()
+            AccountIdentifier::new(owner.clone(),None).to_hex()
         );
         if own_registration_count == 1 {
             resolver_map.insert(
@@ -335,9 +312,9 @@ impl RegistrarService {
                 resolver_map,
             ).await;
         debug!("set_record_value: {:?}", api_resolver_result);
-        return match api_resolver_result {
-            Ok(value) => Ok(value),
-            Err(e) => Err(NamingError::RemoteError(e))
+        match api_resolver_result {
+            Ok(value) => info!("set_record_value: {:?}", value),
+            Err(e) => info!("set_record_value: {:?}", e),
         }
     }
 
