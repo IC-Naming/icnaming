@@ -1,7 +1,6 @@
 use common::TimeInNs;
 use ic_cdk::api;
 
-
 use crate::token_service::TokenService;
 
 pub async fn run_periodic_tasks() {

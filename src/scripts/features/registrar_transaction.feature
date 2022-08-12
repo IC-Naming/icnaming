@@ -1,5 +1,4 @@
 @registrar
-@dev
 Feature: Name Transaction
 
   Background:

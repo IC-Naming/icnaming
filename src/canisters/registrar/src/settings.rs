@@ -1,5 +1,4 @@
-use candid::{encode_args};
-
+use candid::encode_args;
 
 use common::state::StableState;
 

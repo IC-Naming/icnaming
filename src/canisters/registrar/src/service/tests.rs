@@ -3,7 +3,6 @@ use std::sync::Arc;
 
 use candid::Principal;
 
-
 use rstest::*;
 
 use common::cycles_minting_types::{IcpXdrConversionRate, IcpXdrConversionRateCertifiedResponse};
@@ -1144,7 +1143,6 @@ mod transfer_from {
 }
 
 mod transfer_from_quota {
-    
 
     use super::*;
 

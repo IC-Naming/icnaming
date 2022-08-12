@@ -2,7 +2,7 @@ use log::{debug, error};
 use std::collections::HashSet;
 
 use common::errors::{NamingError, ServiceResult};
-use common::naming::{FirstLevelName};
+use common::naming::FirstLevelName;
 
 use crate::state::NAME_LOCKER;
 

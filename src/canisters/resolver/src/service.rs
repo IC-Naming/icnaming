@@ -1,8 +1,8 @@
-use std::collections::{HashMap};
+use std::collections::HashMap;
 use std::str::FromStr;
 use std::sync::Arc;
 
-use candid::{Principal};
+use candid::Principal;
 
 use common::{AuthPrincipal, CallContext};
 use log::{debug, info};
@@ -72,8 +72,7 @@ impl ResolverService {
             }
         });
 
-        let context =
-            SetRecordValueValidator::new(caller, name.to_string(), patch_value, resolver);
+        let context = SetRecordValueValidator::new(caller, name.to_string(), patch_value, resolver);
         let input = context.validate().await?;
 
         input.update_state()?;

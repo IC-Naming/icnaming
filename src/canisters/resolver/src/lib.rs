@@ -20,7 +20,7 @@ use common::CallContext;
 use ic_cdk_macros::*;
 
 use common::errors::{BooleanActorResponse, ErrorInfo, ServiceResult};
-use common::named_canister_ids::{CanisterNames};
+use common::named_canister_ids::CanisterNames;
 
 use crate::service::ResolverService;
 use crate::state::InitArgs;

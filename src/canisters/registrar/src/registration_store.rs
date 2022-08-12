@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::fmt::{Debug, Formatter};
 
 use candid::{decode_args, encode_args, CandidType, Deserialize, Principal};
-use common::naming::{FirstLevelName};
+use common::naming::FirstLevelName;
 
 use common::state::StableState;
 
