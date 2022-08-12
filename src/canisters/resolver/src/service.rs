@@ -15,7 +15,8 @@ use common::constants::{
 };
 use common::dto::IRegistryUsers;
 use common::errors::*;
-use common::named_canister_ids::CanisterNames;
+use common::named_canister_ids::{CanisterNames, is_named_canister_id};
+use common::named_canister_ids::CanisterNames::Registrar;
 use common::permissions::must_not_anonymous;
 
 use crate::coinaddress::{validate_btc_address, validate_ltc_address};
@@ -59,7 +60,7 @@ impl ResolverService {
         name: &str,
         patch_value: HashMap<String, String>,
     ) -> ServiceResult<bool> {
-        let mut caller = call_context.must_not_anonymous_or_named_canister(CanisterNames::Registrar)?;
+        let mut caller = call_context.must_not_anonymous()?;
 
         let resolver = STATE.with(|s| {
             let resolver_store = s.resolver_store.borrow();
@@ -240,22 +241,25 @@ impl SetRecordValueValidator {
             });
         }
 
-        // check permission
-        let users = self.registry_api.get_users(&self.name).await?;
-        if !users.can_operate(&self.caller.0) {
-            debug!("Permission denied for {}", self.caller.0);
-            return Err(NamingError::PermissionDenied);
-        }
-
-        // check ResolverKey::SettingReverseResolutionPrincipal
-        if update_primary_name_input_value.is_some() {
-            if &self.caller.0 != users.get_owner() {
-                debug!(
-                    "SettingReverseResolutionPrincipal is not allowed since caller is not owner"
-                );
+        if !is_named_canister_id(CanisterNames::Registrar,self.caller.0) {
+            // check permission
+            let users = self.registry_api.get_users(&self.name).await?;
+            if !users.can_operate(&self.caller.0) {
+                debug!("Permission denied for {}", self.caller.0);
                 return Err(NamingError::PermissionDenied);
             }
+
+            // check ResolverKey::SettingReverseResolutionPrincipal
+            if update_primary_name_input_value.is_some() {
+                if &self.caller.0 != users.get_owner() {
+                    debug!(
+                    "SettingReverseResolutionPrincipal is not allowed since caller is not owner"
+                );
+                    return Err(NamingError::PermissionDenied);
+                }
+            }
         }
+
 
         Ok(SetRecordValueInput {
             name: self.name.clone(),

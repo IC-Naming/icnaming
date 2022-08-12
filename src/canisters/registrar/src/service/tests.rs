@@ -47,6 +47,7 @@ fn service(
     mut mock_cycles_minting_api: MockCyclesMintingApi,
     mut mock_registry_api: MockRegistryApi,
     mut mock_dicp_api: MockDICPApi,
+    mut mock_resolver_api: MockResolverApi,
 ) -> RegistrarService {
     STATE.with(|s| {
         let mut m = s.user_quota_store.borrow_mut();
@@ -69,7 +70,14 @@ fn service(
     mock_registry_api
         .expect_reclaim_name()
         .returning(|_name, _owner, _resolver| Ok(true));
+    mock_resolver_api
+        .expect_set_record_value()
+        .returning(|_name:String, _patch_values: HashMap<String, String>| {
+            Ok(true)
+        });
+
     service.registry_api = Arc::new(mock_registry_api);
+    service.resolver_api = Arc::new(mock_resolver_api);
     service
 }
 
@@ -1220,6 +1228,54 @@ mod get_expired_at {
     fn test_nice(#[case] now: u64, #[case] years: u32, #[case] expected: u64) {
         let result = get_expired_at(years, TimeInNs(now));
         assert_eq!(result, TimeInNs(expected));
+    }
+}
+
+mod set_record_value {
+    use super::*;
+    #[rstest]
+    async fn set_record_value_registration_count_gt_1(
+        mut service: RegistrarService,
+        mock_user1: Principal,
+        mut mock_resolver_api: MockResolverApi,
+    ) {
+        mock_resolver_api
+            .expect_set_record_value()
+            .returning(|_name:String, _patch_values: HashMap<String, String>| {
+                // assert _patch_values.len() == 2
+                assert_eq!(2, _patch_values.len());
+                Ok(true)
+            });
+        service.resolver_api = Arc::new(mock_resolver_api);
+        let name = "test.ic";
+        let result =  service.set_record_value(
+            name.to_string(),
+            &mock_user1,
+            2,
+        ).await;
+        assert!(result.is_ok());
+    }
+    #[rstest]
+    async fn set_record_value_registration_count_eq_1(
+        mut service: RegistrarService,
+        mock_user1: Principal,
+        mut mock_resolver_api: MockResolverApi,
+    ) {
+        mock_resolver_api
+            .expect_set_record_value()
+            .returning(|_name:String, _patch_values: HashMap<String, String>| {
+                // assert _patch_values.len() == 3
+                assert_eq!(3, _patch_values.len());
+                Ok(true)
+            });
+        service.resolver_api = Arc::new(mock_resolver_api);
+        let name = "test.ic";
+        let result =  service.set_record_value(
+            name.to_string(),
+            &mock_user1,
+            1,
+        ).await;
+        assert!(result.is_ok());
     }
 }
 

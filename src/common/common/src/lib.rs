@@ -150,11 +150,4 @@ impl CallContext {
         }
         return Err(NamingError::Unauthorized);
     }
-
-    pub fn must_not_anonymous_or_named_canister(&self, name: CanisterNames) -> ServiceResult<AuthPrincipal> {
-        if self.caller == Principal::anonymous() || !is_named_canister_id(name, self.caller) {
-            return Err(NamingError::Unauthorized);
-        }
-        Ok(AuthPrincipal(self.caller))
-    }
 }

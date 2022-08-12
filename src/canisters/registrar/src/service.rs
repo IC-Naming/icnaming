@@ -281,15 +281,14 @@ impl RegistrarService {
                 let mut counter = c.borrow_mut();
                 counter.push_registration(registration.clone());
             });
-            todo!();
-            self.set_record_value(name, &owner.0, own_registration_count).await;
+            let _ = self.set_record_value(name, &owner.0, own_registration_count).await;
             Ok(true)
         } else {
             Err(NamingError::RemoteError(api_result.err().unwrap()))
         }
     }
 
-    async fn set_record_value(&self, name:String,owner:&Principal, own_registration_count:usize)  {
+    async fn set_record_value(&self, name:String,owner:&Principal, own_registration_count:usize) ->ServiceResult<()> {
         let mut resolver_map = HashMap::new();
         resolver_map.insert(
             RESOLVER_KEY_ICP_PRINCIPAL.to_string(),
@@ -300,6 +299,7 @@ impl RegistrarService {
             AccountIdentifier::new(owner.clone(),None).to_hex()
         );
         if own_registration_count == 1 {
+            trace!("user: {} only one registration ", owner);
             resolver_map.insert(
                 RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL.to_string(),
                 owner.to_text()
@@ -311,10 +311,15 @@ impl RegistrarService {
                 name,
                 resolver_map,
             ).await;
-        debug!("set_record_value: {:?}", api_resolver_result);
         match api_resolver_result {
-            Ok(value) => info!("set_record_value: {:?}", value),
-            Err(e) => info!("set_record_value: {:?}", e),
+            Ok(value) => {
+                info!("set_record_value api result: {:?}", value);
+                Ok(())
+            },
+            Err(e) => {
+                error!("set_record_value api result: {:?}", e);
+                Err(NamingError::RemoteError(e))
+            },
         }
     }
 
