@@ -10,6 +10,8 @@ import {Result} from '~/utils/Result'
 import {assert_remote_result} from './utils'
 import {identities} from '~/identityHelper'
 import {Principal} from "@dfinity/principal"
+import logger from "node-color-log";
+import {identity, utils} from "@deland-labs/ic-dev-kit";
 
 let global_ensure_resolver_created_result: EnsureResolverCreatedResult
 let global_update_record_value_result: UpdateRecordValueResult
@@ -34,6 +36,31 @@ Then(/^get_record_value "([^"]*)" should be as below$/,
             for (const item of results) {
                 const target_row = rows.find(row => {
                     return row[0] = item[0]
+                })
+                expect(target_row).to.not.equal(undefined)
+            }
+        }
+    })
+Then(/^auto resolve get_record_value "([^"]*)" should be as below$/,
+    async function (name: string, data: DataTable) {
+        const results = await new Result(resolver.get_record_value(name)).unwrap()
+        logger.debug(results);
+        const rows = data.hashes()
+        logger.debug(rows);
+        if (rows.length == 0) {
+            expect(results.length).to.equal(0, "expected no results")
+        } else {
+            expect(results.length).to.equal(rows.length, "expected same number of results")
+            for (const item of results) {
+                const target_row = rows.find(row =>{
+
+                    if (item[0] == "account_id.icp") {
+                        logger.debug(`row:${utils.principalToAccountID(identities.getPrincipal(row.to))}, item:${item[1]}`);
+                        return  row.from == item[0] && utils.principalToAccountID(identities.getPrincipal(row.to)) == item[1];
+                    }
+
+                    logger.debug(`row:${identities.getPrincipal(row.to).toText()}, item:${item[1]}`);
+                    return  row.from == item[0] && identities.getPrincipal(row.to).toText() == item[1];
                 })
                 expect(target_row).to.not.equal(undefined)
             }

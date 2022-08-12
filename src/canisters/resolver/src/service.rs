@@ -60,7 +60,7 @@ impl ResolverService {
         name: &str,
         patch_value: HashMap<String, String>,
     ) -> ServiceResult<bool> {
-        let mut caller = call_context.must_not_anonymous()?;
+        let caller = call_context.must_not_anonymous()?;
 
         let resolver = STATE.with(|s| {
             let resolver_store = s.resolver_store.borrow();

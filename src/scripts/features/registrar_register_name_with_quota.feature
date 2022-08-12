@@ -59,3 +59,34 @@ Feature: Register a name with quota
       | hello3.ic |
       | hello2.ic |
       | hello1.ic |
+
+  Scenario: Register name should auto resolve, single name
+    When User "user1" register name "hello1.ic" with quote "LenGte(3)"
+    Then Get last registrations result is
+      | name      |
+      | hello1.ic |
+    And auto resolve get_record_value "hello1.ic" should be as below
+      | from                                  | to    |
+      | settings.reverse_resolution.principal | user1 |
+      | principal.icp                         | user1 |
+      | account_id.icp                        | user1 |
+
+  @dev
+  Scenario: Register name should auto resolve, multiple names
+    When User "user1" register name "hello1.ic" with quote "LenGte(3)"
+    And User "user1" register name "hello2.ic" with quote "LenGte(3)"
+    Then Get last registrations result is
+      | name      |
+      | hello2.ic |
+      | hello1.ic |
+    And auto resolve get_record_value "hello1.ic" should be as below
+      | from                                  | to    |
+      | settings.reverse_resolution.principal | user1 |
+      | principal.icp                         | user1 |
+      | account_id.icp                        | user1 |
+    And auto resolve get_record_value "hello2.ic" should be as below
+      | from           | to    |
+      | principal.icp  | user1 |
+      | account_id.icp | user1 |
+
+
