@@ -1,8 +1,8 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap};
 use std::str::FromStr;
 use std::sync::Arc;
 
-use candid::{Principal, Service};
+use candid::{Principal};
 
 use common::{AuthPrincipal, CallContext};
 use log::{debug, info};
@@ -15,7 +15,7 @@ use common::constants::{
 };
 use common::dto::IRegistryUsers;
 use common::errors::*;
-use common::named_canister_ids::CanisterNames::Registrar;
+
 use common::named_canister_ids::{is_named_canister_id, CanisterNames};
 use common::permissions::must_not_anonymous;
 
@@ -72,7 +72,7 @@ impl ResolverService {
             }
         });
 
-        let mut context =
+        let context =
             SetRecordValueValidator::new(caller, name.to_string(), patch_value, resolver);
         let input = context.validate().await?;
 
@@ -216,7 +216,7 @@ impl SetRecordValueValidator {
     pub async fn validate(&self) -> ServiceResult<SetRecordValueInput> {
         let mut patch_values = vec![];
         // validate and normalize key and value
-        let mut update_primary_name_input_value = self
+        let update_primary_name_input_value = self
             .patch_value
             .get(RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL)
             .cloned();

@@ -3,7 +3,7 @@ use crate::state::STATE;
 use candid::Nat;
 use common::canister_api::ic_impl::DICPApi;
 use common::canister_api::IDICPApi;
-use common::errors::{ActorResult, NamingError, ServiceResult};
+use common::errors::{NamingError, ServiceResult};
 use common::timeout_lock::{release_timeout_locker, try_lock_with_timeout, LockId};
 use common::TimeInNs;
 use log::{debug, error, info};

@@ -1,9 +1,9 @@
 use crate::canister_api::AccountIdentifier;
-use crate::errors::NamingError;
+
 use crate::named_canister_ids::{CanisterNames, DEV_NAMED_CANISTER_IDS};
 use candid::Principal;
 use const_env::from_env;
-use log::{debug, info};
+use log::{info};
 use once_cell::sync::Lazy;
 use std::str::FromStr;
 

@@ -1,6 +1,6 @@
-use candid::{decode_args, encode_args};
+use candid::{encode_args};
 
-use common::constants::{NAMING_MAX_REGISTRATION_YEAR, NAMING_MIN_REGISTRATION_YEAR};
+
 use common::state::StableState;
 
 #[derive(Default)]

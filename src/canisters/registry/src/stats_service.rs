@@ -7,7 +7,7 @@ use ic_cdk::api;
 pub struct StatsService {}
 
 impl StatsService {
-    pub fn get_stats(&self, now: u64) -> Stats {
+    pub fn get_stats(&self, _now: u64) -> Stats {
         let mut stats = Stats::default();
         stats.cycles_balance = api::canister_balance();
         STATE.with(|s| {

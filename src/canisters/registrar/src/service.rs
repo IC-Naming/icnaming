@@ -5,7 +5,7 @@ use std::str::FromStr;
 use std::sync::Arc;
 
 use candid::{CandidType, Deserialize, Nat, Principal};
-use ic_cdk::call;
+
 use log::{debug, error, info, trace};
 use num_bigint::BigUint;
 use num_traits::ToPrimitive;
@@ -24,7 +24,7 @@ use common::named_canister_ids::{get_named_get_canister_id, CanisterNames};
 use common::named_principals::{PRINCIPAL_NAME_STATE_EXPORTER, PRINCIPAL_NAME_TIMER_TRIGGER};
 use common::naming::{normalize_name, FirstLevelName, NameParseResult};
 use common::permissions::{
-    is_admin, must_be_in_named_canister, must_be_named_canister, must_be_system_owner,
+    must_be_in_named_canister, must_be_named_canister, must_be_system_owner,
 };
 use common::permissions::{must_be_named_principal, must_not_anonymous};
 use common::{AuthPrincipal, CallContext, TimeInNs};

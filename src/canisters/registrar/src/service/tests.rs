@@ -2,8 +2,8 @@ use std::borrow::Borrow;
 use std::sync::Arc;
 
 use candid::Principal;
-use common::canister_api::TransactionResponse;
-use once_cell::sync::Lazy;
+
+
 use rstest::*;
 
 use common::cycles_minting_types::{IcpXdrConversionRate, IcpXdrConversionRateCertifiedResponse};
@@ -46,7 +46,7 @@ fn service(
     register_years: u32,
     mut mock_cycles_minting_api: MockCyclesMintingApi,
     mut mock_registry_api: MockRegistryApi,
-    mut mock_dicp_api: MockDICPApi,
+    _mock_dicp_api: MockDICPApi,
     mut mock_resolver_api: MockResolverApi,
 ) -> RegistrarService {
     STATE.with(|s| {
@@ -1144,7 +1144,7 @@ mod transfer_from {
 }
 
 mod transfer_from_quota {
-    use common::permissions::get_admin;
+    
 
     use super::*;
 

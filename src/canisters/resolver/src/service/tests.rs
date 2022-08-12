@@ -109,7 +109,7 @@ mod set_record_validation {
     #[rstest]
     async fn test_set_record_validation_key_too_long(
         _init_test: (),
-        mock_now: u64,
+        _mock_now: u64,
         mock_user1: Principal,
     ) {
         let name = "nice.ic";
@@ -147,7 +147,7 @@ mod set_record_validation {
     #[rstest]
     async fn test_set_record_validation_value_invalid(
         _init_test: (),
-        mock_now: u64,
+        _mock_now: u64,
         mock_user1: Principal,
     ) {
         let name = "nice.ic";
@@ -189,7 +189,7 @@ mod set_record_validation {
     #[rstest]
     async fn test_set_record_validation_too_many_items(
         _init_test: (),
-        mock_now: u64,
+        _mock_now: u64,
         mock_user1: Principal,
     ) {
         let name = "nice.ic";
@@ -231,7 +231,7 @@ mod set_record_validation {
     async fn test_set_record_validation_permission_deny(
         _init_test: (),
         mut mock_registry_api: MockRegistryApi,
-        mock_now: u64,
+        _mock_now: u64,
         mock_user1: Principal,
     ) {
         let name = "nice.ic";
@@ -275,10 +275,10 @@ mod set_record_validation {
     #[rstest]
     async fn test_set_record_validation_success(
         _init_test: (),
-        mut service: ResolverService,
+        _service: ResolverService,
         mut mock_registry_api: MockRegistryApi,
-        mock_now: u64,
-        mock_user1: Principal,
+        _mock_now: u64,
+        _mock_user1: Principal,
     ) {
         let name = "nice.ic";
         let mut patch_values: HashMap<String, String> = HashMap::new();
@@ -335,10 +335,10 @@ mod set_record_validation {
     #[rstest]
     async fn test_set_record_validation_update_primary_name(
         _init_test: (),
-        mut service: ResolverService,
+        _service: ResolverService,
         mut mock_registry_api: MockRegistryApi,
-        mock_now: u64,
-        mock_user1: Principal,
+        _mock_now: u64,
+        _mock_user1: Principal,
     ) {
         let name = "nice.ic";
         let mut patch_values: HashMap<String, String> = HashMap::new();
@@ -386,10 +386,10 @@ mod set_record_validation {
     #[rstest]
     async fn test_set_record_validation_remove_primary_name(
         _init_test: (),
-        mut service: ResolverService,
+        _service: ResolverService,
         mut mock_registry_api: MockRegistryApi,
-        mock_now: u64,
-        mock_user1: Principal,
+        _mock_now: u64,
+        _mock_user1: Principal,
     ) {
         let name = "nice.ic";
         let mut patch_values: HashMap<String, String> = HashMap::new();
