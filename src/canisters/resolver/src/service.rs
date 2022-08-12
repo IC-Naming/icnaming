@@ -241,24 +241,31 @@ impl SetRecordValueValidator {
             });
         }
 
-        if !is_named_canister_id(CanisterNames::Registrar,self.caller.0) {
-            // check permission
-            let users = self.registry_api.get_users(&self.name).await?;
-            if !users.can_operate(&self.caller.0) {
-                debug!("Permission denied for {}", self.caller.0);
-                return Err(NamingError::PermissionDenied);
-            }
-
-            // check ResolverKey::SettingReverseResolutionPrincipal
-            if update_primary_name_input_value.is_some() {
-                if &self.caller.0 != users.get_owner() {
-                    debug!(
-                    "SettingReverseResolutionPrincipal is not allowed since caller is not owner"
-                );
+        let users = self.registry_api.get_users(&self.name).await?;
+        let owner = users.get_owner();
+        let owner = match is_named_canister_id(CanisterNames::Registrar,self.caller.0) {
+            false => {
+                // check permission
+                if !users.can_operate(&self.caller.0) {
+                    debug!("Permission denied for {}", self.caller.0);
                     return Err(NamingError::PermissionDenied);
                 }
-            }
-        }
+
+                // check ResolverKey::SettingReverseResolutionPrincipal
+                if update_primary_name_input_value.is_some() {
+                    if &self.caller.0 != owner {
+                        debug!(
+                    "SettingReverseResolutionPrincipal is not allowed since caller is not owner"
+                );
+                        return Err(NamingError::PermissionDenied);
+                    }
+                }
+                self.caller.0.clone()
+            },
+            true => owner.clone(),
+        };
+
+
 
 
         Ok(SetRecordValueInput {
@@ -280,9 +287,9 @@ impl SetRecordValueValidator {
                 update_primary_name_input_value
             {
                 if principalString.is_empty() {
-                    UpdatePrimaryNameInput::Remove(self.caller.0.clone())
+                    UpdatePrimaryNameInput::Remove(owner.clone())
                 } else {
-                    UpdatePrimaryNameInput::Set(self.caller.0.clone())
+                    UpdatePrimaryNameInput::Set(owner.clone())
                 }
             } else {
                 UpdatePrimaryNameInput::DoNothing

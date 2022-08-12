@@ -103,6 +103,7 @@ mod get_record_value {
 }
 
 mod set_record_validation {
+    use common::named_canister_ids::NAMED_CANISTER_IDS;
     use super::*;
 
     #[rstest]
@@ -125,8 +126,8 @@ mod set_record_validation {
             patch_values,
             Resolver::new(name.to_string()),
         )
-        .validate()
-        .await;
+            .validate()
+            .await;
 
         // assert
         assert!(result.is_err());
@@ -167,8 +168,8 @@ mod set_record_validation {
             patch_values,
             Resolver::new(name.to_string()),
         )
-        .validate()
-        .await;
+            .validate()
+            .await;
 
         // assert
         assert!(result.is_err());
@@ -208,8 +209,8 @@ mod set_record_validation {
             patch_values,
             resolver,
         )
-        .validate()
-        .await;
+            .validate()
+            .await;
 
         // assert
         assert!(result.is_err());
@@ -478,6 +479,110 @@ mod set_record_validation {
         let result = result.err().unwrap();
         assert_eq!(result, NamingError::PermissionDenied);
     }
+
+    #[rstest]
+    async fn test_set_record_validation_call_from_canister_registrar_should_pass(_init_test: (),
+                                                                        mut mock_registry_api: MockRegistryApi) {
+        let name = "nice.ic";
+        let mut patch_values: HashMap<String, String> = HashMap::new();
+        let icp_addr = "rrkah-fqaaa-aaaaa-aaaaq-cai";
+        patch_values.insert(
+            RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL.to_string(),
+            icp_addr.to_string(),
+        );
+        // enter blank value to remove the key
+        patch_values.insert(RESOLVER_KEY_TWITTER.to_string(), "".to_string());
+        let owner = Principal::from_text("rrkah-fqaaa-aaaaa-aaaaq-cai").unwrap();
+
+
+
+        let caller_registration = NAMED_CANISTER_IDS.with(|n| {
+            let n = n.borrow();
+            n.get_canister_id(CanisterNames::Registrar)
+        });
+
+
+        // add resolver
+        add_test_resolver(name);
+
+        let _ctx = mock_registry_api
+            .expect_get_users()
+            .returning(move |_name| {
+                Ok(RegistryUsers {
+                    owner,
+                    operators: HashSet::new(),
+                })
+            });
+
+        // act
+        let mut context = SetRecordValueValidator::new(
+            must_not_anonymous(&caller_registration).unwrap(),
+            name.to_string(),
+            patch_values,
+            Resolver::new(name.to_string()),
+        );
+        context.registry_api = Arc::new(mock_registry_api);
+
+        let result = context.validate().await;
+
+        // assert
+        assert!(result.is_ok(), "{:?}", result);
+        let result = result.unwrap();
+        assert_eq!(
+            result.update_primary_name_input,
+            UpdatePrimaryNameInput::Set(owner.clone())
+        );
+    }
+    #[rstest]
+    async fn test_set_record_validation_call_from_canister_not_registrar_permission_denied(_init_test: (),
+                                                                        mut mock_registry_api: MockRegistryApi) {
+        let name = "nice.ic";
+        let mut patch_values: HashMap<String, String> = HashMap::new();
+        let icp_addr = "rrkah-fqaaa-aaaaa-aaaaq-cai";
+        patch_values.insert(
+            RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL.to_string(),
+            icp_addr.to_string(),
+        );
+        // enter blank value to remove the key
+        patch_values.insert(RESOLVER_KEY_TWITTER.to_string(), "".to_string());
+        let owner = Principal::from_text("rrkah-fqaaa-aaaaa-aaaaq-cai").unwrap();
+
+
+
+        let caller_registration = NAMED_CANISTER_IDS.with(|n| {
+            let n = n.borrow();
+            n.get_canister_id(CanisterNames::Registry)
+        });
+
+
+        // add resolver
+        add_test_resolver(name);
+
+        let _ctx = mock_registry_api
+            .expect_get_users()
+            .returning(move |_name| {
+                Ok(RegistryUsers {
+                    owner,
+                    operators: HashSet::new(),
+                })
+            });
+
+        // act
+        let mut context = SetRecordValueValidator::new(
+            must_not_anonymous(&caller_registration).unwrap(),
+            name.to_string(),
+            patch_values,
+            Resolver::new(name.to_string()),
+        );
+        context.registry_api = Arc::new(mock_registry_api);
+
+        let result = context.validate().await;
+
+        // assert
+        assert!(result.is_err());
+        let result = result.err().unwrap();
+        assert_eq!(result, NamingError::PermissionDenied);
+    }
 }
 
 mod validate_value {
@@ -513,16 +618,16 @@ mod validate_value {
 
     #[rstest]
     #[case(
-        "cc659fe529756bae6f72db9937c6c60cf7ad57eb4ac5f930a75748927aab469a",
-        true
+    "cc659fe529756bae6f72db9937c6c60cf7ad57eb4ac5f930a75748927aab469a",
+    true
     )]
     #[case(
-        "92dd9b9ad9c5e937aaf0136a5ec313f6f86aeab08951e52a92b4bb5f3b6017f4",
-        true
+    "92dd9b9ad9c5e937aaf0136a5ec313f6f86aeab08951e52a92b4bb5f3b6017f4",
+    true
     )]
     #[case(
-        "uqf5b-uk33j-b72z7-uoz2o-hmhl2-lw63v-zwh5f-cmnii-k4pzi-jbomw-nae",
-        true
+    "uqf5b-uk33j-b72z7-uoz2o-hmhl2-lw63v-zwh5f-cmnii-k4pzi-jbomw-nae",
+    true
     )]
     #[case("q3fc5-haaaa-aaaaa-aaahq-cai", true)]
     #[case("aaaaa-aaaaa-aaaaa-aaahq-cai", false)]
