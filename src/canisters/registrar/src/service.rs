@@ -12,7 +12,9 @@ use num_traits::ToPrimitive;
 use time::{OffsetDateTime, Time};
 
 use common::canister_api::ic_impl::{CyclesMintingApi, RegistryApi, ResolverApi};
-use common::canister_api::{AccountIdentifier, ICyclesMintingApi, IDICPApi, IRegistryApi, IResolverApi};
+use common::canister_api::{
+    AccountIdentifier, ICyclesMintingApi, IDICPApi, IRegistryApi, IResolverApi,
+};
 use common::constants::*;
 use common::dto::{
     BatchAddQuotaRequest, GetPageInput, GetPageOutput, ImportQuotaRequest, ImportQuotaStatus,
@@ -281,45 +283,44 @@ impl RegistrarService {
                 let mut counter = c.borrow_mut();
                 counter.push_registration(registration.clone());
             });
-            let _ = self.set_record_value(name, &owner.0, own_registration_count).await;
+            let _ = self
+                .set_record_value(name, &owner.0, own_registration_count)
+                .await;
             Ok(true)
         } else {
             Err(NamingError::RemoteError(api_result.err().unwrap()))
         }
     }
 
-    async fn set_record_value(&self, name:String,owner:&Principal, own_registration_count:usize) ->ServiceResult<()> {
+    async fn set_record_value(
+        &self,
+        name: String,
+        owner: &Principal,
+        own_registration_count: usize,
+    ) -> ServiceResult<()> {
         let mut resolver_map = HashMap::new();
-        resolver_map.insert(
-            RESOLVER_KEY_ICP_PRINCIPAL.to_string(),
-            owner.to_text()
-        );
+        resolver_map.insert(RESOLVER_KEY_ICP_PRINCIPAL.to_string(), owner.to_text());
         resolver_map.insert(
             RESOLVER_KEY_ICP_ACCOUNT_ID.to_string(),
-            AccountIdentifier::new(owner.clone(),None).to_hex()
+            AccountIdentifier::new(owner.clone(), None).to_hex(),
         );
         if own_registration_count == 1 {
             trace!("user: {} only one registration ", owner);
             resolver_map.insert(
                 RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL.to_string(),
-                owner.to_text()
+                owner.to_text(),
             );
         }
-        let api_resolver_result = self
-            .resolver_api
-            .set_record_value(
-                name,
-                resolver_map,
-            ).await;
+        let api_resolver_result = self.resolver_api.set_record_value(name, resolver_map).await;
         match api_resolver_result {
             Ok(value) => {
                 info!("set_record_value api result: {:?}", value);
                 Ok(())
-            },
+            }
             Err(e) => {
                 error!("set_record_value api result: {:?}", e);
                 Err(NamingError::RemoteError(e))
-            },
+            }
         }
     }
 

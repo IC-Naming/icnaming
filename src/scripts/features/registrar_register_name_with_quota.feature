@@ -71,7 +71,6 @@ Feature: Register a name with quota
       | principal.icp                         | user1 |
       | account_id.icp                        | user1 |
 
-  @dev
   Scenario: Register name should auto resolve, multiple names
     When User "user1" register name "hello1.ic" with quote "LenGte(3)"
     And User "user1" register name "hello2.ic" with quote "LenGte(3)"

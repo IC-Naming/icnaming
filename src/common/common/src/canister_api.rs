@@ -24,15 +24,15 @@ async fn call_core<T, TResult>(
     args: T,
     logging: bool,
 ) -> Result<TResult, NamingError>
-    where
-        T: candid::utils::ArgumentEncoder,
-        TResult: for<'a> Deserialize<'a> + CandidType + Debug,
+where
+    T: candid::utils::ArgumentEncoder,
+    TResult: for<'a> Deserialize<'a> + CandidType + Debug,
 {
     if logging {
         debug!("Calling {:?}::{}", canister_name, method);
     }
     let canister_id = get_named_get_canister_id(canister_name);
-    let call_result: Result<(TResult, ), (RejectionCode, String)> =
+    let call_result: Result<(TResult,), (RejectionCode, String)> =
         call(canister_id, method, args).await;
     if call_result.is_err() {
         let (code, message) = call_result.err().unwrap();
@@ -61,9 +61,9 @@ async fn call_canister_as_icns_result<T, TResult>(
     method: &str,
     args: T,
 ) -> ActorResult<TResult>
-    where
-        T: candid::utils::ArgumentEncoder,
-        TResult: for<'a> Deserialize<'a> + CandidType + Debug,
+where
+    T: candid::utils::ArgumentEncoder,
+    TResult: for<'a> Deserialize<'a> + CandidType + Debug,
 {
     let result = call_core::<T, ActorResult<TResult>>(canister_name, method, args, true).await;
     match result {
@@ -77,9 +77,9 @@ async fn call_canister_as_result<T, TResult>(
     method: &str,
     args: T,
 ) -> ActorResult<TResult>
-    where
-        T: candid::utils::ArgumentEncoder,
-        TResult: for<'a> Deserialize<'a> + CandidType + Debug,
+where
+    T: candid::utils::ArgumentEncoder,
+    TResult: for<'a> Deserialize<'a> + CandidType + Debug,
 {
     call_core::<T, TResult>(canister_name, method, args, true)
         .await
@@ -91,9 +91,9 @@ async fn call_canister_as_result_no_logging<T, TResult>(
     method: &str,
     args: T,
 ) -> ActorResult<TResult>
-    where
-        T: candid::utils::ArgumentEncoder,
-        TResult: for<'a> Deserialize<'a> + CandidType + Debug,
+where
+    T: candid::utils::ArgumentEncoder,
+    TResult: for<'a> Deserialize<'a> + CandidType + Debug,
 {
     call_core::<T, TResult>(canister_name, method, args, false)
         .await
@@ -133,7 +133,11 @@ pub trait IRegistryApi {
 pub trait IResolverApi {
     async fn ensure_resolver_created(&self, name: String) -> ActorResult<bool>;
     async fn remove_resolvers(&self, names: Vec<String>) -> ActorResult<bool>;
-    async fn set_record_value(&self, name: String, patch_values: HashMap<String, String>) -> ActorResult<bool>;
+    async fn set_record_value(
+        &self,
+        name: String,
+        patch_values: HashMap<String, String>,
+    ) -> ActorResult<bool>;
 }
 
 #[async_trait]

@@ -72,9 +72,7 @@ fn service(
         .returning(|_name, _owner, _resolver| Ok(true));
     mock_resolver_api
         .expect_set_record_value()
-        .returning(|_name:String, _patch_values: HashMap<String, String>| {
-            Ok(true)
-        });
+        .returning(|_name: String, _patch_values: HashMap<String, String>| Ok(true));
 
     service.registry_api = Arc::new(mock_registry_api);
     service.resolver_api = Arc::new(mock_resolver_api);
@@ -1239,20 +1237,18 @@ mod set_record_value {
         mock_user1: Principal,
         mut mock_resolver_api: MockResolverApi,
     ) {
-        mock_resolver_api
-            .expect_set_record_value()
-            .returning(|_name:String, _patch_values: HashMap<String, String>| {
+        mock_resolver_api.expect_set_record_value().returning(
+            |_name: String, _patch_values: HashMap<String, String>| {
                 // assert _patch_values.len() == 2
                 assert_eq!(2, _patch_values.len());
                 Ok(true)
-            });
+            },
+        );
         service.resolver_api = Arc::new(mock_resolver_api);
         let name = "test.ic";
-        let result =  service.set_record_value(
-            name.to_string(),
-            &mock_user1,
-            2,
-        ).await;
+        let result = service
+            .set_record_value(name.to_string(), &mock_user1, 2)
+            .await;
         assert!(result.is_ok());
     }
     #[rstest]
@@ -1261,20 +1257,18 @@ mod set_record_value {
         mock_user1: Principal,
         mut mock_resolver_api: MockResolverApi,
     ) {
-        mock_resolver_api
-            .expect_set_record_value()
-            .returning(|_name:String, _patch_values: HashMap<String, String>| {
+        mock_resolver_api.expect_set_record_value().returning(
+            |_name: String, _patch_values: HashMap<String, String>| {
                 // assert _patch_values.len() == 3
                 assert_eq!(3, _patch_values.len());
                 Ok(true)
-            });
+            },
+        );
         service.resolver_api = Arc::new(mock_resolver_api);
         let name = "test.ic";
-        let result =  service.set_record_value(
-            name.to_string(),
-            &mock_user1,
-            1,
-        ).await;
+        let result = service
+            .set_record_value(name.to_string(), &mock_user1, 1)
+            .await;
         assert!(result.is_ok());
     }
 }

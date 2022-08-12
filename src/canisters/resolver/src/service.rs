@@ -15,8 +15,8 @@ use common::constants::{
 };
 use common::dto::IRegistryUsers;
 use common::errors::*;
-use common::named_canister_ids::{CanisterNames, is_named_canister_id};
 use common::named_canister_ids::CanisterNames::Registrar;
+use common::named_canister_ids::{is_named_canister_id, CanisterNames};
 use common::permissions::must_not_anonymous;
 
 use crate::coinaddress::{validate_btc_address, validate_ltc_address};
@@ -243,7 +243,7 @@ impl SetRecordValueValidator {
 
         let users = self.registry_api.get_users(&self.name).await?;
         let owner = users.get_owner();
-        let owner = match is_named_canister_id(CanisterNames::Registrar,self.caller.0) {
+        let owner = match is_named_canister_id(CanisterNames::Registrar, self.caller.0) {
             false => {
                 // check permission
                 if !users.can_operate(&self.caller.0) {
@@ -261,12 +261,9 @@ impl SetRecordValueValidator {
                     }
                 }
                 self.caller.0.clone()
-            },
+            }
             true => owner.clone(),
         };
-
-
-
 
         Ok(SetRecordValueInput {
             name: self.name.clone(),

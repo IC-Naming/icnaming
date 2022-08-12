@@ -37,7 +37,6 @@ Feature: Register a name with payment
     And User "user1" balance is "11.5 icp"
 
 
-
   Scenario: Register name should auto resolve
     When User "user1" register name "7654321.ic" for "10" years and pay "10 icp"
     Then Last register_with_payment result is 'Ok'
