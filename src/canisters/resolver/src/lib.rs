@@ -16,11 +16,11 @@ use std::collections::HashMap;
 
 use candid::{candid_method, CandidType, Principal};
 use common::CallContext;
-use ic_cdk::{api, caller};
+
 use ic_cdk_macros::*;
 
-use common::errors::{BooleanActorResponse, ErrorInfo, NamingError, ServiceResult};
-use common::named_canister_ids::{get_named_get_canister_id, CanisterNames};
+use common::errors::{BooleanActorResponse, ErrorInfo, ServiceResult};
+use common::named_canister_ids::CanisterNames;
 
 use crate::service::ResolverService;
 use crate::state::InitArgs;

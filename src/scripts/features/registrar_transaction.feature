@@ -26,19 +26,19 @@ Feature: Name Transaction
     When User "user1" transfer name "hello.ic" to User "user2"
     Then last name transfer result status is "Ok"
     And registrar get_details "hello.ic" result is
-      | key        | value     |
-      | owner      | user2     |
+      | key        | value    |
+      | owner      | user2    |
       | name       | hello.ic |
-      | expired_at | 1         |
-      | created_at | 0         |
+      | expired_at | 1        |
+      | created_at | 0        |
     And get_record_value "hello.ic" should be as below
       | key | value |
     And registry get_details "hello.ic" should be as below
-      | key      | value     |
+      | key      | value    |
       | name     | hello.ic |
-      | owner    | user2     |
-      | resolver | public    |
-      | ttl      | 600       |
+      | owner    | user2    |
+      | resolver | public   |
+      | ttl      | 600      |
 
   Scenario: Transfer name twice
     Given User "user1" register name "hello.ic" with quote "LenGte(3)"
@@ -53,19 +53,19 @@ Feature: Name Transaction
     And User "user2" transfer name "hello.ic" to User "user3"
     Then last name transfer result status is "Ok"
     And registrar get_details "hello.ic" result is
-      | key        | value     |
-      | owner      | user3     |
+      | key        | value    |
+      | owner      | user3    |
       | name       | hello.ic |
-      | expired_at | 1         |
-      | created_at | 0         |
+      | expired_at | 1        |
+      | created_at | 0        |
     And get_record_value "hello.ic" should be as below
       | key | value |
     And registry get_details "hello.ic" should be as below
-      | key      | value     |
+      | key      | value    |
       | name     | hello.ic |
-      | owner    | user3     |
-      | resolver | public    |
-      | ttl      | 600       |
+      | owner    | user3    |
+      | resolver | public   |
+      | ttl      | 600      |
 
   Scenario: Transfer name fail without permission
     Given User "user1" register name "hello.ic" with quote "LenGte(3)"
@@ -85,19 +85,19 @@ Feature: Name Transaction
     When User "user2" transfer name "hello.ic" by transfer_from
     Then last name transfer_from result status is "Ok"
     And registrar get_details "hello.ic" result is
-      | key        | value     |
-      | owner      | user2     |
+      | key        | value    |
+      | owner      | user2    |
       | name       | hello.ic |
-      | expired_at | 1         |
-      | created_at | 0         |
+      | expired_at | 1        |
+      | created_at | 0        |
     And get_record_value "hello.ic" should be as below
       | key | value |
     And registry get_details "hello.ic" should be as below
-      | key      | value     |
+      | key      | value    |
       | name     | hello.ic |
-      | owner    | user2     |
-      | resolver | public    |
-      | ttl      | 600       |
+      | owner    | user2    |
+      | resolver | public   |
+      | ttl      | 600      |
 
   Scenario: Transfer name by transfer_from failed without approve
     Given User "user1" register name "hello.ic" with quote "LenGte(3)"
@@ -127,18 +127,21 @@ Feature: Name Transaction
     And User "user1" set registry owner for "hello.ic" to "user2"
     When User "user1" reclaim name "hello.ic"
     And registrar get_details "hello.ic" result is
-      | key        | value     |
-      | owner      | user1     |
+      | key        | value    |
+      | owner      | user1    |
       | name       | hello.ic |
-      | expired_at | 1         |
-      | created_at | 0         |
+      | expired_at | 1        |
+      | created_at | 0        |
     And get_record_value "hello.ic" should be as below
-      | key       | value                              |
-      | token.icp | qjdve-lqaaa-aaaaa-aaaeq-cai        |
-      | token.btc | 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa |
+      | key                                   | value                                                            |
+      | token.icp                             | qjdve-lqaaa-aaaaa-aaaeq-cai                                      |
+      | token.btc                             | 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa                               |
+      | settings.reverse_resolution.principal | 2eis6-ev3kx-wr3pi-otbsb-kzzrp-z3oyb-poe6w-bdbtz-gtigi-6ipki-3qe  |
+      | principal.icp                         | 2eis6-ev3kx-wr3pi-otbsb-kzzrp-z3oyb-poe6w-bdbtz-gtigi-6ipki-3qe  |
+      | account_id.icp                        | 3445e6cc1bb5397fd89fd1e81090f09541923359bc37fab92c29873b168ba70e |
     And registry get_details "hello.ic" should be as below
-      | key      | value     |
+      | key      | value    |
       | name     | hello.ic |
-      | owner    | user1     |
-      | resolver | public    |
-      | ttl      | 600       |
+      | owner    | user1    |
+      | resolver | public   |
+      | ttl      | 600      |

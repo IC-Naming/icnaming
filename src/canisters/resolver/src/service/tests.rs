@@ -104,11 +104,12 @@ mod get_record_value {
 
 mod set_record_validation {
     use super::*;
+    use common::named_canister_ids::NAMED_CANISTER_IDS;
 
     #[rstest]
     async fn test_set_record_validation_key_too_long(
         _init_test: (),
-        mock_now: u64,
+        _mock_now: u64,
         mock_user1: Principal,
     ) {
         let name = "nice.ic";
@@ -146,7 +147,7 @@ mod set_record_validation {
     #[rstest]
     async fn test_set_record_validation_value_invalid(
         _init_test: (),
-        mock_now: u64,
+        _mock_now: u64,
         mock_user1: Principal,
     ) {
         let name = "nice.ic";
@@ -188,7 +189,7 @@ mod set_record_validation {
     #[rstest]
     async fn test_set_record_validation_too_many_items(
         _init_test: (),
-        mock_now: u64,
+        _mock_now: u64,
         mock_user1: Principal,
     ) {
         let name = "nice.ic";
@@ -230,7 +231,7 @@ mod set_record_validation {
     async fn test_set_record_validation_permission_deny(
         _init_test: (),
         mut mock_registry_api: MockRegistryApi,
-        mock_now: u64,
+        _mock_now: u64,
         mock_user1: Principal,
     ) {
         let name = "nice.ic";
@@ -274,10 +275,10 @@ mod set_record_validation {
     #[rstest]
     async fn test_set_record_validation_success(
         _init_test: (),
-        mut service: ResolverService,
+        _service: ResolverService,
         mut mock_registry_api: MockRegistryApi,
-        mock_now: u64,
-        mock_user1: Principal,
+        _mock_now: u64,
+        _mock_user1: Principal,
     ) {
         let name = "nice.ic";
         let mut patch_values: HashMap<String, String> = HashMap::new();
@@ -334,10 +335,10 @@ mod set_record_validation {
     #[rstest]
     async fn test_set_record_validation_update_primary_name(
         _init_test: (),
-        mut service: ResolverService,
+        _service: ResolverService,
         mut mock_registry_api: MockRegistryApi,
-        mock_now: u64,
-        mock_user1: Principal,
+        _mock_now: u64,
+        _mock_user1: Principal,
     ) {
         let name = "nice.ic";
         let mut patch_values: HashMap<String, String> = HashMap::new();
@@ -385,10 +386,10 @@ mod set_record_validation {
     #[rstest]
     async fn test_set_record_validation_remove_primary_name(
         _init_test: (),
-        mut service: ResolverService,
+        _service: ResolverService,
         mut mock_registry_api: MockRegistryApi,
-        mock_now: u64,
-        mock_user1: Principal,
+        _mock_now: u64,
+        _mock_user1: Principal,
     ) {
         let name = "nice.ic";
         let mut patch_values: HashMap<String, String> = HashMap::new();
@@ -465,6 +466,108 @@ mod set_record_validation {
         // act
         let mut context = SetRecordValueValidator::new(
             must_not_anonymous(&mock_user1).unwrap(),
+            name.to_string(),
+            patch_values,
+            Resolver::new(name.to_string()),
+        );
+        context.registry_api = Arc::new(mock_registry_api);
+
+        let result = context.validate().await;
+
+        // assert
+        assert!(result.is_err());
+        let result = result.err().unwrap();
+        assert_eq!(result, NamingError::PermissionDenied);
+    }
+
+    #[rstest]
+    async fn test_set_record_validation_call_from_canister_registrar_should_pass(
+        _init_test: (),
+        mut mock_registry_api: MockRegistryApi,
+    ) {
+        let name = "nice.ic";
+        let mut patch_values: HashMap<String, String> = HashMap::new();
+        let icp_addr = "rrkah-fqaaa-aaaaa-aaaaq-cai";
+        patch_values.insert(
+            RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL.to_string(),
+            icp_addr.to_string(),
+        );
+        // enter blank value to remove the key
+        patch_values.insert(RESOLVER_KEY_TWITTER.to_string(), "".to_string());
+        let owner = Principal::from_text("rrkah-fqaaa-aaaaa-aaaaq-cai").unwrap();
+
+        let caller_registration = NAMED_CANISTER_IDS.with(|n| {
+            let n = n.borrow();
+            n.get_canister_id(CanisterNames::Registrar)
+        });
+
+        // add resolver
+        add_test_resolver(name);
+
+        let _ctx = mock_registry_api
+            .expect_get_users()
+            .returning(move |_name| {
+                Ok(RegistryUsers {
+                    owner,
+                    operators: HashSet::new(),
+                })
+            });
+
+        // act
+        let mut context = SetRecordValueValidator::new(
+            must_not_anonymous(&caller_registration).unwrap(),
+            name.to_string(),
+            patch_values,
+            Resolver::new(name.to_string()),
+        );
+        context.registry_api = Arc::new(mock_registry_api);
+
+        let result = context.validate().await;
+
+        // assert
+        assert!(result.is_ok(), "{:?}", result);
+        let result = result.unwrap();
+        assert_eq!(
+            result.update_primary_name_input,
+            UpdatePrimaryNameInput::Set(owner.clone())
+        );
+    }
+    #[rstest]
+    async fn test_set_record_validation_call_from_canister_not_registrar_permission_denied(
+        _init_test: (),
+        mut mock_registry_api: MockRegistryApi,
+    ) {
+        let name = "nice.ic";
+        let mut patch_values: HashMap<String, String> = HashMap::new();
+        let icp_addr = "rrkah-fqaaa-aaaaa-aaaaq-cai";
+        patch_values.insert(
+            RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL.to_string(),
+            icp_addr.to_string(),
+        );
+        // enter blank value to remove the key
+        patch_values.insert(RESOLVER_KEY_TWITTER.to_string(), "".to_string());
+        let owner = Principal::from_text("rrkah-fqaaa-aaaaa-aaaaq-cai").unwrap();
+
+        let caller_registration = NAMED_CANISTER_IDS.with(|n| {
+            let n = n.borrow();
+            n.get_canister_id(CanisterNames::Registry)
+        });
+
+        // add resolver
+        add_test_resolver(name);
+
+        let _ctx = mock_registry_api
+            .expect_get_users()
+            .returning(move |_name| {
+                Ok(RegistryUsers {
+                    owner,
+                    operators: HashSet::new(),
+                })
+            });
+
+        // act
+        let mut context = SetRecordValueValidator::new(
+            must_not_anonymous(&caller_registration).unwrap(),
             name.to_string(),
             patch_values,
             Resolver::new(name.to_string()),

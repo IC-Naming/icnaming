@@ -1,8 +1,8 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 use std::str::FromStr;
 use std::sync::Arc;
 
-use candid::{Principal, Service};
+use candid::Principal;
 
 use common::{AuthPrincipal, CallContext};
 use log::{debug, info};
@@ -15,7 +15,8 @@ use common::constants::{
 };
 use common::dto::IRegistryUsers;
 use common::errors::*;
-use common::named_canister_ids::CanisterNames;
+
+use common::named_canister_ids::{is_named_canister_id, CanisterNames};
 use common::permissions::must_not_anonymous;
 
 use crate::coinaddress::{validate_btc_address, validate_ltc_address};
@@ -71,8 +72,7 @@ impl ResolverService {
             }
         });
 
-        let mut context =
-            SetRecordValueValidator::new(caller, name.to_string(), patch_value, resolver);
+        let context = SetRecordValueValidator::new(caller, name.to_string(), patch_value, resolver);
         let input = context.validate().await?;
 
         input.update_state()?;
@@ -215,7 +215,7 @@ impl SetRecordValueValidator {
     pub async fn validate(&self) -> ServiceResult<SetRecordValueInput> {
         let mut patch_values = vec![];
         // validate and normalize key and value
-        let mut update_primary_name_input_value = self
+        let update_primary_name_input_value = self
             .patch_value
             .get(RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL)
             .cloned();
@@ -240,22 +240,29 @@ impl SetRecordValueValidator {
             });
         }
 
-        // check permission
         let users = self.registry_api.get_users(&self.name).await?;
-        if !users.can_operate(&self.caller.0) {
-            debug!("Permission denied for {}", self.caller.0);
-            return Err(NamingError::PermissionDenied);
-        }
+        let owner = users.get_owner();
 
-        // check ResolverKey::SettingReverseResolutionPrincipal
-        if update_primary_name_input_value.is_some() {
-            if &self.caller.0 != users.get_owner() {
-                debug!(
-                    "SettingReverseResolutionPrincipal is not allowed since caller is not owner"
-                );
+        let owner = if is_named_canister_id(CanisterNames::Registrar, self.caller.0) {
+            owner.clone()
+        } else {
+            // check permission
+            if !users.can_operate(&self.caller.0) {
+                debug!("Permission denied for {}", self.caller.0);
                 return Err(NamingError::PermissionDenied);
             }
-        }
+
+            // check ResolverKey::SettingReverseResolutionPrincipal
+            if update_primary_name_input_value.is_some() {
+                if &self.caller.0 != owner {
+                    debug!(
+                    "SettingReverseResolutionPrincipal is not allowed since caller is not owner"
+                );
+                    return Err(NamingError::PermissionDenied);
+                }
+            }
+            self.caller.0.clone()
+        };
 
         Ok(SetRecordValueInput {
             name: self.name.clone(),
@@ -276,9 +283,9 @@ impl SetRecordValueValidator {
                 update_primary_name_input_value
             {
                 if principalString.is_empty() {
-                    UpdatePrimaryNameInput::Remove(self.caller.0.clone())
+                    UpdatePrimaryNameInput::Remove(owner)
                 } else {
-                    UpdatePrimaryNameInput::Set(self.caller.0.clone())
+                    UpdatePrimaryNameInput::Set(owner)
                 }
             } else {
                 UpdatePrimaryNameInput::DoNothing

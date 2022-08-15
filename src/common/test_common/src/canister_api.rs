@@ -2,6 +2,7 @@ use async_trait::async_trait;
 use candid::{Nat, Principal};
 use mockall::{mock, predicate::*};
 use rstest::*;
+use std::collections::HashMap;
 
 use common::canister_api::*;
 use common::cycles_minting_types::*;
@@ -51,6 +52,7 @@ mock! {
 impl IResolverApi for ResolverApi {
     async fn ensure_resolver_created(&self, name: String) -> ActorResult<bool>;
     async fn remove_resolvers(&self, names: Vec<String>) -> ActorResult<bool>;
+    async fn set_record_value(&self, name: String, patch_values: HashMap<String, String>) -> ActorResult<bool>;
 }
 }
 

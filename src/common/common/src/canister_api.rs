@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::fmt::{Debug, Display, Formatter};
 use std::io::Write;
 use std::str::FromStr;
@@ -132,6 +133,11 @@ pub trait IRegistryApi {
 pub trait IResolverApi {
     async fn ensure_resolver_created(&self, name: String) -> ActorResult<bool>;
     async fn remove_resolvers(&self, names: Vec<String>) -> ActorResult<bool>;
+    async fn set_record_value(
+        &self,
+        name: String,
+        patch_values: HashMap<String, String>,
+    ) -> ActorResult<bool>;
 }
 
 #[async_trait]

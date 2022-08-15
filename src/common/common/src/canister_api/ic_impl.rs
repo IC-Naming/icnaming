@@ -91,6 +91,19 @@ impl IResolverApi for ResolverApi {
     async fn remove_resolvers(&self, names: Vec<String>) -> ActorResult<bool> {
         call_canister_as_icns_result(CanisterNames::Resolver, "remove_resolvers", (names,)).await
     }
+
+    async fn set_record_value(
+        &self,
+        name: String,
+        patch_values: HashMap<String, String>,
+    ) -> ActorResult<bool> {
+        call_canister_as_icns_result(
+            CanisterNames::Resolver,
+            "set_record_value",
+            (name, patch_values),
+        )
+        .await
+    }
 }
 
 #[derive(Default)]

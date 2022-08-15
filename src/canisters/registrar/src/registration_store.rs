@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::fmt::{Debug, Formatter};
 
 use candid::{decode_args, encode_args, CandidType, Deserialize, Principal};
-use common::naming::{FirstLevelName, NormalizedName};
+use common::naming::FirstLevelName;
 
 use common::state::StableState;
 
@@ -93,6 +93,13 @@ impl RegistrationStore {
             .and_modify(|registration| {
                 registration.expired_at = expired_at;
             });
+    }
+
+    pub fn get_user_own_registration_count(&self, user: &Principal) -> usize {
+        self.registrations
+            .values()
+            .filter(|registration| registration.is_owner(user))
+            .count()
     }
 }
 

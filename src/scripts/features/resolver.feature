@@ -12,7 +12,10 @@ Feature: Query Api
 
   Scenario: Query default resolver values
     Then get_record_value "hello.ic" should be as below
-      | key | value |
+      | key                                   | value                                                            |
+      | settings.reverse_resolution.principal | 2eis6-ev3kx-wr3pi-otbsb-kzzrp-z3oyb-poe6w-bdbtz-gtigi-6ipki-3qe  |
+      | principal.icp                         | 2eis6-ev3kx-wr3pi-otbsb-kzzrp-z3oyb-poe6w-bdbtz-gtigi-6ipki-3qe  |
+      | account_id.icp                        | 3445e6cc1bb5397fd89fd1e81090f09541923359bc37fab92c29873b168ba70e |
 
   Scenario: Update resolver values
     When I update resolver "hello.ic" with values
@@ -24,13 +27,15 @@ Feature: Query Api
       | canister.icp                          | qsgjb-riaaa-aaaaa-aaaga-cai                                     |
       | settings.reverse_resolution.principal | 2eis6-ev3kx-wr3pi-otbsb-kzzrp-z3oyb-poe6w-bdbtz-gtigi-6ipki-3qe |
     Then get_record_value "hello.ic" should be as below
-      | key                                   | value                                                           |
-      | token.icp                             | qjdve-lqaaa-aaaaa-aaaeq-cai                                     |
-      | token.btc                             | 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa                              |
-      | token.ltc                             | LUwxSibYhxq2u6RfhQmkuTPZRk2wNjwLbE                              |
-      | token.eth                             | 0xb436ef6cc9f24193ccb42f98be2b1db764484514                      |
-      | canister.icp                          | qsgjb-riaaa-aaaaa-aaaga-cai                                     |
-      | settings.reverse_resolution.principal | 2eis6-ev3kx-wr3pi-otbsb-kzzrp-z3oyb-poe6w-bdbtz-gtigi-6ipki-3qe |
+      | key                                   | value                                                            |
+      | token.icp                             | qjdve-lqaaa-aaaaa-aaaeq-cai                                      |
+      | token.btc                             | 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa                               |
+      | token.ltc                             | LUwxSibYhxq2u6RfhQmkuTPZRk2wNjwLbE                               |
+      | token.eth                             | 0xb436ef6cc9f24193ccb42f98be2b1db764484514                       |
+      | canister.icp                          | qsgjb-riaaa-aaaaa-aaaga-cai                                      |
+      | settings.reverse_resolution.principal | 2eis6-ev3kx-wr3pi-otbsb-kzzrp-z3oyb-poe6w-bdbtz-gtigi-6ipki-3qe  |
+      | principal.icp                         | 2eis6-ev3kx-wr3pi-otbsb-kzzrp-z3oyb-poe6w-bdbtz-gtigi-6ipki-3qe  |
+      | account_id.icp                        | 3445e6cc1bb5397fd89fd1e81090f09541923359bc37fab92c29873b168ba70e |
     And Reverse resolve name "2eis6-ev3kx-wr3pi-otbsb-kzzrp-z3oyb-poe6w-bdbtz-gtigi-6ipki-3qe" should be "hello.ic"
 
   Scenario: Update resolver values with invalid key
@@ -53,8 +58,11 @@ Feature: Query Api
       | token.icp    | qjdve-lqaaa-aaaaa-aaaeq-cai |
       | canister.icp |                             |
     Then get_record_value "hello.ic" should be as below
-      | key       | value                       |
-      | token.icp | qjdve-lqaaa-aaaaa-aaaeq-cai |
+      | key                                   | value                                                            |
+      | token.icp                             | qjdve-lqaaa-aaaaa-aaaeq-cai                                      |
+      | settings.reverse_resolution.principal | 2eis6-ev3kx-wr3pi-otbsb-kzzrp-z3oyb-poe6w-bdbtz-gtigi-6ipki-3qe  |
+      | principal.icp                         | 2eis6-ev3kx-wr3pi-otbsb-kzzrp-z3oyb-poe6w-bdbtz-gtigi-6ipki-3qe  |
+      | account_id.icp                        | 3445e6cc1bb5397fd89fd1e81090f09541923359bc37fab92c29873b168ba70e |
 
   Scenario: Delete reverse resolution principal
     Given I update resolver "hello.ic" with values
@@ -64,7 +72,9 @@ Feature: Query Api
       | key                                   | value |
       | settings.reverse_resolution.principal |       |
     Then get_record_value "hello.ic" should be as below
-      | key | value |
+      | key                                   | value                                                            |
+      | principal.icp                         | 2eis6-ev3kx-wr3pi-otbsb-kzzrp-z3oyb-poe6w-bdbtz-gtigi-6ipki-3qe  |
+      | account_id.icp                        | 3445e6cc1bb5397fd89fd1e81090f09541923359bc37fab92c29873b168ba70e |
     And Reverse resolve name "2eis6-ev3kx-wr3pi-otbsb-kzzrp-z3oyb-poe6w-bdbtz-gtigi-6ipki-3qe" should be "none"
 
   Scenario: Update reverse resolution principal multiple times
@@ -75,9 +85,13 @@ Feature: Query Api
       | key                                   | value                                                           |
       | settings.reverse_resolution.principal | 2eis6-ev3kx-wr3pi-otbsb-kzzrp-z3oyb-poe6w-bdbtz-gtigi-6ipki-3qe |
     Then get_record_value "hello.ic" should be as below
-      | key | value |
+      | key                                   | value                                                            |
+      | principal.icp                         | 2eis6-ev3kx-wr3pi-otbsb-kzzrp-z3oyb-poe6w-bdbtz-gtigi-6ipki-3qe  |
+      | account_id.icp                        | 3445e6cc1bb5397fd89fd1e81090f09541923359bc37fab92c29873b168ba70e |
     And get_record_value "wonderful.ic" should be as below
       | key                                   | value                                                           |
-      | settings.reverse_resolution.principal | 2eis6-ev3kx-wr3pi-otbsb-kzzrp-z3oyb-poe6w-bdbtz-gtigi-6ipki-3qe |
+      | settings.reverse_resolution.principal | 2eis6-ev3kx-wr3pi-otbsb-kzzrp-z3oyb-poe6w-bdbtz-gtigi-6ipki-3qe  |
+      | principal.icp                         | 2eis6-ev3kx-wr3pi-otbsb-kzzrp-z3oyb-poe6w-bdbtz-gtigi-6ipki-3qe  |
+      | account_id.icp                        | 3445e6cc1bb5397fd89fd1e81090f09541923359bc37fab92c29873b168ba70e |
     And Reverse resolve name "2eis6-ev3kx-wr3pi-otbsb-kzzrp-z3oyb-poe6w-bdbtz-gtigi-6ipki-3qe" should be "wonderful.ic"
 
