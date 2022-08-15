@@ -242,26 +242,26 @@ impl SetRecordValueValidator {
 
         let users = self.registry_api.get_users(&self.name).await?;
         let owner = users.get_owner();
-        let owner = match is_named_canister_id(CanisterNames::Registrar, self.caller.0) {
-            false => {
-                // check permission
-                if !users.can_operate(&self.caller.0) {
-                    debug!("Permission denied for {}", self.caller.0);
-                    return Err(NamingError::PermissionDenied);
-                }
 
-                // check ResolverKey::SettingReverseResolutionPrincipal
-                if update_primary_name_input_value.is_some() {
-                    if &self.caller.0 != owner {
-                        debug!(
+        let owner = if is_named_canister_id(CanisterNames::Registrar, self.caller.0) {
+            owner.clone()
+        } else {
+            // check permission
+            if !users.can_operate(&self.caller.0) {
+                debug!("Permission denied for {}", self.caller.0);
+                return Err(NamingError::PermissionDenied);
+            }
+
+            // check ResolverKey::SettingReverseResolutionPrincipal
+            if update_primary_name_input_value.is_some() {
+                if &self.caller.0 != owner {
+                    debug!(
                     "SettingReverseResolutionPrincipal is not allowed since caller is not owner"
                 );
-                        return Err(NamingError::PermissionDenied);
-                    }
+                    return Err(NamingError::PermissionDenied);
                 }
-                self.caller.0.clone()
             }
-            true => owner.clone(),
+            self.caller.0.clone()
         };
 
         Ok(SetRecordValueInput {
@@ -283,9 +283,9 @@ impl SetRecordValueValidator {
                 update_primary_name_input_value
             {
                 if principalString.is_empty() {
-                    UpdatePrimaryNameInput::Remove(owner.clone())
+                    UpdatePrimaryNameInput::Remove(owner)
                 } else {
-                    UpdatePrimaryNameInput::Set(owner.clone())
+                    UpdatePrimaryNameInput::Set(owner)
                 }
             } else {
                 UpdatePrimaryNameInput::DoNothing
