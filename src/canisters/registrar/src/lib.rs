@@ -16,6 +16,8 @@ mod shared_actor;
 mod stats_service;
 mod token_service;
 
+mod token_index_store;
+
 use crate::state::InitArgs;
 use candid::{candid_method, CandidType, Deserialize, Principal};
 use common::constants::is_env;
@@ -566,6 +568,11 @@ impl GetNameStatueActorResponse {
             Err(err) => GetNameStatueActorResponse::Err(err.into()),
         }
     }
+}
+
+#[derive(Debug, Deserialize, CandidType)]
+pub struct RegistrationMetadata {
+    pub data: HashMap<String, String>,
 }
 
 candid::export_service!();

@@ -272,6 +272,8 @@ impl RegistrarService {
                 resolver,
             )
             .await;
+        todo!();
+
         if api_result.is_ok() {
             trace!("registered success from registry {:?}", registration);
             let own_registration_count = STATE.with(|s| {
@@ -960,6 +962,19 @@ impl RegistrarService {
             kept: false,
             details: None,
         });
+    }
+
+    pub fn get_registry() -> Vec<(u32, String)> {
+        let list = STATE.with(|s| {
+            let store = s.token_index_store.borrow();
+            store
+                .get_registrations()
+                .iter()
+                .map(|registration| (registration.0.value.clone(), registration.1.value.clone()))
+                .collect()
+        });
+
+        return list;
     }
 }
 
