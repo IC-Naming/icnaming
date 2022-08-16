@@ -21,6 +21,7 @@ pub mod naming;
 pub mod permissions;
 pub mod state;
 pub mod timeout_lock;
+pub mod token_identifier;
 
 #[cfg(test)]
 mod test_common;

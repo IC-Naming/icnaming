@@ -571,8 +571,70 @@ impl GetNameStatueActorResponse {
 }
 
 #[derive(Debug, Deserialize, CandidType)]
+pub enum GetRegistryResponse {
+    Ok(Vec<(u32, String)>),
+    Err(ErrorInfo),
+}
+impl GetRegistryResponse {
+    pub fn new(result: ServiceResult<Vec<(u32, String)>>) -> GetRegistryResponse {
+        match result {
+            Ok(data) => GetRegistryResponse::Ok(data),
+            Err(err) => GetRegistryResponse::Err(err.into()),
+        }
+    }
+}
+#[query(name = "getRegistry")]
+#[candid_method(query)]
+fn get_registry(name: String) -> GetRegistryResponse {
+    let service = RegistrarService::default();
+    let result = service.get_registry();
+    GetRegistryResponse::new(result)
+}
+
+#[derive(Debug, Deserialize, CandidType)]
 pub struct RegistrationMetadata {
     pub data: HashMap<String, String>,
+}
+#[derive(Debug, Deserialize, CandidType)]
+pub enum GetTokensResponse {
+    Ok(Vec<(u32, RegistrationMetadata)>),
+    Err(ErrorInfo),
+}
+impl GetTokensResponse {
+    pub fn new(result: ServiceResult<Vec<(u32, RegistrationMetadata)>>) -> GetTokensResponse {
+        match result {
+            Ok(data) => GetTokensResponse::Ok(data),
+            Err(err) => GetTokensResponse::Err(err.into()),
+        }
+    }
+}
+// #[query(name = "getTokens")]
+// #[candid_method(query)]
+// fn get_tokens(name: String) -> GetRegistryResponse {
+//     let service = RegistrarService::default();
+//     let result = service.get();
+//     GetRegistryResponse::new(result)
+// }
+#[query(name = "supply")]
+#[candid_method(query)]
+fn get_supply() -> GetSupplyResponse {
+    let service = RegistrarService::default();
+    let result = service.get_supply();
+    GetSupplyResponse::new(result)
+}
+
+#[derive(Debug, Deserialize, CandidType)]
+pub enum GetSupplyResponse {
+    Ok(u128),
+    Err(ErrorInfo),
+}
+impl GetSupplyResponse {
+    pub fn new(result: ServiceResult<u128>) -> GetSupplyResponse {
+        match result {
+            Ok(data) => GetSupplyResponse::Ok(data),
+            Err(err) => GetSupplyResponse::Err(err.into()),
+        }
+    }
 }
 
 candid::export_service!();
