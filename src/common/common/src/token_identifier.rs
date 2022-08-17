@@ -1,5 +1,7 @@
 #![allow(dead_code)]
+
 use crate::canister_api::AccountIdentifier;
+use crate::{NamingError, ServiceResult};
 use candid::{CandidType, Deserialize, Principal};
 
 const CANISTER_ID_HASH_LEN_IN_BYTES: usize = 10;
@@ -28,6 +30,7 @@ pub struct Fungible {
     pub decimals: TokenIdentifier,
     pub metadata: Option<Vec<u8>>,
 }
+
 // A user can be any principal or canister, which can hold a balance
 #[derive(CandidType, Debug, Clone, Deserialize)]
 pub enum User {
@@ -37,7 +40,7 @@ pub enum User {
     Principal(Principal),
 }
 
-pub fn is_valid_token_id(tid: TokenIdentifier, p: Principal) -> bool {
+pub fn is_valid_token_id(tid: &TokenIdentifier, p: &Principal) -> bool {
     let t_parsed = decode_token_id(tid);
     match t_parsed {
         Ok(t) => t.canister == p.as_slice().to_vec(),
@@ -45,13 +48,24 @@ pub fn is_valid_token_id(tid: TokenIdentifier, p: Principal) -> bool {
     }
 }
 
-pub fn get_token_index(tid: TokenIdentifier) -> TokenIndex {
+pub fn get_token_index(tid: &TokenIdentifier) -> TokenIndex {
     let tobj = decode_token_id(tid).unwrap();
     tobj.index
 }
 
-pub fn decode_token_id(tid: TokenIdentifier) -> Result<TokenObj, String> {
-    let principal_parse_res = Principal::from_text(tid.value);
+pub fn get_valid_token_index(
+    tid: &TokenIdentifier,
+    principal: &Principal,
+) -> ServiceResult<TokenIndex> {
+    if is_valid_token_id(tid, principal) {
+        let index = get_token_index(tid);
+        return Ok(index);
+    }
+    Err(NamingError::InvalidTokenIdentifier)
+}
+
+pub fn decode_token_id(tid: &TokenIdentifier) -> Result<TokenObj, String> {
+    let principal_parse_res = Principal::from_text(tid.value.clone());
     match principal_parse_res {
         Ok(principal) => {
             let bytes = principal.as_slice();
@@ -95,7 +109,7 @@ fn encode_decode_tx_id() {
         TokenIdentifier {
             value: tx_id.clone()
         },
-        token_id
+        token_id,
     ));
     let decode_res = decode_token_id(TokenIdentifier {
         value: tx_id.clone(),

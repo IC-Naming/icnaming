@@ -35,7 +35,7 @@ use common::errors::{BooleanActorResponse, ErrorInfo, ServiceResult};
 use common::named_principals::PRINCIPAL_NAME_TIMER_TRIGGER;
 use common::nft::Metadata;
 use common::permissions::must_be_named_principal;
-use common::token_identifier::TokenIdentifier;
+use common::token_identifier::{TokenIdentifier, TokenIndex};
 use common::{CallContext, TimeInNs};
 
 use crate::periodic_tasks_runner::run_periodic_tasks;
@@ -572,46 +572,20 @@ impl GetNameStatueActorResponse {
     }
 }
 
-#[derive(Debug, Deserialize, CandidType)]
-pub enum GetRegistryResponse {
-    Ok(Vec<(u32, String)>),
-    Err(ErrorInfo),
-}
-impl GetRegistryResponse {
-    pub fn new(result: ServiceResult<Vec<(u32, String)>>) -> GetRegistryResponse {
-        match result {
-            Ok(data) => GetRegistryResponse::Ok(data),
-            Err(err) => GetRegistryResponse::Err(err.into()),
-        }
-    }
-}
 #[query(name = "getRegistry")]
-#[candid_method(query)]
-fn get_registry(name: String) -> GetRegistryResponse {
+#[candid_method(query, rename = "getRegistry")]
+fn get_registry(name: String) -> ServiceResult<Vec<(u32, String)>> {
     let service = RegistrarService::default();
     let result = service.get_registry();
-    GetRegistryResponse::new(result)
+    result
 }
 
-#[derive(Debug, Deserialize, CandidType)]
-pub enum GetTokensResponse {
-    Ok(Vec<(u32, Metadata)>),
-    Err(ErrorInfo),
-}
-impl GetTokensResponse {
-    pub fn new(result: ServiceResult<Vec<(u32, Metadata)>>) -> GetTokensResponse {
-        match result {
-            Ok(data) => GetTokensResponse::Ok(data),
-            Err(err) => GetTokensResponse::Err(err.into()),
-        }
-    }
-}
 #[query(name = "getTokens")]
-#[candid_method(query)]
-fn get_tokens() -> GetTokensResponse {
+#[candid_method(query, rename = "getTokens")]
+fn get_tokens() -> ServiceResult<Vec<(u32, Metadata)>> {
     let service = RegistrarService::default();
     let result = service.get_tokens();
-    GetTokensResponse::new(result)
+    result
 }
 #[query(name = "metadata")]
 #[candid_method(query)]
@@ -624,24 +598,25 @@ fn metadata(token: TokenIdentifier) -> ServiceResult<Metadata> {
 
 #[query(name = "supply")]
 #[candid_method(query)]
-fn get_supply() -> GetSupplyResponse {
+fn get_supply() -> ServiceResult<u128> {
     let service = RegistrarService::default();
     let result = service.get_supply();
-    GetSupplyResponse::new(result)
+    result
 }
 
-#[derive(Debug, Deserialize, CandidType)]
-pub enum GetSupplyResponse {
-    Ok(u128),
-    Err(ErrorInfo),
+#[query(name = "getMinter")]
+#[candid_method(query, rename = "getMinter")]
+fn minter() -> Principal {
+    Principal::anonymous()
 }
-impl GetSupplyResponse {
-    pub fn new(result: ServiceResult<u128>) -> GetSupplyResponse {
-        match result {
-            Ok(data) => GetSupplyResponse::Ok(data),
-            Err(err) => GetSupplyResponse::Err(err.into()),
-        }
-    }
+
+#[query(name = "bearer")]
+#[candid_method(query, rename = "bearer")]
+fn bearer(token: TokenIdentifier) -> ServiceResult<String> {
+    let service = RegistrarService::default();
+    let canister = api::caller();
+    let result = service.bearer(&canister, &token);
+    result
 }
 
 candid::export_service!();

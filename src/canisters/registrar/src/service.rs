@@ -29,7 +29,9 @@ use common::permissions::{
     must_be_in_named_canister, must_be_named_canister, must_be_system_owner,
 };
 use common::permissions::{must_be_named_principal, must_not_anonymous};
-use common::token_identifier::{get_token_index, is_valid_token_id, TokenIdentifier, User};
+use common::token_identifier::{
+    get_token_index, get_valid_token_index, is_valid_token_id, TokenIdentifier, User,
+};
 use common::{AuthPrincipal, CallContext, TimeInNs};
 
 use crate::name_locker::{try_lock_name, unlock_name};
@@ -1016,17 +1018,14 @@ impl RegistrarService {
         caller: &Principal,
         token: TokenIdentifier,
     ) -> ServiceResult<Metadata> {
-        if !is_valid_token_id(token.clone(), caller.clone()) {
-            return Err(NamingError::InvalidTokenIdentifier);
-        }
-        let token_id = get_token_index(token.clone());
+        let token_index = get_valid_token_index(&token, caller)?;
         let registration = STATE.with(|s| {
             let store = s.token_index_store.borrow();
-            store.get_registration(&token_id)
+            store.get_registration(&token_index)
         });
         if let Some(registration) = registration {
             return Ok(Metadata::NonFungible({
-                let mut metadata = NonFungible {
+                let metadata = NonFungible {
                     metadata: Some(registration.value.clone().as_bytes().to_vec()),
                 };
                 metadata
@@ -1039,6 +1038,29 @@ impl RegistrarService {
         STATE.with(|s| {
             let store = s.token_index_store.borrow();
             Ok(store.get_index().value as u128)
+        })
+    }
+
+    pub(crate) fn bearer(
+        &self,
+        canister: &Principal,
+        token: &TokenIdentifier,
+    ) -> ServiceResult<String> {
+        let token_index = get_valid_token_index(token, canister)?;
+        STATE.with(|s| {
+            let token_index_store = s.token_index_store.borrow();
+            let registration_store = s.registration_store.borrow();
+            let registration_name = token_index_store.get_registration(&token_index);
+            if let Some(registration_name) = registration_name {
+                let registration =
+                    registration_store.get_registration(&registration_name.value.into());
+                return if let Some(registration) = registration {
+                    Ok(registration.get_owner().to_text())
+                } else {
+                    Err(NamingError::InvalidTokenIdentifier)
+                };
+            }
+            Err(NamingError::InvalidTokenIdentifier)
         })
     }
 }
