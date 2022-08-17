@@ -980,7 +980,7 @@ impl RegistrarService {
     pub(crate) fn get_supply(&self) -> ServiceResult<u128> {
         STATE.with(|s| {
             let store = s.token_index_store.borrow();
-            Ok(store.get_index() as u128)
+            Ok(store.get_index().value as u128)
         })
     }
 }

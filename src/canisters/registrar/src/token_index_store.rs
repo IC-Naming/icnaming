@@ -1,13 +1,9 @@
 use candid::{decode_args, encode_args, CandidType, Deserialize, Principal};
 use common::state::StableState;
+use common::token_identifier::TokenIndex;
 use getset::{Getters, Setters};
 use std::borrow::Borrow;
 use std::collections::HashMap;
-
-#[derive(Deserialize, Copy, CandidType, Clone, Hash, Eq, PartialEq, Debug)]
-pub struct TokenIndex {
-    pub value: u32,
-}
 
 #[derive(Deserialize, CandidType, Clone, Hash, Eq, PartialEq, Debug)]
 pub struct RegistrationName {
