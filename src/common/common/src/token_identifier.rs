@@ -23,23 +23,6 @@ pub struct TokenIdentifier {
     pub value: String,
 }
 
-#[derive(CandidType, Debug, Clone, Deserialize)]
-pub struct Fungible {
-    pub name: User,
-    pub symbol: Principal,
-    pub decimals: TokenIdentifier,
-    pub metadata: Option<Vec<u8>>,
-}
-
-// A user can be any principal or canister, which can hold a balance
-#[derive(CandidType, Debug, Clone, Deserialize)]
-pub enum User {
-    #[serde(rename = "address")]
-    Address(String),
-    #[serde(rename = "principal")]
-    Principal(Principal),
-}
-
 pub fn is_valid_token_id(tid: &TokenIdentifier, p: &Principal) -> bool {
     let t_parsed = decode_token_id(tid);
     match t_parsed {
