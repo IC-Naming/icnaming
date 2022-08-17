@@ -4,7 +4,8 @@ use std::ops::Deref;
 use std::str::FromStr;
 use std::sync::Arc;
 
-use candid::{CandidType, Deserialize, Nat, Principal};
+use candid::{encode_args, CandidType, Deserialize, Nat, Principal};
+use hex::ToHex;
 
 use log::{debug, error, info, trace};
 use num_bigint::BigUint;
@@ -13,7 +14,7 @@ use time::{OffsetDateTime, Time};
 
 use common::canister_api::ic_impl::{CyclesMintingApi, RegistryApi, ResolverApi};
 use common::canister_api::{
-    AccountIdentifier, ICyclesMintingApi, IDICPApi, IRegistryApi, IResolverApi,
+    AccountIdentifier, ICyclesMintingApi, IDICPApi, IRegistryApi, IResolverApi, Subaccount,
 };
 use common::constants::*;
 use common::dto::{
@@ -23,16 +24,19 @@ use common::errors::{NamingError, ServiceResult};
 use common::named_canister_ids::{get_named_get_canister_id, CanisterNames};
 use common::named_principals::{PRINCIPAL_NAME_STATE_EXPORTER, PRINCIPAL_NAME_TIMER_TRIGGER};
 use common::naming::{normalize_name, FirstLevelName, NameParseResult};
+use common::nft::{Metadata, NonFungible};
 use common::permissions::{
     must_be_in_named_canister, must_be_named_canister, must_be_system_owner,
 };
 use common::permissions::{must_be_named_principal, must_not_anonymous};
+use common::token_identifier::{get_token_index, is_valid_token_id, TokenIdentifier, User};
 use common::{AuthPrincipal, CallContext, TimeInNs};
 
 use crate::name_locker::{try_lock_name, unlock_name};
 use crate::registration_store::{Registration, RegistrationDetails, RegistrationDto};
 use crate::reserved_list::RESERVED_NAMES;
 use crate::state::*;
+use crate::token_index_store::RegistrationName;
 use crate::token_service::TokenService;
 use crate::user_quota_store::{QuotaType, TransferQuotaDetails};
 
@@ -272,13 +276,20 @@ impl RegistrarService {
                 resolver,
             )
             .await;
-        todo!();
-
         if api_result.is_ok() {
             trace!("registered success from registry {:?}", registration);
             let own_registration_count = STATE.with(|s| {
                 let mut store = s.registration_store.borrow_mut();
                 store.add_registration(registration.clone());
+                let mut token_index_store = s.token_index_store.borrow_mut();
+                let is_new_name_id =
+                    token_index_store.try_add_registration_name(RegistrationName {
+                        value: registration.get_name().to_string(),
+                    });
+                trace!(
+                    "is the registration name of the new id: {:?}",
+                    is_new_name_id
+                );
                 store.get_user_own_registration_count(&owner.0)
             });
             MERTRICS_COUNTER.with(|c| {
@@ -975,6 +986,53 @@ impl RegistrarService {
         });
 
         return Ok(list);
+    }
+
+    pub(crate) fn get_tokens(&self) -> ServiceResult<Vec<(u32, Metadata)>> {
+        let list = STATE.with(|s| {
+            let store = s.token_index_store.borrow();
+            store
+                .get_registrations()
+                .iter()
+                .map(|registration| {
+                    (
+                        registration.0.value.clone(),
+                        Metadata::NonFungible({
+                            let mut metadata = NonFungible {
+                                metadata: Some(registration.1.value.clone().as_bytes().to_vec()),
+                            };
+                            metadata
+                        }),
+                    )
+                })
+                .collect()
+        });
+
+        return Ok(list);
+    }
+
+    pub(crate) fn metadata(
+        &self,
+        caller: &Principal,
+        token: TokenIdentifier,
+    ) -> ServiceResult<Metadata> {
+        if !is_valid_token_id(token.clone(), caller.clone()) {
+            return Err(NamingError::InvalidTokenIdentifier);
+        }
+        let token_id = get_token_index(token.clone());
+        let registration = STATE.with(|s| {
+            let store = s.token_index_store.borrow();
+            store.get_registration(&token_id)
+        });
+        if let Some(registration) = registration {
+            return Ok(Metadata::NonFungible({
+                let mut metadata = NonFungible {
+                    metadata: Some(registration.value.clone().as_bytes().to_vec()),
+                };
+                metadata
+            }));
+        }
+        Err(NamingError::InvalidTokenIdentifier)
     }
 
     pub(crate) fn get_supply(&self) -> ServiceResult<u128> {

@@ -18,6 +18,7 @@ pub mod metrics_encoder;
 pub mod named_canister_ids;
 pub mod named_principals;
 pub mod naming;
+pub mod nft;
 pub mod permissions;
 pub mod state;
 pub mod timeout_lock;

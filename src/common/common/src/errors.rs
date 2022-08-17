@@ -76,6 +76,8 @@ pub enum NamingError {
     InvalidApproveAmount,
     #[error("Too many resolver keys, max is {max:?}")]
     TooManyResolverKeys { max: u32 },
+    #[error("invalid token identifier")]
+    InvalidTokenIdentifier,
 }
 
 impl NamingError {
@@ -113,6 +115,7 @@ impl NamingError {
             NamingError::RenewalYearsError { .. } => 30,
             NamingError::InvalidApproveAmount => 31,
             NamingError::TooManyResolverKeys { .. } => 32,
+            NamingError::InvalidTokenIdentifier => 33,
         }
     }
 }

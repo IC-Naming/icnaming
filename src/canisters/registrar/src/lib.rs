@@ -33,7 +33,9 @@ use std::collections::HashMap;
 use common::dto::{GetPageInput, GetPageOutput, ImportQuotaRequest, ImportQuotaStatus};
 use common::errors::{BooleanActorResponse, ErrorInfo, ServiceResult};
 use common::named_principals::PRINCIPAL_NAME_TIMER_TRIGGER;
+use common::nft::Metadata;
 use common::permissions::must_be_named_principal;
+use common::token_identifier::TokenIdentifier;
 use common::{CallContext, TimeInNs};
 
 use crate::periodic_tasks_runner::run_periodic_tasks;
@@ -592,29 +594,34 @@ fn get_registry(name: String) -> GetRegistryResponse {
 }
 
 #[derive(Debug, Deserialize, CandidType)]
-pub struct RegistrationMetadata {
-    pub data: HashMap<String, String>,
-}
-#[derive(Debug, Deserialize, CandidType)]
 pub enum GetTokensResponse {
-    Ok(Vec<(u32, RegistrationMetadata)>),
+    Ok(Vec<(u32, Metadata)>),
     Err(ErrorInfo),
 }
 impl GetTokensResponse {
-    pub fn new(result: ServiceResult<Vec<(u32, RegistrationMetadata)>>) -> GetTokensResponse {
+    pub fn new(result: ServiceResult<Vec<(u32, Metadata)>>) -> GetTokensResponse {
         match result {
             Ok(data) => GetTokensResponse::Ok(data),
             Err(err) => GetTokensResponse::Err(err.into()),
         }
     }
 }
-// #[query(name = "getTokens")]
-// #[candid_method(query)]
-// fn get_tokens(name: String) -> GetRegistryResponse {
-//     let service = RegistrarService::default();
-//     let result = service.get();
-//     GetRegistryResponse::new(result)
-// }
+#[query(name = "getTokens")]
+#[candid_method(query)]
+fn get_tokens() -> GetTokensResponse {
+    let service = RegistrarService::default();
+    let result = service.get_tokens();
+    GetTokensResponse::new(result)
+}
+#[query(name = "metadata")]
+#[candid_method(query)]
+fn metadata(token: TokenIdentifier) -> ServiceResult<Metadata> {
+    let service = RegistrarService::default();
+    let caller = api::caller();
+    let result = service.metadata(&caller, token);
+    result
+}
+
 #[query(name = "supply")]
 #[candid_method(query)]
 fn get_supply() -> GetSupplyResponse {
