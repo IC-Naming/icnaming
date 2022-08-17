@@ -7,7 +7,7 @@ use candid::{CandidType, Deserialize, Principal};
 const CANISTER_ID_HASH_LEN_IN_BYTES: usize = 10;
 const TOKEN_ID_PREFIX: [u8; 4] = [10, 116, 105, 100]; //b"\x0Atid"
 
-#[derive(Deserialize, Copy, CandidType, Clone, Hash, Eq, PartialEq, Debug)]
+#[derive(Default, Deserialize, Copy, CandidType, Clone, Hash, Eq, PartialEq, Debug)]
 pub struct TokenIndex {
     pub value: u32,
 }

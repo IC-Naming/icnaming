@@ -1,7 +1,6 @@
 use candid::{decode_args, encode_args, CandidType, Deserialize, Principal};
 use common::state::StableState;
 use common::token_identifier::TokenIndex;
-use getset::{Getters, Setters};
 use std::borrow::Borrow;
 use std::collections::HashMap;
 
@@ -10,8 +9,7 @@ pub struct RegistrationName {
     pub value: String,
 }
 
-#[derive(Getters, Setters)]
-#[getset(get = "pub")]
+#[derive(Default)]
 pub struct TokenIndexStore {
     index: TokenIndex,
     registrations: HashMap<TokenIndex, RegistrationName>,
@@ -68,10 +66,5 @@ impl StableState for TokenIndexStore {
             index,
             registrations,
         })
-    }
-}
-impl Default for TokenIndexStore {
-    fn default() -> Self {
-        TokenIndexStore::new()
     }
 }
