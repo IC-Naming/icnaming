@@ -595,8 +595,8 @@ fn get_tokens() -> ServiceResult<Vec<(u32, Metadata)>> {
 #[candid_method(query)]
 fn metadata(token: TokenIdentifier) -> ServiceResult<Metadata> {
     let service = RegistrarService::default();
-    let caller = api::caller();
-    let result = service.metadata(&caller, token);
+    let call_context = CallContext::from_ic();
+    let result = service.metadata(&call_context, token);
     result
 }
 
@@ -618,8 +618,8 @@ fn minter() -> Principal {
 #[candid_method(query, rename = "bearer")]
 fn bearer(token: TokenIdentifier) -> ServiceResult<String> {
     let service = RegistrarService::default();
-    let canister = api::caller();
-    let result = service.bearer(&canister, &token);
+    let call_context = CallContext::from_ic();
+    let result = service.bearer(&call_context, &token);
     result
 }
 
@@ -641,8 +641,8 @@ impl ImportTokenIdResponse {
 #[query(name = "import_token_id_from_registration")]
 fn import_token_id_from_registration() -> ImportTokenIdResponse {
     let service = RegistrarService::default();
-    let caller = api::caller();
-    let result = service.import_token_id_from_registration(&caller);
+    let call_context = CallContext::from_ic();
+    let result = service.import_token_id_from_registration(&call_context);
     ImportTokenIdResponse::new(result)
 }
 

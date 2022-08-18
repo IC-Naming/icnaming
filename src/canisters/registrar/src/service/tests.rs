@@ -1288,9 +1288,7 @@ mod nft_query_service {
         let test_name_str = create_test_name("icnaming");
         STATE.with(|s| {
             let mut store = s.token_index_store.borrow_mut();
-            store.try_add_registration_name(RegistrationName {
-                value: test_name_str.to_string(),
-            });
+            store.try_add_registration_name(RegistrationName(test_name_str.to_string()));
         });
         let result = service.get_registry();
         assert!(result.is_ok());
@@ -1304,9 +1302,7 @@ mod nft_query_service {
         let test_name_str = create_test_name("icnaming");
         STATE.with(|s| {
             let mut store = s.token_index_store.borrow_mut();
-            store.try_add_registration_name(RegistrationName {
-                value: test_name_str.to_string(),
-            });
+            store.try_add_registration_name(RegistrationName(test_name_str.to_string()));
         });
 
         let result = service.get_tokens();
@@ -1321,9 +1317,7 @@ mod nft_query_service {
         let test_name_str = create_test_name("icnaming");
         STATE.with(|s| {
             let mut store = s.token_index_store.borrow_mut();
-            store.try_add_registration_name(RegistrationName {
-                value: test_name_str.to_string(),
-            });
+            store.try_add_registration_name(RegistrationName(test_name_str.to_string()));
             let mut store = s.registration_store.borrow_mut();
             store.add_registration(Registration::new(
                 mock_canister1.clone(),
@@ -1333,8 +1327,14 @@ mod nft_query_service {
             ));
         });
         let canister_id = get_valid_canister_id(&mock_canister1).unwrap();
-        let token_id = encode_token_id(canister_id, TokenIndex { value: 1u32 });
-        let result = service.metadata(&mock_canister1, token_id);
+        let token_id = encode_token_id(canister_id, TokenIndex(1u32));
+        let result = service.metadata(
+            &CallContext {
+                caller: mock_canister1,
+                now: TimeInNs(mock_now),
+            },
+            token_id,
+        );
         println!("{:?}", result);
         assert!(result.is_ok());
 
@@ -1356,9 +1356,7 @@ mod nft_query_service {
         let test_name_str = create_test_name("icnaming");
         STATE.with(|s| {
             let mut store = s.token_index_store.borrow_mut();
-            store.try_add_registration_name(RegistrationName {
-                value: test_name_str.to_string(),
-            });
+            store.try_add_registration_name(RegistrationName(test_name_str.to_string()));
         });
         let result = service.get_supply();
         assert!(result.is_ok());
@@ -1366,6 +1364,7 @@ mod nft_query_service {
 
         assert_eq!(result, 1u128);
     }
+
     #[rstest]
     fn get_supply_default(mut service: RegistrarService) {
         let result = service.get_supply();

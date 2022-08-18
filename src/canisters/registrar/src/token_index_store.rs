@@ -5,9 +5,7 @@ use std::borrow::Borrow;
 use std::collections::HashMap;
 
 #[derive(Deserialize, CandidType, Clone, Hash, Eq, PartialEq, Debug)]
-pub struct RegistrationName {
-    pub value: String,
-}
+pub struct RegistrationName(pub String);
 
 #[derive(Default)]
 pub struct TokenIndexStore {
@@ -18,7 +16,7 @@ pub struct TokenIndexStore {
 impl TokenIndexStore {
     pub fn new() -> TokenIndexStore {
         TokenIndexStore {
-            index: TokenIndex { value: 0 },
+            index: TokenIndex(0),
             registrations: HashMap::new(),
         }
     }
@@ -27,7 +25,7 @@ impl TokenIndexStore {
         let mut count = 0;
         for name in names {
             if self
-                .try_add_registration_name(RegistrationName { value: name })
+                .try_add_registration_name(RegistrationName(name))
                 .is_some()
             {
                 count += 1;
@@ -46,7 +44,7 @@ impl TokenIndexStore {
     }
 
     fn next_index(&mut self) -> TokenIndex {
-        self.index.value += 1;
+        self.index.0 += 1;
         self.index.clone()
     }
     pub fn get_index(&self) -> TokenIndex {

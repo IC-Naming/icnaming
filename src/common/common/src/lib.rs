@@ -2,6 +2,8 @@ use crate::errors::{NamingError, ServiceResult};
 use crate::named_canister_ids::{is_named_canister_id, CanisterNames};
 use crate::named_principals::is_named_principal;
 use crate::permissions::is_admin;
+use crate::token_identifier::CanisterId;
+use crate::token_identifier::CANISTER_ID_HASH_LEN_IN_BYTES;
 use candid::{CandidType, Deserialize, Principal};
 use ic_cdk::api;
 use std::fmt::{Display, Formatter};
@@ -116,6 +118,13 @@ impl CallContext {
             return Err(NamingError::Unauthorized);
         }
         Ok(AuthPrincipal(self.caller))
+    }
+
+    pub fn must_be_canister_id(&self) -> ServiceResult<CanisterId> {
+        if self.caller.as_slice().len() == CANISTER_ID_HASH_LEN_IN_BYTES {
+            return Ok(CanisterId(self.caller.clone()));
+        }
+        Err(NamingError::InvalidCanisterId)
     }
 
     pub fn must_be_named_principal(&self, name: &str) -> ServiceResult<AuthPrincipal> {
