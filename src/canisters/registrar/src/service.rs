@@ -28,7 +28,7 @@ use common::permissions::{
     must_be_in_named_canister, must_be_named_canister, must_be_system_owner,
 };
 use common::permissions::{must_be_named_principal, must_not_anonymous};
-use common::token_identifier::{get_valid_canister_id, get_valid_token_index, TokenIdentifier};
+use common::token_identifier::{get_valid_token_index, TokenIdentifier};
 use common::{AuthPrincipal, CallContext, TimeInNs};
 
 use crate::name_locker::{try_lock_name, unlock_name};
