@@ -572,6 +572,9 @@ impl GetNameStatueActorResponse {
     }
 }
 
+#[derive(CandidType)]
+pub enum GetRegistryActorResponse {}
+
 #[query(name = "getRegistry")]
 #[candid_method(query, rename = "getRegistry")]
 fn get_registry(name: String) -> ServiceResult<Vec<(u32, String)>> {
@@ -587,6 +590,7 @@ fn get_tokens() -> ServiceResult<Vec<(u32, Metadata)>> {
     let result = service.get_tokens();
     result
 }
+
 #[query(name = "metadata")]
 #[candid_method(query)]
 fn metadata(token: TokenIdentifier) -> ServiceResult<Metadata> {
@@ -617,6 +621,29 @@ fn bearer(token: TokenIdentifier) -> ServiceResult<String> {
     let canister = api::caller();
     let result = service.bearer(&canister, &token);
     result
+}
+
+#[derive(CandidType)]
+pub enum ImportTokenIdResponse {
+    Ok(usize),
+    Err(ErrorInfo),
+}
+
+impl ImportTokenIdResponse {
+    pub fn new(result: ServiceResult<usize>) -> ImportTokenIdResponse {
+        match result {
+            Ok(data) => ImportTokenIdResponse::Ok(data),
+            Err(err) => ImportTokenIdResponse::Err(err.into()),
+        }
+    }
+}
+
+#[query(name = "import_token_id_from_registration")]
+fn import_token_id_from_registration() -> ImportTokenIdResponse {
+    let service = RegistrarService::default();
+    let caller = api::caller();
+    let result = service.import_token_id_from_registration(&caller);
+    ImportTokenIdResponse::new(result)
 }
 
 candid::export_service!();

@@ -23,19 +23,26 @@ impl TokenIndexStore {
         }
     }
 
-    pub fn import_from_registration_store(&mut self, names: Vec<String>) {
+    pub fn import_from_registration_store(&mut self, names: Vec<String>) -> usize {
+        let mut count = 0;
         for name in names {
-            self.try_add_registration_name(RegistrationName { value: name });
+            if self
+                .try_add_registration_name(RegistrationName { value: name })
+                .is_some()
+            {
+                count += 1;
+            }
         }
+        count
     }
 
-    pub fn try_add_registration_name(&mut self, name: RegistrationName) -> bool {
+    pub fn try_add_registration_name(&mut self, name: RegistrationName) -> Option<TokenIndex> {
         if self.registrations.values().any(|val| val == &name) {
-            return false;
+            return None;
         }
         let next_index = self.next_index();
         self.registrations.insert(next_index, name);
-        true
+        Some(next_index)
     }
 
     fn next_index(&mut self) -> TokenIndex {

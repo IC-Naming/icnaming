@@ -281,14 +281,10 @@ impl RegistrarService {
                 let mut store = s.registration_store.borrow_mut();
                 store.add_registration(registration.clone());
                 let mut token_index_store = s.token_index_store.borrow_mut();
-                let is_new_name_id =
-                    token_index_store.try_add_registration_name(RegistrationName {
-                        value: registration.get_name().to_string(),
-                    });
-                trace!(
-                    "is the registration name of the new id: {:?}",
-                    is_new_name_id
-                );
+                let new_name_id = token_index_store.try_add_registration_name(RegistrationName {
+                    value: registration.get_name().to_string(),
+                });
+                trace!("registered name of the new id: {:?}", new_name_id);
                 store.get_user_own_registration_count(&owner.0)
             });
             MERTRICS_COUNTER.with(|c| {
@@ -1060,6 +1056,23 @@ impl RegistrarService {
                 };
             }
             Err(NamingError::InvalidTokenIdentifier)
+        })
+    }
+
+    pub(crate) fn import_token_id_from_registration(
+        &self,
+        caller: &Principal,
+    ) -> ServiceResult<usize> {
+        STATE.with(|s| {
+            let registration_store = s.registration_store.borrow();
+            let mut token_index_store = s.token_index_store.borrow_mut();
+            let registrations = registration_store
+                .get_registrations()
+                .values()
+                .map(|registration| registration.get_name())
+                .collect::<Vec<_>>();
+            let success_count = token_index_store.import_from_registration_store(registrations);
+            Ok(success_count)
         })
     }
 }
