@@ -78,6 +78,8 @@ pub enum NamingError {
     TooManyResolverKeys { max: u32 },
     #[error("invalid token identifier")]
     InvalidTokenIdentifier,
+    #[error("it is not a valid canister id")]
+    InvalidCanisterId,
 }
 
 impl NamingError {
@@ -116,6 +118,7 @@ impl NamingError {
             NamingError::InvalidApproveAmount => 31,
             NamingError::TooManyResolverKeys { .. } => 32,
             NamingError::InvalidTokenIdentifier => 33,
+            NamingError::InvalidCanisterId => 34,
         }
     }
 }

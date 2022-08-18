@@ -28,7 +28,7 @@ use common::permissions::{
     must_be_in_named_canister, must_be_named_canister, must_be_system_owner,
 };
 use common::permissions::{must_be_named_principal, must_not_anonymous};
-use common::token_identifier::{get_valid_token_index, TokenIdentifier};
+use common::token_identifier::{get_valid_canister_id, get_valid_token_index, TokenIdentifier};
 use common::{AuthPrincipal, CallContext, TimeInNs};
 
 use crate::name_locker::{try_lock_name, unlock_name};
@@ -1012,10 +1012,11 @@ impl RegistrarService {
 
     pub(crate) fn metadata(
         &self,
-        caller: &Principal,
+        canister: &Principal,
         token: TokenIdentifier,
     ) -> ServiceResult<Metadata> {
-        let token_index = get_valid_token_index(&token, caller)?;
+        let canister_id = get_valid_canister_id(canister)?;
+        let token_index = get_valid_token_index(&token, &canister_id)?;
         let registration = STATE.with(|s| {
             let store = s.token_index_store.borrow();
             store.get_registration(&token_index)
@@ -1043,7 +1044,8 @@ impl RegistrarService {
         canister: &Principal,
         token: &TokenIdentifier,
     ) -> ServiceResult<String> {
-        let token_index = get_valid_token_index(token, canister)?;
+        let canister_id = get_valid_canister_id(canister)?;
+        let token_index = get_valid_token_index(token, &canister_id)?;
         STATE.with(|s| {
             let token_index_store = s.token_index_store.borrow();
             let registration_store = s.registration_store.borrow();

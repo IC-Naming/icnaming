@@ -24,6 +24,13 @@ pub fn mock_account_id(index: u32, subaccount: u32) -> Vec<u8> {
     AccountIdentifier::new(mock_user(index), Some(subaccount)).to_vec()
 }
 
+pub fn mock_canister(index: u32) -> Principal {
+    let mut principal_bytes = vec![0u8; 10];
+    // The first four bytes are the index.
+    principal_bytes[0..4].copy_from_slice(&index.to_be_bytes());
+    Principal::from_slice(&principal_bytes)
+}
+
 #[fixture]
 pub fn mock_user1() -> Principal {
     mock_user(1)
@@ -37,6 +44,11 @@ pub fn mock_user2() -> Principal {
 #[fixture]
 pub fn mock_user3() -> Principal {
     mock_user(3)
+}
+
+#[fixture]
+pub fn mock_canister1() -> Principal {
+    mock_canister(1)
 }
 
 #[fixture]

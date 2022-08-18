@@ -36,10 +36,80 @@ export const idlFactory = ({ IDL }) => {
   const BatchTransferRequest = IDL.Record({
     'items' : IDL.Vec(TransferQuotaDetails),
   });
+  const TokenIdentifier = IDL.Record({ 'value' : IDL.Text });
+  const NamingError = IDL.Variant({
+    'RemoteError' : ErrorInfo,
+    'TopNameAlreadyExists' : IDL.Null,
+    'InvalidCanisterName' : IDL.Null,
+    'RegistrationHasBeenTaken' : IDL.Null,
+    'RegistrationNotFound' : IDL.Null,
+    'OperatorCountExceeded' : IDL.Null,
+    'ResolverNotFoundError' : IDL.Record({ 'name' : IDL.Text }),
+    'InsufficientQuota' : IDL.Null,
+    'RenewalYearsError' : IDL.Record({ 'years' : IDL.Nat32 }),
+    'TooManyFavorites' : IDL.Record({ 'max' : IDL.Nat64 }),
+    'OrderNotFound' : IDL.Null,
+    'KeyMaxLengthError' : IDL.Record({ 'max' : IDL.Nat64 }),
+    'InvalidApproveAmount' : IDL.Null,
+    'YearsRangeError' : IDL.Record({ 'max' : IDL.Nat32, 'min' : IDL.Nat32 }),
+    'PermissionDenied' : IDL.Null,
+    'InvalidResolverValueFormat' : IDL.Record({
+      'value' : IDL.Text,
+      'format' : IDL.Text,
+    }),
+    'RegistryNotFoundError' : IDL.Record({ 'name' : IDL.Text }),
+    'ValueShouldBeInRangeError' : IDL.Record({
+      'max' : IDL.Nat64,
+      'min' : IDL.Nat64,
+      'field' : IDL.Text,
+    }),
+    'Unauthorized' : IDL.Null,
+    'InvalidName' : IDL.Record({ 'reason' : IDL.Text }),
+    'InvalidQuotaOrderDetails' : IDL.Null,
+    'InvalidOwner' : IDL.Null,
+    'TooManyResolverKeys' : IDL.Record({ 'max' : IDL.Nat32 }),
+    'NameUnavailable' : IDL.Record({ 'reason' : IDL.Text }),
+    'Unknown' : IDL.Null,
+    'OperatorShouldNotBeTheSameToOwner' : IDL.Null,
+    'PendingOrder' : IDL.Null,
+    'InvalidTokenIdentifier' : IDL.Null,
+    'ValueMaxLengthError' : IDL.Record({ 'max' : IDL.Nat64 }),
+    'OwnerOnly' : IDL.Null,
+    'CanisterCallError' : IDL.Record({
+      'message' : IDL.Text,
+      'rejection_code' : IDL.Text,
+    }),
+    'RefundFailed' : IDL.Null,
+    'Conflict' : IDL.Null,
+  });
+  const Result = IDL.Variant({ 'Ok' : IDL.Text, 'Err' : NamingError });
   const StateExportData = IDL.Record({ 'state_data' : IDL.Vec(IDL.Nat8) });
   const StateExportResponse = IDL.Variant({
     'Ok' : StateExportData,
     'Err' : ErrorInfo,
+  });
+  const Result_1 = IDL.Variant({
+    'Ok' : IDL.Vec(IDL.Tuple(IDL.Nat32, IDL.Text)),
+    'Err' : NamingError,
+  });
+  const FungibleUser = IDL.Variant({
+    'principal' : IDL.Principal,
+    'address' : IDL.Text,
+  });
+  const Fungible = IDL.Record({
+    'decimals' : TokenIdentifier,
+    'metadata' : IDL.Opt(IDL.Vec(IDL.Nat8)),
+    'name' : FungibleUser,
+    'symbol' : IDL.Principal,
+  });
+  const NonFungible = IDL.Record({ 'metadata' : IDL.Opt(IDL.Vec(IDL.Nat8)) });
+  const Metadata = IDL.Variant({
+    'fungible' : Fungible,
+    'nonfungible' : NonFungible,
+  });
+  const Result_2 = IDL.Variant({
+    'Ok' : IDL.Vec(IDL.Tuple(IDL.Nat32, Metadata)),
+    'Err' : NamingError,
   });
   const GetPageInput = IDL.Record({
     'offset' : IDL.Nat64,
@@ -124,6 +194,7 @@ export const idlFactory = ({ IDL }) => {
     'registration_count' : IDL.Nat64,
   });
   const GetStatsResponse = IDL.Variant({ 'Ok' : Stats, 'Err' : ErrorInfo });
+  const Result_3 = IDL.Variant({ 'Ok' : IDL.Nat, 'Err' : NamingError });
   const HttpRequest = IDL.Record({
     'url' : IDL.Text,
     'method' : IDL.Text,
@@ -167,6 +238,7 @@ export const idlFactory = ({ IDL }) => {
   const ImportNameRegistrationRequest = IDL.Record({
     'items' : IDL.Vec(ImportNameRegistrationItem),
   });
+  const Result_4 = IDL.Variant({ 'Ok' : Metadata, 'Err' : NamingError });
   const RegisterNameWithPaymentRequest = IDL.Record({
     'name' : IDL.Text,
     'approve_amount' : IDL.Nat,
@@ -201,7 +273,11 @@ export const idlFactory = ({ IDL }) => {
         [BooleanActorResponse],
         [],
       ),
+    'bearer' : IDL.Func([TokenIdentifier], [Result], ['query']),
     'export_state' : IDL.Func([], [StateExportResponse], []),
+    'getMinter' : IDL.Func([], [IDL.Principal], ['query']),
+    'getRegistry' : IDL.Func([IDL.Text], [Result_1], ['query']),
+    'getTokens' : IDL.Func([], [Result_2], ['query']),
     'get_all_details' : IDL.Func(
         [GetPageInput],
         [GetAllDetailsActorResponse],
@@ -246,6 +322,7 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'get_stats' : IDL.Func([], [GetStatsResponse], ['query']),
+    'get_supply' : IDL.Func([], [Result_3], ['query']),
     'get_wasm_info' : IDL.Func(
         [],
         [IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text))],
@@ -259,6 +336,7 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'load_state' : IDL.Func([StateExportData], [BooleanActorResponse], []),
+    'metadata' : IDL.Func([TokenIdentifier], [Result_4], ['query']),
     'reclaim_name' : IDL.Func([IDL.Text], [BooleanActorResponse], []),
     'register_for' : IDL.Func(
         [IDL.Text, IDL.Principal, IDL.Nat64],

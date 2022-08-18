@@ -13,6 +13,11 @@ pub struct TokenIndex {
 }
 
 #[derive(CandidType, Debug, Clone, Deserialize)]
+pub struct CanisterId {
+    pub value: Principal,
+}
+
+#[derive(CandidType, Debug, Clone, Deserialize)]
 pub struct TokenObj {
     pub index: TokenIndex,
     pub canister: Vec<u8>,
@@ -23,10 +28,10 @@ pub struct TokenIdentifier {
     pub value: String,
 }
 
-pub fn is_valid_token_id(tid: &TokenIdentifier, p: &Principal) -> bool {
+pub fn is_valid_token_id(tid: &TokenIdentifier, p: &CanisterId) -> bool {
     let t_parsed = decode_token_id(tid);
     match t_parsed {
-        Ok(t) => t.canister == p.as_slice().to_vec(),
+        Ok(t) => t.canister == p.value.as_slice().to_vec(),
         Err(_) => false,
     }
 }
@@ -38,16 +43,25 @@ pub fn get_token_index(tid: &TokenIdentifier) -> TokenIndex {
 
 pub fn get_valid_token_index(
     tid: &TokenIdentifier,
-    principal: &Principal,
+    canister_id: &CanisterId,
 ) -> ServiceResult<TokenIndex> {
-    if is_valid_token_id(tid, principal) {
+    if is_valid_token_id(tid, canister_id) {
         let index = get_token_index(tid);
         return Ok(index);
     }
     Err(NamingError::InvalidTokenIdentifier)
 }
 
-pub fn decode_token_id(tid: &TokenIdentifier) -> Result<TokenObj, String> {
+pub fn get_valid_canister_id(principal: &Principal) -> ServiceResult<CanisterId> {
+    if principal.as_slice().len() == CANISTER_ID_HASH_LEN_IN_BYTES {
+        return Ok(CanisterId {
+            value: principal.clone(),
+        });
+    }
+    Err(NamingError::InvalidCanisterId)
+}
+
+pub fn decode_token_id(tid: &TokenIdentifier) -> ServiceResult<TokenObj> {
     let principal_parse_res = Principal::from_text(tid.value.clone());
     match principal_parse_res {
         Ok(principal) => {
@@ -66,19 +80,18 @@ pub fn decode_token_id(tid: &TokenIdentifier) -> Result<TokenObj, String> {
                 index: TokenIndex {
                     value: u32::from_be_bytes(token_index),
                 },
-                canister: canister,
+                canister,
             });
         }
-        Err(_) => Err("invalid token id".to_string()),
+        Err(_) => Err(NamingError::InvalidTokenIdentifier),
     }
 }
 
-pub fn encode_token_id(token_id: Principal, token_index: TokenIndex) -> TokenIdentifier {
+pub fn encode_token_id(canister_id: CanisterId, token_index: TokenIndex) -> TokenIdentifier {
     let mut blob: Vec<u8> = Vec::new();
     blob.extend_from_slice(&TOKEN_ID_PREFIX);
-    blob.extend_from_slice(token_id.as_slice());
+    blob.extend_from_slice(canister_id.value.as_slice());
     blob.extend_from_slice(&token_index.value.to_be_bytes());
-
     TokenIdentifier {
         value: Principal::from_slice(blob.as_slice()).to_text(),
     }
@@ -86,32 +99,36 @@ pub fn encode_token_id(token_id: Principal, token_index: TokenIndex) -> TokenIde
 
 #[test]
 fn encode_decode_tx_id() {
-    let token_id = Principal::from_text("e3izy-jiaaa-aaaah-qacbq-cai").unwrap();
+    let token_id = CanisterId {
+        value: Principal::from_text("e3izy-jiaaa-aaaah-qacbq-cai").unwrap(),
+    };
     let tx_id = "7hsvu-sikor-uwiaa-aaaaa-b4aaq-maqca-aabke-q".to_string();
     assert!(is_valid_token_id(
-        TokenIdentifier {
+        &TokenIdentifier {
             value: tx_id.clone()
         },
-        token_id,
+        &token_id,
     ));
-    let decode_res = decode_token_id(TokenIdentifier {
+    let decode_res = decode_token_id(&TokenIdentifier {
         value: tx_id.clone(),
     })
     .unwrap();
     let de_tx_index = decode_res.index;
     let de_canister = Principal::from_slice(decode_res.canister.as_slice());
     assert_eq!(de_canister, token_id);
-    assert_eq!(decode_res.index, de_tx_index);
-
+    assert_eq!(decode_res.index.value, de_tx_index.value);
+    println!("{:?}", de_tx_index);
     let en_tx_id = encode_token_id(token_id, de_tx_index);
-    assert_eq!(en_tx_id, tx_id);
+    assert_eq!(en_tx_id.value, tx_id);
 }
 
 #[test]
 fn test_tx_id() {
-    let token_id = Principal::from_text("rrkah-fqaaa-aaaaa-aaaaq-cai").unwrap();
+    let token_id = CanisterId {
+        value: Principal::from_text("e3izy-jiaaa-aaaah-qacbq-cai").unwrap(),
+    };
     let tx_index = 1000u32;
 
     let en_tx_id = encode_token_id(token_id, TokenIndex { value: tx_index });
-    assert!(en_tx_id.len() > 0, "result is {}", en_tx_id);
+    assert!(en_tx_id.value.len() > 0, "result is {:?}", en_tx_id);
 }

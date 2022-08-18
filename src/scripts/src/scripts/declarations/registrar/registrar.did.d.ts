@@ -20,6 +20,14 @@ export type CanisterNames = { 'NamingMarketplace' : null } |
   { 'Favorites' : null } |
   { 'Resolver' : null };
 export interface ErrorInfo { 'code' : number, 'message' : string }
+export interface Fungible {
+  'decimals' : TokenIdentifier,
+  'metadata' : [] | [Array<number>],
+  'name' : FungibleUser,
+  'symbol' : Principal,
+}
+export type FungibleUser = { 'principal' : Principal } |
+  { 'address' : string };
 export type GetAllDetailsActorResponse = { 'Ok' : Array<RegistrationDetails> } |
   { 'Err' : ErrorInfo };
 export type GetDetailsActorResponse = { 'Ok' : RegistrationDetails } |
@@ -80,12 +88,54 @@ export type ImportQuotaStatus = { 'Ok' : null } |
 export interface InitArgs {
   'dev_named_canister_ids' : Array<[CanisterNames, Principal]>,
 }
+export type Metadata = { 'fungible' : Fungible } |
+  { 'nonfungible' : NonFungible };
 export interface NameStatus {
   'kept' : boolean,
   'available' : boolean,
   'details' : [] | [RegistrationDetails],
   'registered' : boolean,
 }
+export type NamingError = { 'RemoteError' : ErrorInfo } |
+  { 'TopNameAlreadyExists' : null } |
+  { 'InvalidCanisterName' : null } |
+  { 'RegistrationHasBeenTaken' : null } |
+  { 'RegistrationNotFound' : null } |
+  { 'OperatorCountExceeded' : null } |
+  { 'ResolverNotFoundError' : { 'name' : string } } |
+  { 'InsufficientQuota' : null } |
+  { 'RenewalYearsError' : { 'years' : number } } |
+  { 'TooManyFavorites' : { 'max' : bigint } } |
+  { 'OrderNotFound' : null } |
+  { 'KeyMaxLengthError' : { 'max' : bigint } } |
+  { 'InvalidApproveAmount' : null } |
+  { 'YearsRangeError' : { 'max' : number, 'min' : number } } |
+  { 'PermissionDenied' : null } |
+  { 'InvalidResolverValueFormat' : { 'value' : string, 'format' : string } } |
+  { 'RegistryNotFoundError' : { 'name' : string } } |
+  {
+    'ValueShouldBeInRangeError' : {
+      'max' : bigint,
+      'min' : bigint,
+      'field' : string,
+    }
+  } |
+  { 'Unauthorized' : null } |
+  { 'InvalidName' : { 'reason' : string } } |
+  { 'InvalidQuotaOrderDetails' : null } |
+  { 'InvalidOwner' : null } |
+  { 'TooManyResolverKeys' : { 'max' : number } } |
+  { 'NameUnavailable' : { 'reason' : string } } |
+  { 'Unknown' : null } |
+  { 'OperatorShouldNotBeTheSameToOwner' : null } |
+  { 'PendingOrder' : null } |
+  { 'InvalidTokenIdentifier' : null } |
+  { 'ValueMaxLengthError' : { 'max' : bigint } } |
+  { 'OwnerOnly' : null } |
+  { 'CanisterCallError' : { 'message' : string, 'rejection_code' : string } } |
+  { 'RefundFailed' : null } |
+  { 'Conflict' : null };
+export interface NonFungible { 'metadata' : [] | [Array<number>] }
 export interface PriceTable {
   'icp_xdr_conversion_rate' : bigint,
   'items' : Array<PriceTableItem>,
@@ -118,6 +168,16 @@ export interface RenewNameRequest {
   'approve_amount' : bigint,
   'years' : number,
 }
+export type Result = { 'Ok' : string } |
+  { 'Err' : NamingError };
+export type Result_1 = { 'Ok' : Array<[number, string]> } |
+  { 'Err' : NamingError };
+export type Result_2 = { 'Ok' : Array<[number, Metadata]> } |
+  { 'Err' : NamingError };
+export type Result_3 = { 'Ok' : bigint } |
+  { 'Err' : NamingError };
+export type Result_4 = { 'Ok' : Metadata } |
+  { 'Err' : NamingError };
 export interface StateExportData { 'state_data' : Array<number> }
 export type StateExportResponse = { 'Ok' : StateExportData } |
   { 'Err' : ErrorInfo };
@@ -139,6 +199,7 @@ export interface Token {
   'index' : bigint,
   'content_encoding' : string,
 }
+export interface TokenIdentifier { 'value' : string }
 export interface TransferFromQuotaRequest {
   'to' : Principal,
   'diff' : number,
@@ -162,7 +223,11 @@ export interface _SERVICE {
     [BatchTransferRequest],
     BooleanActorResponse,
   >,
+  'bearer' : ActorMethod<[TokenIdentifier], Result>,
   'export_state' : ActorMethod<[], StateExportResponse>,
+  'getMinter' : ActorMethod<[], Principal>,
+  'getRegistry' : ActorMethod<[string], Result_1>,
+  'getTokens' : ActorMethod<[], Result_2>,
   'get_all_details' : ActorMethod<[GetPageInput], GetAllDetailsActorResponse>,
   'get_details' : ActorMethod<[string], GetDetailsActorResponse>,
   'get_last_registrations' : ActorMethod<[], GetAllDetailsActorResponse>,
@@ -175,6 +240,7 @@ export interface _SERVICE {
   'get_public_resolver' : ActorMethod<[], GetPublicResolverActorResponse>,
   'get_quota' : ActorMethod<[Principal, QuotaType], GetQuotaActorResponse>,
   'get_stats' : ActorMethod<[], GetStatsResponse>,
+  'get_supply' : ActorMethod<[], Result_3>,
   'get_wasm_info' : ActorMethod<[], Array<[string, string]>>,
   'http_request' : ActorMethod<[HttpRequest], HttpResponse>,
   'import_quota' : ActorMethod<[ImportQuotaRequest], ImportQuotaResponse>,
@@ -183,6 +249,7 @@ export interface _SERVICE {
     BooleanActorResponse,
   >,
   'load_state' : ActorMethod<[StateExportData], BooleanActorResponse>,
+  'metadata' : ActorMethod<[TokenIdentifier], Result_4>,
   'reclaim_name' : ActorMethod<[string], BooleanActorResponse>,
   'register_for' : ActorMethod<
     [string, Principal, bigint],

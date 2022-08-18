@@ -1143,7 +1143,6 @@ mod transfer_from {
 }
 
 mod transfer_from_quota {
-
     use super::*;
 
     #[rstest]
@@ -1229,6 +1228,7 @@ mod get_expired_at {
 
 mod set_record_value {
     use super::*;
+
     #[rstest]
     async fn set_record_value_registration_count_gt_1(
         mut service: RegistrarService,
@@ -1249,6 +1249,7 @@ mod set_record_value {
             .await;
         assert!(result.is_ok());
     }
+
     #[rstest]
     async fn set_record_value_registration_count_eq_1(
         mut service: RegistrarService,
@@ -1268,6 +1269,110 @@ mod set_record_value {
             .set_record_value(name.to_string(), &mock_user1, 1)
             .await;
         assert!(result.is_ok());
+    }
+}
+
+mod nft_query_service {
+    use super::*;
+    use common::token_identifier::{encode_token_id, TokenIndex};
+    use serde::__private::de::Content::String;
+
+    #[rstest]
+    fn invalid_canister_id(mock_user1: Principal) {
+        let result = get_valid_canister_id(&mock_user1);
+        assert!(result.is_err());
+    }
+
+    #[rstest]
+    fn get_registry(mut service: RegistrarService) {
+        let test_name_str = create_test_name("icnaming");
+        STATE.with(|s| {
+            let mut store = s.token_index_store.borrow_mut();
+            store.try_add_registration_name(RegistrationName {
+                value: test_name_str.to_string(),
+            });
+        });
+        let result = service.get_registry();
+        assert!(result.is_ok());
+        let result = result.unwrap();
+
+        assert_eq!(result.len(), 1);
+    }
+
+    #[rstest]
+    fn get_tokens(mut service: RegistrarService) {
+        let test_name_str = create_test_name("icnaming");
+        STATE.with(|s| {
+            let mut store = s.token_index_store.borrow_mut();
+            store.try_add_registration_name(RegistrationName {
+                value: test_name_str.to_string(),
+            });
+        });
+
+        let result = service.get_tokens();
+        assert!(result.is_ok());
+        let result = result.unwrap();
+
+        assert_eq!(result.len(), 1);
+    }
+
+    #[rstest]
+    fn metadata(mut service: RegistrarService, mock_canister1: Principal, mock_now: u64) {
+        let test_name_str = create_test_name("icnaming");
+        STATE.with(|s| {
+            let mut store = s.token_index_store.borrow_mut();
+            store.try_add_registration_name(RegistrationName {
+                value: test_name_str.to_string(),
+            });
+            let mut store = s.registration_store.borrow_mut();
+            store.add_registration(Registration::new(
+                mock_canister1.clone(),
+                test_name_str.to_string(),
+                mock_now + 1,
+                mock_now,
+            ));
+        });
+        let canister_id = get_valid_canister_id(&mock_canister1).unwrap();
+        let token_id = encode_token_id(canister_id, TokenIndex { value: 1u32 });
+        let result = service.metadata(&mock_canister1, token_id);
+        println!("{:?}", result);
+        assert!(result.is_ok());
+
+        match result.clone().unwrap() {
+            Metadata::NonFungible(registration) => {
+                assert_eq!(
+                    std::string::String::from_utf8(registration.metadata.unwrap()).unwrap(),
+                    test_name_str
+                );
+            }
+            _ => {
+                panic!("Expected registration");
+            }
+        }
+    }
+
+    #[rstest]
+    fn get_supply(mut service: RegistrarService) {
+        let test_name_str = create_test_name("icnaming");
+        STATE.with(|s| {
+            let mut store = s.token_index_store.borrow_mut();
+            store.try_add_registration_name(RegistrationName {
+                value: test_name_str.to_string(),
+            });
+        });
+        let result = service.get_supply();
+        assert!(result.is_ok());
+        let result = result.unwrap();
+
+        assert_eq!(result, 1u128);
+    }
+    #[rstest]
+    fn get_supply_default(mut service: RegistrarService) {
+        let result = service.get_supply();
+        assert!(result.is_ok());
+        let result = result.unwrap();
+
+        assert_eq!(result, 0u128);
     }
 }
 

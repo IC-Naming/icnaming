@@ -15,6 +15,13 @@ type CanisterNames = variant {
   Resolver;
 };
 type ErrorInfo = record { code : nat32; message : text };
+type Fungible = record {
+  decimals : TokenIdentifier;
+  metadata : opt vec nat8;
+  name : FungibleUser;
+  symbol : principal;
+};
+type FungibleUser = variant { "principal" : principal; address : text };
 type GetAllDetailsActorResponse = variant {
   Ok : vec RegistrationDetails;
   Err : ErrorInfo;
@@ -68,12 +75,49 @@ type ImportQuotaStatus = variant { Ok; AlreadyExists };
 type InitArgs = record {
   dev_named_canister_ids : vec record { CanisterNames; principal };
 };
+type Metadata = variant { fungible : Fungible; nonfungible : NonFungible };
 type NameStatus = record {
   kept : bool;
   available : bool;
   details : opt RegistrationDetails;
   registered : bool;
 };
+type NamingError = variant {
+  RemoteError : ErrorInfo;
+  TopNameAlreadyExists;
+  InvalidCanisterName;
+  RegistrationHasBeenTaken;
+  RegistrationNotFound;
+  OperatorCountExceeded;
+  ResolverNotFoundError : record { name : text };
+  InsufficientQuota;
+  RenewalYearsError : record { years : nat32 };
+  TooManyFavorites : record { max : nat64 };
+  OrderNotFound;
+  KeyMaxLengthError : record { max : nat64 };
+  InvalidApproveAmount;
+  YearsRangeError : record { max : nat32; min : nat32 };
+  PermissionDenied;
+  InvalidResolverValueFormat : record { value : text; format : text };
+  RegistryNotFoundError : record { name : text };
+  ValueShouldBeInRangeError : record { max : nat64; min : nat64; field : text };
+  Unauthorized;
+  InvalidName : record { reason : text };
+  InvalidQuotaOrderDetails;
+  InvalidOwner;
+  TooManyResolverKeys : record { max : nat32 };
+  NameUnavailable : record { reason : text };
+  Unknown;
+  OperatorShouldNotBeTheSameToOwner;
+  PendingOrder;
+  InvalidTokenIdentifier;
+  ValueMaxLengthError : record { max : nat64 };
+  OwnerOnly;
+  CanisterCallError : record { message : text; rejection_code : text };
+  RefundFailed;
+  Conflict;
+};
+type NonFungible = record { metadata : opt vec nat8 };
 type PriceTable = record {
   icp_xdr_conversion_rate : nat64;
   items : vec PriceTableItem;
@@ -105,6 +149,14 @@ type RenewNameRequest = record {
   approve_amount : nat64;
   years : nat32;
 };
+type Result = variant { Ok : text; Err : NamingError };
+type Result_1 = variant { Ok : vec record { nat32; text }; Err : NamingError };
+type Result_2 = variant {
+  Ok : vec record { nat32; Metadata };
+  Err : NamingError;
+};
+type Result_3 = variant { Ok : nat; Err : NamingError };
+type Result_4 = variant { Ok : Metadata; Err : NamingError };
 type StateExportData = record { state_data : vec nat8 };
 type StateExportResponse = variant { Ok : StateExportData; Err : ErrorInfo };
 type Stats = record {
@@ -125,6 +177,7 @@ type Token = record {
   index : nat;
   content_encoding : text;
 };
+type TokenIdentifier = record { value : text };
 type TransferFromQuotaRequest = record {
   to : principal;
   diff : nat32;
@@ -142,7 +195,11 @@ service : (opt InitArgs) -> {
   available : (text) -> (BooleanActorResponse) query;
   batch_add_quota : (BatchAddQuotaRequest) -> (BooleanActorResponse);
   batch_transfer_quota : (BatchTransferRequest) -> (BooleanActorResponse);
+  bearer : (TokenIdentifier) -> (Result) query;
   export_state : () -> (StateExportResponse);
+  getMinter : () -> (principal) query;
+  getRegistry : (text) -> (Result_1) query;
+  getTokens : () -> (Result_2) query;
   get_all_details : (GetPageInput) -> (GetAllDetailsActorResponse) query;
   get_details : (text) -> (GetDetailsActorResponse) query;
   get_last_registrations : () -> (GetAllDetailsActorResponse) query;
@@ -155,6 +212,7 @@ service : (opt InitArgs) -> {
   get_public_resolver : () -> (GetPublicResolverActorResponse) query;
   get_quota : (principal, QuotaType) -> (GetQuotaActorResponse) query;
   get_stats : () -> (GetStatsResponse) query;
+  get_supply : () -> (Result_3) query;
   get_wasm_info : () -> (vec record { text; text }) query;
   http_request : (HttpRequest) -> (HttpResponse) query;
   import_quota : (ImportQuotaRequest) -> (ImportQuotaResponse);
@@ -162,6 +220,7 @@ service : (opt InitArgs) -> {
       BooleanActorResponse,
     );
   load_state : (StateExportData) -> (BooleanActorResponse);
+  metadata : (TokenIdentifier) -> (Result_4) query;
   reclaim_name : (text) -> (BooleanActorResponse);
   register_for : (text, principal, nat64) -> (BooleanActorResponse);
   register_from_gateway : (text, principal) -> (BooleanActorResponse);
