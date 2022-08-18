@@ -21,7 +21,7 @@ export type CanisterNames = { 'NamingMarketplace' : null } |
   { 'Resolver' : null };
 export interface ErrorInfo { 'code' : number, 'message' : string }
 export interface Fungible {
-  'decimals' : TokenIdentifier,
+  'decimals' : string,
   'metadata' : [] | [Array<number>],
   'name' : FungibleUser,
   'symbol' : Principal,
@@ -97,6 +97,7 @@ export interface NameStatus {
   'registered' : boolean,
 }
 export type NamingError = { 'RemoteError' : ErrorInfo } |
+  { 'InvalidCanisterId' : null } |
   { 'TopNameAlreadyExists' : null } |
   { 'InvalidCanisterName' : null } |
   { 'RegistrationHasBeenTaken' : null } |
@@ -199,7 +200,6 @@ export interface Token {
   'index' : bigint,
   'content_encoding' : string,
 }
-export interface TokenIdentifier { 'value' : string }
 export interface TransferFromQuotaRequest {
   'to' : Principal,
   'diff' : number,
@@ -223,7 +223,7 @@ export interface _SERVICE {
     [BatchTransferRequest],
     BooleanActorResponse,
   >,
-  'bearer' : ActorMethod<[TokenIdentifier], Result>,
+  'bearer' : ActorMethod<[string], Result>,
   'export_state' : ActorMethod<[], StateExportResponse>,
   'getMinter' : ActorMethod<[], Principal>,
   'getRegistry' : ActorMethod<[string], Result_1>,
@@ -249,7 +249,7 @@ export interface _SERVICE {
     BooleanActorResponse,
   >,
   'load_state' : ActorMethod<[StateExportData], BooleanActorResponse>,
-  'metadata' : ActorMethod<[TokenIdentifier], Result_4>,
+  'metadata' : ActorMethod<[string], Result_4>,
   'reclaim_name' : ActorMethod<[string], BooleanActorResponse>,
   'register_for' : ActorMethod<
     [string, Principal, bigint],

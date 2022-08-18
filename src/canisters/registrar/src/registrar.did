@@ -16,7 +16,7 @@ type CanisterNames = variant {
 };
 type ErrorInfo = record { code : nat32; message : text };
 type Fungible = record {
-  decimals : TokenIdentifier;
+  decimals : text;
   metadata : opt vec nat8;
   name : FungibleUser;
   symbol : principal;
@@ -84,6 +84,7 @@ type NameStatus = record {
 };
 type NamingError = variant {
   RemoteError : ErrorInfo;
+  InvalidCanisterId;
   TopNameAlreadyExists;
   InvalidCanisterName;
   RegistrationHasBeenTaken;
@@ -177,7 +178,6 @@ type Token = record {
   index : nat;
   content_encoding : text;
 };
-type TokenIdentifier = record { value : text };
 type TransferFromQuotaRequest = record {
   to : principal;
   diff : nat32;
@@ -195,7 +195,7 @@ service : (opt InitArgs) -> {
   available : (text) -> (BooleanActorResponse) query;
   batch_add_quota : (BatchAddQuotaRequest) -> (BooleanActorResponse);
   batch_transfer_quota : (BatchTransferRequest) -> (BooleanActorResponse);
-  bearer : (TokenIdentifier) -> (Result) query;
+  bearer : (text) -> (Result) query;
   export_state : () -> (StateExportResponse);
   getMinter : () -> (principal) query;
   getRegistry : (text) -> (Result_1) query;
@@ -220,7 +220,7 @@ service : (opt InitArgs) -> {
       BooleanActorResponse,
     );
   load_state : (StateExportData) -> (BooleanActorResponse);
-  metadata : (TokenIdentifier) -> (Result_4) query;
+  metadata : (text) -> (Result_4) query;
   reclaim_name : (text) -> (BooleanActorResponse);
   register_for : (text, principal, nat64) -> (BooleanActorResponse);
   register_from_gateway : (text, principal) -> (BooleanActorResponse);

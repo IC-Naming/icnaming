@@ -36,9 +36,9 @@ export const idlFactory = ({ IDL }) => {
   const BatchTransferRequest = IDL.Record({
     'items' : IDL.Vec(TransferQuotaDetails),
   });
-  const TokenIdentifier = IDL.Record({ 'value' : IDL.Text });
   const NamingError = IDL.Variant({
     'RemoteError' : ErrorInfo,
+    'InvalidCanisterId' : IDL.Null,
     'TopNameAlreadyExists' : IDL.Null,
     'InvalidCanisterName' : IDL.Null,
     'RegistrationHasBeenTaken' : IDL.Null,
@@ -97,7 +97,7 @@ export const idlFactory = ({ IDL }) => {
     'address' : IDL.Text,
   });
   const Fungible = IDL.Record({
-    'decimals' : TokenIdentifier,
+    'decimals' : IDL.Text,
     'metadata' : IDL.Opt(IDL.Vec(IDL.Nat8)),
     'name' : FungibleUser,
     'symbol' : IDL.Principal,
@@ -273,7 +273,7 @@ export const idlFactory = ({ IDL }) => {
         [BooleanActorResponse],
         [],
       ),
-    'bearer' : IDL.Func([TokenIdentifier], [Result], ['query']),
+    'bearer' : IDL.Func([IDL.Text], [Result], ['query']),
     'export_state' : IDL.Func([], [StateExportResponse], []),
     'getMinter' : IDL.Func([], [IDL.Principal], ['query']),
     'getRegistry' : IDL.Func([IDL.Text], [Result_1], ['query']),
@@ -336,7 +336,7 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'load_state' : IDL.Func([StateExportData], [BooleanActorResponse], []),
-    'metadata' : IDL.Func([TokenIdentifier], [Result_4], ['query']),
+    'metadata' : IDL.Func([IDL.Text], [Result_4], ['query']),
     'reclaim_name' : IDL.Func([IDL.Text], [BooleanActorResponse], []),
     'register_for' : IDL.Func(
         [IDL.Text, IDL.Principal, IDL.Nat64],
