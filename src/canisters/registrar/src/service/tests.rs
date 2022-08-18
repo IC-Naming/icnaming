@@ -1278,8 +1278,12 @@ mod nft_query_service {
     use serde::__private::de::Content::String;
 
     #[rstest]
-    fn invalid_canister_id(mock_user1: Principal) {
-        let result = get_valid_canister_id(&mock_user1);
+    fn invalid_canister_id(mock_user1: Principal, mock_now: u64) {
+        let call_context = CallContext {
+            caller: mock_user1,
+            now: TimeInNs(mock_now),
+        };
+        let result = call_context.must_be_canister_id();
         assert!(result.is_err());
     }
 
@@ -1326,7 +1330,11 @@ mod nft_query_service {
                 mock_now,
             ));
         });
-        let canister_id = get_valid_canister_id(&mock_canister1).unwrap();
+        let call_context = CallContext {
+            caller: mock_canister1,
+            now: TimeInNs(mock_now),
+        };
+        let canister_id = call_context.must_be_canister_id().unwrap();
         let token_id = encode_token_id(canister_id, TokenIndex(1u32));
         let result = service.metadata(
             &CallContext {
