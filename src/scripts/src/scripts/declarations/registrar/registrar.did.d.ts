@@ -52,8 +52,6 @@ export type GetPublicResolverActorResponse = { 'Ok' : string } |
   { 'Err' : ErrorInfo };
 export type GetQuotaActorResponse = { 'Ok' : number } |
   { 'Err' : ErrorInfo };
-export type GetRegistryActorResponse = { 'Ok' : Array<[number, string]> } |
-  { 'Err' : NamingError };
 export type GetStatsResponse = { 'Ok' : Stats } |
   { 'Err' : ErrorInfo };
 export interface HttpRequest {
@@ -104,46 +102,6 @@ export interface NameStatus {
   'details' : [] | [RegistrationDetails],
   'registered' : boolean,
 }
-export type NamingError = { 'RemoteError' : ErrorInfo } |
-  { 'InvalidCanisterId' : null } |
-  { 'TopNameAlreadyExists' : null } |
-  { 'InvalidCanisterName' : null } |
-  { 'RegistrationHasBeenTaken' : null } |
-  { 'RegistrationNotFound' : null } |
-  { 'OperatorCountExceeded' : null } |
-  { 'ResolverNotFoundError' : { 'name' : string } } |
-  { 'InsufficientQuota' : null } |
-  { 'RenewalYearsError' : { 'years' : number } } |
-  { 'TooManyFavorites' : { 'max' : bigint } } |
-  { 'OrderNotFound' : null } |
-  { 'KeyMaxLengthError' : { 'max' : bigint } } |
-  { 'InvalidApproveAmount' : null } |
-  { 'YearsRangeError' : { 'max' : number, 'min' : number } } |
-  { 'PermissionDenied' : null } |
-  { 'InvalidResolverValueFormat' : { 'value' : string, 'format' : string } } |
-  { 'RegistryNotFoundError' : { 'name' : string } } |
-  {
-    'ValueShouldBeInRangeError' : {
-      'max' : bigint,
-      'min' : bigint,
-      'field' : string,
-    }
-  } |
-  { 'Unauthorized' : null } |
-  { 'InvalidName' : { 'reason' : string } } |
-  { 'InvalidQuotaOrderDetails' : null } |
-  { 'InvalidOwner' : null } |
-  { 'TooManyResolverKeys' : { 'max' : number } } |
-  { 'NameUnavailable' : { 'reason' : string } } |
-  { 'Unknown' : null } |
-  { 'OperatorShouldNotBeTheSameToOwner' : null } |
-  { 'PendingOrder' : null } |
-  { 'InvalidTokenIdentifier' : null } |
-  { 'ValueMaxLengthError' : { 'max' : bigint } } |
-  { 'OwnerOnly' : null } |
-  { 'CanisterCallError' : { 'message' : string, 'rejection_code' : string } } |
-  { 'RefundFailed' : null } |
-  { 'Conflict' : null };
 export interface NonFungible { 'metadata' : [] | [Array<number>] }
 export interface PriceTable {
   'icp_xdr_conversion_rate' : bigint,
@@ -226,7 +184,7 @@ export interface _SERVICE {
   'bearer' : ActorMethod<[string], BearerActorResponse>,
   'export_state' : ActorMethod<[], StateExportResponse>,
   'getMinter' : ActorMethod<[], Principal>,
-  'getRegistry' : ActorMethod<[string], GetRegistryActorResponse>,
+  'getRegistry' : ActorMethod<[], Array<[number, string]>>,
   'getTokens' : ActorMethod<[], Array<[number, Metadata]>>,
   'get_all_details' : ActorMethod<[GetPageInput], GetAllDetailsActorResponse>,
   'get_details' : ActorMethod<[string], GetDetailsActorResponse>,

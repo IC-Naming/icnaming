@@ -572,15 +572,14 @@ impl GetNameStatueActorResponse {
     }
 }
 
-#[derive(CandidType)]
-pub struct GetRegistryActorResponse(pub ServiceResult<Vec<(u32, String)>>);
+pub type GetRegistryActorResponse = Vec<(u32, String)>;
 
 #[query(name = "getRegistry")]
 #[candid_method(query, rename = "getRegistry")]
-fn get_registry(name: String) -> GetRegistryActorResponse {
+fn get_registry() -> GetRegistryActorResponse {
     let service = RegistrarService::default();
     let result = service.get_registry();
-    GetRegistryActorResponse(result)
+    result
 }
 
 pub type GetTokens = Vec<(u32, Metadata)>;

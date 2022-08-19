@@ -968,7 +968,7 @@ impl RegistrarService {
         });
     }
 
-    pub(crate) fn get_registry(&self) -> ServiceResult<Vec<(u32, String)>> {
+    pub(crate) fn get_registry(&self) -> Vec<(u32, String)> {
         let list = STATE.with(|s| {
             let store = s.token_index_store.borrow();
             store
@@ -978,7 +978,7 @@ impl RegistrarService {
                 .collect()
         });
 
-        return Ok(list);
+        list
     }
 
     pub(crate) fn get_tokens(&self) -> Vec<(u32, Metadata)> {

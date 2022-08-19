@@ -41,10 +41,6 @@ type GetPageOutput = record { items : vec RegistrationDto };
 type GetPriceTableResponse = variant { Ok : PriceTable; Err : ErrorInfo };
 type GetPublicResolverActorResponse = variant { Ok : text; Err : ErrorInfo };
 type GetQuotaActorResponse = variant { Ok : nat32; Err : ErrorInfo };
-type GetRegistryActorResponse = variant {
-  Ok : vec record { nat32; text };
-  Err : NamingError;
-};
 type GetStatsResponse = variant { Ok : Stats; Err : ErrorInfo };
 type HttpRequest = record {
   url : text;
@@ -88,42 +84,6 @@ type NameStatus = record {
   available : bool;
   details : opt RegistrationDetails;
   registered : bool;
-};
-type NamingError = variant {
-  RemoteError : ErrorInfo;
-  InvalidCanisterId;
-  TopNameAlreadyExists;
-  InvalidCanisterName;
-  RegistrationHasBeenTaken;
-  RegistrationNotFound;
-  OperatorCountExceeded;
-  ResolverNotFoundError : record { name : text };
-  InsufficientQuota;
-  RenewalYearsError : record { years : nat32 };
-  TooManyFavorites : record { max : nat64 };
-  OrderNotFound;
-  KeyMaxLengthError : record { max : nat64 };
-  InvalidApproveAmount;
-  YearsRangeError : record { max : nat32; min : nat32 };
-  PermissionDenied;
-  InvalidResolverValueFormat : record { value : text; format : text };
-  RegistryNotFoundError : record { name : text };
-  ValueShouldBeInRangeError : record { max : nat64; min : nat64; field : text };
-  Unauthorized;
-  InvalidName : record { reason : text };
-  InvalidQuotaOrderDetails;
-  InvalidOwner;
-  TooManyResolverKeys : record { max : nat32 };
-  NameUnavailable : record { reason : text };
-  Unknown;
-  OperatorShouldNotBeTheSameToOwner;
-  PendingOrder;
-  InvalidTokenIdentifier;
-  ValueMaxLengthError : record { max : nat64 };
-  OwnerOnly;
-  CanisterCallError : record { message : text; rejection_code : text };
-  RefundFailed;
-  Conflict;
 };
 type NonFungible = record { metadata : opt vec nat8 };
 type PriceTable = record {
@@ -198,7 +158,7 @@ service : (opt InitArgs) -> {
   bearer : (text) -> (BearerActorResponse) query;
   export_state : () -> (StateExportResponse);
   getMinter : () -> (principal) query;
-  getRegistry : (text) -> (GetRegistryActorResponse) query;
+  getRegistry : () -> (vec record { nat32; text }) query;
   getTokens : () -> (vec record { nat32; Metadata }) query;
   get_all_details : (GetPageInput) -> (GetAllDetailsActorResponse) query;
   get_details : (text) -> (GetDetailsActorResponse) query;
