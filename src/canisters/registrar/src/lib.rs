@@ -33,7 +33,7 @@ use std::collections::HashMap;
 use common::dto::{GetPageInput, GetPageOutput, ImportQuotaRequest, ImportQuotaStatus};
 use common::errors::{BooleanActorResponse, ErrorInfo, ServiceResult};
 use common::named_principals::PRINCIPAL_NAME_TIMER_TRIGGER;
-use common::nft::{Metadata, NFTError, NFTServiceResult};
+use common::nft::{CommonError, Metadata, NFTServiceResult};
 use common::permissions::must_be_named_principal;
 use common::token_identifier::TokenIdentifier;
 use common::{CallContext, TimeInNs};
@@ -595,7 +595,7 @@ fn get_tokens() -> GetTokens {
 #[derive(CandidType)]
 pub enum MetadataActorResponse {
     Ok(Metadata),
-    Err(NFTError),
+    Err(CommonError),
 }
 
 impl MetadataActorResponse {
@@ -619,7 +619,7 @@ fn metadata(token: TokenIdentifier) -> MetadataActorResponse {
 #[derive(CandidType)]
 pub enum SupplyActorResponse {
     Ok(u128),
-    Err(NFTError),
+    Err(CommonError),
 }
 
 impl SupplyActorResponse {
@@ -650,7 +650,7 @@ fn minter() -> GetMinterActorResponse {
 #[derive(CandidType)]
 pub enum BearerActorResponse {
     Ok(String),
-    Err(NFTError),
+    Err(CommonError),
 }
 
 impl BearerActorResponse {

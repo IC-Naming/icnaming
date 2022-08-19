@@ -4,7 +4,7 @@ import type { ActorMethod } from '@dfinity/agent';
 export interface BatchAddQuotaRequest { 'items' : Array<ImportQuotaItem> }
 export interface BatchTransferRequest { 'items' : Array<TransferQuotaDetails> }
 export type BearerActorResponse = { 'Ok' : string } |
-  { 'Err' : NFTError };
+  { 'Err' : CommonError };
 export type BooleanActorResponse = { 'Ok' : boolean } |
   { 'Err' : ErrorInfo };
 export interface CallbackStrategy {
@@ -21,6 +21,8 @@ export type CanisterNames = { 'NamingMarketplace' : null } |
   { 'Ledger' : null } |
   { 'Favorites' : null } |
   { 'Resolver' : null };
+export type CommonError = { 'InvalidToken' : string } |
+  { 'Other' : string };
 export interface ErrorInfo { 'code' : number, 'message' : string }
 export interface Fungible {
   'decimals' : string,
@@ -93,9 +95,7 @@ export interface InitArgs {
 export type Metadata = { 'fungible' : Fungible } |
   { 'nonfungible' : NonFungible };
 export type MetadataActorResponse = { 'Ok' : Metadata } |
-  { 'Err' : NFTError };
-export type NFTError = { 'InvalidToken' : string } |
-  { 'Other' : string };
+  { 'Err' : CommonError };
 export interface NameStatus {
   'kept' : boolean,
   'available' : boolean,
@@ -151,7 +151,7 @@ export interface Stats {
 }
 export type StreamingStrategy = { 'Callback' : CallbackStrategy };
 export type SupplyActorResponse = { 'Ok' : bigint } |
-  { 'Err' : NFTError };
+  { 'Err' : CommonError };
 export interface Token {
   'key' : string,
   'sha256' : [] | [Array<number>],

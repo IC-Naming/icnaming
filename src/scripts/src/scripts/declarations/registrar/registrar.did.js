@@ -36,13 +36,13 @@ export const idlFactory = ({ IDL }) => {
   const BatchTransferRequest = IDL.Record({
     'items' : IDL.Vec(TransferQuotaDetails),
   });
-  const NFTError = IDL.Variant({
+  const CommonError = IDL.Variant({
     'InvalidToken' : IDL.Text,
     'Other' : IDL.Text,
   });
   const BearerActorResponse = IDL.Variant({
     'Ok' : IDL.Text,
-    'Err' : NFTError,
+    'Err' : CommonError,
   });
   const StateExportData = IDL.Record({ 'state_data' : IDL.Vec(IDL.Nat8) });
   const StateExportResponse = IDL.Variant({
@@ -147,7 +147,10 @@ export const idlFactory = ({ IDL }) => {
     'registration_count' : IDL.Nat64,
   });
   const GetStatsResponse = IDL.Variant({ 'Ok' : Stats, 'Err' : ErrorInfo });
-  const SupplyActorResponse = IDL.Variant({ 'Ok' : IDL.Nat, 'Err' : NFTError });
+  const SupplyActorResponse = IDL.Variant({
+    'Ok' : IDL.Nat,
+    'Err' : CommonError,
+  });
   const HttpRequest = IDL.Record({
     'url' : IDL.Text,
     'method' : IDL.Text,
@@ -193,7 +196,7 @@ export const idlFactory = ({ IDL }) => {
   });
   const MetadataActorResponse = IDL.Variant({
     'Ok' : Metadata,
-    'Err' : NFTError,
+    'Err' : CommonError,
   });
   const RegisterNameWithPaymentRequest = IDL.Record({
     'name' : IDL.Text,

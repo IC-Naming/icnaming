@@ -1,4 +1,3 @@
-use crate::canister_api::AccountIdentifier;
 use crate::token_identifier::TokenIdentifier;
 use crate::NamingError;
 use candid::{CandidType, Deserialize, Principal};
@@ -32,16 +31,16 @@ pub struct NonFungible {
     pub metadata: Option<Vec<u8>>,
 }
 
-pub type NFTServiceResult<T> = anyhow::Result<T, NFTError>;
+pub type NFTServiceResult<T> = anyhow::Result<T, CommonError>;
 
 //NFT error respone
 #[derive(CandidType, Debug, Clone, Deserialize)]
-pub enum NFTError {
+pub enum CommonError {
     InvalidToken(TokenIdentifier),
     Other(String),
 }
-impl From<NamingError> for NFTError {
+impl From<NamingError> for CommonError {
     fn from(error: NamingError) -> Self {
-        NFTError::Other(error.to_string())
+        CommonError::Other(error.to_string())
     }
 }

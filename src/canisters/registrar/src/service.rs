@@ -21,7 +21,7 @@ use common::errors::{NamingError, ServiceResult};
 use common::named_canister_ids::{get_named_get_canister_id, CanisterNames};
 use common::named_principals::{PRINCIPAL_NAME_STATE_EXPORTER, PRINCIPAL_NAME_TIMER_TRIGGER};
 use common::naming::{normalize_name, FirstLevelName, NameParseResult};
-use common::nft::{Metadata, NFTError, NFTServiceResult, NonFungible};
+use common::nft::{CommonError, Metadata, NFTServiceResult, NonFungible};
 use common::permissions::{
     must_be_in_named_canister, must_be_named_canister, must_be_system_owner,
 };
@@ -1029,7 +1029,7 @@ impl RegistrarService {
                 metadata
             }));
         }
-        Err(NFTError::InvalidToken(token))
+        Err(CommonError::InvalidToken(token))
     }
 
     pub(crate) fn get_supply(&self) -> NFTServiceResult<u128> {
@@ -1061,10 +1061,10 @@ impl RegistrarService {
                 return if let Some(registration) = registration {
                     Ok(registration.get_owner().to_text())
                 } else {
-                    Err(NFTError::InvalidToken(token.clone()))
+                    Err(CommonError::InvalidToken(token.clone()))
                 };
             }
-            Err(NFTError::InvalidToken(token.clone()))
+            Err(CommonError::InvalidToken(token.clone()))
         })
     }
 

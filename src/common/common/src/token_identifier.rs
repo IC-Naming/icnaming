@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 
 use crate::canister_api::AccountIdentifier;
-use crate::nft::{NFTError, NFTServiceResult};
+use crate::nft::{CommonError, NFTServiceResult};
 use crate::{NamingError, ServiceResult};
 use candid::{CandidType, Deserialize, Principal};
 
@@ -49,10 +49,10 @@ pub fn get_valid_token_index(
         let index = get_token_index(tid);
         return Ok(index);
     }
-    Err(NFTError::InvalidToken(tid.clone()))
+    Err(CommonError::InvalidToken(tid.clone()))
 }
 
-pub fn decode_token_id(tid: &TokenIdentifier) -> ServiceResult<TokenObj> {
+pub fn decode_token_id(tid: &TokenIdentifier) -> NFTServiceResult<TokenObj> {
     let principal_parse_res = Principal::from_text(tid);
     match principal_parse_res {
         Ok(principal) => {
@@ -72,7 +72,7 @@ pub fn decode_token_id(tid: &TokenIdentifier) -> ServiceResult<TokenObj> {
                 canister,
             });
         }
-        Err(_) => Err(NamingError::InvalidTokenIdentifier),
+        Err(_) => return Err(CommonError::InvalidToken(tid.to_owned())),
     }
 }
 
