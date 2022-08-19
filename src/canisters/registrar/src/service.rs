@@ -1056,7 +1056,8 @@ impl RegistrarService {
             let registration_store = s.registration_store.borrow();
             let registration_name = token_index_store.get_registration(&token_index);
             if let Some(registration_name) = registration_name {
-                let registration = registration_store.get_registration(&registration_name.0.into());
+                let registration =
+                    registration_store.get_registration(&registration_name.get_value().into());
                 return if let Some(registration) = registration {
                     Ok(registration.get_owner().to_text())
                 } else {
