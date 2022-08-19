@@ -172,7 +172,6 @@ service : (opt InitArgs) -> {
   get_public_resolver : () -> (GetPublicResolverActorResponse) query;
   get_quota : (principal, QuotaType) -> (GetQuotaActorResponse) query;
   get_stats : () -> (GetStatsResponse) query;
-  get_supply : () -> (SupplyActorResponse) query;
   get_wasm_info : () -> (vec record { text; text }) query;
   http_request : (HttpRequest) -> (HttpResponse) query;
   import_quota : (ImportQuotaRequest) -> (ImportQuotaResponse);
@@ -191,6 +190,7 @@ service : (opt InitArgs) -> {
   renew_name : (RenewNameRequest) -> (BooleanActorResponse);
   run_tasks : () -> (BooleanActorResponse);
   sub_quota : (principal, QuotaType, nat32) -> (BooleanActorResponse);
+  supply : () -> (SupplyActorResponse) query;
   transfer : (text, principal) -> (BooleanActorResponse);
   transfer_by_admin : (text, principal) -> (BooleanActorResponse);
   transfer_from : (text) -> (BooleanActorResponse);

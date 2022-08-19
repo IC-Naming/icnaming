@@ -147,10 +147,6 @@ export const idlFactory = ({ IDL }) => {
     'registration_count' : IDL.Nat64,
   });
   const GetStatsResponse = IDL.Variant({ 'Ok' : Stats, 'Err' : ErrorInfo });
-  const SupplyActorResponse = IDL.Variant({
-    'Ok' : IDL.Nat,
-    'Err' : CommonError,
-  });
   const HttpRequest = IDL.Record({
     'url' : IDL.Text,
     'method' : IDL.Text,
@@ -207,6 +203,10 @@ export const idlFactory = ({ IDL }) => {
     'name' : IDL.Text,
     'approve_amount' : IDL.Nat64,
     'years' : IDL.Nat32,
+  });
+  const SupplyActorResponse = IDL.Variant({
+    'Ok' : IDL.Nat,
+    'Err' : CommonError,
   });
   const TransferFromQuotaRequest = IDL.Record({
     'to' : IDL.Principal,
@@ -289,7 +289,6 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'get_stats' : IDL.Func([], [GetStatsResponse], ['query']),
-    'get_supply' : IDL.Func([], [SupplyActorResponse], ['query']),
     'get_wasm_info' : IDL.Func(
         [],
         [IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text))],
@@ -332,6 +331,7 @@ export const idlFactory = ({ IDL }) => {
         [BooleanActorResponse],
         [],
       ),
+    'supply' : IDL.Func([], [SupplyActorResponse], ['query']),
     'transfer' : IDL.Func(
         [IDL.Text, IDL.Principal],
         [BooleanActorResponse],
