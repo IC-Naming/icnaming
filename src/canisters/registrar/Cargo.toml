@@ -33,7 +33,7 @@ rstest = "0.15.0"
 csv = "1.1.6"
 
 [build-dependencies]
-anyhow = "1.0.61"
+anyhow = "1.0.62"
 build_common = { path = "../../common/build_common" }
 
 
