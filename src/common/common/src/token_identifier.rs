@@ -11,6 +11,12 @@ const TOKEN_ID_PREFIX: [u8; 4] = [10, 116, 105, 100]; //b"\x0Atid"
 #[derive(Default, Deserialize, Copy, CandidType, Clone, Hash, Eq, PartialEq, Debug)]
 pub struct TokenIndex(pub u32);
 
+impl TokenIndex {
+    pub fn get_value(&self) -> u32 {
+        self.0
+    }
+}
+
 #[derive(CandidType, Debug, Clone, Deserialize)]
 pub struct CanisterId(pub Principal);
 

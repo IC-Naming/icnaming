@@ -1274,8 +1274,9 @@ mod set_record_value {
 
 mod nft_query_service {
     use super::*;
+    use candid::decode_args;
     use common::token_identifier::{encode_token_id, TokenIndex};
-    use serde::__private::de::Content::String;
+    use std::string::String;
 
     #[rstest]
     fn invalid_canister_id(mock_user1: Principal, mock_now: u64) {
@@ -1295,22 +1296,44 @@ mod nft_query_service {
             store.try_add_registration_name(RegistrationName(test_name_str.to_string()));
         });
         let result = service.get_registry();
-        assert!(result.is_ok());
-        let result = result.unwrap();
-
         assert_eq!(result.len(), 1);
     }
 
     #[rstest]
     fn get_tokens(mut service: RegistrarService) {
-        let test_name_str = create_test_name("icnaming");
+        let test_name_str1 = create_test_name("icnaming1");
+        let test_name_str2 = create_test_name("icnaming2");
         STATE.with(|s| {
             let mut store = s.token_index_store.borrow_mut();
-            store.try_add_registration_name(RegistrationName(test_name_str.to_string()));
+            store.try_add_registration_name(RegistrationName(test_name_str1.to_string()));
+            store.try_add_registration_name(RegistrationName(test_name_str2.to_string()));
         });
 
-        let result = service.get_tokens();
-        assert_eq!(result.len(), 1);
+        let mut result = service.get_tokens();
+        assert_eq!(result.len(), 2);
+        result.sort_by(|a, b| a.0.cmp(&b.0));
+        let first_token = result.first().unwrap().to_owned();
+        let last_token = result.last().unwrap().to_owned();
+        match first_token.1 {
+            Metadata::NonFungible(registration) => {
+                let (metadata,): (HashMap<String, String>,) =
+                    decode_args(&registration.metadata.unwrap()).unwrap();
+                assert_eq!(metadata.get("name").unwrap(), &test_name_str1);
+            }
+            _ => {
+                panic!("Expected registration");
+            }
+        }
+        match last_token.1 {
+            Metadata::NonFungible(registration) => {
+                let (metadata,): (HashMap<String, String>,) =
+                    decode_args(&registration.metadata.unwrap()).unwrap();
+                assert_eq!(metadata.get("name").unwrap(), &test_name_str2);
+            }
+            _ => {
+                panic!("Expected registration");
+            }
+        }
     }
 
     #[rstest]
@@ -1342,13 +1365,12 @@ mod nft_query_service {
         );
         println!("{:?}", result);
         assert!(result.is_ok());
-
-        match result.clone().unwrap() {
+        let result = result.unwrap();
+        match result {
             Metadata::NonFungible(registration) => {
-                assert_eq!(
-                    std::string::String::from_utf8(registration.metadata.unwrap()).unwrap(),
-                    test_name_str
-                );
+                let (metadata,): (HashMap<String, String>,) =
+                    decode_args(&registration.metadata.unwrap()).unwrap();
+                assert_eq!(metadata.get("name").unwrap(), &test_name_str);
             }
             _ => {
                 panic!("Expected registration");

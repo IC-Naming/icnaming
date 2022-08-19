@@ -974,7 +974,7 @@ impl RegistrarService {
             store
                 .get_registrations()
                 .iter()
-                .map(|registration| (registration.0 .0.clone(), registration.1 .0.clone()))
+                .map(|registration| (registration.0.get_value(), registration.1.get_value()))
                 .collect()
         });
 
@@ -982,26 +982,18 @@ impl RegistrarService {
     }
 
     pub(crate) fn get_tokens(&self) -> Vec<(u32, Metadata)> {
-        let list = STATE.with(|s| {
+        let mut list: Vec<(u32, Metadata)> = STATE.with(|s| {
             let store = s.token_index_store.borrow();
             store
                 .get_registrations()
                 .iter()
                 .map(|registration| {
-                    let mut map = HashMap::new();
-                    map.insert("name".to_string(), registration.1 .0.clone());
                     (
-                        registration.0 .0.clone(),
+                        registration.0.get_value().clone(),
                         Metadata::NonFungible({
                             let metadata = NonFungible {
                                 //encode map
-                                metadata: match encode_args((map,)) {
-                                    Ok(data) => Some(data),
-                                    Err(e) => {
-                                        error!("error encoding metadata: {:?}", e);
-                                        None
-                                    }
-                                },
+                                metadata: registration.1.get_metadata(),
                             };
                             metadata
                         }),
@@ -1009,6 +1001,7 @@ impl RegistrarService {
                 })
                 .collect()
         });
+        list.sort_by(|a, b| a.0.cmp(&b.0));
 
         list
     }
@@ -1031,7 +1024,7 @@ impl RegistrarService {
         if let Some(registration) = registration {
             return Ok(Metadata::NonFungible({
                 let metadata = NonFungible {
-                    metadata: Some(registration.0.clone().as_bytes().to_vec()),
+                    metadata: registration.get_metadata(),
                 };
                 metadata
             }));
@@ -1042,7 +1035,7 @@ impl RegistrarService {
     pub(crate) fn get_supply(&self) -> NFTServiceResult<u128> {
         STATE.with(|s| {
             let store = s.token_index_store.borrow();
-            Ok(store.get_index().0 as u128)
+            Ok(store.get_index().get_value() as u128)
         })
     }
 

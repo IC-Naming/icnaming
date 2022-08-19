@@ -1,10 +1,31 @@
 use candid::{decode_args, encode_args, CandidType, Deserialize};
 use common::state::StableState;
 use common::token_identifier::TokenIndex;
+use log::error;
 use std::collections::HashMap;
+use std::hash::Hash;
+use std::vec::Vec;
 
 #[derive(Deserialize, CandidType, Clone, Hash, Eq, PartialEq, Debug)]
 pub struct RegistrationName(pub String);
+
+impl RegistrationName {
+    pub fn get_value(&self) -> String {
+        self.0.clone()
+    }
+
+    pub fn get_metadata(&self) -> Option<Vec<u8>> {
+        let mut metadata = HashMap::new();
+        metadata.insert("name".to_string(), self.get_value());
+        match encode_args((metadata,)) {
+            Ok(data) => Some(data),
+            Err(e) => {
+                error!("error encoding metadata: {:?}", e);
+                None
+            }
+        }
+    }
+}
 
 #[derive(Default)]
 pub struct TokenIndexStore {
