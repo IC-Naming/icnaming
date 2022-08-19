@@ -4,7 +4,7 @@ use std::ops::Deref;
 use std::str::FromStr;
 use std::sync::Arc;
 
-use candid::{CandidType, Deserialize, Nat, Principal};
+use candid::{encode_args, CandidType, Deserialize, Nat, Principal};
 
 use log::{debug, error, info, trace};
 use num_bigint::BigUint;
@@ -12,9 +12,7 @@ use num_traits::ToPrimitive;
 use time::{OffsetDateTime, Time};
 
 use common::canister_api::ic_impl::{CyclesMintingApi, RegistryApi, ResolverApi};
-use common::canister_api::{
-    AccountIdentifier, ICyclesMintingApi, IDICPApi, IRegistryApi, IResolverApi,
-};
+use common::canister_api::{AccountIdentifier, ICyclesMintingApi, IRegistryApi, IResolverApi};
 use common::constants::*;
 use common::dto::{
     BatchAddQuotaRequest, GetPageInput, GetPageOutput, ImportQuotaRequest, ImportQuotaStatus,
@@ -23,7 +21,7 @@ use common::errors::{NamingError, ServiceResult};
 use common::named_canister_ids::{get_named_get_canister_id, CanisterNames};
 use common::named_principals::{PRINCIPAL_NAME_STATE_EXPORTER, PRINCIPAL_NAME_TIMER_TRIGGER};
 use common::naming::{normalize_name, FirstLevelName, NameParseResult};
-use common::nft::{Metadata, NonFungible};
+use common::nft::{Metadata, NFTError, NFTServiceResult, NonFungible};
 use common::permissions::{
     must_be_in_named_canister, must_be_named_canister, must_be_system_owner,
 };
@@ -983,18 +981,27 @@ impl RegistrarService {
         return Ok(list);
     }
 
-    pub(crate) fn get_tokens(&self) -> ServiceResult<Vec<(u32, Metadata)>> {
+    pub(crate) fn get_tokens(&self) -> Vec<(u32, Metadata)> {
         let list = STATE.with(|s| {
             let store = s.token_index_store.borrow();
             store
                 .get_registrations()
                 .iter()
                 .map(|registration| {
+                    let mut map = HashMap::new();
+                    map.insert("name".to_string(), registration.1 .0.clone());
                     (
                         registration.0 .0.clone(),
                         Metadata::NonFungible({
-                            let mut metadata = NonFungible {
-                                metadata: Some(registration.1 .0.clone().as_bytes().to_vec()),
+                            let metadata = NonFungible {
+                                //encode map
+                                metadata: match encode_args((map,)) {
+                                    Ok(data) => Some(data),
+                                    Err(e) => {
+                                        error!("error encoding metadata: {:?}", e);
+                                        None
+                                    }
+                                },
                             };
                             metadata
                         }),
@@ -1003,15 +1010,19 @@ impl RegistrarService {
                 .collect()
         });
 
-        return Ok(list);
+        list
     }
 
     pub(crate) fn metadata(
         &self,
         call_context: &CallContext,
         token: TokenIdentifier,
-    ) -> ServiceResult<Metadata> {
-        let canister_id = call_context.must_be_canister_id()?;
+    ) -> NFTServiceResult<Metadata> {
+        let canister_id = call_context.must_be_canister_id();
+        if canister_id.is_err() {
+            return Err(NamingError::InvalidCanisterId.into());
+        }
+        let canister_id = canister_id.unwrap();
         let token_index = get_valid_token_index(&token, &canister_id)?;
         let registration = STATE.with(|s| {
             let store = s.token_index_store.borrow();
@@ -1025,10 +1036,10 @@ impl RegistrarService {
                 metadata
             }));
         }
-        Err(NamingError::InvalidTokenIdentifier)
+        Err(NFTError::InvalidToken(token))
     }
 
-    pub(crate) fn get_supply(&self) -> ServiceResult<u128> {
+    pub(crate) fn get_supply(&self) -> NFTServiceResult<u128> {
         STATE.with(|s| {
             let store = s.token_index_store.borrow();
             Ok(store.get_index().0 as u128)
@@ -1039,8 +1050,13 @@ impl RegistrarService {
         &self,
         call_context: &CallContext,
         token: &TokenIdentifier,
-    ) -> ServiceResult<String> {
-        let canister_id = call_context.must_be_canister_id()?;
+    ) -> NFTServiceResult<String> {
+        let canister_id = call_context.must_be_canister_id();
+        if canister_id.is_err() {
+            return Err(NamingError::InvalidCanisterId.into());
+        }
+        let canister_id = canister_id.unwrap();
+
         let token_index = get_valid_token_index(token, &canister_id)?;
         STATE.with(|s| {
             let token_index_store = s.token_index_store.borrow();
@@ -1051,10 +1067,10 @@ impl RegistrarService {
                 return if let Some(registration) = registration {
                     Ok(registration.get_owner().to_text())
                 } else {
-                    Err(NamingError::InvalidTokenIdentifier)
+                    Err(NFTError::InvalidToken(token.clone()))
                 };
             }
-            Err(NamingError::InvalidTokenIdentifier)
+            Err(NFTError::InvalidToken(token.clone()))
         })
     }
 
@@ -1071,7 +1087,7 @@ impl RegistrarService {
                 .values()
                 .map(|registration| registration.get_name())
                 .collect::<Vec<_>>();
-            let success_count = token_index_store.import_from_registration_store(registrations);
+            let success_count = token_index_store.import_from_registration_store(&registrations);
             Ok(success_count)
         })
     }

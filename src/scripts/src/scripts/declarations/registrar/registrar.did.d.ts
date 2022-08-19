@@ -3,6 +3,8 @@ import type { ActorMethod } from '@dfinity/agent';
 
 export interface BatchAddQuotaRequest { 'items' : Array<ImportQuotaItem> }
 export interface BatchTransferRequest { 'items' : Array<TransferQuotaDetails> }
+export type BearerActorResponse = { 'Ok' : string } |
+  { 'Err' : NFTError };
 export type BooleanActorResponse = { 'Ok' : boolean } |
   { 'Err' : ErrorInfo };
 export interface CallbackStrategy {
@@ -50,6 +52,8 @@ export type GetPublicResolverActorResponse = { 'Ok' : string } |
   { 'Err' : ErrorInfo };
 export type GetQuotaActorResponse = { 'Ok' : number } |
   { 'Err' : ErrorInfo };
+export type GetRegistryActorResponse = { 'Ok' : Array<[number, string]> } |
+  { 'Err' : NamingError };
 export type GetStatsResponse = { 'Ok' : Stats } |
   { 'Err' : ErrorInfo };
 export interface HttpRequest {
@@ -90,6 +94,10 @@ export interface InitArgs {
 }
 export type Metadata = { 'fungible' : Fungible } |
   { 'nonfungible' : NonFungible };
+export type MetadataActorResponse = { 'Ok' : Metadata } |
+  { 'Err' : NFTError };
+export type NFTError = { 'InvalidToken' : string } |
+  { 'Other' : string };
 export interface NameStatus {
   'kept' : boolean,
   'available' : boolean,
@@ -169,16 +177,6 @@ export interface RenewNameRequest {
   'approve_amount' : bigint,
   'years' : number,
 }
-export type Result = { 'Ok' : string } |
-  { 'Err' : NamingError };
-export type Result_1 = { 'Ok' : Array<[number, string]> } |
-  { 'Err' : NamingError };
-export type Result_2 = { 'Ok' : Array<[number, Metadata]> } |
-  { 'Err' : NamingError };
-export type Result_3 = { 'Ok' : bigint } |
-  { 'Err' : NamingError };
-export type Result_4 = { 'Ok' : Metadata } |
-  { 'Err' : NamingError };
 export interface StateExportData { 'state_data' : Array<number> }
 export type StateExportResponse = { 'Ok' : StateExportData } |
   { 'Err' : ErrorInfo };
@@ -194,6 +192,8 @@ export interface Stats {
   'registration_count' : bigint,
 }
 export type StreamingStrategy = { 'Callback' : CallbackStrategy };
+export type SupplyActorResponse = { 'Ok' : bigint } |
+  { 'Err' : NFTError };
 export interface Token {
   'key' : string,
   'sha256' : [] | [Array<number>],
@@ -223,11 +223,11 @@ export interface _SERVICE {
     [BatchTransferRequest],
     BooleanActorResponse,
   >,
-  'bearer' : ActorMethod<[string], Result>,
+  'bearer' : ActorMethod<[string], BearerActorResponse>,
   'export_state' : ActorMethod<[], StateExportResponse>,
   'getMinter' : ActorMethod<[], Principal>,
-  'getRegistry' : ActorMethod<[string], Result_1>,
-  'getTokens' : ActorMethod<[], Result_2>,
+  'getRegistry' : ActorMethod<[string], GetRegistryActorResponse>,
+  'getTokens' : ActorMethod<[], Array<[number, Metadata]>>,
   'get_all_details' : ActorMethod<[GetPageInput], GetAllDetailsActorResponse>,
   'get_details' : ActorMethod<[string], GetDetailsActorResponse>,
   'get_last_registrations' : ActorMethod<[], GetAllDetailsActorResponse>,
@@ -240,7 +240,7 @@ export interface _SERVICE {
   'get_public_resolver' : ActorMethod<[], GetPublicResolverActorResponse>,
   'get_quota' : ActorMethod<[Principal, QuotaType], GetQuotaActorResponse>,
   'get_stats' : ActorMethod<[], GetStatsResponse>,
-  'get_supply' : ActorMethod<[], Result_3>,
+  'get_supply' : ActorMethod<[], SupplyActorResponse>,
   'get_wasm_info' : ActorMethod<[], Array<[string, string]>>,
   'http_request' : ActorMethod<[HttpRequest], HttpResponse>,
   'import_quota' : ActorMethod<[ImportQuotaRequest], ImportQuotaResponse>,
@@ -249,7 +249,7 @@ export interface _SERVICE {
     BooleanActorResponse,
   >,
   'load_state' : ActorMethod<[StateExportData], BooleanActorResponse>,
-  'metadata' : ActorMethod<[string], Result_4>,
+  'metadata' : ActorMethod<[string], MetadataActorResponse>,
   'reclaim_name' : ActorMethod<[string], BooleanActorResponse>,
   'register_for' : ActorMethod<
     [string, Principal, bigint],

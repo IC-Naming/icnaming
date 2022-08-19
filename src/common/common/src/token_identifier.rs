@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 
 use crate::canister_api::AccountIdentifier;
+use crate::nft::{NFTError, NFTServiceResult};
 use crate::{NamingError, ServiceResult};
 use candid::{CandidType, Deserialize, Principal};
 
@@ -19,8 +20,7 @@ pub struct TokenObj {
     pub canister: Vec<u8>,
 }
 
-#[derive(Deserialize, CandidType, Clone, Hash, Eq, PartialEq, Debug)]
-pub struct TokenIdentifier(pub String);
+pub type TokenIdentifier = String;
 
 pub fn is_valid_token_id(tid: &TokenIdentifier, p: &CanisterId) -> bool {
     let t_parsed = decode_token_id(tid);
@@ -38,16 +38,16 @@ pub fn get_token_index(tid: &TokenIdentifier) -> TokenIndex {
 pub fn get_valid_token_index(
     tid: &TokenIdentifier,
     canister_id: &CanisterId,
-) -> ServiceResult<TokenIndex> {
+) -> NFTServiceResult<TokenIndex> {
     if is_valid_token_id(tid, canister_id) {
         let index = get_token_index(tid);
         return Ok(index);
     }
-    Err(NamingError::InvalidTokenIdentifier)
+    Err(NFTError::InvalidToken(tid.clone()))
 }
 
 pub fn decode_token_id(tid: &TokenIdentifier) -> ServiceResult<TokenObj> {
-    let principal_parse_res = Principal::from_text(tid.0.clone());
+    let principal_parse_res = Principal::from_text(tid);
     match principal_parse_res {
         Ok(principal) => {
             let bytes = principal.as_slice();
@@ -75,18 +75,15 @@ pub fn encode_token_id(canister_id: CanisterId, token_index: TokenIndex) -> Toke
     blob.extend_from_slice(&TOKEN_ID_PREFIX);
     blob.extend_from_slice(canister_id.0.as_slice());
     blob.extend_from_slice(&token_index.0.to_be_bytes());
-    TokenIdentifier(Principal::from_slice(blob.as_slice()).to_text())
+    Principal::from_slice(blob.as_slice()).to_text()
 }
 
 #[test]
 fn encode_decode_tx_id() {
     let token_id = CanisterId(Principal::from_text("e3izy-jiaaa-aaaah-qacbq-cai").unwrap());
     let tx_id = "7hsvu-sikor-uwiaa-aaaaa-b4aaq-maqca-aabke-q".to_string();
-    assert!(is_valid_token_id(
-        &TokenIdentifier(tx_id.clone()),
-        &token_id,
-    ));
-    let decode_res = decode_token_id(&TokenIdentifier(tx_id.clone())).unwrap();
+    assert!(is_valid_token_id(&tx_id, &token_id,));
+    let decode_res = decode_token_id(&tx_id).unwrap();
     let de_tx_index = decode_res.index;
     let de_canister = Principal::from_slice(decode_res.canister.as_slice());
     assert_eq!(de_canister, token_id.0);

@@ -33,9 +33,9 @@ use std::collections::HashMap;
 use common::dto::{GetPageInput, GetPageOutput, ImportQuotaRequest, ImportQuotaStatus};
 use common::errors::{BooleanActorResponse, ErrorInfo, ServiceResult};
 use common::named_principals::PRINCIPAL_NAME_TIMER_TRIGGER;
-use common::nft::Metadata;
+use common::nft::{Metadata, NFTError, NFTServiceResult};
 use common::permissions::must_be_named_principal;
-use common::token_identifier::{TokenIdentifier, TokenIndex};
+use common::token_identifier::TokenIdentifier;
 use common::{CallContext, TimeInNs};
 
 use crate::periodic_tasks_runner::run_periodic_tasks;
@@ -573,54 +573,103 @@ impl GetNameStatueActorResponse {
 }
 
 #[derive(CandidType)]
-pub enum GetRegistryActorResponse {}
+pub struct GetRegistryActorResponse(pub ServiceResult<Vec<(u32, String)>>);
 
 #[query(name = "getRegistry")]
 #[candid_method(query, rename = "getRegistry")]
-fn get_registry(name: String) -> ServiceResult<Vec<(u32, String)>> {
+fn get_registry(name: String) -> GetRegistryActorResponse {
     let service = RegistrarService::default();
     let result = service.get_registry();
-    result
+    GetRegistryActorResponse(result)
 }
+
+pub type GetTokens = Vec<(u32, Metadata)>;
 
 #[query(name = "getTokens")]
 #[candid_method(query, rename = "getTokens")]
-fn get_tokens() -> ServiceResult<Vec<(u32, Metadata)>> {
+fn get_tokens() -> GetTokens {
     let service = RegistrarService::default();
     let result = service.get_tokens();
     result
 }
 
+#[derive(CandidType)]
+pub enum MetadataActorResponse {
+    Ok(Metadata),
+    Err(NFTError),
+}
+
+impl MetadataActorResponse {
+    pub fn new(result: NFTServiceResult<Metadata>) -> MetadataActorResponse {
+        match result {
+            Ok(data) => MetadataActorResponse::Ok(data),
+            Err(err) => MetadataActorResponse::Err(err.into()),
+        }
+    }
+}
+
 #[query(name = "metadata")]
 #[candid_method(query)]
-fn metadata(token: TokenIdentifier) -> ServiceResult<Metadata> {
+fn metadata(token: TokenIdentifier) -> MetadataActorResponse {
     let service = RegistrarService::default();
     let call_context = CallContext::from_ic();
     let result = service.metadata(&call_context, token);
-    result
+    MetadataActorResponse::new(result)
+}
+
+#[derive(CandidType)]
+pub enum SupplyActorResponse {
+    Ok(u128),
+    Err(NFTError),
+}
+
+impl SupplyActorResponse {
+    pub fn new(result: NFTServiceResult<u128>) -> SupplyActorResponse {
+        match result {
+            Ok(data) => SupplyActorResponse::Ok(data),
+            Err(err) => SupplyActorResponse::Err(err.into()),
+        }
+    }
 }
 
 #[query(name = "supply")]
 #[candid_method(query)]
-fn get_supply() -> ServiceResult<u128> {
+fn get_supply() -> SupplyActorResponse {
     let service = RegistrarService::default();
     let result = service.get_supply();
-    result
+    SupplyActorResponse::new(result)
 }
+
+pub type GetMinterActorResponse = Principal;
 
 #[query(name = "getMinter")]
 #[candid_method(query, rename = "getMinter")]
-fn minter() -> Principal {
+fn minter() -> GetMinterActorResponse {
     Principal::anonymous()
+}
+
+#[derive(CandidType)]
+pub enum BearerActorResponse {
+    Ok(String),
+    Err(NFTError),
+}
+
+impl BearerActorResponse {
+    pub fn new(result: NFTServiceResult<String>) -> BearerActorResponse {
+        match result {
+            Ok(data) => BearerActorResponse::Ok(data),
+            Err(err) => BearerActorResponse::Err(err.into()),
+        }
+    }
 }
 
 #[query(name = "bearer")]
 #[candid_method(query, rename = "bearer")]
-fn bearer(token: TokenIdentifier) -> ServiceResult<String> {
+fn bearer(token: TokenIdentifier) -> BearerActorResponse {
     let service = RegistrarService::default();
     let call_context = CallContext::from_ic();
     let result = service.bearer(&call_context, &token);
-    result
+    BearerActorResponse::new(result)
 }
 
 #[derive(CandidType)]

@@ -1,7 +1,6 @@
-use candid::{decode_args, encode_args, CandidType, Deserialize, Principal};
+use candid::{decode_args, encode_args, CandidType, Deserialize};
 use common::state::StableState;
 use common::token_identifier::TokenIndex;
-use std::borrow::Borrow;
 use std::collections::HashMap;
 
 #[derive(Deserialize, CandidType, Clone, Hash, Eq, PartialEq, Debug)]
@@ -21,11 +20,11 @@ impl TokenIndexStore {
         }
     }
 
-    pub fn import_from_registration_store(&mut self, names: Vec<String>) -> usize {
+    pub fn import_from_registration_store(&mut self, names: &[String]) -> usize {
         let mut count = 0;
         for name in names {
             if self
-                .try_add_registration_name(RegistrationName(name))
+                .try_add_registration_name(RegistrationName(name.to_owned()))
                 .is_some()
             {
                 count += 1;

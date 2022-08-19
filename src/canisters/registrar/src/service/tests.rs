@@ -1310,9 +1310,6 @@ mod nft_query_service {
         });
 
         let result = service.get_tokens();
-        assert!(result.is_ok());
-        let result = result.unwrap();
-
         assert_eq!(result.len(), 1);
     }
 
