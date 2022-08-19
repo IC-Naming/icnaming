@@ -90,7 +90,7 @@ fn encode_decode_tx_id() {
     assert_eq!(decode_res.index, de_tx_index);
     println!("{:?}", de_tx_index);
     let en_tx_id = encode_token_id(token_id, de_tx_index);
-    assert_eq!(en_tx_id.0, tx_id);
+    assert_eq!(en_tx_id, tx_id);
 }
 
 #[test]
@@ -99,5 +99,5 @@ fn test_tx_id() {
     let tx_index = 1000u32;
 
     let en_tx_id = encode_token_id(token_id, TokenIndex(tx_index));
-    assert!(en_tx_id.0.len() > 0, "result is {:?}", en_tx_id);
+    assert!(en_tx_id.len() > 0, "result is {:?}", en_tx_id);
 }
