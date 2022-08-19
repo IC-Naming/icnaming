@@ -632,7 +632,7 @@ impl SupplyActorResponse {
 }
 
 #[query(name = "supply")]
-#[candid_method(query)]
+#[candid_method(query, rename = "supply")]
 fn get_supply() -> SupplyActorResponse {
     let service = RegistrarService::default();
     let result = service.get_supply();
