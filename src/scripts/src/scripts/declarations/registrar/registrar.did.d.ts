@@ -3,6 +3,8 @@ import type { ActorMethod } from '@dfinity/agent';
 
 export interface BatchAddQuotaRequest { 'items' : Array<ImportQuotaItem> }
 export interface BatchTransferRequest { 'items' : Array<TransferQuotaDetails> }
+export type BearerActorResponse = { 'Ok' : string } |
+  { 'Err' : CommonError };
 export type BooleanActorResponse = { 'Ok' : boolean } |
   { 'Err' : ErrorInfo };
 export interface CallbackStrategy {
@@ -19,7 +21,17 @@ export type CanisterNames = { 'NamingMarketplace' : null } |
   { 'Ledger' : null } |
   { 'Favorites' : null } |
   { 'Resolver' : null };
+export type CommonError = { 'InvalidToken' : string } |
+  { 'Other' : string };
 export interface ErrorInfo { 'code' : number, 'message' : string }
+export interface Fungible {
+  'decimals' : string,
+  'metadata' : [] | [Array<number>],
+  'name' : FungibleUser,
+  'symbol' : Principal,
+}
+export type FungibleUser = { 'principal' : Principal } |
+  { 'address' : string };
 export type GetAllDetailsActorResponse = { 'Ok' : Array<RegistrationDetails> } |
   { 'Err' : ErrorInfo };
 export type GetDetailsActorResponse = { 'Ok' : RegistrationDetails } |
@@ -80,12 +92,17 @@ export type ImportQuotaStatus = { 'Ok' : null } |
 export interface InitArgs {
   'dev_named_canister_ids' : Array<[CanisterNames, Principal]>,
 }
+export type Metadata = { 'fungible' : Fungible } |
+  { 'nonfungible' : NonFungible };
+export type MetadataActorResponse = { 'Ok' : Metadata } |
+  { 'Err' : CommonError };
 export interface NameStatus {
   'kept' : boolean,
   'available' : boolean,
   'details' : [] | [RegistrationDetails],
   'registered' : boolean,
 }
+export interface NonFungible { 'metadata' : [] | [Array<number>] }
 export interface PriceTable {
   'icp_xdr_conversion_rate' : bigint,
   'items' : Array<PriceTableItem>,
@@ -133,6 +150,8 @@ export interface Stats {
   'registration_count' : bigint,
 }
 export type StreamingStrategy = { 'Callback' : CallbackStrategy };
+export type SupplyActorResponse = { 'Ok' : bigint } |
+  { 'Err' : CommonError };
 export interface Token {
   'key' : string,
   'sha256' : [] | [Array<number>],
@@ -162,7 +181,11 @@ export interface _SERVICE {
     [BatchTransferRequest],
     BooleanActorResponse,
   >,
+  'bearer' : ActorMethod<[string], BearerActorResponse>,
   'export_state' : ActorMethod<[], StateExportResponse>,
+  'getMinter' : ActorMethod<[], Principal>,
+  'getRegistry' : ActorMethod<[], Array<[number, string]>>,
+  'getTokens' : ActorMethod<[], Array<[number, Metadata]>>,
   'get_all_details' : ActorMethod<[GetPageInput], GetAllDetailsActorResponse>,
   'get_details' : ActorMethod<[string], GetDetailsActorResponse>,
   'get_last_registrations' : ActorMethod<[], GetAllDetailsActorResponse>,
@@ -183,6 +206,7 @@ export interface _SERVICE {
     BooleanActorResponse,
   >,
   'load_state' : ActorMethod<[StateExportData], BooleanActorResponse>,
+  'metadata' : ActorMethod<[string], MetadataActorResponse>,
   'reclaim_name' : ActorMethod<[string], BooleanActorResponse>,
   'register_for' : ActorMethod<
     [string, Principal, bigint],
@@ -206,6 +230,7 @@ export interface _SERVICE {
     [Principal, QuotaType, number],
     BooleanActorResponse,
   >,
+  'supply' : ActorMethod<[], SupplyActorResponse>,
   'transfer' : ActorMethod<[string, Principal], BooleanActorResponse>,
   'transfer_by_admin' : ActorMethod<[string, Principal], BooleanActorResponse>,
   'transfer_from' : ActorMethod<[string], BooleanActorResponse>,

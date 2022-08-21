@@ -20,6 +20,7 @@ use crate::quota_import_store::QuotaImportStore;
 use crate::registration_approval_store::RegistrationApprovalStore;
 use crate::registration_store::{Registration, RegistrationStore};
 use crate::settings::Settings;
+use crate::token_index_store::TokenIndexStore;
 use crate::user_quota_store::UserQuotaStore;
 
 thread_local! {
@@ -59,6 +60,7 @@ pub struct State {
     pub quota_import_store: RefCell<QuotaImportStore>,
     pub registration_approval_store: RefCell<RegistrationApprovalStore>,
     pub balance_store: RefCell<BalanceStore>,
+    pub token_index_store: RefCell<TokenIndexStore>,
 }
 
 impl State {
@@ -73,10 +75,13 @@ impl State {
         self.registration_approval_store
             .replace(new_state.registration_approval_store.take());
         self.balance_store.replace(new_state.balance_store.take());
+        self.token_index_store
+            .replace(new_state.token_index_store.take());
     }
 }
 
 pub type EncodedState = (
+    Option<Vec<u8>>,
     Option<Vec<u8>>,
     Option<Vec<u8>>,
     Option<Vec<u8>>,
@@ -94,6 +99,7 @@ impl StableState for State {
             self.quota_import_store.borrow().encode(),
             self.registration_approval_store.borrow().encode(),
             self.balance_store.borrow().encode(),
+            self.token_index_store.borrow().encode(),
         ))
         .unwrap()
     }
@@ -106,6 +112,7 @@ impl StableState for State {
             quota_import_store_bytes,
             registration_approval_store_bytes,
             balance_store_bytes,
+            token_index_store_bytes,
         ): EncodedState = decode_args(&bytes).unwrap();
 
         return Ok(State {
@@ -117,6 +124,7 @@ impl StableState for State {
                 registration_approval_store_bytes,
             )?,
             balance_store: decode_or_default::<BalanceStore>(balance_store_bytes)?,
+            token_index_store: decode_or_default::<TokenIndexStore>(token_index_store_bytes)?,
         });
 
         fn decode_or_default<T>(bytes: Option<Vec<u8>>) -> Result<RefCell<T>, String>

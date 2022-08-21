@@ -76,6 +76,10 @@ pub enum NamingError {
     InvalidApproveAmount,
     #[error("Too many resolver keys, max is {max:?}")]
     TooManyResolverKeys { max: u32 },
+    #[error("invalid token identifier")]
+    InvalidTokenIdentifier,
+    #[error("it is not a valid canister id")]
+    InvalidCanisterId,
 }
 
 impl NamingError {
@@ -113,6 +117,8 @@ impl NamingError {
             NamingError::RenewalYearsError { .. } => 30,
             NamingError::InvalidApproveAmount => 31,
             NamingError::TooManyResolverKeys { .. } => 32,
+            NamingError::InvalidTokenIdentifier => 33,
+            NamingError::InvalidCanisterId => 34,
         }
     }
 }

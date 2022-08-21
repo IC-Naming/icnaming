@@ -1143,7 +1143,6 @@ mod transfer_from {
 }
 
 mod transfer_from_quota {
-
     use super::*;
 
     #[rstest]
@@ -1229,6 +1228,7 @@ mod get_expired_at {
 
 mod set_record_value {
     use super::*;
+
     #[rstest]
     async fn set_record_value_registration_count_gt_1(
         mut service: RegistrarService,
@@ -1249,6 +1249,7 @@ mod set_record_value {
             .await;
         assert!(result.is_ok());
     }
+
     #[rstest]
     async fn set_record_value_registration_count_eq_1(
         mut service: RegistrarService,
@@ -1268,6 +1269,136 @@ mod set_record_value {
             .set_record_value(name.to_string(), &mock_user1, 1)
             .await;
         assert!(result.is_ok());
+    }
+}
+
+mod nft_query_service {
+    use super::*;
+    use candid::decode_args;
+    use common::token_identifier::{encode_token_id, TokenIndex};
+    use std::string::String;
+
+    #[rstest]
+    fn invalid_canister_id(mock_user1: Principal, mock_now: u64) {
+        let call_context = CallContext {
+            caller: mock_user1,
+            now: TimeInNs(mock_now),
+        };
+        let result = call_context.must_be_canister_id();
+        assert!(result.is_err());
+    }
+
+    #[rstest]
+    fn get_registry(mut service: RegistrarService) {
+        let test_name_str = create_test_name("icnaming");
+        STATE.with(|s| {
+            let mut store = s.token_index_store.borrow_mut();
+            store.try_add_registration_name(RegistrationName(test_name_str.to_string()));
+        });
+        let result = service.get_registry();
+        assert_eq!(result.len(), 1);
+    }
+
+    #[rstest]
+    fn get_tokens(mut service: RegistrarService) {
+        let test_name_str1 = create_test_name("icnaming1");
+        let test_name_str2 = create_test_name("icnaming2");
+        STATE.with(|s| {
+            let mut store = s.token_index_store.borrow_mut();
+            store.try_add_registration_name(RegistrationName(test_name_str1.to_string()));
+            store.try_add_registration_name(RegistrationName(test_name_str2.to_string()));
+        });
+
+        let mut result = service.get_tokens();
+        assert_eq!(result.len(), 2);
+        result.sort_by(|a, b| a.0.cmp(&b.0));
+        let first_token = result.first().unwrap().to_owned();
+        let last_token = result.last().unwrap().to_owned();
+        match first_token.1 {
+            Metadata::NonFungible(registration) => {
+                let (metadata,): (HashMap<String, String>,) =
+                    decode_args(&registration.metadata.unwrap()).unwrap();
+                assert_eq!(metadata.get("name").unwrap(), &test_name_str1);
+            }
+            _ => {
+                panic!("Expected registration");
+            }
+        }
+        match last_token.1 {
+            Metadata::NonFungible(registration) => {
+                let (metadata,): (HashMap<String, String>,) =
+                    decode_args(&registration.metadata.unwrap()).unwrap();
+                assert_eq!(metadata.get("name").unwrap(), &test_name_str2);
+            }
+            _ => {
+                panic!("Expected registration");
+            }
+        }
+    }
+
+    #[rstest]
+    fn metadata(mut service: RegistrarService, mock_canister1: Principal, mock_now: u64) {
+        let test_name_str = create_test_name("icnaming");
+        STATE.with(|s| {
+            let mut store = s.token_index_store.borrow_mut();
+            store.try_add_registration_name(RegistrationName(test_name_str.to_string()));
+            let mut store = s.registration_store.borrow_mut();
+            store.add_registration(Registration::new(
+                mock_canister1.clone(),
+                test_name_str.to_string(),
+                mock_now + 1,
+                mock_now,
+            ));
+        });
+        let call_context = CallContext {
+            caller: mock_canister1,
+            now: TimeInNs(mock_now),
+        };
+        let canister_id = call_context.must_be_canister_id().unwrap();
+        let token_id = encode_token_id(canister_id, TokenIndex(1u32));
+        let result = service.metadata(
+            &CallContext {
+                caller: mock_canister1,
+                now: TimeInNs(mock_now),
+            },
+            token_id,
+        );
+        println!("{:?}", result);
+        assert!(result.is_ok());
+        let result = result.unwrap();
+        match result {
+            Metadata::NonFungible(registration) => {
+                let (metadata,): (HashMap<String, String>,) =
+                    decode_args(&registration.metadata.unwrap()).unwrap();
+                assert_eq!(metadata.get("name").unwrap(), &test_name_str);
+            }
+            _ => {
+                panic!("Expected registration");
+            }
+        }
+    }
+
+    #[rstest]
+    fn get_supply(mut service: RegistrarService) {
+        let test_name_str = create_test_name("icnaming");
+        STATE.with(|s| {
+            let mut store = s.token_index_store.borrow_mut();
+            store.try_add_registration_name(RegistrationName(test_name_str.to_string()));
+        });
+        let result = service.get_supply();
+        assert!(result.is_ok());
+        let result = result.unwrap();
+
+        assert_eq!(result, 1u128);
+    }
+
+    #[rstest]
+    fn get_supply_default(mut service: RegistrarService) {
+        let result = service.get_supply();
+        assert!(result.is_ok());
+        let result = result.unwrap();
+
+        assert_eq!(result, 0u128);
     }
 }
 
