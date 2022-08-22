@@ -23,7 +23,7 @@ use common::errors::{NamingError, ServiceResult};
 use common::named_canister_ids::{get_named_get_canister_id, CanisterNames};
 use common::named_principals::{PRINCIPAL_NAME_STATE_EXPORTER, PRINCIPAL_NAME_TIMER_TRIGGER};
 use common::naming::{normalize_name, FirstLevelName, NameParseResult};
-use common::nft::{CommonError, Metadata, NFTServiceResult, NonFungible};
+use common::nft::{CommonError, Metadata, NFTServiceResult, NFTTransferServiceResult, NonFungible};
 use common::permissions::{
     must_be_in_named_canister, must_be_named_canister, must_be_system_owner,
 };
@@ -1109,6 +1109,23 @@ impl RegistrarService {
                 Err(CommonError::InvalidToken(token.clone()))
             }
         })
+    }
+    pub(crate) async fn ex_transfer(
+        &self,
+        from: &common::nft::User,
+        to: &common::nft::User,
+        token: &TokenIdentifier,
+    ) -> NFTTransferServiceResult<u128> {
+        let from = from.get_principal()?;
+        let to = to.get_principal()?;
+        let registration_name = self.get_registration_name(token)?;
+        let transfer_result = self
+            .transfer(registration_name.get_value().as_str(), &from, to)
+            .await;
+        match transfer_result {
+            Ok(value) => Ok(value as u128),
+            Err(e) => Err(e.into()),
+        }
     }
 }
 

@@ -33,7 +33,10 @@ use std::collections::HashMap;
 use common::dto::{GetPageInput, GetPageOutput, ImportQuotaRequest, ImportQuotaStatus};
 use common::errors::{BooleanActorResponse, ErrorInfo, NamingError, ServiceResult};
 use common::named_principals::PRINCIPAL_NAME_TIMER_TRIGGER;
-use common::nft::{AllowanceRequest, ApproveRequest, CommonError, Metadata, NFTServiceResult};
+use common::nft::{
+    AllowanceRequest, ApproveRequest, CommonError, Metadata, NFTServiceResult,
+    NFTTransferServiceResult, TransferError, TransferRequest,
+};
 use common::permissions::must_be_named_principal;
 use common::token_identifier::TokenIdentifier;
 use common::{CallContext, TimeInNs};
@@ -723,12 +726,38 @@ fn allowance(request: AllowanceRequest) -> AllowanceActorResponse {
         common::nft::User::Address(_) => {
             return AllowanceActorResponse::new(Err(
                 NamingError::AccountIdentifierNotSupported.into()
-            ))
+            ));
         }
         common::nft::User::Principal(p) => p,
     };
     let result = service.allowance(&owner, &request.spender, &request.token);
     AllowanceActorResponse::new(result)
+}
+
+#[derive(CandidType)]
+pub enum EXTransferResponse {
+    Ok(u128),
+    Err(TransferError),
+}
+
+impl EXTransferResponse {
+    pub fn new(result: NFTTransferServiceResult<u128>) -> EXTransferResponse {
+        match result {
+            Ok(data) => EXTransferResponse::Ok(data),
+            Err(err) => EXTransferResponse::Err(err.into()),
+        }
+    }
+}
+
+#[update(name = "ex_transfer")]
+#[candid_method(update, rename = "ex_transfer")]
+async fn ex_transfer(request: TransferRequest) -> EXTransferResponse {
+    let service = RegistrarService::default();
+    let call_context = CallContext::from_ic();
+    let result = service
+        .ex_transfer(&call_context, &request.from, &request.to, &request.token)
+        .await;
+    EXTransferResponse::new(result)
 }
 
 candid::export_service!();

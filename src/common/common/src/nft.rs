@@ -6,6 +6,7 @@ use candid::{CandidType, Deserialize, Principal};
 // Additional data field for transfers to describe the tx
 // Data will also be forwarded to notify callback
 pub type Memo = Vec<u8>;
+
 #[derive(CandidType, Debug, Clone, Deserialize)]
 pub struct TransferRequest {
     pub from: User,
@@ -21,12 +22,17 @@ pub struct TransferRequest {
 pub enum TransferError {
     Unauthorized(AccountIdentifier),
     InsufficientBalance,
-    Rejected, //Rejected by canister
+    Rejected,
+    //Rejected by canister
     InvalidToken(TokenIdentifier),
     CannotNotify(AccountIdentifier),
     Other(String),
 }
-pub type TransferResponse = Result<u128, TransferError>;
+impl From<NamingError> for TransferError {
+    fn from(error: NamingError) -> Self {
+        TransferError::Other(error.to_string())
+    }
+}
 
 #[derive(CandidType, Debug, Clone, Deserialize)]
 pub struct ApproveRequest {
@@ -67,12 +73,23 @@ pub enum User {
     #[serde(rename = "principal")]
     Principal(Principal),
 }
+
+impl User {
+    pub fn get_principal(&self) -> Result<Principal, NamingError> {
+        match self {
+            User::Address(_) => Err(NamingError::AccountIdentifierNotSupported),
+            User::Principal(principal) => Ok(principal.clone()),
+        }
+    }
+}
+
 #[derive(CandidType, Debug, Clone, Deserialize)]
 pub struct NonFungible {
     pub metadata: Option<Vec<u8>>,
 }
 
 pub type NFTServiceResult<T> = anyhow::Result<T, CommonError>;
+pub type NFTTransferServiceResult<T> = anyhow::Result<T, TransferError>;
 
 //NFT error respone
 #[derive(CandidType, Debug, Clone, Deserialize)]
@@ -80,6 +97,7 @@ pub enum CommonError {
     InvalidToken(TokenIdentifier),
     Other(String),
 }
+
 impl From<NamingError> for CommonError {
     fn from(error: NamingError) -> Self {
         CommonError::Other(error.to_string())
