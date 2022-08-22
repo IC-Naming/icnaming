@@ -193,7 +193,7 @@ static ACCOUNT_DOMAIN_SEPERATOR: &[u8] = b"\x0Aaccount-id";
 
 pub type AccountId = [u8; 32];
 
-#[derive(Clone, Copy, Hash, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(CandidType, Clone, Copy, Hash, Debug, PartialEq, Eq, PartialOrd, Ord, Deserialize)]
 pub struct AccountIdentifier {
     hash: [u8; 28],
 }

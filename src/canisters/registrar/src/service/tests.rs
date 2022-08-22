@@ -1350,19 +1350,9 @@ mod nft_query_service {
                 mock_now,
             ));
         });
-        let call_context = CallContext {
-            caller: mock_canister1,
-            now: TimeInNs(mock_now),
-        };
-        let canister_id = call_context.must_be_canister_id().unwrap();
-        let token_id = encode_token_id(canister_id, TokenIndex(1u32));
-        let result = service.metadata(
-            &CallContext {
-                caller: mock_canister1,
-                now: TimeInNs(mock_now),
-            },
-            token_id,
-        );
+        let canisterid = get_named_get_canister_id(CanisterNames::Registrar);
+        let token_id = encode_token_id(CanisterId(canisterid), TokenIndex(1u32));
+        let result = service.metadata(&token_id);
         println!("{:?}", result);
         assert!(result.is_ok());
         let result = result.unwrap();

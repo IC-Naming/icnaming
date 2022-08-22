@@ -31,9 +31,9 @@ use stats_service::*;
 use std::collections::HashMap;
 
 use common::dto::{GetPageInput, GetPageOutput, ImportQuotaRequest, ImportQuotaStatus};
-use common::errors::{BooleanActorResponse, ErrorInfo, ServiceResult};
+use common::errors::{BooleanActorResponse, ErrorInfo, NamingError, ServiceResult};
 use common::named_principals::PRINCIPAL_NAME_TIMER_TRIGGER;
-use common::nft::{CommonError, Metadata, NFTServiceResult};
+use common::nft::{AllowanceRequest, ApproveRequest, CommonError, Metadata, NFTServiceResult};
 use common::permissions::must_be_named_principal;
 use common::token_identifier::TokenIdentifier;
 use common::{CallContext, TimeInNs};
@@ -690,6 +690,45 @@ fn import_token_id_from_registration() -> ImportTokenIdResponse {
     let call_context = CallContext::from_ic();
     let result = service.import_token_id_from_registration(&call_context);
     ImportTokenIdResponse::new(result)
+}
+
+#[update(name = "ex_approve")]
+#[candid_method(update, rename = "ex_approve")]
+fn ex_approve(request: ApproveRequest) {
+    let service = RegistrarService::default();
+    let call_context = CallContext::from_ic();
+    let _ = service.ex_approve(&call_context, request.spender, &request.token);
+}
+
+#[derive(CandidType)]
+pub enum AllowanceActorResponse {
+    Ok(u128),
+    Err(CommonError),
+}
+
+impl AllowanceActorResponse {
+    pub fn new(result: NFTServiceResult<u128>) -> AllowanceActorResponse {
+        match result {
+            Ok(data) => AllowanceActorResponse::Ok(data),
+            Err(err) => AllowanceActorResponse::Err(err.into()),
+        }
+    }
+}
+
+#[query(name = "allowance")]
+#[candid_method(query, rename = "allowance")]
+fn allowance(request: AllowanceRequest) -> AllowanceActorResponse {
+    let service = RegistrarService::default();
+    let owner = match request.owner {
+        common::nft::User::Address(_) => {
+            return AllowanceActorResponse::new(Err(
+                NamingError::AccountIdentifierNotSupported.into()
+            ))
+        }
+        common::nft::User::Principal(p) => p,
+    };
+    let result = service.allowance(&owner, &request.spender, &request.token);
+    AllowanceActorResponse::new(result)
 }
 
 candid::export_service!();

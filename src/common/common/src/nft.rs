@@ -1,6 +1,47 @@
+use crate::canister_api::{AccountIdentifier, Subaccount};
 use crate::token_identifier::TokenIdentifier;
 use crate::NamingError;
 use candid::{CandidType, Deserialize, Principal};
+
+// Additional data field for transfers to describe the tx
+// Data will also be forwarded to notify callback
+pub type Memo = Vec<u8>;
+#[derive(CandidType, Debug, Clone, Deserialize)]
+pub struct TransferRequest {
+    pub from: User,
+    pub to: User,
+    pub token: TokenIdentifier,
+    pub amount: u128,
+    pub memo: Memo,
+    pub notify: bool,
+    pub subaccount: Option<Subaccount>,
+}
+
+#[derive(CandidType, Debug, Clone, Deserialize)]
+pub enum TransferError {
+    Unauthorized(AccountIdentifier),
+    InsufficientBalance,
+    Rejected, //Rejected by canister
+    InvalidToken(TokenIdentifier),
+    CannotNotify(AccountIdentifier),
+    Other(String),
+}
+pub type TransferResponse = Result<u128, TransferError>;
+
+#[derive(CandidType, Debug, Clone, Deserialize)]
+pub struct ApproveRequest {
+    pub subaccount: Option<Subaccount>,
+    pub spender: Principal,
+    pub allowance: u128,
+    pub token: TokenIdentifier,
+}
+
+#[derive(CandidType, Debug, Clone, Deserialize)]
+pub struct AllowanceRequest {
+    pub owner: User,
+    pub spender: Principal,
+    pub token: TokenIdentifier,
+}
 
 #[derive(CandidType, Debug, Clone, Deserialize)]
 pub enum Metadata {
@@ -12,7 +53,7 @@ pub enum Metadata {
 
 #[derive(CandidType, Debug, Clone, Deserialize)]
 pub struct Fungible {
-    pub name: FungibleUser,
+    pub name: User,
     pub symbol: Principal,
     pub decimals: TokenIdentifier,
     pub metadata: Option<Vec<u8>>,
@@ -20,9 +61,9 @@ pub struct Fungible {
 
 // A user can be any principal or canister, which can hold a balance
 #[derive(CandidType, Debug, Clone, Deserialize)]
-pub enum FungibleUser {
+pub enum User {
     #[serde(rename = "address")]
-    Address(String),
+    Address(AccountIdentifier),
     #[serde(rename = "principal")]
     Principal(Principal),
 }

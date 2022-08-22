@@ -12,7 +12,9 @@ use num_traits::ToPrimitive;
 use time::{OffsetDateTime, Time};
 
 use common::canister_api::ic_impl::{CyclesMintingApi, RegistryApi, ResolverApi};
-use common::canister_api::{AccountIdentifier, ICyclesMintingApi, IRegistryApi, IResolverApi};
+use common::canister_api::{
+    AccountIdentifier, ICyclesMintingApi, IRegistryApi, IResolverApi, Subaccount,
+};
 use common::constants::*;
 use common::dto::{
     BatchAddQuotaRequest, GetPageInput, GetPageOutput, ImportQuotaRequest, ImportQuotaStatus,
@@ -26,7 +28,7 @@ use common::permissions::{
     must_be_in_named_canister, must_be_named_canister, must_be_system_owner,
 };
 use common::permissions::{must_be_named_principal, must_not_anonymous};
-use common::token_identifier::{get_valid_token_index, CanisterId, TokenIdentifier};
+use common::token_identifier::{get_valid_token_index, CanisterId, TokenIdentifier, TokenIndex};
 use common::{AuthPrincipal, CallContext, TimeInNs};
 
 use crate::name_locker::{try_lock_name, unlock_name};
@@ -1007,20 +1009,13 @@ impl RegistrarService {
     }
 
     pub(crate) fn metadata(&self, token: &TokenIdentifier) -> NFTServiceResult<Metadata> {
-        let token_index = get_valid_token_index(token, CanisterNames::Registrar)?;
-        let registration = STATE.with(|s| {
-            let store = s.token_index_store.borrow();
-            store.get_registration(&token_index)
-        });
-        if let Some(registration) = registration {
-            return Ok(Metadata::NonFungible({
-                let metadata = NonFungible {
-                    metadata: registration.get_metadata(),
-                };
-                metadata
-            }));
-        }
-        Err(CommonError::InvalidToken(token.clone()))
+        let registration_name = self.get_registration_name(token)?;
+        return Ok(Metadata::NonFungible({
+            let metadata = NonFungible {
+                metadata: registration_name.get_metadata(),
+            };
+            metadata
+        }));
     }
 
     pub(crate) fn get_supply(&self) -> NFTServiceResult<u128> {
@@ -1031,21 +1026,16 @@ impl RegistrarService {
     }
 
     pub(crate) fn bearer(&self, token: &TokenIdentifier) -> NFTServiceResult<String> {
-        let token_index = get_valid_token_index(token, CanisterNames::Registrar)?;
+        let registration_name = self.get_registration_name(token)?;
         STATE.with(|s| {
-            let token_index_store = s.token_index_store.borrow();
             let registration_store = s.registration_store.borrow();
-            let registration_name = token_index_store.get_registration(&token_index);
-            if let Some(registration_name) = registration_name {
-                let registration =
-                    registration_store.get_registration(&registration_name.get_value().into());
-                return if let Some(registration) = registration {
-                    Ok(registration.get_owner().to_text())
-                } else {
-                    Err(CommonError::InvalidToken(token.clone()))
-                };
-            }
-            Err(CommonError::InvalidToken(token.clone()))
+            let registration =
+                registration_store.get_registration(&registration_name.get_value().into());
+            return if let Some(registration) = registration {
+                Ok(registration.get_owner().to_text())
+            } else {
+                Err(CommonError::InvalidToken(token.clone()))
+            };
         })
     }
 
@@ -1072,16 +1062,7 @@ impl RegistrarService {
         spender: Principal,
         token: &TokenIdentifier,
     ) -> NFTServiceResult<()> {
-        let token_index = get_valid_token_index(token, CanisterNames::Registrar)?;
-        let registration_name = STATE.with(|s| {
-            let mut token_index_store = s.token_index_store.borrow_mut();
-            let registration_name = token_index_store.get_registration(&token_index);
-            registration_name
-        });
-        if registration_name.is_none() {
-            return Err(CommonError::InvalidToken(token.clone()));
-        }
-        let registration_name = registration_name.unwrap();
+        let registration_name = self.get_registration_name(token)?;
         let _ = self.approve(
             &call_context.caller,
             call_context.now.0,
@@ -1089,6 +1070,45 @@ impl RegistrarService {
             spender,
         );
         Ok(())
+    }
+
+    fn get_registration_name(&self, token: &TokenIdentifier) -> NFTServiceResult<RegistrationName> {
+        let token_index = get_valid_token_index(token, CanisterNames::Registrar)?;
+        let registration_name = STATE.with(|s| {
+            let mut token_index_store = s.token_index_store.borrow_mut();
+            let registration_name = token_index_store.get_registration(&token_index);
+            registration_name
+        });
+        if let Some(registration_name) = registration_name {
+            return Ok(registration_name);
+        }
+        return Err(CommonError::InvalidToken(token.clone()));
+    }
+
+    pub(crate) fn allowance(
+        &self,
+        owner: &Principal,
+        spender: &Principal,
+        token: &TokenIdentifier,
+    ) -> NFTServiceResult<u128> {
+        let registration_name = self.get_registration_name(token)?;
+        let first_leve_name: FirstLevelName = registration_name.get_value().into();
+        STATE.with(|s| {
+            let approve_store = s.registration_approval_store.borrow();
+            let registration_store = s.registration_store.borrow();
+
+            if let Some(registration) = registration_store.get_registration(&first_leve_name) {
+                if !registration.is_owner(owner) {
+                    return Err(NamingError::InvalidOwner.into());
+                }
+                match approve_store.is_approved_to(&first_leve_name, &spender) {
+                    true => Ok(1),
+                    false => Ok(0),
+                }
+            } else {
+                Err(CommonError::InvalidToken(token.clone()))
+            }
+        })
     }
 }
 
