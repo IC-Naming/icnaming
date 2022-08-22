@@ -1,8 +1,9 @@
 #![allow(dead_code)]
 
 use crate::canister_api::AccountIdentifier;
+use crate::named_canister_ids::get_named_get_canister_id;
 use crate::nft::{CommonError, NFTServiceResult};
-use crate::{NamingError, ServiceResult};
+use crate::{CanisterNames, NamingError, ServiceResult};
 use candid::{CandidType, Deserialize, Principal};
 
 pub const CANISTER_ID_HASH_LEN_IN_BYTES: usize = 10;
@@ -43,9 +44,10 @@ pub fn get_token_index(tid: &TokenIdentifier) -> TokenIndex {
 
 pub fn get_valid_token_index(
     tid: &TokenIdentifier,
-    canister_id: &CanisterId,
+    canister_name: CanisterNames,
 ) -> NFTServiceResult<TokenIndex> {
-    if is_valid_token_id(tid, canister_id) {
+    let canister_id = get_named_get_canister_id(canister_name);
+    if is_valid_token_id(tid, &CanisterId(canister_id)) {
         let index = get_token_index(tid);
         return Ok(index);
     }

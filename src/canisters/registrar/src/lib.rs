@@ -611,8 +611,7 @@ impl MetadataActorResponse {
 #[candid_method(query)]
 fn metadata(token: TokenIdentifier) -> MetadataActorResponse {
     let service = RegistrarService::default();
-    let call_context = CallContext::from_ic();
-    let result = service.metadata(&call_context, token);
+    let result = service.metadata(&token);
     MetadataActorResponse::new(result)
 }
 
@@ -666,8 +665,7 @@ impl BearerActorResponse {
 #[candid_method(query, rename = "bearer")]
 fn bearer(token: TokenIdentifier) -> BearerActorResponse {
     let service = RegistrarService::default();
-    let call_context = CallContext::from_ic();
-    let result = service.bearer(&call_context, &token);
+    let result = service.bearer(&token);
     BearerActorResponse::new(result)
 }
 
