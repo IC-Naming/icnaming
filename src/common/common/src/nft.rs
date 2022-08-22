@@ -33,6 +33,14 @@ impl From<NamingError> for TransferError {
         TransferError::Other(error.to_string())
     }
 }
+impl From<CommonError> for TransferError {
+    fn from(error: CommonError) -> Self {
+        match error {
+            CommonError::InvalidToken(token) => TransferError::InvalidToken(token),
+            CommonError::Other(error) => TransferError::Other(error),
+        }
+    }
+}
 
 #[derive(CandidType, Debug, Clone, Deserialize)]
 pub struct ApproveRequest {

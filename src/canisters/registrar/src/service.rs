@@ -1112,19 +1112,25 @@ impl RegistrarService {
     }
     pub(crate) async fn ex_transfer(
         &self,
+        call_context: &CallContext,
         from: &common::nft::User,
         to: &common::nft::User,
         token: &TokenIdentifier,
     ) -> NFTTransferServiceResult<u128> {
         let from = from.get_principal()?;
         let to = to.get_principal()?;
-        let registration_name = self.get_registration_name(token)?;
-        let transfer_result = self
-            .transfer(registration_name.get_value().as_str(), &from, to)
-            .await;
-        match transfer_result {
-            Ok(value) => Ok(value as u128),
-            Err(e) => Err(e.into()),
+        let registration_name = self.get_registration_name(token);
+        match registration_name {
+            Ok(registration_name) => {
+                let transfer_result = self
+                    .transfer(registration_name.get_value().as_str(), &from, to)
+                    .await;
+                match transfer_result {
+                    Ok(value) => Ok(value as u128),
+                    Err(e) => Err(e.into()),
+                }
+            }
+            Err(err) => return Err(err.into()),
         }
     }
 }
