@@ -1295,7 +1295,7 @@ mod nft_query_service {
             let mut store = s.token_index_store.borrow_mut();
             store.try_add_registration_name(RegistrationName(test_name_str.to_string()));
         });
-        let result = service.get_registry();
+        let result = service.ext_get_registry();
         assert_eq!(result.len(), 1);
     }
 
@@ -1309,7 +1309,7 @@ mod nft_query_service {
             store.try_add_registration_name(RegistrationName(test_name_str2.to_string()));
         });
 
-        let mut result = service.get_tokens();
+        let mut result = service.ext_get_tokens();
         assert_eq!(result.len(), 2);
         result.sort_by(|a, b| a.0.cmp(&b.0));
         let first_token = result.first().unwrap().to_owned();
@@ -1352,7 +1352,7 @@ mod nft_query_service {
         });
         let canisterid = get_named_get_canister_id(CanisterNames::Registrar);
         let token_id = encode_token_id(CanisterId(canisterid), TokenIndex(1u32));
-        let result = service.metadata(&token_id);
+        let result = service.ext_metadata(&token_id);
         println!("{:?}", result);
         assert!(result.is_ok());
         let result = result.unwrap();
@@ -1375,7 +1375,7 @@ mod nft_query_service {
             let mut store = s.token_index_store.borrow_mut();
             store.try_add_registration_name(RegistrationName(test_name_str.to_string()));
         });
-        let result = service.get_supply();
+        let result = service.ext_supply();
         assert!(result.is_ok());
         let result = result.unwrap();
 
@@ -1384,7 +1384,7 @@ mod nft_query_service {
 
     #[rstest]
     fn test_get_supply_default(mut service: RegistrarService) {
-        let result = service.get_supply();
+        let result = service.ext_supply();
         assert!(result.is_ok());
         let result = result.unwrap();
 
@@ -1423,7 +1423,7 @@ mod nft_transfer_service {
 
         let canisterid = get_named_get_canister_id(CanisterNames::Registrar);
         let token_id = encode_token_id(CanisterId(canisterid), TokenIndex(1u32));
-        let result = service.ex_approve(&call_context, mock_user2, &token_id);
+        let result = service.ext_approve(&call_context, mock_user2, &token_id);
         assert!(result.is_ok());
     }
 
@@ -1440,7 +1440,7 @@ mod nft_transfer_service {
 
         let canisterid = get_named_get_canister_id(CanisterNames::Registrar);
         let token_id = encode_token_id(CanisterId(canisterid), TokenIndex(1u32));
-        let result = service.ex_approve(&call_context, mock_user1, &token_id);
+        let result = service.ext_approve(&call_context, mock_user1, &token_id);
         assert!(result.is_ok());
     }
 
@@ -1457,12 +1457,12 @@ mod nft_transfer_service {
         let canister_id = get_named_get_canister_id(CanisterNames::Registrar);
         let token_id = encode_token_id(CanisterId(canister_id), TokenIndex(1u32));
 
-        let result = service.ex_approve(&call_context, mock_user2, &token_id);
+        let result = service.ext_approve(&call_context, mock_user2, &token_id);
         assert!(result.is_ok());
 
         let owner = common::nft::User::Principal(call_context.caller.clone());
 
-        let result = service.allowance(&owner, &mock_user2, &token_id);
+        let result = service.ext_allowance(&owner, &mock_user2, &token_id);
         assert!(result.is_ok());
         let result = result.unwrap();
         assert_eq!(result, 1u128);
@@ -1481,12 +1481,12 @@ mod nft_transfer_service {
         let canister_id = get_named_get_canister_id(CanisterNames::Registrar);
         let token_id = encode_token_id(CanisterId(canister_id), TokenIndex(1u32));
 
-        let result = service.ex_approve(&call_context, mock_user2, &token_id);
+        let result = service.ext_approve(&call_context, mock_user2, &token_id);
         assert!(result.is_ok());
 
         let owner = common::nft::User::Address(AccountIdentifier::new(call_context.caller, None));
 
-        let result = service.allowance(&owner, &mock_user2, &token_id);
+        let result = service.ext_allowance(&owner, &mock_user2, &token_id);
         assert!(result.is_err());
         let result = result.unwrap_err();
         let expect_err: common::nft::CommonError =
@@ -1507,12 +1507,12 @@ mod nft_transfer_service {
         let canister_id = get_named_get_canister_id(CanisterNames::Registrar);
         let token_id = encode_token_id(CanisterId(canister_id), TokenIndex(1u32));
 
-        let result = service.ex_approve(&call_context, mock_user1, &token_id);
+        let result = service.ext_approve(&call_context, mock_user1, &token_id);
         assert!(result.is_ok());
 
         let owner = common::nft::User::Principal(call_context.caller.clone());
 
-        let result = service.allowance(&owner, &mock_user1, &token_id);
+        let result = service.ext_allowance(&owner, &mock_user1, &token_id);
         assert!(result.is_err());
         let result = result.unwrap_err();
         let expect_error: CommonError = NamingError::InvalidOwner.into();
@@ -1533,12 +1533,12 @@ mod nft_transfer_service {
         let canister_id = get_named_get_canister_id(CanisterNames::Registrar);
         let token_id = encode_token_id(CanisterId(canister_id), TokenIndex(1u32));
 
-        let result = service.ex_approve(&call_context, mock_user2, &token_id);
+        let result = service.ext_approve(&call_context, mock_user2, &token_id);
         assert!(result.is_ok());
 
         let owner = common::nft::User::Principal(call_context.caller.clone());
 
-        let result = service.allowance(&owner, &mock_user3, &token_id);
+        let result = service.ext_allowance(&owner, &mock_user3, &token_id);
         assert!(result.is_ok());
         let result = result.unwrap();
         assert_eq!(result, 0u128);
@@ -1566,7 +1566,7 @@ mod nft_transfer_service {
         let to = common::nft::User::Principal(mock_user2.clone());
 
         let result = service
-            .ex_transfer(&call_context, &from, &to, &token_id)
+            .ext_transfer(&call_context, &from, &to, &token_id)
             .await;
         assert!(result.is_ok());
     }
@@ -1593,7 +1593,7 @@ mod nft_transfer_service {
         let to = common::nft::User::Principal(mock_user1.clone());
 
         let result = service
-            .ex_transfer(&call_context, &from, &to, &token_id)
+            .ext_transfer(&call_context, &from, &to, &token_id)
             .await;
         assert!(result.is_err());
         let result = result.unwrap_err();
@@ -1624,7 +1624,7 @@ mod nft_transfer_service {
         let to = common::nft::User::Principal(mock_user2.clone());
 
         let result = service
-            .ex_transfer(&call_context, &from, &to, &token_id)
+            .ext_transfer(&call_context, &from, &to, &token_id)
             .await;
         assert!(result.is_err());
         let result = result.unwrap_err();
@@ -1651,7 +1651,7 @@ mod nft_transfer_service {
         let canister_id = get_named_get_canister_id(CanisterNames::Registrar);
         let token_id = encode_token_id(CanisterId(canister_id), TokenIndex(1u32));
 
-        let result = service.ex_approve(&call_context, canister_id, &token_id);
+        let result = service.ext_approve(&call_context, canister_id, &token_id);
         assert!(result.is_ok());
 
         let call_context = CallContext::new(canister_id, TimeInNs(mock_now));
@@ -1660,7 +1660,7 @@ mod nft_transfer_service {
         let to = common::nft::User::Principal(mock_user2.clone());
 
         let result = service
-            .ex_transfer(&call_context, &from, &to, &token_id)
+            .ext_transfer(&call_context, &from, &to, &token_id)
             .await;
         assert!(result.is_ok());
         assert_eq!(result.unwrap(), 1u128);

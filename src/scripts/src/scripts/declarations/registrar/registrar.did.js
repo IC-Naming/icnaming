@@ -20,23 +20,6 @@ export const idlFactory = ({ IDL }) => {
     'Ok' : IDL.Bool,
     'Err' : ErrorInfo,
   });
-  const User = IDL.Variant({
-    'principal' : IDL.Principal,
-    'address' : IDL.Text,
-  });
-  const AllowanceRequest = IDL.Record({
-    'token' : IDL.Text,
-    'owner' : User,
-    'spender' : IDL.Principal,
-  });
-  const CommonError = IDL.Variant({
-    'InvalidToken' : IDL.Text,
-    'Other' : IDL.Text,
-  });
-  const AllowanceActorResponse = IDL.Variant({
-    'Ok' : IDL.Nat,
-    'Err' : CommonError,
-  });
   const ImportQuotaItem = IDL.Record({
     'owner' : IDL.Principal,
     'diff' : IDL.Nat32,
@@ -53,8 +36,26 @@ export const idlFactory = ({ IDL }) => {
   const BatchTransferRequest = IDL.Record({
     'items' : IDL.Vec(TransferQuotaDetails),
   });
-  const BearerActorResponse = IDL.Variant({
-    'Ok' : IDL.Text,
+  const StateExportData = IDL.Record({ 'state_data' : IDL.Vec(IDL.Nat8) });
+  const StateExportResponse = IDL.Variant({
+    'Ok' : StateExportData,
+    'Err' : ErrorInfo,
+  });
+  const User = IDL.Variant({
+    'principal' : IDL.Principal,
+    'address' : IDL.Text,
+  });
+  const AllowanceRequest = IDL.Record({
+    'token' : IDL.Text,
+    'owner' : User,
+    'spender' : IDL.Principal,
+  });
+  const CommonError = IDL.Variant({
+    'InvalidToken' : IDL.Text,
+    'Other' : IDL.Text,
+  });
+  const EXTAllowanceActorResponse = IDL.Variant({
+    'Ok' : IDL.Nat,
     'Err' : CommonError,
   });
   const ApproveRequest = IDL.Record({
@@ -62,6 +63,29 @@ export const idlFactory = ({ IDL }) => {
     'subaccount' : IDL.Opt(IDL.Vec(IDL.Nat8)),
     'allowance' : IDL.Nat,
     'spender' : IDL.Principal,
+  });
+  const EXTBearerActorResponse = IDL.Variant({
+    'Ok' : IDL.Text,
+    'Err' : CommonError,
+  });
+  const Fungible = IDL.Record({
+    'decimals' : IDL.Text,
+    'metadata' : IDL.Opt(IDL.Vec(IDL.Nat8)),
+    'name' : User,
+    'symbol' : IDL.Principal,
+  });
+  const NonFungible = IDL.Record({ 'metadata' : IDL.Opt(IDL.Vec(IDL.Nat8)) });
+  const Metadata = IDL.Variant({
+    'fungible' : Fungible,
+    'nonfungible' : NonFungible,
+  });
+  const EXTMetadataActorResponse = IDL.Variant({
+    'Ok' : Metadata,
+    'Err' : CommonError,
+  });
+  const EXTSupplyActorResponse = IDL.Variant({
+    'Ok' : IDL.Nat,
+    'Err' : CommonError,
   });
   const TransferRequest = IDL.Record({
     'to' : User,
@@ -80,25 +104,9 @@ export const idlFactory = ({ IDL }) => {
     'Unauthorized' : IDL.Text,
     'Other' : IDL.Text,
   });
-  const EXTransferResponse = IDL.Variant({
+  const EXTTransferResponse = IDL.Variant({
     'Ok' : IDL.Nat,
     'Err' : TransferError,
-  });
-  const StateExportData = IDL.Record({ 'state_data' : IDL.Vec(IDL.Nat8) });
-  const StateExportResponse = IDL.Variant({
-    'Ok' : StateExportData,
-    'Err' : ErrorInfo,
-  });
-  const Fungible = IDL.Record({
-    'decimals' : IDL.Text,
-    'metadata' : IDL.Opt(IDL.Vec(IDL.Nat8)),
-    'name' : User,
-    'symbol' : IDL.Principal,
-  });
-  const NonFungible = IDL.Record({ 'metadata' : IDL.Opt(IDL.Vec(IDL.Nat8)) });
-  const Metadata = IDL.Variant({
-    'fungible' : Fungible,
-    'nonfungible' : NonFungible,
   });
   const GetPageInput = IDL.Record({
     'offset' : IDL.Nat64,
@@ -226,10 +234,6 @@ export const idlFactory = ({ IDL }) => {
   const ImportNameRegistrationRequest = IDL.Record({
     'items' : IDL.Vec(ImportNameRegistrationItem),
   });
-  const MetadataActorResponse = IDL.Variant({
-    'Ok' : Metadata,
-    'Err' : CommonError,
-  });
   const RegisterNameWithPaymentRequest = IDL.Record({
     'name' : IDL.Text,
     'approve_amount' : IDL.Nat,
@@ -239,10 +243,6 @@ export const idlFactory = ({ IDL }) => {
     'name' : IDL.Text,
     'approve_amount' : IDL.Nat64,
     'years' : IDL.Nat32,
-  });
-  const SupplyActorResponse = IDL.Variant({
-    'Ok' : IDL.Nat,
-    'Err' : CommonError,
   });
   const TransferFromQuotaRequest = IDL.Record({
     'to' : IDL.Principal,
@@ -256,11 +256,6 @@ export const idlFactory = ({ IDL }) => {
         [BooleanActorResponse],
         [],
       ),
-    'allowance' : IDL.Func(
-        [AllowanceRequest],
-        [AllowanceActorResponse],
-        ['query'],
-      ),
     'approve' : IDL.Func([IDL.Text, IDL.Principal], [BooleanActorResponse], []),
     'available' : IDL.Func([IDL.Text], [BooleanActorResponse], ['query']),
     'batch_add_quota' : IDL.Func(
@@ -273,21 +268,32 @@ export const idlFactory = ({ IDL }) => {
         [BooleanActorResponse],
         [],
       ),
-    'bearer' : IDL.Func([IDL.Text], [BearerActorResponse], ['query']),
-    'ex_approve' : IDL.Func([ApproveRequest], [], []),
-    'ex_transfer' : IDL.Func([TransferRequest], [EXTransferResponse], []),
     'export_state' : IDL.Func([], [StateExportResponse], []),
-    'getMinter' : IDL.Func([], [IDL.Principal], ['query']),
-    'getRegistry' : IDL.Func(
+    'ext_allowance' : IDL.Func(
+        [AllowanceRequest],
+        [EXTAllowanceActorResponse],
+        ['query'],
+      ),
+    'ext_approve' : IDL.Func([ApproveRequest], [], []),
+    'ext_bearer' : IDL.Func([IDL.Text], [EXTBearerActorResponse], ['query']),
+    'ext_getMinter' : IDL.Func([], [IDL.Principal], ['query']),
+    'ext_getRegistry' : IDL.Func(
         [],
         [IDL.Vec(IDL.Tuple(IDL.Nat32, IDL.Text))],
         ['query'],
       ),
-    'getTokens' : IDL.Func(
+    'ext_getTokens' : IDL.Func(
         [],
         [IDL.Vec(IDL.Tuple(IDL.Nat32, Metadata))],
         ['query'],
       ),
+    'ext_metadata' : IDL.Func(
+        [IDL.Text],
+        [EXTMetadataActorResponse],
+        ['query'],
+      ),
+    'ext_supply' : IDL.Func([], [EXTSupplyActorResponse], ['query']),
+    'ext_transfer' : IDL.Func([TransferRequest], [EXTTransferResponse], []),
     'get_all_details' : IDL.Func(
         [GetPageInput],
         [GetAllDetailsActorResponse],
@@ -345,7 +351,6 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'load_state' : IDL.Func([StateExportData], [BooleanActorResponse], []),
-    'metadata' : IDL.Func([IDL.Text], [MetadataActorResponse], ['query']),
     'reclaim_name' : IDL.Func([IDL.Text], [BooleanActorResponse], []),
     'register_for' : IDL.Func(
         [IDL.Text, IDL.Principal, IDL.Nat64],
@@ -374,7 +379,6 @@ export const idlFactory = ({ IDL }) => {
         [BooleanActorResponse],
         [],
       ),
-    'supply' : IDL.Func([], [SupplyActorResponse], ['query']),
     'transfer' : IDL.Func(
         [IDL.Text, IDL.Principal],
         [BooleanActorResponse],

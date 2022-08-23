@@ -968,7 +968,7 @@ impl RegistrarService {
         });
     }
 
-    pub(crate) fn get_registry(&self) -> Vec<(u32, String)> {
+    pub(crate) fn ext_get_registry(&self) -> Vec<(u32, String)> {
         let list = STATE.with(|s| {
             let store = s.token_index_store.borrow();
             store
@@ -981,7 +981,7 @@ impl RegistrarService {
         list
     }
 
-    pub(crate) fn get_tokens(&self) -> Vec<(u32, Metadata)> {
+    pub(crate) fn ext_get_tokens(&self) -> Vec<(u32, Metadata)> {
         let mut list: Vec<(u32, Metadata)> = STATE.with(|s| {
             let store = s.token_index_store.borrow();
             store
@@ -1006,7 +1006,7 @@ impl RegistrarService {
         list
     }
 
-    pub(crate) fn metadata(&self, token: &TokenIdentifier) -> NFTServiceResult<Metadata> {
+    pub(crate) fn ext_metadata(&self, token: &TokenIdentifier) -> NFTServiceResult<Metadata> {
         let registration_name = self.get_token_index_registration_name(token)?;
         return Ok(Metadata::NonFungible({
             let metadata = NonFungible {
@@ -1016,14 +1016,14 @@ impl RegistrarService {
         }));
     }
 
-    pub(crate) fn get_supply(&self) -> NFTServiceResult<u128> {
+    pub(crate) fn ext_supply(&self) -> NFTServiceResult<u128> {
         STATE.with(|s| {
             let store = s.token_index_store.borrow();
             Ok(store.get_index().get_value() as u128)
         })
     }
 
-    pub(crate) fn bearer(&self, token: &TokenIdentifier) -> NFTServiceResult<String> {
+    pub(crate) fn ext_bearer(&self, token: &TokenIdentifier) -> NFTServiceResult<String> {
         let registration = self.get_registration_by_token_id(token)?;
         Ok(registration.get_owner().to_text())
     }
@@ -1045,7 +1045,7 @@ impl RegistrarService {
             Ok(success_count)
         })
     }
-    pub(crate) fn ex_approve(
+    pub(crate) fn ext_approve(
         &self,
         call_context: &CallContext,
         spender: Principal,
@@ -1093,7 +1093,7 @@ impl RegistrarService {
         return Err(CommonError::InvalidToken(token.clone()));
     }
 
-    pub(crate) fn allowance(
+    pub(crate) fn ext_allowance(
         &self,
         owner: &common::nft::User,
         spender: &Principal,
@@ -1112,7 +1112,7 @@ impl RegistrarService {
             Ok(0)
         })
     }
-    pub(crate) async fn ex_transfer(
+    pub(crate) async fn ext_transfer(
         &self,
         call_context: &CallContext,
         from: &common::nft::User,

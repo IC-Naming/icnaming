@@ -575,101 +575,101 @@ impl GetNameStatueActorResponse {
     }
 }
 
-pub type GetRegistryActorResponse = Vec<(u32, String)>;
+pub type EXTGetRegistryActorResponse = Vec<(u32, String)>;
 
-#[query(name = "getRegistry")]
-#[candid_method(query, rename = "getRegistry")]
-fn get_registry() -> GetRegistryActorResponse {
+#[query(name = "ext_getRegistry")]
+#[candid_method(query, rename = "ext_getRegistry")]
+fn ext_get_registry() -> EXTGetRegistryActorResponse {
     let service = RegistrarService::default();
-    let result = service.get_registry();
+    let result = service.ext_get_registry();
     result
 }
 
-pub type GetTokens = Vec<(u32, Metadata)>;
+pub type EXTGetTokens = Vec<(u32, Metadata)>;
 
-#[query(name = "getTokens")]
-#[candid_method(query, rename = "getTokens")]
-fn get_tokens() -> GetTokens {
+#[query(name = "ext_getTokens")]
+#[candid_method(query, rename = "ext_getTokens")]
+fn ext_get_tokens() -> EXTGetTokens {
     let service = RegistrarService::default();
-    let result = service.get_tokens();
+    let result = service.ext_get_tokens();
     result
 }
 
 #[derive(CandidType)]
-pub enum MetadataActorResponse {
+pub enum EXTMetadataActorResponse {
     Ok(Metadata),
     Err(CommonError),
 }
 
-impl MetadataActorResponse {
-    pub fn new(result: NFTServiceResult<Metadata>) -> MetadataActorResponse {
+impl EXTMetadataActorResponse {
+    pub fn new(result: NFTServiceResult<Metadata>) -> EXTMetadataActorResponse {
         match result {
-            Ok(data) => MetadataActorResponse::Ok(data),
-            Err(err) => MetadataActorResponse::Err(err.into()),
+            Ok(data) => EXTMetadataActorResponse::Ok(data),
+            Err(err) => EXTMetadataActorResponse::Err(err.into()),
         }
     }
 }
 
-#[query(name = "metadata")]
+#[query(name = "ext_metadata")]
 #[candid_method(query)]
-fn metadata(token: TokenIdentifier) -> MetadataActorResponse {
+fn ext_metadata(token: TokenIdentifier) -> EXTMetadataActorResponse {
     let service = RegistrarService::default();
-    let result = service.metadata(&token);
-    MetadataActorResponse::new(result)
+    let result = service.ext_metadata(&token);
+    EXTMetadataActorResponse::new(result)
 }
 
 #[derive(CandidType)]
-pub enum SupplyActorResponse {
+pub enum EXTSupplyActorResponse {
     Ok(u128),
     Err(CommonError),
 }
 
-impl SupplyActorResponse {
-    pub fn new(result: NFTServiceResult<u128>) -> SupplyActorResponse {
+impl EXTSupplyActorResponse {
+    pub fn new(result: NFTServiceResult<u128>) -> EXTSupplyActorResponse {
         match result {
-            Ok(data) => SupplyActorResponse::Ok(data),
-            Err(err) => SupplyActorResponse::Err(err.into()),
+            Ok(data) => EXTSupplyActorResponse::Ok(data),
+            Err(err) => EXTSupplyActorResponse::Err(err.into()),
         }
     }
 }
 
-#[query(name = "supply")]
-#[candid_method(query, rename = "supply")]
-fn get_supply() -> SupplyActorResponse {
+#[query(name = "ext_supply")]
+#[candid_method(query)]
+fn ext_supply() -> EXTSupplyActorResponse {
     let service = RegistrarService::default();
-    let result = service.get_supply();
-    SupplyActorResponse::new(result)
+    let result = service.ext_supply();
+    EXTSupplyActorResponse::new(result)
 }
 
-pub type GetMinterActorResponse = Principal;
+pub type EXTGetMinterActorResponse = Principal;
 
-#[query(name = "getMinter")]
-#[candid_method(query, rename = "getMinter")]
-fn minter() -> GetMinterActorResponse {
+#[query(name = "ext_getMinter")]
+#[candid_method(query, rename = "ext_getMinter")]
+fn minter() -> EXTGetMinterActorResponse {
     Principal::anonymous()
 }
 
 #[derive(CandidType)]
-pub enum BearerActorResponse {
+pub enum EXTBearerActorResponse {
     Ok(String),
     Err(CommonError),
 }
 
-impl BearerActorResponse {
-    pub fn new(result: NFTServiceResult<String>) -> BearerActorResponse {
+impl EXTBearerActorResponse {
+    pub fn new(result: NFTServiceResult<String>) -> EXTBearerActorResponse {
         match result {
-            Ok(data) => BearerActorResponse::Ok(data),
-            Err(err) => BearerActorResponse::Err(err.into()),
+            Ok(data) => EXTBearerActorResponse::Ok(data),
+            Err(err) => EXTBearerActorResponse::Err(err.into()),
         }
     }
 }
 
-#[query(name = "bearer")]
-#[candid_method(query, rename = "bearer")]
-fn bearer(token: TokenIdentifier) -> BearerActorResponse {
+#[query(name = "ext_bearer")]
+#[candid_method(query)]
+fn ext_bearer(token: TokenIdentifier) -> EXTBearerActorResponse {
     let service = RegistrarService::default();
-    let result = service.bearer(&token);
-    BearerActorResponse::new(result)
+    let result = service.ext_bearer(&token);
+    EXTBearerActorResponse::new(result)
 }
 
 #[derive(CandidType)]
@@ -695,61 +695,61 @@ fn import_token_id_from_registration() -> ImportTokenIdResponse {
     ImportTokenIdResponse::new(result)
 }
 
-#[update(name = "ex_approve")]
-#[candid_method(update, rename = "ex_approve")]
-fn ex_approve(request: ApproveRequest) {
+#[update(name = "ext_approve")]
+#[candid_method(update)]
+fn ext_approve(request: ApproveRequest) {
     let service = RegistrarService::default();
     let call_context = CallContext::from_ic();
-    let _ = service.ex_approve(&call_context, request.spender, &request.token);
+    let _ = service.ext_approve(&call_context, request.spender, &request.token);
 }
 
 #[derive(CandidType)]
-pub enum AllowanceActorResponse {
+pub enum EXTAllowanceActorResponse {
     Ok(u128),
     Err(CommonError),
 }
 
-impl AllowanceActorResponse {
-    pub fn new(result: NFTServiceResult<u128>) -> AllowanceActorResponse {
+impl EXTAllowanceActorResponse {
+    pub fn new(result: NFTServiceResult<u128>) -> EXTAllowanceActorResponse {
         match result {
-            Ok(data) => AllowanceActorResponse::Ok(data),
-            Err(err) => AllowanceActorResponse::Err(err.into()),
+            Ok(data) => EXTAllowanceActorResponse::Ok(data),
+            Err(err) => EXTAllowanceActorResponse::Err(err.into()),
         }
     }
 }
 
-#[query(name = "allowance")]
-#[candid_method(query, rename = "allowance")]
-fn allowance(request: AllowanceRequest) -> AllowanceActorResponse {
+#[query(name = "ext_allowance")]
+#[candid_method(query)]
+fn ext_allowance(request: AllowanceRequest) -> EXTAllowanceActorResponse {
     let service = RegistrarService::default();
-    let result = service.allowance(&request.owner, &request.spender, &request.token);
-    AllowanceActorResponse::new(result)
+    let result = service.ext_allowance(&request.owner, &request.spender, &request.token);
+    EXTAllowanceActorResponse::new(result)
 }
 
 #[derive(CandidType)]
-pub enum EXTransferResponse {
+pub enum EXTTransferResponse {
     Ok(u128),
     Err(TransferError),
 }
 
-impl EXTransferResponse {
-    pub fn new(result: NFTTransferServiceResult<u128>) -> EXTransferResponse {
+impl EXTTransferResponse {
+    pub fn new(result: NFTTransferServiceResult<u128>) -> EXTTransferResponse {
         match result {
-            Ok(data) => EXTransferResponse::Ok(data),
-            Err(err) => EXTransferResponse::Err(err.into()),
+            Ok(data) => EXTTransferResponse::Ok(data),
+            Err(err) => EXTTransferResponse::Err(err.into()),
         }
     }
 }
 
-#[update(name = "ex_transfer")]
-#[candid_method(update, rename = "ex_transfer")]
-async fn ex_transfer(request: TransferRequest) -> EXTransferResponse {
+#[update(name = "ext_transfer")]
+#[candid_method(update)]
+async fn ext_transfer(request: TransferRequest) -> EXTTransferResponse {
     let service = RegistrarService::default();
     let call_context = CallContext::from_ic();
     let result = service
-        .ex_transfer(&call_context, &request.from, &request.to, &request.token)
+        .ext_transfer(&call_context, &request.from, &request.to, &request.token)
         .await;
-    EXTransferResponse::new(result)
+    EXTTransferResponse::new(result)
 }
 
 candid::export_service!();
