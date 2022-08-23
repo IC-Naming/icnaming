@@ -1275,7 +1275,7 @@ mod set_record_value {
 mod nft_query_service {
     use super::*;
     use candid::decode_args;
-    use common::token_identifier::{encode_token_id, TokenIndex};
+    use common::token_identifier::{encode_token_id, CanisterId, TokenIndex};
     use std::string::String;
 
     #[rstest]
@@ -1394,7 +1394,7 @@ mod nft_query_service {
 
 mod nft_transfer_service {
     use super::*;
-    use common::token_identifier::{encode_token_id, TokenIndex};
+    use common::token_identifier::{encode_token_id, CanisterId, TokenIndex};
 
     fn registration_init(name: String, user: Principal, now: u64) {
         STATE.with(|s| {

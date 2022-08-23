@@ -4,7 +4,7 @@ use std::ops::Deref;
 use std::str::FromStr;
 use std::sync::Arc;
 
-use candid::{encode_args, CandidType, Deserialize, Nat, Principal};
+use candid::{CandidType, Deserialize, Nat, Principal};
 
 use log::{debug, error, info, trace};
 use num_bigint::BigUint;
@@ -12,9 +12,7 @@ use num_traits::ToPrimitive;
 use time::{OffsetDateTime, Time};
 
 use common::canister_api::ic_impl::{CyclesMintingApi, RegistryApi, ResolverApi};
-use common::canister_api::{
-    AccountIdentifier, ICyclesMintingApi, IRegistryApi, IResolverApi, Subaccount,
-};
+use common::canister_api::{AccountIdentifier, ICyclesMintingApi, IRegistryApi, IResolverApi};
 use common::constants::*;
 use common::dto::{
     BatchAddQuotaRequest, GetPageInput, GetPageOutput, ImportQuotaRequest, ImportQuotaStatus,
@@ -28,7 +26,7 @@ use common::permissions::{
     must_be_in_named_canister, must_be_named_canister, must_be_system_owner,
 };
 use common::permissions::{must_be_named_principal, must_not_anonymous};
-use common::token_identifier::{get_valid_token_index, CanisterId, TokenIdentifier, TokenIndex};
+use common::token_identifier::{get_valid_token_index, TokenIdentifier};
 use common::{AuthPrincipal, CallContext, TimeInNs};
 
 use crate::name_locker::{try_lock_name, unlock_name};

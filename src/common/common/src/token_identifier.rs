@@ -1,9 +1,8 @@
 #![allow(dead_code)]
 
-use crate::canister_api::AccountIdentifier;
 use crate::named_canister_ids::get_named_get_canister_id;
 use crate::nft::{CommonError, NFTServiceResult};
-use crate::{CanisterNames, NamingError, ServiceResult};
+use crate::CanisterNames;
 use candid::{CandidType, Deserialize, Principal};
 
 pub const CANISTER_ID_HASH_LEN_IN_BYTES: usize = 10;
