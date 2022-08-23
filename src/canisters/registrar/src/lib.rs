@@ -722,15 +722,7 @@ impl AllowanceActorResponse {
 #[candid_method(query, rename = "allowance")]
 fn allowance(request: AllowanceRequest) -> AllowanceActorResponse {
     let service = RegistrarService::default();
-    let owner = match request.owner {
-        common::nft::User::Address(_) => {
-            return AllowanceActorResponse::new(Err(
-                NamingError::AccountIdentifierNotSupported.into()
-            ));
-        }
-        common::nft::User::Principal(p) => p,
-    };
-    let result = service.allowance(&owner, &request.spender, &request.token);
+    let result = service.allowance(&request.owner, &request.spender, &request.token);
     AllowanceActorResponse::new(result)
 }
 

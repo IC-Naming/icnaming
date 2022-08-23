@@ -1460,10 +1460,38 @@ mod nft_transfer_service {
         let result = service.ex_approve(&call_context, mock_user2, &token_id);
         assert!(result.is_ok());
 
-        let result = service.allowance(&call_context.caller, &mock_user2, &token_id);
+        let owner = common::nft::User::Principal(call_context.caller.clone());
+
+        let result = service.allowance(&owner, &mock_user2, &token_id);
         assert!(result.is_ok());
         let result = result.unwrap();
         assert_eq!(result, 1u128);
+    }
+
+    #[rstest]
+    fn test_allowance_failed_account_id_not_supported(
+        mut service: RegistrarService,
+        mock_user1: Principal,
+        mock_user2: Principal,
+        mock_now: u64,
+    ) {
+        let test_name_str = create_test_name("icnaming");
+        registration_init(test_name_str.to_string(), mock_user1, mock_now);
+        let call_context = CallContext::new(mock_user1, TimeInNs(mock_now));
+        let canisterid = get_named_get_canister_id(CanisterNames::Registrar);
+        let token_id = encode_token_id(CanisterId(canisterid), TokenIndex(1u32));
+
+        let result = service.ex_approve(&call_context, mock_user2, &token_id);
+        assert!(result.is_ok());
+
+        let owner = common::nft::User::Address(AccountIdentifier::new(call_context.caller, None));
+
+        let result = service.allowance(&owner, &mock_user2, &token_id);
+        assert!(result.is_err());
+        let result = result.unwrap_err();
+        let expect_err: common::nft::CommonError =
+            NamingError::AccountIdentifierNotSupported.into();
+        assert_eq!(result, expect_err);
     }
 
     #[rstest]
@@ -1482,7 +1510,9 @@ mod nft_transfer_service {
         let result = service.ex_approve(&call_context, mock_user1, &token_id);
         assert!(result.is_ok());
 
-        let result = service.allowance(&call_context.caller, &mock_user1, &token_id);
+        let owner = common::nft::User::Principal(call_context.caller.clone());
+
+        let result = service.allowance(&owner, &mock_user1, &token_id);
         assert!(result.is_err());
         let result = result.unwrap_err();
         let expect_error: CommonError = NamingError::InvalidOwner.into();
@@ -1506,7 +1536,9 @@ mod nft_transfer_service {
         let result = service.ex_approve(&call_context, mock_user2, &token_id);
         assert!(result.is_ok());
 
-        let result = service.allowance(&call_context.caller, &mock_user3, &token_id);
+        let owner = common::nft::User::Principal(call_context.caller.clone());
+
+        let result = service.allowance(&owner, &mock_user3, &token_id);
         assert!(result.is_ok());
         let result = result.unwrap();
         assert_eq!(result, 0u128);

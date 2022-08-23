@@ -1095,12 +1095,13 @@ impl RegistrarService {
 
     pub(crate) fn allowance(
         &self,
-        owner: &Principal,
+        owner: &common::nft::User,
         spender: &Principal,
         token: &TokenIdentifier,
     ) -> NFTServiceResult<u128> {
+        let owner = owner.get_principal()?;
         let registration = self.get_registration_by_token_id(token)?;
-        if !registration.is_owner(owner) {
+        if !registration.is_owner(&owner) {
             return Err(NamingError::InvalidOwner.into());
         }
         STATE.with(|s| {
