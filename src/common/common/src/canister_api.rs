@@ -8,7 +8,8 @@ use candid::{CandidType, Nat, Principal};
 use ic_cdk::api::call::RejectionCode;
 use ic_cdk::call;
 use log::{debug, error};
-use serde::{Deserialize, Serialize};
+use serde::de::Error;
+use serde::{de, Deserialize, Serialize};
 
 use crate::cycles_minting_types::IcpXdrConversionRateCertifiedResponse;
 use crate::dto::*;
@@ -193,7 +194,7 @@ static ACCOUNT_DOMAIN_SEPERATOR: &[u8] = b"\x0Aaccount-id";
 
 pub type AccountId = [u8; 32];
 
-#[derive(CandidType, Clone, Copy, Hash, Debug, PartialEq, Eq, PartialOrd, Ord, Deserialize)]
+#[derive(CandidType, Clone, Copy, Hash, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct AccountIdentifier {
     hash: [u8; 28],
 }
@@ -270,6 +271,27 @@ impl FromStr for AccountIdentifier {
 
     fn from_str(s: &str) -> Result<AccountIdentifier, String> {
         AccountIdentifier::from_hex(s)
+    }
+}
+
+impl Serialize for AccountIdentifier {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        self.to_hex().serialize(serializer)
+    }
+}
+
+impl<'de> Deserialize<'de> for AccountIdentifier {
+    // This is the canonical way to read a this from string
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+        D::Error: de::Error,
+    {
+        let hex: [u8; 32] = hex::serde::deserialize(deserializer)?;
+        check_sum(hex).map_err(D::Error::custom)
     }
 }
 

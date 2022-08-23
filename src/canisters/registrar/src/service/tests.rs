@@ -1454,8 +1454,8 @@ mod nft_transfer_service {
         let test_name_str = create_test_name("icnaming");
         registration_init(test_name_str.to_string(), mock_user1, mock_now);
         let call_context = CallContext::new(mock_user1, TimeInNs(mock_now));
-        let canisterid = get_named_get_canister_id(CanisterNames::Registrar);
-        let token_id = encode_token_id(CanisterId(canisterid), TokenIndex(1u32));
+        let canister_id = get_named_get_canister_id(CanisterNames::Registrar);
+        let token_id = encode_token_id(CanisterId(canister_id), TokenIndex(1u32));
 
         let result = service.ex_approve(&call_context, mock_user2, &token_id);
         assert!(result.is_ok());
@@ -1478,8 +1478,8 @@ mod nft_transfer_service {
         let test_name_str = create_test_name("icnaming");
         registration_init(test_name_str.to_string(), mock_user1, mock_now);
         let call_context = CallContext::new(mock_user1, TimeInNs(mock_now));
-        let canisterid = get_named_get_canister_id(CanisterNames::Registrar);
-        let token_id = encode_token_id(CanisterId(canisterid), TokenIndex(1u32));
+        let canister_id = get_named_get_canister_id(CanisterNames::Registrar);
+        let token_id = encode_token_id(CanisterId(canister_id), TokenIndex(1u32));
 
         let result = service.ex_approve(&call_context, mock_user2, &token_id);
         assert!(result.is_ok());
@@ -1504,8 +1504,8 @@ mod nft_transfer_service {
         let test_name_str = create_test_name("icnaming");
         registration_init(test_name_str.to_string(), mock_user1, mock_now);
         let call_context = CallContext::new(mock_user2, TimeInNs(mock_now));
-        let canisterid = get_named_get_canister_id(CanisterNames::Registrar);
-        let token_id = encode_token_id(CanisterId(canisterid), TokenIndex(1u32));
+        let canister_id = get_named_get_canister_id(CanisterNames::Registrar);
+        let token_id = encode_token_id(CanisterId(canister_id), TokenIndex(1u32));
 
         let result = service.ex_approve(&call_context, mock_user1, &token_id);
         assert!(result.is_ok());
@@ -1530,8 +1530,8 @@ mod nft_transfer_service {
         let test_name_str = create_test_name("icnaming");
         registration_init(test_name_str.to_string(), mock_user1, mock_now);
         let call_context = CallContext::new(mock_user1, TimeInNs(mock_now));
-        let canisterid = get_named_get_canister_id(CanisterNames::Registrar);
-        let token_id = encode_token_id(CanisterId(canisterid), TokenIndex(1u32));
+        let canister_id = get_named_get_canister_id(CanisterNames::Registrar);
+        let token_id = encode_token_id(CanisterId(canister_id), TokenIndex(1u32));
 
         let result = service.ex_approve(&call_context, mock_user2, &token_id);
         assert!(result.is_ok());
@@ -1560,8 +1560,8 @@ mod nft_transfer_service {
         let test_name_str = create_test_name("icnaming");
         registration_init(test_name_str.to_string(), mock_user1, mock_now);
         let call_context = CallContext::new(mock_user1, TimeInNs(mock_now));
-        let canisterid = get_named_get_canister_id(CanisterNames::Registrar);
-        let token_id = encode_token_id(CanisterId(canisterid), TokenIndex(1u32));
+        let canister_id = get_named_get_canister_id(CanisterNames::Registrar);
+        let token_id = encode_token_id(CanisterId(canister_id), TokenIndex(1u32));
         let from = common::nft::User::Principal(mock_user1.clone());
         let to = common::nft::User::Principal(mock_user2.clone());
 
@@ -1587,8 +1587,8 @@ mod nft_transfer_service {
         let test_name_str = create_test_name("icnaming");
         registration_init(test_name_str.to_string(), mock_user1, mock_now);
         let call_context = CallContext::new(mock_user2, TimeInNs(mock_now));
-        let canisterid = get_named_get_canister_id(CanisterNames::Registrar);
-        let token_id = encode_token_id(CanisterId(canisterid), TokenIndex(1u32));
+        let canister_id = get_named_get_canister_id(CanisterNames::Registrar);
+        let token_id = encode_token_id(CanisterId(canister_id), TokenIndex(1u32));
         let from = common::nft::User::Principal(mock_user2.clone());
         let to = common::nft::User::Principal(mock_user1.clone());
 
@@ -1598,6 +1598,37 @@ mod nft_transfer_service {
         assert!(result.is_err());
         let result = result.unwrap_err();
         let expect_error: common::nft::TransferError = NamingError::InvalidOwner.into();
+        assert_eq!(result, expect_error);
+    }
+
+    #[rstest]
+    async fn test_ex_transfer_caller_unknown(
+        mut service: RegistrarService,
+        mut _mock_registry_api: MockRegistryApi,
+        mock_user1: Principal,
+        mock_user2: Principal,
+        mock_user3: Principal,
+        mock_now: u64,
+    ) {
+        _mock_registry_api
+            .expect_transfer()
+            .returning(|_name, _owner, _resolver| Ok(true));
+        service.registry_api = Arc::new(_mock_registry_api);
+
+        let test_name_str = create_test_name("icnaming");
+        registration_init(test_name_str.to_string(), mock_user1, mock_now);
+        let call_context = CallContext::new(mock_user3, TimeInNs(mock_now));
+        let canister_id = get_named_get_canister_id(CanisterNames::Registrar);
+        let token_id = encode_token_id(CanisterId(canister_id), TokenIndex(1u32));
+        let from = common::nft::User::Principal(mock_user1.clone());
+        let to = common::nft::User::Principal(mock_user2.clone());
+
+        let result = service
+            .ex_transfer(&call_context, &from, &to, &token_id)
+            .await;
+        assert!(result.is_err());
+        let result = result.unwrap_err();
+        let expect_error: common::nft::TransferError = NamingError::PermissionDenied.into();
         assert_eq!(result, expect_error);
     }
 
@@ -1617,13 +1648,13 @@ mod nft_transfer_service {
         let test_name_str = create_test_name("icnaming");
         registration_init(test_name_str.to_string(), mock_user1, mock_now);
         let call_context = CallContext::new(mock_user1, TimeInNs(mock_now));
-        let canisterid = get_named_get_canister_id(CanisterNames::Registrar);
-        let token_id = encode_token_id(CanisterId(canisterid), TokenIndex(1u32));
+        let canister_id = get_named_get_canister_id(CanisterNames::Registrar);
+        let token_id = encode_token_id(CanisterId(canister_id), TokenIndex(1u32));
 
-        let result = service.ex_approve(&call_context, canisterid, &token_id);
+        let result = service.ex_approve(&call_context, canister_id, &token_id);
         assert!(result.is_ok());
 
-        let call_context = CallContext::new(canisterid, TimeInNs(mock_now));
+        let call_context = CallContext::new(canister_id, TimeInNs(mock_now));
 
         let from = common::nft::User::Principal(mock_user1.clone());
         let to = common::nft::User::Principal(mock_user2.clone());

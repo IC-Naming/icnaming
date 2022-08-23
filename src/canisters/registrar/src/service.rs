@@ -1106,10 +1106,10 @@ impl RegistrarService {
         }
         STATE.with(|s| {
             let approve_store = s.registration_approval_store.borrow();
-            match approve_store.is_approved_to(&registration.get_name().into(), &spender) {
-                true => Ok(1),
-                false => Ok(0),
+            if approve_store.is_approved_to(&registration.get_name().into(), &spender) {
+                return Ok(1);
             }
+            Ok(0)
         })
     }
     pub(crate) async fn ex_transfer(
