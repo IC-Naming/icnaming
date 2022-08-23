@@ -194,7 +194,7 @@ static ACCOUNT_DOMAIN_SEPERATOR: &[u8] = b"\x0Aaccount-id";
 
 pub type AccountId = [u8; 32];
 
-#[derive(CandidType, Clone, Copy, Hash, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Copy, Hash, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct AccountIdentifier {
     hash: [u8; 28],
 }
@@ -316,6 +316,19 @@ fn check_sum(hex: [u8; 32]) -> Result<AccountIdentifier, String> {
             hex::encode(expected_checksum),
             hex::encode(found_checksum),
         ))
+    }
+}
+impl CandidType for AccountIdentifier {
+    // The type expected for account identifier is
+    fn _ty() -> candid::types::Type {
+        String::_ty()
+    }
+
+    fn idl_serialize<S>(&self, serializer: S) -> Result<(), S::Error>
+    where
+        S: candid::types::Serializer,
+    {
+        self.to_hex().idl_serialize(serializer)
     }
 }
 

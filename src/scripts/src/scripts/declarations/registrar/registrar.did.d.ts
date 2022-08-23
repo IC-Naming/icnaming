@@ -1,7 +1,6 @@
 import type { Principal } from '@dfinity/principal';
 import type { ActorMethod } from '@dfinity/agent';
 
-export interface AccountIdentifier { 'hash' : Array<number> }
 export type AllowanceActorResponse = { 'Ok' : bigint } |
   { 'Err' : CommonError };
 export interface AllowanceRequest {
@@ -172,11 +171,11 @@ export interface Token {
   'index' : bigint,
   'content_encoding' : string,
 }
-export type TransferError = { 'CannotNotify' : AccountIdentifier } |
+export type TransferError = { 'CannotNotify' : string } |
   { 'InsufficientBalance' : null } |
   { 'InvalidToken' : string } |
   { 'Rejected' : null } |
-  { 'Unauthorized' : AccountIdentifier } |
+  { 'Unauthorized' : string } |
   { 'Other' : string };
 export interface TransferFromQuotaRequest {
   'to' : Principal,
@@ -199,7 +198,7 @@ export interface TransferRequest {
   'amount' : bigint,
 }
 export type User = { 'principal' : Principal } |
-  { 'address' : AccountIdentifier };
+  { 'address' : string };
 export interface _SERVICE {
   'add_quota' : ActorMethod<
     [Principal, QuotaType, number],

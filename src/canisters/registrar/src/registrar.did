@@ -1,4 +1,3 @@
-type AccountIdentifier = record { hash : vec nat8 };
 type AllowanceActorResponse = variant { Ok : nat; Err : CommonError };
 type AllowanceRequest = record {
   token : text;
@@ -152,11 +151,11 @@ type Token = record {
   content_encoding : text;
 };
 type TransferError = variant {
-  CannotNotify : AccountIdentifier;
+  CannotNotify : text;
   InsufficientBalance;
   InvalidToken : text;
   Rejected;
-  Unauthorized : AccountIdentifier;
+  Unauthorized : text;
   Other : text;
 };
 type TransferFromQuotaRequest = record {
@@ -179,7 +178,7 @@ type TransferRequest = record {
   subaccount : opt vec nat8;
   amount : nat;
 };
-type User = variant { "principal" : principal; address : AccountIdentifier };
+type User = variant { "principal" : principal; address : text };
 service : (opt InitArgs) -> {
   add_quota : (principal, QuotaType, nat32) -> (BooleanActorResponse);
   allowance : (AllowanceRequest) -> (AllowanceActorResponse) query;

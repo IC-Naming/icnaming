@@ -20,10 +20,9 @@ export const idlFactory = ({ IDL }) => {
     'Ok' : IDL.Bool,
     'Err' : ErrorInfo,
   });
-  const AccountIdentifier = IDL.Record({ 'hash' : IDL.Vec(IDL.Nat8) });
   const User = IDL.Variant({
     'principal' : IDL.Principal,
-    'address' : AccountIdentifier,
+    'address' : IDL.Text,
   });
   const AllowanceRequest = IDL.Record({
     'token' : IDL.Text,
@@ -74,11 +73,11 @@ export const idlFactory = ({ IDL }) => {
     'amount' : IDL.Nat,
   });
   const TransferError = IDL.Variant({
-    'CannotNotify' : AccountIdentifier,
+    'CannotNotify' : IDL.Text,
     'InsufficientBalance' : IDL.Null,
     'InvalidToken' : IDL.Text,
     'Rejected' : IDL.Null,
-    'Unauthorized' : AccountIdentifier,
+    'Unauthorized' : IDL.Text,
     'Other' : IDL.Text,
   });
   const EXTransferResponse = IDL.Variant({
