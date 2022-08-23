@@ -18,7 +18,7 @@ pub struct TransferRequest {
     pub subaccount: Option<Subaccount>,
 }
 
-#[derive(CandidType, Debug, Clone, Deserialize)]
+#[derive(CandidType, Debug, Clone, Deserialize, Eq, PartialEq)]
 pub enum TransferError {
     Unauthorized(AccountIdentifier),
     InsufficientBalance,
@@ -28,11 +28,13 @@ pub enum TransferError {
     CannotNotify(AccountIdentifier),
     Other(String),
 }
+
 impl From<NamingError> for TransferError {
     fn from(error: NamingError) -> Self {
         TransferError::Other(error.to_string())
     }
 }
+
 impl From<CommonError> for TransferError {
     fn from(error: CommonError) -> Self {
         match error {
@@ -100,7 +102,7 @@ pub type NFTServiceResult<T> = anyhow::Result<T, CommonError>;
 pub type NFTTransferServiceResult<T> = anyhow::Result<T, TransferError>;
 
 //NFT error respone
-#[derive(CandidType, Debug, Clone, Deserialize)]
+#[derive(CandidType, Debug, Clone, Deserialize, Eq, PartialEq)]
 pub enum CommonError {
     InvalidToken(TokenIdentifier),
     Other(String),

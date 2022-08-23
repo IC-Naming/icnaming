@@ -1009,7 +1009,7 @@ impl RegistrarService {
     }
 
     pub(crate) fn metadata(&self, token: &TokenIdentifier) -> NFTServiceResult<Metadata> {
-        let registration_name = self.get_registration_name(token)?;
+        let registration_name = self.get_token_index_registration_name(token)?;
         return Ok(Metadata::NonFungible({
             let metadata = NonFungible {
                 metadata: registration_name.get_metadata(),
@@ -1026,17 +1026,8 @@ impl RegistrarService {
     }
 
     pub(crate) fn bearer(&self, token: &TokenIdentifier) -> NFTServiceResult<String> {
-        let registration_name = self.get_registration_name(token)?;
-        STATE.with(|s| {
-            let registration_store = s.registration_store.borrow();
-            let registration =
-                registration_store.get_registration(&registration_name.get_value().into());
-            return if let Some(registration) = registration {
-                Ok(registration.get_owner().to_text())
-            } else {
-                Err(CommonError::InvalidToken(token.clone()))
-            };
-        })
+        let registration = self.get_registration_by_token_id(token)?;
+        Ok(registration.get_owner().to_text())
     }
 
     pub(crate) fn import_token_id_from_registration(
@@ -1062,7 +1053,7 @@ impl RegistrarService {
         spender: Principal,
         token: &TokenIdentifier,
     ) -> NFTServiceResult<()> {
-        let registration_name = self.get_registration_name(token)?;
+        let registration_name = self.get_token_index_registration_name(token)?;
         let _ = self.approve(
             &call_context.caller,
             call_context.now.0,
@@ -1072,15 +1063,34 @@ impl RegistrarService {
         Ok(())
     }
 
-    fn get_registration_name(&self, token: &TokenIdentifier) -> NFTServiceResult<RegistrationName> {
+    fn get_token_index_registration_name(
+        &self,
+        token: &TokenIdentifier,
+    ) -> NFTServiceResult<RegistrationName> {
         let token_index = get_valid_token_index(token, CanisterNames::Registrar)?;
         let registration_name = STATE.with(|s| {
-            let mut token_index_store = s.token_index_store.borrow_mut();
-            let registration_name = token_index_store.get_registration(&token_index);
-            registration_name
+            let token_index_store = s.token_index_store.borrow();
+            token_index_store.get_registration(&token_index).cloned()
         });
         if let Some(registration_name) = registration_name {
             return Ok(registration_name);
+        }
+        return Err(CommonError::InvalidToken(token.clone()));
+    }
+
+    fn get_registration_by_token_id(
+        &self,
+        token: &TokenIdentifier,
+    ) -> NFTServiceResult<Registration> {
+        let registration_name = self.get_token_index_registration_name(token)?;
+        let registration = STATE.with(|s| {
+            let registration_store = s.registration_store.borrow();
+            registration_store
+                .get_registration(&registration_name.get_value().into())
+                .cloned()
+        });
+        if let Some(registration) = registration {
+            return Ok(registration);
         }
         return Err(CommonError::InvalidToken(token.clone()));
     }
@@ -1091,22 +1101,15 @@ impl RegistrarService {
         spender: &Principal,
         token: &TokenIdentifier,
     ) -> NFTServiceResult<u128> {
-        let registration_name = self.get_registration_name(token)?;
-        let first_leve_name: FirstLevelName = registration_name.get_value().into();
+        let registration = self.get_registration_by_token_id(token)?;
+        if !registration.is_owner(owner) {
+            return Err(NamingError::InvalidOwner.into());
+        }
         STATE.with(|s| {
             let approve_store = s.registration_approval_store.borrow();
-            let registration_store = s.registration_store.borrow();
-
-            if let Some(registration) = registration_store.get_registration(&first_leve_name) {
-                if !registration.is_owner(owner) {
-                    return Err(NamingError::InvalidOwner.into());
-                }
-                match approve_store.is_approved_to(&first_leve_name, &spender) {
-                    true => Ok(1),
-                    false => Ok(0),
-                }
-            } else {
-                Err(CommonError::InvalidToken(token.clone()))
+            match approve_store.is_approved_to(&registration.get_name().into(), &spender) {
+                true => Ok(1),
+                false => Ok(0),
             }
         })
     }
@@ -1119,18 +1122,26 @@ impl RegistrarService {
     ) -> NFTTransferServiceResult<u128> {
         let from = from.get_principal()?;
         let to = to.get_principal()?;
-        let registration_name = self.get_registration_name(token);
-        match registration_name {
-            Ok(registration_name) => {
-                let transfer_result = self
-                    .transfer(registration_name.get_value().as_str(), &from, to)
-                    .await;
-                match transfer_result {
-                    Ok(value) => Ok(value as u128),
-                    Err(e) => Err(e.into()),
-                }
+        let registration = self.get_registration_by_token_id(token)?;
+        if !registration.is_owner(&from) {
+            return Err(NamingError::InvalidOwner.into());
+        }
+        if !registration.is_owner(&call_context.caller) {
+            let transfer_result = self
+                .transfer_from(&call_context.caller, registration.get_name().as_str())
+                .await;
+            match transfer_result {
+                Ok(value) => Ok(value as u128),
+                Err(e) => Err(e.into()),
             }
-            Err(err) => return Err(err.into()),
+        } else {
+            let transfer_result = self
+                .transfer(registration.get_name().as_str(), &from, to)
+                .await;
+            match transfer_result {
+                Ok(value) => Ok(value as u128),
+                Err(e) => Err(e.into()),
+            }
         }
     }
 }

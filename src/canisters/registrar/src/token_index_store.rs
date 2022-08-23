@@ -73,8 +73,8 @@ impl TokenIndexStore {
     pub fn get_registrations(&self) -> &HashMap<TokenIndex, RegistrationName> {
         &self.registrations
     }
-    pub fn get_registration(&self, index: &TokenIndex) -> Option<RegistrationName> {
-        self.registrations.get(index).cloned()
+    pub fn get_registration(&self, index: &TokenIndex) -> Option<&RegistrationName> {
+        self.registrations.get(index)
     }
 }
 

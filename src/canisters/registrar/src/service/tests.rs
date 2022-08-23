@@ -1230,7 +1230,7 @@ mod set_record_value {
     use super::*;
 
     #[rstest]
-    async fn set_record_value_registration_count_gt_1(
+    async fn test_set_record_value_registration_count_gt_1(
         mut service: RegistrarService,
         mock_user1: Principal,
         mut mock_resolver_api: MockResolverApi,
@@ -1251,7 +1251,7 @@ mod set_record_value {
     }
 
     #[rstest]
-    async fn set_record_value_registration_count_eq_1(
+    async fn test_set_record_value_registration_count_eq_1(
         mut service: RegistrarService,
         mock_user1: Principal,
         mut mock_resolver_api: MockResolverApi,
@@ -1279,7 +1279,7 @@ mod nft_query_service {
     use std::string::String;
 
     #[rstest]
-    fn invalid_canister_id(mock_user1: Principal, mock_now: u64) {
+    fn test_invalid_canister_id(mock_user1: Principal, mock_now: u64) {
         let call_context = CallContext {
             caller: mock_user1,
             now: TimeInNs(mock_now),
@@ -1289,7 +1289,7 @@ mod nft_query_service {
     }
 
     #[rstest]
-    fn get_registry(mut service: RegistrarService) {
+    fn test_get_registry(mut service: RegistrarService) {
         let test_name_str = create_test_name("icnaming");
         STATE.with(|s| {
             let mut store = s.token_index_store.borrow_mut();
@@ -1300,7 +1300,7 @@ mod nft_query_service {
     }
 
     #[rstest]
-    fn get_tokens(mut service: RegistrarService) {
+    fn test_get_tokens(mut service: RegistrarService) {
         let test_name_str1 = create_test_name("icnaming1");
         let test_name_str2 = create_test_name("icnaming2");
         STATE.with(|s| {
@@ -1337,7 +1337,7 @@ mod nft_query_service {
     }
 
     #[rstest]
-    fn metadata(mut service: RegistrarService, mock_canister1: Principal, mock_now: u64) {
+    fn test_metadata(mut service: RegistrarService, mock_canister1: Principal, mock_now: u64) {
         let test_name_str = create_test_name("icnaming");
         STATE.with(|s| {
             let mut store = s.token_index_store.borrow_mut();
@@ -1369,7 +1369,7 @@ mod nft_query_service {
     }
 
     #[rstest]
-    fn get_supply(mut service: RegistrarService) {
+    fn test_get_supply(mut service: RegistrarService) {
         let test_name_str = create_test_name("icnaming");
         STATE.with(|s| {
             let mut store = s.token_index_store.borrow_mut();
@@ -1383,12 +1383,224 @@ mod nft_query_service {
     }
 
     #[rstest]
-    fn get_supply_default(mut service: RegistrarService) {
+    fn test_get_supply_default(mut service: RegistrarService) {
         let result = service.get_supply();
         assert!(result.is_ok());
         let result = result.unwrap();
 
         assert_eq!(result, 0u128);
+    }
+}
+
+mod nft_transfer_service {
+    use super::*;
+    use common::token_identifier::{encode_token_id, TokenIndex};
+
+    fn registration_init(name: String, user: Principal, now: u64) {
+        STATE.with(|s| {
+            let mut store = s.token_index_store.borrow_mut();
+            store.try_add_registration_name(RegistrationName(name.to_string()));
+            let mut store = s.registration_store.borrow_mut();
+            store.add_registration(Registration::new(
+                user.clone(),
+                name.to_string(),
+                now + 1,
+                now,
+            ));
+        });
+    }
+
+    #[rstest]
+    fn test_ex_approve_owner(
+        mut service: RegistrarService,
+        mock_user1: Principal,
+        mock_user2: Principal,
+        mock_now: u64,
+    ) {
+        let test_name_str = create_test_name("icnaming");
+        registration_init(test_name_str.to_string(), mock_user1, mock_now);
+        let call_context = CallContext::new(mock_user1, TimeInNs(mock_now));
+
+        let canisterid = get_named_get_canister_id(CanisterNames::Registrar);
+        let token_id = encode_token_id(CanisterId(canisterid), TokenIndex(1u32));
+        let result = service.ex_approve(&call_context, mock_user2, &token_id);
+        assert!(result.is_ok());
+    }
+
+    #[rstest]
+    fn test_ex_approve_not_owner(
+        mut service: RegistrarService,
+        mock_user1: Principal,
+        mock_user2: Principal,
+        mock_now: u64,
+    ) {
+        let test_name_str = create_test_name("icnaming");
+        registration_init(test_name_str.to_string(), mock_user1, mock_now);
+        let call_context = CallContext::new(mock_user2, TimeInNs(mock_now));
+
+        let canisterid = get_named_get_canister_id(CanisterNames::Registrar);
+        let token_id = encode_token_id(CanisterId(canisterid), TokenIndex(1u32));
+        let result = service.ex_approve(&call_context, mock_user1, &token_id);
+        assert!(result.is_ok());
+    }
+
+    #[rstest]
+    fn test_allowance_success(
+        mut service: RegistrarService,
+        mock_user1: Principal,
+        mock_user2: Principal,
+        mock_now: u64,
+    ) {
+        let test_name_str = create_test_name("icnaming");
+        registration_init(test_name_str.to_string(), mock_user1, mock_now);
+        let call_context = CallContext::new(mock_user1, TimeInNs(mock_now));
+        let canisterid = get_named_get_canister_id(CanisterNames::Registrar);
+        let token_id = encode_token_id(CanisterId(canisterid), TokenIndex(1u32));
+
+        let result = service.ex_approve(&call_context, mock_user2, &token_id);
+        assert!(result.is_ok());
+
+        let result = service.allowance(&call_context.caller, &mock_user2, &token_id);
+        assert!(result.is_ok());
+        let result = result.unwrap();
+        assert_eq!(result, 1u128);
+    }
+
+    #[rstest]
+    fn test_allowance_failed_invalid_owner(
+        mut service: RegistrarService,
+        mock_user1: Principal,
+        mock_user2: Principal,
+        mock_now: u64,
+    ) {
+        let test_name_str = create_test_name("icnaming");
+        registration_init(test_name_str.to_string(), mock_user1, mock_now);
+        let call_context = CallContext::new(mock_user2, TimeInNs(mock_now));
+        let canisterid = get_named_get_canister_id(CanisterNames::Registrar);
+        let token_id = encode_token_id(CanisterId(canisterid), TokenIndex(1u32));
+
+        let result = service.ex_approve(&call_context, mock_user1, &token_id);
+        assert!(result.is_ok());
+
+        let result = service.allowance(&call_context.caller, &mock_user1, &token_id);
+        assert!(result.is_err());
+        let result = result.unwrap_err();
+        let expect_error: CommonError = NamingError::InvalidOwner.into();
+        assert_eq!(result, expect_error);
+    }
+
+    #[rstest]
+    fn test_allowance_not_allowed(
+        mut service: RegistrarService,
+        mock_user1: Principal,
+        mock_user2: Principal,
+        mock_user3: Principal,
+        mock_now: u64,
+    ) {
+        let test_name_str = create_test_name("icnaming");
+        registration_init(test_name_str.to_string(), mock_user1, mock_now);
+        let call_context = CallContext::new(mock_user1, TimeInNs(mock_now));
+        let canisterid = get_named_get_canister_id(CanisterNames::Registrar);
+        let token_id = encode_token_id(CanisterId(canisterid), TokenIndex(1u32));
+
+        let result = service.ex_approve(&call_context, mock_user2, &token_id);
+        assert!(result.is_ok());
+
+        let result = service.allowance(&call_context.caller, &mock_user3, &token_id);
+        assert!(result.is_ok());
+        let result = result.unwrap();
+        assert_eq!(result, 0u128);
+    }
+
+    #[rstest]
+    async fn test_ex_transfer_success(
+        mut service: RegistrarService,
+        mut _mock_registry_api: MockRegistryApi,
+        mock_user1: Principal,
+        mock_user2: Principal,
+        mock_now: u64,
+    ) {
+        _mock_registry_api
+            .expect_transfer()
+            .returning(|_name, _owner, _resolver| Ok(true));
+        service.registry_api = Arc::new(_mock_registry_api);
+
+        let test_name_str = create_test_name("icnaming");
+        registration_init(test_name_str.to_string(), mock_user1, mock_now);
+        let call_context = CallContext::new(mock_user1, TimeInNs(mock_now));
+        let canisterid = get_named_get_canister_id(CanisterNames::Registrar);
+        let token_id = encode_token_id(CanisterId(canisterid), TokenIndex(1u32));
+        let from = common::nft::User::Principal(mock_user1.clone());
+        let to = common::nft::User::Principal(mock_user2.clone());
+
+        let result = service
+            .ex_transfer(&call_context, &from, &to, &token_id)
+            .await;
+        assert!(result.is_ok());
+    }
+
+    #[rstest]
+    async fn test_ex_transfer_failed_invalid_owner(
+        mut service: RegistrarService,
+        mut _mock_registry_api: MockRegistryApi,
+        mock_user1: Principal,
+        mock_user2: Principal,
+        mock_now: u64,
+    ) {
+        _mock_registry_api
+            .expect_transfer()
+            .returning(|_name, _owner, _resolver| Ok(true));
+        service.registry_api = Arc::new(_mock_registry_api);
+
+        let test_name_str = create_test_name("icnaming");
+        registration_init(test_name_str.to_string(), mock_user1, mock_now);
+        let call_context = CallContext::new(mock_user2, TimeInNs(mock_now));
+        let canisterid = get_named_get_canister_id(CanisterNames::Registrar);
+        let token_id = encode_token_id(CanisterId(canisterid), TokenIndex(1u32));
+        let from = common::nft::User::Principal(mock_user2.clone());
+        let to = common::nft::User::Principal(mock_user1.clone());
+
+        let result = service
+            .ex_transfer(&call_context, &from, &to, &token_id)
+            .await;
+        assert!(result.is_err());
+        let result = result.unwrap_err();
+        let expect_error: common::nft::TransferError = NamingError::InvalidOwner.into();
+        assert_eq!(result, expect_error);
+    }
+
+    #[rstest]
+    async fn test_ex_transfer_from_success(
+        mut service: RegistrarService,
+        mut _mock_registry_api: MockRegistryApi,
+        mock_user1: Principal,
+        mock_user2: Principal,
+        mock_now: u64,
+    ) {
+        _mock_registry_api
+            .expect_transfer()
+            .returning(|_name, _owner, _resolver| Ok(true));
+        service.registry_api = Arc::new(_mock_registry_api);
+
+        let test_name_str = create_test_name("icnaming");
+        registration_init(test_name_str.to_string(), mock_user1, mock_now);
+        let call_context = CallContext::new(mock_user1, TimeInNs(mock_now));
+        let canisterid = get_named_get_canister_id(CanisterNames::Registrar);
+        let token_id = encode_token_id(CanisterId(canisterid), TokenIndex(1u32));
+
+        let result = service.ex_approve(&call_context, canisterid, &token_id);
+        assert!(result.is_ok());
+
+        let call_context = CallContext::new(canisterid, TimeInNs(mock_now));
+
+        let from = common::nft::User::Principal(mock_user1.clone());
+        let to = common::nft::User::Principal(mock_user2.clone());
+
+        let result = service
+            .ex_transfer(&call_context, &from, &to, &token_id)
+            .await;
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap(), 1u128);
     }
 }
 
