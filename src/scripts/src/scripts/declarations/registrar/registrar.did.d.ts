@@ -1,6 +1,8 @@
 import type { Principal } from '@dfinity/principal';
 import type { ActorMethod } from '@dfinity/agent';
 
+export type AllowanceActorResponse = { 'Ok' : bigint } |
+  { 'Err' : CommonError };
 export interface AllowanceRequest {
   'token' : string,
   'owner' : User,
@@ -14,6 +16,8 @@ export interface ApproveRequest {
 }
 export interface BatchAddQuotaRequest { 'items' : Array<ImportQuotaItem> }
 export interface BatchTransferRequest { 'items' : Array<TransferQuotaDetails> }
+export type BearerActorResponse = { 'Ok' : string } |
+  { 'Err' : CommonError };
 export type BooleanActorResponse = { 'Ok' : boolean } |
   { 'Err' : ErrorInfo };
 export interface CallbackStrategy {
@@ -32,14 +36,6 @@ export type CanisterNames = { 'NamingMarketplace' : null } |
   { 'Resolver' : null };
 export type CommonError = { 'InvalidToken' : string } |
   { 'Other' : string };
-export type EXTAllowanceActorResponse = { 'Ok' : bigint } |
-  { 'Err' : CommonError };
-export type EXTBearerActorResponse = { 'Ok' : string } |
-  { 'Err' : CommonError };
-export type EXTMetadataActorResponse = { 'Ok' : Metadata } |
-  { 'Err' : CommonError };
-export type EXTSupplyActorResponse = { 'Ok' : bigint } |
-  { 'Err' : CommonError };
 export type EXTTransferResponse = { 'Ok' : bigint } |
   { 'Err' : TransferError };
 export interface ErrorInfo { 'code' : number, 'message' : string }
@@ -111,6 +107,8 @@ export interface InitArgs {
 }
 export type Metadata = { 'fungible' : Fungible } |
   { 'nonfungible' : NonFungible };
+export type MetadataActorResponse = { 'Ok' : Metadata } |
+  { 'Err' : CommonError };
 export interface NameStatus {
   'kept' : boolean,
   'available' : boolean,
@@ -165,6 +163,8 @@ export interface Stats {
   'registration_count' : bigint,
 }
 export type StreamingStrategy = { 'Callback' : CallbackStrategy };
+export type SupplyActorResponse = { 'Ok' : bigint } |
+  { 'Err' : CommonError };
 export interface Token {
   'key' : string,
   'sha256' : [] | [Array<number>],
@@ -204,6 +204,7 @@ export interface _SERVICE {
     [Principal, QuotaType, number],
     BooleanActorResponse,
   >,
+  'allowance' : ActorMethod<[AllowanceRequest], AllowanceActorResponse>,
   'approve' : ActorMethod<[string, Principal], BooleanActorResponse>,
   'available' : ActorMethod<[string], BooleanActorResponse>,
   'batch_add_quota' : ActorMethod<[BatchAddQuotaRequest], BooleanActorResponse>,
@@ -211,16 +212,13 @@ export interface _SERVICE {
     [BatchTransferRequest],
     BooleanActorResponse,
   >,
+  'bearer' : ActorMethod<[string], BearerActorResponse>,
   'export_state' : ActorMethod<[], StateExportResponse>,
-  'ext_allowance' : ActorMethod<[AllowanceRequest], EXTAllowanceActorResponse>,
   'ext_approve' : ActorMethod<[ApproveRequest], undefined>,
-  'ext_bearer' : ActorMethod<[string], EXTBearerActorResponse>,
-  'ext_getMinter' : ActorMethod<[], Principal>,
-  'ext_getRegistry' : ActorMethod<[], Array<[number, string]>>,
-  'ext_getTokens' : ActorMethod<[], Array<[number, Metadata]>>,
-  'ext_metadata' : ActorMethod<[string], EXTMetadataActorResponse>,
-  'ext_supply' : ActorMethod<[], EXTSupplyActorResponse>,
   'ext_transfer' : ActorMethod<[TransferRequest], EXTTransferResponse>,
+  'getMinter' : ActorMethod<[], Principal>,
+  'getRegistry' : ActorMethod<[], Array<[number, string]>>,
+  'getTokens' : ActorMethod<[], Array<[number, Metadata]>>,
   'get_all_details' : ActorMethod<[GetPageInput], GetAllDetailsActorResponse>,
   'get_details' : ActorMethod<[string], GetDetailsActorResponse>,
   'get_last_registrations' : ActorMethod<[], GetAllDetailsActorResponse>,
@@ -241,6 +239,7 @@ export interface _SERVICE {
     BooleanActorResponse,
   >,
   'load_state' : ActorMethod<[StateExportData], BooleanActorResponse>,
+  'metadata' : ActorMethod<[string], MetadataActorResponse>,
   'reclaim_name' : ActorMethod<[string], BooleanActorResponse>,
   'register_for' : ActorMethod<
     [string, Principal, bigint],
@@ -264,6 +263,7 @@ export interface _SERVICE {
     [Principal, QuotaType, number],
     BooleanActorResponse,
   >,
+  'supply' : ActorMethod<[], SupplyActorResponse>,
   'transfer' : ActorMethod<[string, Principal], BooleanActorResponse>,
   'transfer_by_admin' : ActorMethod<[string, Principal], BooleanActorResponse>,
   'transfer_from' : ActorMethod<[string], BooleanActorResponse>,
