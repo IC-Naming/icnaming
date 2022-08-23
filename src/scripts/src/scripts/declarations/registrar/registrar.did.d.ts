@@ -1,6 +1,19 @@
 import type { Principal } from '@dfinity/principal';
 import type { ActorMethod } from '@dfinity/agent';
 
+export type AllowanceActorResponse = { 'Ok' : bigint } |
+  { 'Err' : CommonError };
+export interface AllowanceRequest {
+  'token' : string,
+  'owner' : User,
+  'spender' : Principal,
+}
+export interface ApproveRequest {
+  'token' : string,
+  'subaccount' : [] | [Array<number>],
+  'allowance' : bigint,
+  'spender' : Principal,
+}
 export interface BatchAddQuotaRequest { 'items' : Array<ImportQuotaItem> }
 export interface BatchTransferRequest { 'items' : Array<TransferQuotaDetails> }
 export type BearerActorResponse = { 'Ok' : string } |
@@ -23,15 +36,15 @@ export type CanisterNames = { 'NamingMarketplace' : null } |
   { 'Resolver' : null };
 export type CommonError = { 'InvalidToken' : string } |
   { 'Other' : string };
+export type EXTTransferResponse = { 'Ok' : bigint } |
+  { 'Err' : TransferError };
 export interface ErrorInfo { 'code' : number, 'message' : string }
 export interface Fungible {
   'decimals' : string,
   'metadata' : [] | [Array<number>],
-  'name' : FungibleUser,
+  'name' : User,
   'symbol' : Principal,
 }
-export type FungibleUser = { 'principal' : Principal } |
-  { 'address' : string };
 export type GetAllDetailsActorResponse = { 'Ok' : Array<RegistrationDetails> } |
   { 'Err' : ErrorInfo };
 export type GetDetailsActorResponse = { 'Ok' : RegistrationDetails } |
@@ -158,6 +171,12 @@ export interface Token {
   'index' : bigint,
   'content_encoding' : string,
 }
+export type TransferError = { 'CannotNotify' : string } |
+  { 'InsufficientBalance' : null } |
+  { 'InvalidToken' : string } |
+  { 'Rejected' : null } |
+  { 'Unauthorized' : string } |
+  { 'Other' : string };
 export interface TransferFromQuotaRequest {
   'to' : Principal,
   'diff' : number,
@@ -169,11 +188,23 @@ export interface TransferQuotaDetails {
   'diff' : number,
   'quota_type' : QuotaType,
 }
+export interface TransferRequest {
+  'to' : User,
+  'token' : string,
+  'notify' : boolean,
+  'from' : User,
+  'memo' : Array<number>,
+  'subaccount' : [] | [Array<number>],
+  'amount' : bigint,
+}
+export type User = { 'principal' : Principal } |
+  { 'address' : string };
 export interface _SERVICE {
   'add_quota' : ActorMethod<
     [Principal, QuotaType, number],
     BooleanActorResponse,
   >,
+  'allowance' : ActorMethod<[AllowanceRequest], AllowanceActorResponse>,
   'approve' : ActorMethod<[string, Principal], BooleanActorResponse>,
   'available' : ActorMethod<[string], BooleanActorResponse>,
   'batch_add_quota' : ActorMethod<[BatchAddQuotaRequest], BooleanActorResponse>,
@@ -183,6 +214,8 @@ export interface _SERVICE {
   >,
   'bearer' : ActorMethod<[string], BearerActorResponse>,
   'export_state' : ActorMethod<[], StateExportResponse>,
+  'ext_approve' : ActorMethod<[ApproveRequest], undefined>,
+  'ext_transfer' : ActorMethod<[TransferRequest], EXTTransferResponse>,
   'getMinter' : ActorMethod<[], Principal>,
   'getRegistry' : ActorMethod<[], Array<[number, string]>>,
   'getTokens' : ActorMethod<[], Array<[number, Metadata]>>,

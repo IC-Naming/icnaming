@@ -80,6 +80,8 @@ pub enum NamingError {
     InvalidTokenIdentifier,
     #[error("it is not a valid canister id")]
     InvalidCanisterId,
+    #[error("account identifier is not supported")]
+    AccountIdentifierNotSupported,
 }
 
 impl NamingError {
@@ -119,6 +121,7 @@ impl NamingError {
             NamingError::TooManyResolverKeys { .. } => 32,
             NamingError::InvalidTokenIdentifier => 33,
             NamingError::InvalidCanisterId => 34,
+            NamingError::AccountIdentifierNotSupported => 35,
         }
     }
 }

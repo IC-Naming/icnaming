@@ -8,7 +8,8 @@ use candid::{CandidType, Nat, Principal};
 use ic_cdk::api::call::RejectionCode;
 use ic_cdk::call;
 use log::{debug, error};
-use serde::{Deserialize, Serialize};
+use serde::de::Error;
+use serde::{de, Deserialize, Serialize};
 
 use crate::cycles_minting_types::IcpXdrConversionRateCertifiedResponse;
 use crate::dto::*;
@@ -273,6 +274,27 @@ impl FromStr for AccountIdentifier {
     }
 }
 
+impl Serialize for AccountIdentifier {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        self.to_hex().serialize(serializer)
+    }
+}
+
+impl<'de> Deserialize<'de> for AccountIdentifier {
+    // This is the canonical way to read a this from string
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+        D::Error: de::Error,
+    {
+        let hex: [u8; 32] = hex::serde::deserialize(deserializer)?;
+        check_sum(hex).map_err(D::Error::custom)
+    }
+}
+
 fn check_sum(hex: [u8; 32]) -> Result<AccountIdentifier, String> {
     // Get the checksum provided
     let found_checksum = &hex[0..4];
@@ -294,6 +316,19 @@ fn check_sum(hex: [u8; 32]) -> Result<AccountIdentifier, String> {
             hex::encode(expected_checksum),
             hex::encode(found_checksum),
         ))
+    }
+}
+impl CandidType for AccountIdentifier {
+    // The type expected for account identifier is
+    fn _ty() -> candid::types::Type {
+        String::_ty()
+    }
+
+    fn idl_serialize<S>(&self, serializer: S) -> Result<(), S::Error>
+    where
+        S: candid::types::Serializer,
+    {
+        self.to_hex().idl_serialize(serializer)
     }
 }
 
