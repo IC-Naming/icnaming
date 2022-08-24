@@ -31,9 +31,12 @@ use stats_service::*;
 use std::collections::HashMap;
 
 use common::dto::{GetPageInput, GetPageOutput, ImportQuotaRequest, ImportQuotaStatus};
-use common::errors::{BooleanActorResponse, ErrorInfo, ServiceResult};
+use common::errors::{BooleanActorResponse, ErrorInfo, NamingError, ServiceResult};
 use common::named_principals::PRINCIPAL_NAME_TIMER_TRIGGER;
-use common::nft::{CommonError, Metadata, NFTServiceResult};
+use common::nft::{
+    AllowanceRequest, ApproveRequest, CommonError, Metadata, NFTServiceResult,
+    NFTTransferServiceResult, TransferError, TransferRequest,
+};
 use common::permissions::must_be_named_principal;
 use common::token_identifier::TokenIdentifier;
 use common::{CallContext, TimeInNs};
@@ -611,8 +614,7 @@ impl MetadataActorResponse {
 #[candid_method(query)]
 fn metadata(token: TokenIdentifier) -> MetadataActorResponse {
     let service = RegistrarService::default();
-    let call_context = CallContext::from_ic();
-    let result = service.metadata(&call_context, token);
+    let result = service.metadata(&token);
     MetadataActorResponse::new(result)
 }
 
@@ -632,10 +634,10 @@ impl SupplyActorResponse {
 }
 
 #[query(name = "supply")]
-#[candid_method(query, rename = "supply")]
-fn get_supply() -> SupplyActorResponse {
+#[candid_method(query)]
+fn supply() -> SupplyActorResponse {
     let service = RegistrarService::default();
-    let result = service.get_supply();
+    let result = service.supply();
     SupplyActorResponse::new(result)
 }
 
@@ -663,11 +665,10 @@ impl BearerActorResponse {
 }
 
 #[query(name = "bearer")]
-#[candid_method(query, rename = "bearer")]
+#[candid_method(query)]
 fn bearer(token: TokenIdentifier) -> BearerActorResponse {
     let service = RegistrarService::default();
-    let call_context = CallContext::from_ic();
-    let result = service.bearer(&call_context, &token);
+    let result = service.bearer(&token);
     BearerActorResponse::new(result)
 }
 
@@ -692,6 +693,63 @@ fn import_token_id_from_registration() -> ImportTokenIdResponse {
     let call_context = CallContext::from_ic();
     let result = service.import_token_id_from_registration(&call_context);
     ImportTokenIdResponse::new(result)
+}
+
+#[update(name = "ext_approve")]
+#[candid_method(update)]
+fn ext_approve(request: ApproveRequest) {
+    let service = RegistrarService::default();
+    let call_context = CallContext::from_ic();
+    let _ = service.ext_approve(&call_context, request.spender, &request.token);
+}
+
+#[derive(CandidType)]
+pub enum AllowanceActorResponse {
+    Ok(u128),
+    Err(CommonError),
+}
+
+impl AllowanceActorResponse {
+    pub fn new(result: NFTServiceResult<u128>) -> AllowanceActorResponse {
+        match result {
+            Ok(data) => AllowanceActorResponse::Ok(data),
+            Err(err) => AllowanceActorResponse::Err(err.into()),
+        }
+    }
+}
+
+#[query(name = "allowance")]
+#[candid_method(query)]
+fn allowance(request: AllowanceRequest) -> AllowanceActorResponse {
+    let service = RegistrarService::default();
+    let result = service.allowance(&request.owner, &request.spender, &request.token);
+    AllowanceActorResponse::new(result)
+}
+
+#[derive(CandidType)]
+pub enum EXTTransferResponse {
+    Ok(u128),
+    Err(TransferError),
+}
+
+impl EXTTransferResponse {
+    pub fn new(result: NFTTransferServiceResult<u128>) -> EXTTransferResponse {
+        match result {
+            Ok(data) => EXTTransferResponse::Ok(data),
+            Err(err) => EXTTransferResponse::Err(err.into()),
+        }
+    }
+}
+
+#[update(name = "ext_transfer")]
+#[candid_method(update)]
+async fn ext_transfer(request: TransferRequest) -> EXTTransferResponse {
+    let service = RegistrarService::default();
+    let call_context = CallContext::from_ic();
+    let result = service
+        .ext_transfer(&call_context, &request.from, &request.to, &request.token)
+        .await;
+    EXTTransferResponse::new(result)
 }
 
 candid::export_service!();

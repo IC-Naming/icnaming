@@ -1,3 +1,15 @@
+type AllowanceActorResponse = variant { Ok : nat; Err : CommonError };
+type AllowanceRequest = record {
+  token : text;
+  owner : User;
+  spender : principal;
+};
+type ApproveRequest = record {
+  token : text;
+  subaccount : opt vec nat8;
+  allowance : nat;
+  spender : principal;
+};
 type BatchAddQuotaRequest = record { items : vec ImportQuotaItem };
 type BatchTransferRequest = record { items : vec TransferQuotaDetails };
 type BearerActorResponse = variant { Ok : text; Err : CommonError };
@@ -16,14 +28,14 @@ type CanisterNames = variant {
   Resolver;
 };
 type CommonError = variant { InvalidToken : text; Other : text };
+type EXTTransferResponse = variant { Ok : nat; Err : TransferError };
 type ErrorInfo = record { code : nat32; message : text };
 type Fungible = record {
   decimals : text;
   metadata : opt vec nat8;
-  name : FungibleUser;
+  name : User;
   symbol : principal;
 };
-type FungibleUser = variant { "principal" : principal; address : text };
 type GetAllDetailsActorResponse = variant {
   Ok : vec RegistrationDetails;
   Err : ErrorInfo;
@@ -138,6 +150,14 @@ type Token = record {
   index : nat;
   content_encoding : text;
 };
+type TransferError = variant {
+  CannotNotify : text;
+  InsufficientBalance;
+  InvalidToken : text;
+  Rejected;
+  Unauthorized : text;
+  Other : text;
+};
 type TransferFromQuotaRequest = record {
   to : principal;
   diff : nat32;
@@ -149,14 +169,27 @@ type TransferQuotaDetails = record {
   diff : nat32;
   quota_type : QuotaType;
 };
+type TransferRequest = record {
+  to : User;
+  token : text;
+  notify : bool;
+  from : User;
+  memo : vec nat8;
+  subaccount : opt vec nat8;
+  amount : nat;
+};
+type User = variant { "principal" : principal; address : text };
 service : (opt InitArgs) -> {
   add_quota : (principal, QuotaType, nat32) -> (BooleanActorResponse);
+  allowance : (AllowanceRequest) -> (AllowanceActorResponse) query;
   approve : (text, principal) -> (BooleanActorResponse);
   available : (text) -> (BooleanActorResponse) query;
   batch_add_quota : (BatchAddQuotaRequest) -> (BooleanActorResponse);
   batch_transfer_quota : (BatchTransferRequest) -> (BooleanActorResponse);
   bearer : (text) -> (BearerActorResponse) query;
   export_state : () -> (StateExportResponse);
+  ext_approve : (ApproveRequest) -> ();
+  ext_transfer : (TransferRequest) -> (EXTTransferResponse);
   getMinter : () -> (principal) query;
   getRegistry : () -> (vec record { nat32; text }) query;
   getTokens : () -> (vec record { nat32; Metadata }) query;
