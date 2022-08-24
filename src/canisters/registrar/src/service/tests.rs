@@ -1289,7 +1289,7 @@ mod nft_query_service {
     }
 
     #[rstest]
-    fn test_get_registry(mut service: RegistrarService) {
+    fn test_get_registry(service: RegistrarService) {
         let test_name_str = create_test_name("icnaming");
         STATE.with(|s| {
             let mut store = s.token_index_store.borrow_mut();
@@ -1300,7 +1300,7 @@ mod nft_query_service {
     }
 
     #[rstest]
-    fn test_get_tokens(mut service: RegistrarService) {
+    fn test_get_tokens(service: RegistrarService) {
         let test_name_str1 = create_test_name("icnaming1");
         let test_name_str2 = create_test_name("icnaming2");
         STATE.with(|s| {
@@ -1337,7 +1337,7 @@ mod nft_query_service {
     }
 
     #[rstest]
-    fn test_metadata(mut service: RegistrarService, mock_canister1: Principal, mock_now: u64) {
+    fn test_metadata(service: RegistrarService, mock_canister1: Principal, mock_now: u64) {
         let test_name_str = create_test_name("icnaming");
         STATE.with(|s| {
             let mut store = s.token_index_store.borrow_mut();
@@ -1369,7 +1369,7 @@ mod nft_query_service {
     }
 
     #[rstest]
-    fn test_get_supply(mut service: RegistrarService) {
+    fn test_get_supply(service: RegistrarService) {
         let test_name_str = create_test_name("icnaming");
         STATE.with(|s| {
             let mut store = s.token_index_store.borrow_mut();
@@ -1383,7 +1383,7 @@ mod nft_query_service {
     }
 
     #[rstest]
-    fn test_get_supply_default(mut service: RegistrarService) {
+    fn test_get_supply_default(service: RegistrarService) {
         let result = service.supply();
         assert!(result.is_ok());
         let result = result.unwrap();
@@ -1412,7 +1412,7 @@ mod nft_transfer_service {
 
     #[rstest]
     fn test_ext_approve_owner(
-        mut service: RegistrarService,
+        service: RegistrarService,
         mock_user1: Principal,
         mock_user2: Principal,
         mock_now: u64,
@@ -1429,7 +1429,7 @@ mod nft_transfer_service {
 
     #[rstest]
     fn test_ext_approve_not_owner(
-        mut service: RegistrarService,
+        service: RegistrarService,
         mock_user1: Principal,
         mock_user2: Principal,
         mock_now: u64,
@@ -1446,7 +1446,7 @@ mod nft_transfer_service {
 
     #[rstest]
     fn test_allowance_success(
-        mut service: RegistrarService,
+        service: RegistrarService,
         mock_user1: Principal,
         mock_user2: Principal,
         mock_now: u64,
@@ -1470,7 +1470,7 @@ mod nft_transfer_service {
 
     #[rstest]
     fn test_allowance_failed_account_id_not_supported(
-        mut service: RegistrarService,
+        service: RegistrarService,
         mock_user1: Principal,
         mock_user2: Principal,
         mock_now: u64,
@@ -1496,7 +1496,7 @@ mod nft_transfer_service {
 
     #[rstest]
     fn test_allowance_failed_invalid_owner(
-        mut service: RegistrarService,
+        service: RegistrarService,
         mock_user1: Principal,
         mock_user2: Principal,
         mock_now: u64,
@@ -1521,7 +1521,7 @@ mod nft_transfer_service {
 
     #[rstest]
     fn test_allowance_not_allowed(
-        mut service: RegistrarService,
+        service: RegistrarService,
         mock_user1: Principal,
         mock_user2: Principal,
         mock_user3: Principal,

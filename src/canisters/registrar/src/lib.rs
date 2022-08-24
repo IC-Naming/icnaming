@@ -16,6 +16,7 @@ mod shared_actor;
 mod stats_service;
 mod token_service;
 
+mod http_nft;
 mod token_index_store;
 
 use crate::state::InitArgs;
@@ -31,7 +32,7 @@ use stats_service::*;
 use std::collections::HashMap;
 
 use common::dto::{GetPageInput, GetPageOutput, ImportQuotaRequest, ImportQuotaStatus};
-use common::errors::{BooleanActorResponse, ErrorInfo, NamingError, ServiceResult};
+use common::errors::{BooleanActorResponse, ErrorInfo, ServiceResult};
 use common::named_principals::PRINCIPAL_NAME_TIMER_TRIGGER;
 use common::nft::{
     AllowanceRequest, ApproveRequest, CommonError, Metadata, NFTServiceResult,

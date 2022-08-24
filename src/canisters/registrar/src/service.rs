@@ -1076,7 +1076,7 @@ impl RegistrarService {
         return Err(CommonError::InvalidToken(token.clone()));
     }
 
-    fn get_registration_by_token_id(
+    pub fn get_registration_by_token_id(
         &self,
         token: &TokenIdentifier,
     ) -> NFTServiceResult<Registration> {
