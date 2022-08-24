@@ -43,7 +43,7 @@
     "@types/base64-js": "1.3.0",
     "@types/chai": "4.3.3",
     "@types/debug": "4.1.7",
-    "@types/node": "16.11.54",
+    "@types/node": "16.11.56",
     "@types/shelljs": "0.8.11",
     "@typescript-eslint/eslint-plugin": "5.34.0",
     "@typescript-eslint/parser": "5.34.0",
