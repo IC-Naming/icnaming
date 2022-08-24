@@ -1,21 +1,15 @@
 use candid::{candid_method, Principal};
-use ic_cdk::api;
+
 use ic_cdk_macros::*;
 use serde_bytes::ByteBuf;
-use std::collections::{hash_map, HashMap};
-use std::fmt::Debug;
 
 use crate::registration_store::Registration;
-use crate::{metadata, RegistrarService};
+
 use common::http::{HeaderField, HttpRequest, HttpResponse};
 use common::metrics_encoder::MetricsEncoder;
-use common::nft::Metadata;
 
 use crate::http_nft::get_nft_http_response;
 use crate::stats_service::encode_metrics;
-use std::time::{Duration, SystemTime};
-use time::format_description::well_known::{Iso8601, Rfc2822};
-use time::OffsetDateTime;
 
 #[query]
 #[candid_method(query, rename = "http_request")]

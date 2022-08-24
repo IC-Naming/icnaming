@@ -1,13 +1,12 @@
 use crate::registration_store::Registration;
 use crate::{Principal, RegistrarService};
-use candid::pretty::str;
-use common::http::{HeaderField, HttpRequest, HttpResponse};
+
+use common::http::{HeaderField, HttpResponse};
 use ic_cdk::api;
 use rstest::*;
 use serde_bytes::ByteBuf;
-use std::collections::{hash_map, HashMap};
-use std::time::SystemTime;
-use time::format_description::well_known::Rfc2822;
+use std::collections::HashMap;
+
 use time::OffsetDateTime;
 
 fn time_format(time: u64) -> String {
@@ -60,7 +59,7 @@ pub fn get_nft_http_response(param: &str) -> HttpResponse {
 }
 
 fn get_nft(registration: &Registration) -> ByteBuf {
-    let mut svg_content = include_str!("../../../../asset/icnaming_nft.svg").clone();
+    let svg_content = include_str!("../../../../asset/icnaming_nft.svg").clone();
     // u64 to DateTime String
     let expired_at = registration.get_expired_at();
     let expired_at = time_format(expired_at);
@@ -93,10 +92,10 @@ mod test_http_request {
     use crate::token_index_store::RegistrationName;
     use common::named_canister_ids::{get_named_get_canister_id, CanisterNames};
     use common::token_identifier::{encode_token_id, CanisterId, TokenIndex};
-    use std::str::from_utf8;
+
     use std::string::String;
     use test_common::create_test_name;
-    use test_common::user::mock_now;
+
     use test_common::user::mock_user1;
 
     fn registration_init(name: String, user: Principal, now: u64) {
