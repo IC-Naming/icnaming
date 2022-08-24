@@ -44,8 +44,6 @@ fn http_request(req: HttpRequest) -> HttpResponse {
                 },
             }
         }
-
-        //match contain “tokenid”
         "/" => get_nft_http_response(&parts[1]),
         request_path => HttpResponse {
             status_code: 404,

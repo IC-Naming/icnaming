@@ -41,8 +41,8 @@ pub fn get_nft_http_response(param: &str) -> HttpResponse {
                 let registration_result = service.get_registration_by_token_id(&token_id);
                 return if registration_result.is_ok() {
                     let registration = registration_result.unwrap();
-                    let nft = get_nft(&registration);
-                    http_response(200, generate_svg_headers(), nft)
+                    let nft_svg_bytes = get_nft_svg_bytes(&registration);
+                    http_response(200, generate_svg_headers(), nft_svg_bytes)
                 } else {
                     http_response(
                         500,
@@ -58,9 +58,8 @@ pub fn get_nft_http_response(param: &str) -> HttpResponse {
     }
 }
 
-fn get_nft(registration: &Registration) -> ByteBuf {
+fn get_nft_svg_bytes(registration: &Registration) -> ByteBuf {
     let svg_content = include_str!("../../../../asset/icnaming_nft.svg").clone();
-    // u64 to DateTime String
     let expired_at = registration.get_expired_at();
     let expired_at = time_format(expired_at);
     let svg_content = svg_content.replace("{{expired_at}}", expired_at.as_str());
@@ -82,7 +81,7 @@ fn generate_svg_headers() -> Vec<HeaderField> {
         HeaderField("Access-Control-Allow-Origin".into(), "*".into()),
         HeaderField("Cache-Control".into(), "public,max-age=2592000".into()),
         HeaderField("Content-Type".into(), "image/svg+xml".into()),
-        HeaderField("Power-By".into(), "Deland Labs".into()),
+        HeaderField("Power-By".into(), "ICNaming".into()),
     ]
 }
 
