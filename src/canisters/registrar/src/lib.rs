@@ -16,6 +16,7 @@ mod shared_actor;
 mod stats_service;
 mod token_service;
 
+mod http_nft;
 mod token_index_store;
 
 use crate::state::InitArgs;
