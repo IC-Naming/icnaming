@@ -5,8 +5,8 @@ use serde_bytes::ByteBuf;
 use std::collections::{hash_map, HashMap};
 use std::fmt::Debug;
 
-use crate::metadata;
 use crate::registration_store::Registration;
+use crate::{metadata, RegistrarService};
 use common::http::{HeaderField, HttpRequest, HttpResponse};
 use common::metrics_encoder::MetricsEncoder;
 use common::nft::Metadata;
@@ -90,14 +90,24 @@ fn http_request2(req: HttpRequest) -> HttpResponse {
         }
     }
     let token_id_key = "tokenid";
+    let service = RegistrarService::default();
     if params.contains_key(token_id_key) {
         let token_id_res = params.get(token_id_key);
         match token_id_res {
-            Some(token_id) => http_response(
-                200,
-                generate_svg_headers(),
-                get_nft(&get_registration(token_id.clone())),
-            ),
+            Some(token_id) => {
+                let registration_result = service.get_registration_by_token_id(&token_id);
+                return if registration_result.is_ok() {
+                    let registration = registration_result.unwrap();
+                    let nft = get_nft(&registration);
+                    http_response(200, generate_svg_headers(), nft)
+                } else {
+                    http_response(
+                        500,
+                        vec![],
+                        ByteBuf::from(format!("registration not found: {}", token_id)),
+                    )
+                };
+            }
             _ => http_response(404, vec![], ByteBuf::from(vec![])),
         }
     } else {
