@@ -968,38 +968,59 @@ impl RegistrarService {
     }
 
     pub(crate) fn get_registry(&self) -> Vec<(u32, String)> {
-        let list = STATE.with(|s| {
-            let store = s.token_index_store.borrow();
-            store
-                .get_registrations()
-                .iter()
-                .map(|registration| (registration.get_id().get_value(), registration.get_name()))
-                .collect()
-        });
+        let mut list = self
+            .get_valid_registration_names()
+            .iter()
+            .map(|registration_name| {
+                (
+                    registration_name.get_id().get_value(),
+                    registration_name.get_name(),
+                )
+            })
+            .collect::<Vec<_>>();
+        list.sort_by(|a, b| a.0.cmp(&b.0));
 
         list
     }
 
-    pub(crate) fn get_tokens(&self) -> Vec<(u32, Metadata)> {
-        let mut list: Vec<(u32, Metadata)> = STATE.with(|s| {
-            let store = s.token_index_store.borrow();
-            store
-                .get_registrations()
+    fn get_valid_registration_names(&self) -> Vec<RegistrationName> {
+        STATE.with(|s| {
+            let token_index_store = s.token_index_store.borrow();
+            let registration_store = s.registration_store.borrow();
+            let registration_names = token_index_store.get_registrations();
+            let valid_registration_names = registration_names
                 .iter()
-                .map(|registration| {
-                    (
-                        registration.get_id().get_value(),
-                        Metadata::NonFungible({
-                            let metadata = NonFungible {
-                                //encode map
-                                metadata: registration.get_metadata(),
-                            };
-                            metadata
-                        }),
-                    )
+                .filter(|registration_name| {
+                    if let Some(registration) =
+                        registration_store.get_registration(&registration_name.get_name().into())
+                    {
+                        return !registration.is_expired();
+                    }
+                    return false;
                 })
-                .collect()
-        });
+                .cloned()
+                .collect::<Vec<_>>();
+            valid_registration_names
+        })
+    }
+
+    pub(crate) fn get_tokens(&self) -> Vec<(u32, Metadata)> {
+        let mut list = self
+            .get_valid_registration_names()
+            .iter()
+            .map(|registration_name| {
+                (
+                    registration_name.get_id().get_value(),
+                    Metadata::NonFungible({
+                        let metadata = NonFungible {
+                            //encode map
+                            metadata: registration_name.get_metadata(),
+                        };
+                        metadata
+                    }),
+                )
+            })
+            .collect::<Vec<_>>();
         list.sort_by(|a, b| a.0.cmp(&b.0));
 
         list
@@ -1145,7 +1166,7 @@ impl RegistrarService {
     pub(crate) fn get_token_details_by_names(
         &self,
         names: &Vec<String>,
-    ) -> Option<HashMap<String, (u32, String)>> {
+    ) -> HashMap<String, Option<(u32, String)>> {
         let mut token_id_map = HashMap::new();
 
         let canister_id = get_named_get_canister_id(CanisterNames::Registrar);
@@ -1164,23 +1185,22 @@ impl RegistrarService {
                             let registration_name = registration_name_ref.deref().borrow();
                             token_id_map.insert(
                                 registration_name.get_name(),
-                                (
+                                Some((
                                     registration_name.get_id().get_value(),
                                     encode_token_id(
                                         common::token_identifier::CanisterId(canister_id),
                                         registration_name.get_id(),
                                     ),
-                                ),
+                                )),
                             );
+                        } else {
+                            token_id_map.insert(name.to_owned(), None);
                         }
                     }
                 }
             }
         });
-        if token_id_map.is_empty() {
-            return None;
-        }
-        Some(token_id_map)
+        token_id_map
     }
 }
 

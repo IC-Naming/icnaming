@@ -755,7 +755,7 @@ async fn ext_transfer(request: TransferRequest) -> EXTTransferResponse {
     EXTTransferResponse::new(result)
 }
 
-pub type GetTokenIdListByNamesResponse = Option<HashMap<String, (u32, String)>>;
+pub type GetTokenIdListByNamesResponse = HashMap<String, Option<(u32, String)>>;
 
 #[update(name = "get_token_details_by_names")]
 #[candid_method(query)]

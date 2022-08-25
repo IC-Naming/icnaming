@@ -332,6 +332,11 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'get_stats' : IDL.Func([], [GetStatsResponse], ['query']),
+    'get_token_details_by_names' : IDL.Func(
+        [IDL.Vec(IDL.Text)],
+        [IDL.Vec(IDL.Tuple(IDL.Text, IDL.Opt(IDL.Tuple(IDL.Nat32, IDL.Text))))],
+        ['query'],
+      ),
     'get_wasm_info' : IDL.Func(
         [],
         [IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text))],

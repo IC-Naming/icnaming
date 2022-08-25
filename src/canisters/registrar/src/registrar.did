@@ -205,6 +205,9 @@ service : (opt InitArgs) -> {
   get_public_resolver : () -> (GetPublicResolverActorResponse) query;
   get_quota : (principal, QuotaType) -> (GetQuotaActorResponse) query;
   get_stats : () -> (GetStatsResponse) query;
+  get_token_details_by_names : (vec text) -> (
+      vec record { text; opt record { nat32; text } },
+    ) query;
   get_wasm_info : () -> (vec record { text; text }) query;
   http_request : (HttpRequest) -> (HttpResponse) query;
   import_quota : (ImportQuotaRequest) -> (ImportQuotaResponse);

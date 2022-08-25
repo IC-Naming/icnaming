@@ -1303,19 +1303,34 @@ mod nft_query_service {
     }
 
     #[rstest]
-    fn test_get_registry(service: RegistrarService, mock_user1: Principal, mock_tomorrow: u64) {
+    fn test_get_registry(
+        service: RegistrarService,
+        mock_user1: Principal,
+        mock_tomorrow: u64,
+        mock_timestamp_1986: u64,
+    ) {
         let test_name_str = create_test_name("icnaming");
+        let expired_name_str = create_test_name("expired");
         registration_name_init(&test_name_str, mock_user1, mock_tomorrow);
+        registration_name_init(&expired_name_str, mock_user1, mock_timestamp_1986);
         let result = service.get_registry();
         assert_eq!(result.len(), 1);
+        assert_eq!(result[0].1, test_name_str);
     }
 
     #[rstest]
-    fn test_get_tokens(service: RegistrarService, mock_user1: Principal, mock_tomorrow: u64) {
+    fn test_get_tokens(
+        service: RegistrarService,
+        mock_user1: Principal,
+        mock_tomorrow: u64,
+        mock_timestamp_1986: u64,
+    ) {
         let test_name_str1 = create_test_name("icnaming1");
         let test_name_str2 = create_test_name("icnaming2");
+        let expired_name_str = create_test_name("expired");
         registration_name_init(&test_name_str1, mock_user1, mock_tomorrow);
         registration_name_init(&test_name_str2, mock_user1, mock_tomorrow);
+        registration_name_init(&expired_name_str, mock_user1, mock_timestamp_1986);
 
         let mut result = service.get_tokens();
         assert_eq!(result.len(), 2);
