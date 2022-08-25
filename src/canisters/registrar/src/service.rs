@@ -26,7 +26,9 @@ use common::permissions::{
     must_be_in_named_canister, must_be_named_canister, must_be_system_owner,
 };
 use common::permissions::{must_be_named_principal, must_not_anonymous};
-use common::token_identifier::{get_valid_token_index, TokenIdentifier};
+use common::token_identifier::{
+    encode_token_id, get_valid_token_index, TokenIdentifier, TokenIndex,
+};
 use common::{AuthPrincipal, CallContext, TimeInNs};
 
 use crate::name_locker::{try_lock_name, unlock_name};
@@ -1142,6 +1144,35 @@ impl RegistrarService {
                 Err(e) => Err(e.into()),
             }
         }
+    }
+
+    pub(crate) fn get_token_id_list_by_names(
+        &self,
+        names: Vec<&str>,
+    ) -> HashMap<String, (u32, String)> {
+        let mut token_id_map = HashMap::new();
+
+        let canister_id = get_named_get_canister_id(CanisterNames::Registrar);
+        STATE.with(|s| {
+            let token_index_store = s.token_index_store.borrow();
+            token_index_store
+                .get_registrations()
+                .iter()
+                .filter(|(id, name)| names.contains(&name.get_value().as_str()))
+                .for_each(|(id, name)| {
+                    token_id_map.insert(
+                        name.get_value(),
+                        (
+                            id.get_value(),
+                            encode_token_id(
+                                common::token_identifier::CanisterId(canister_id),
+                                id.clone(),
+                            ),
+                        ),
+                    );
+                });
+        });
+        token_id_map
     }
 }
 

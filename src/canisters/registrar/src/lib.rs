@@ -753,6 +753,16 @@ async fn ext_transfer(request: TransferRequest) -> EXTTransferResponse {
     EXTTransferResponse::new(result)
 }
 
+pub type GetTokenIdListByNamesResponse = HashMap<String, (u32, String)>;
+
+#[update(name = "get_token_id_list_by_names")]
+#[candid_method(query)]
+fn get_token_id_list_by_names(names: Vec<&str>) -> GetTokenIdListByNamesResponse {
+    let service = RegistrarService::default();
+    let result = service.get_token_id_list_by_names(names);
+    result
+}
+
 candid::export_service!();
 
 #[query(name = "__get_candid_interface_tmp_hack")]
