@@ -57,13 +57,13 @@ fn http_request(req: HttpRequest) -> HttpResponse {
 mod test_http_request {
     use super::*;
     use crate::state::STATE;
-    use crate::token_index_store::RegistrationName;
+
     use common::named_canister_ids::{get_named_get_canister_id, CanisterNames};
     use common::token_identifier::{encode_token_id, CanisterId, TokenIndex};
     use rstest::*;
     use test_common::create_test_name;
+    use test_common::user::mock_tomorrow;
     use test_common::user::mock_user1;
-    use test_common::user::{mock_now, mock_tomorrow};
 
     fn registration_name_init(name: &String, user: Principal, now: u64) {
         STATE.with(|s| {

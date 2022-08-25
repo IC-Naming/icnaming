@@ -1,4 +1,3 @@
-use crate::registration_store::Registration;
 use crate::state::NEXT_TOKEN_INDEX;
 use candid::{decode_args, encode_args, CandidType, Deserialize};
 use common::state::StableState;
