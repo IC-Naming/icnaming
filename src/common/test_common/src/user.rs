@@ -64,3 +64,7 @@ pub fn mock_tomorrow() -> u64 {
         .as_nanos() as u64
         + 1_000_000_000
 }
+#[fixture]
+pub fn mock_timestamp_1986() -> u64 {
+    515_844_844_000_000_000
+}
