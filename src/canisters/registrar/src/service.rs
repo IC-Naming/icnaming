@@ -1090,7 +1090,9 @@ impl RegistrarService {
                 .cloned()
         });
         if let Some(registration) = registration {
-            return Ok(registration);
+            if !registration.is_expired() {
+                return Ok(registration);
+            }
         }
         return Err(CommonError::InvalidToken(token.clone()));
     }
@@ -1148,31 +1150,17 @@ impl RegistrarService {
 
     pub(crate) fn get_token_details_by_names(
         &self,
-        names: Vec<String>,
-    ) -> HashMap<String, (u32, String)> {
+        names: &Vec<String>,
+    ) -> Option<HashMap<String, (u32, String)>> {
         let mut token_id_map = HashMap::new();
 
         let canister_id = get_named_get_canister_id(CanisterNames::Registrar);
         STATE.with(|s| {
             let token_index_store = s.token_index_store.borrow();
-            token_index_store
-                .get_registrations()
-                .iter()
-                .filter(|(id, name)| names.contains(&name.get_value()))
-                .for_each(|(id, name)| {
-                    token_id_map.insert(
-                        name.get_value(),
-                        (
-                            id.get_value(),
-                            encode_token_id(
-                                common::token_identifier::CanisterId(canister_id),
-                                id.clone(),
-                            ),
-                        ),
-                    );
-                });
+            let registration_store = s.registration_store.borrow();
+            let registrations = registration_store.get_valid_registrations_by_names(names);
         });
-        token_id_map
+        Some(token_id_map)
     }
 }
 

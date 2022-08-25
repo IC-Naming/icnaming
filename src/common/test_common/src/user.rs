@@ -55,3 +55,12 @@ pub fn mock_canister1() -> Principal {
 pub fn mock_now() -> u64 {
     15_844_844_000_000_000
 }
+
+#[fixture]
+pub fn mock_tomorrow() -> u64 {
+    std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap()
+        .as_nanos() as u64
+        + 1_000_000_000
+}

@@ -47,6 +47,13 @@ impl Registration {
     pub fn get_created_at(&self) -> u64 {
         self.created_at
     }
+    pub fn is_expired(&self) -> bool {
+        (self.expired_at as u128)
+            < std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+    }
 }
 
 impl Debug for Registration {
@@ -67,6 +74,14 @@ pub struct RegistrationStore {
 impl RegistrationStore {
     pub fn get_registrations(&self) -> &HashMap<String, Registration> {
         &self.registrations
+    }
+
+    pub fn get_valid_registrations_by_names(&self, names: &Vec<String>) -> Vec<&Registration> {
+        self.registrations
+            .iter()
+            .filter(|(name, registration)| names.contains(name) && !registration.is_expired())
+            .map(|(_, v)| v)
+            .collect()
     }
 
     pub fn get_registration(&self, name: &FirstLevelName) -> Option<&Registration> {

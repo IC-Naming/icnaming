@@ -95,7 +95,7 @@ mod test_http_request {
     use std::string::String;
     use test_common::create_test_name;
 
-    use test_common::user::mock_user1;
+    use test_common::user::{mock_tomorrow, mock_user1};
 
     fn registration_init(name: String, user: Principal, now: u64) {
         STATE.with(|s| {
@@ -119,16 +119,16 @@ mod test_http_request {
     }
 
     #[rstest]
-    fn test_http_request(mock_user1: Principal) {
+    fn test_http_request(mock_user1: Principal, mock_tomorrow: u64) {
         let test_name_str = create_test_name("icnaming");
-        let now = 1661334526000000000;
-        registration_init(test_name_str.to_string(), mock_user1, now);
+        let time_str = time_format(mock_tomorrow);
+        registration_init(test_name_str.to_string(), mock_user1, mock_tomorrow);
         let canisterid = get_named_get_canister_id(CanisterNames::Registrar);
         let token_id = encode_token_id(CanisterId(canisterid), TokenIndex(1u32));
         let param_str = format!("tokenid={}", token_id);
         let res = get_nft_http_response(param_str.as_str());
         let str = String::from_utf8(res.body.to_vec()).unwrap();
-        assert!(str.contains("9:48 UTC 8/24 2022"));
+        assert!(str.contains(&time_str));
         assert!(str.contains(&test_name_str));
     }
 }

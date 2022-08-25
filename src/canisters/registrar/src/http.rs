@@ -62,8 +62,8 @@ mod test_http_request {
     use common::token_identifier::{encode_token_id, CanisterId, TokenIndex};
     use rstest::*;
     use test_common::create_test_name;
-    use test_common::user::mock_now;
     use test_common::user::mock_user1;
+    use test_common::user::{mock_now, mock_tomorrow};
 
     fn registration_init(name: String, user: Principal, now: u64) {
         STATE.with(|s| {
@@ -80,11 +80,11 @@ mod test_http_request {
     }
 
     #[rstest]
-    fn test_ntf_routing(mock_user1: Principal, mock_now: u64) {
+    fn test_ntf_routing(mock_user1: Principal, mock_tomorrow: u64) {
         let test_icnaming_str = create_test_name("icnaming");
         let test_hello_str = create_test_name("hello");
-        registration_init(test_icnaming_str.to_string(), mock_user1, mock_now);
-        registration_init(test_hello_str.to_string(), mock_user1, mock_now);
+        registration_init(test_icnaming_str.to_string(), mock_user1, mock_tomorrow);
+        registration_init(test_hello_str.to_string(), mock_user1, mock_tomorrow);
         let canisterid = get_named_get_canister_id(CanisterNames::Registrar);
         let icnaming_token_id = encode_token_id(CanisterId(canisterid), TokenIndex(1u32));
         let hello_token_id = encode_token_id(CanisterId(canisterid), TokenIndex(2u32));

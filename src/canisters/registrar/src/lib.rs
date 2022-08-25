@@ -753,13 +753,13 @@ async fn ext_transfer(request: TransferRequest) -> EXTTransferResponse {
     EXTTransferResponse::new(result)
 }
 
-pub type GetTokenIdListByNamesResponse = HashMap<String, (u32, String)>;
+pub type GetTokenIdListByNamesResponse = Option<HashMap<String, (u32, String)>>;
 
 #[update(name = "get_token_details_by_names")]
 #[candid_method(query)]
 fn get_token_details_by_names(names: Vec<String>) -> GetTokenIdListByNamesResponse {
     let service = RegistrarService::default();
-    let result = service.get_token_details_by_names(names);
+    let result = service.get_token_details_by_names(&names);
     result
 }
 
