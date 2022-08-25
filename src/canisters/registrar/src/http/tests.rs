@@ -9,7 +9,7 @@ mod test_http_request {
     use common::http::HttpRequest;
     use common::named_canister_ids::{get_named_get_canister_id, CanisterNames};
     use common::token_identifier::{encode_token_id, CanisterId, TokenIndex};
-    use rstest::*;
+
     use test_common::create_test_name;
     use test_common::user::mock_tomorrow;
     use test_common::user::mock_user1;

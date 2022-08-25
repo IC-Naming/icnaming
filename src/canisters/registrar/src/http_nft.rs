@@ -1,5 +1,5 @@
 use crate::registration_store::Registration;
-use crate::{Principal, RegistrarService};
+use crate::RegistrarService;
 
 use common::http::{HeaderField, HttpResponse};
 use ic_cdk::api;

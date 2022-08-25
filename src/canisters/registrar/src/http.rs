@@ -1,9 +1,7 @@
-use candid::{candid_method, Principal};
+use candid::candid_method;
 
 use ic_cdk_macros::*;
 use serde_bytes::ByteBuf;
-
-use crate::registration_store::Registration;
 
 use common::http::{HeaderField, HttpRequest, HttpResponse};
 use common::metrics_encoder::MetricsEncoder;
