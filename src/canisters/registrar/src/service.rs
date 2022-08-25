@@ -1146,9 +1146,9 @@ impl RegistrarService {
         }
     }
 
-    pub(crate) fn get_token_id_list_by_names(
+    pub(crate) fn get_token_details_by_names(
         &self,
-        names: Vec<&str>,
+        names: Vec<String>,
     ) -> HashMap<String, (u32, String)> {
         let mut token_id_map = HashMap::new();
 
@@ -1158,7 +1158,7 @@ impl RegistrarService {
             token_index_store
                 .get_registrations()
                 .iter()
-                .filter(|(id, name)| names.contains(&name.get_value().as_str()))
+                .filter(|(id, name)| names.contains(&name.get_value()))
                 .for_each(|(id, name)| {
                     token_id_map.insert(
                         name.get_value(),
