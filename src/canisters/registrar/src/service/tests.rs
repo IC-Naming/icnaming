@@ -1401,6 +1401,34 @@ mod nft_query_service {
 
         assert_eq!(result, 0u128);
     }
+
+    #[rstest]
+    fn test_get_token_details_by_names(
+        service: RegistrarService,
+        mock_user1: Principal,
+        mock_tomorrow: u64,
+        mock_timestamp_1986: u64,
+    ) {
+        let test_name_str1 = create_test_name("icnaming1");
+        let test_name_str2 = create_test_name("icnaming2");
+        let expired_name_str = create_test_name("expired");
+        registration_name_init(&test_name_str1, mock_user1, mock_tomorrow);
+        registration_name_init(&test_name_str2, mock_user1, mock_tomorrow);
+        registration_name_init(&expired_name_str, mock_user1, mock_timestamp_1986);
+
+        let result = service.get_token_details_by_names(&vec![
+            test_name_str1.clone(),
+            test_name_str2.clone(),
+            expired_name_str.clone(),
+        ]);
+
+        let registration_name = result.get(&test_name_str1).unwrap();
+        assert!(registration_name.is_some());
+        let registration_name = result.get(&test_name_str2).unwrap();
+        assert!(registration_name.is_some());
+        let registration_name = result.get(&expired_name_str).unwrap();
+        assert!(registration_name.is_none());
+    }
 }
 
 mod nft_transfer_service {

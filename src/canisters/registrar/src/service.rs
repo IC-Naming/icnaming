@@ -1175,7 +1175,7 @@ impl RegistrarService {
             let registration_store = s.registration_store.borrow();
 
             for name in names {
-                let registration = registration_store.get_registration(&name.to_owned().into());
+                let registration = registration_store.get_registration(&name.clone().into());
                 if let Some(registration) = registration {
                     if !registration.is_expired() {
                         let registration_name_ref =
@@ -1193,11 +1193,11 @@ impl RegistrarService {
                                     ),
                                 )),
                             );
-                        } else {
-                            token_id_map.insert(name.to_owned(), None);
+                            continue;
                         }
                     }
                 }
+                token_id_map.insert(name.clone(), None);
             }
         });
         token_id_map
