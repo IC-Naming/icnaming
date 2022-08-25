@@ -76,16 +76,6 @@ impl RegistrationStore {
         &self.registrations
     }
 
-    pub fn get_valid_registrations_by_names(&self, names: &[&str]) -> Vec<&str> {
-        self.registrations
-            .iter()
-            .filter(|(name, registration)| {
-                names.contains(&name.as_str()) && !registration.is_expired()
-            })
-            .map(|(_, v)| v.name.as_str())
-            .collect::<Vec<_>>()
-    }
-
     pub fn get_registration(&self, name: &FirstLevelName) -> Option<&Registration> {
         self.registrations.get(name.0.get_name())
     }

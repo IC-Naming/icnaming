@@ -35,7 +35,7 @@ use crate::name_locker::{try_lock_name, unlock_name};
 use crate::registration_store::{Registration, RegistrationDetails, RegistrationDto};
 use crate::reserved_list::RESERVED_NAMES;
 use crate::state::*;
-use crate::token_index_store::RegistrationName;
+use crate::token_index_store::{get_current_token_index, RegistrationName};
 use crate::token_service::TokenService;
 use crate::user_quota_store::{QuotaType, TransferQuotaDetails};
 
@@ -281,9 +281,8 @@ impl RegistrarService {
                 let mut store = s.registration_store.borrow_mut();
                 store.add_registration(registration.clone());
                 let mut token_index_store = s.token_index_store.borrow_mut();
-                let new_name_id = token_index_store.try_add_registration_name(RegistrationName(
-                    registration.get_name().to_string(),
-                ));
+                let new_name_id =
+                    token_index_store.try_add_registration_name(&registration.get_name());
                 trace!("registered name of the new id: {:?}", new_name_id);
                 store.get_user_own_registration_count(&owner.0)
             });
@@ -976,7 +975,7 @@ impl RegistrarService {
             store
                 .get_registrations()
                 .iter()
-                .map(|registration| (registration.0.get_value(), registration.1.get_value()))
+                .map(|registration| (registration.get_id().get_value(), registration.get_name()))
                 .collect()
         });
 
@@ -991,11 +990,11 @@ impl RegistrarService {
                 .iter()
                 .map(|registration| {
                     (
-                        registration.0.get_value().clone(),
+                        registration.get_id().get_value(),
                         Metadata::NonFungible({
                             let metadata = NonFungible {
                                 //encode map
-                                metadata: registration.1.get_metadata(),
+                                metadata: registration.get_metadata(),
                             };
                             metadata
                         }),
@@ -1019,10 +1018,7 @@ impl RegistrarService {
     }
 
     pub(crate) fn supply(&self) -> NFTServiceResult<u128> {
-        STATE.with(|s| {
-            let store = s.token_index_store.borrow();
-            Ok(store.get_index().get_value() as u128)
-        })
+        Ok(get_current_token_index().get_value() as u128)
     }
 
     pub(crate) fn bearer(&self, token: &TokenIdentifier) -> NFTServiceResult<String> {
@@ -1057,7 +1053,7 @@ impl RegistrarService {
         let _ = self.approve(
             &call_context.caller,
             call_context.now.0,
-            registration_name.get_value().as_str(),
+            registration_name.get_name().as_str(),
             spender,
         );
         Ok(())
@@ -1073,7 +1069,7 @@ impl RegistrarService {
             token_index_store.get_registration(&token_index).cloned()
         });
         if let Some(registration_name) = registration_name {
-            return Ok(registration_name);
+            return Ok(registration_name.deref().deref().borrow().clone());
         }
         return Err(CommonError::InvalidToken(token.clone()));
     }
@@ -1086,7 +1082,7 @@ impl RegistrarService {
         let registration = STATE.with(|s| {
             let registration_store = s.registration_store.borrow();
             registration_store
-                .get_registration(&registration_name.get_value().into())
+                .get_registration(&registration_name.get_name().into())
                 .cloned()
         });
         if let Some(registration) = registration {
@@ -1158,28 +1154,30 @@ impl RegistrarService {
         STATE.with(|s| {
             let token_index_store = s.token_index_store.borrow();
             let registration_store = s.registration_store.borrow();
-            let names = registration_store.get_valid_registrations_by_names(
-                names
-                    .iter()
-                    .map(|name| name.as_str())
-                    .collect::<Vec<&str>>()
-                    .as_slice(),
-            );
-            token_index_store
-                .get_registrations_by_names(names.as_slice())
-                .iter()
-                .for_each(|(id, name)| {
-                    token_id_map.insert(
-                        name.get_value(),
-                        (
-                            id.get_value(),
-                            encode_token_id(
-                                common::token_identifier::CanisterId(canister_id),
-                                *id.clone(),
-                            ),
-                        ),
-                    );
-                });
+
+            for name in names {
+                let registration = registration_store.get_registration(&name.to_owned().into());
+                if let Some(registration) = registration {
+                    if !registration.is_expired() {
+                        let registration_name_ref =
+                            token_index_store.get_registration_by_name(&registration.get_name());
+                        if let Some(registration_name_ref) = registration_name_ref {
+                            let registration_name_ref = registration_name_ref.deref();
+                            let registration_name = registration_name_ref.deref().borrow();
+                            token_id_map.insert(
+                                registration_name.get_name(),
+                                (
+                                    registration_name.get_id().get_value(),
+                                    encode_token_id(
+                                        common::token_identifier::CanisterId(canister_id),
+                                        registration_name.get_id(),
+                                    ),
+                                ),
+                            );
+                        }
+                    }
+                }
+            }
         });
         if token_id_map.is_empty() {
             return None;

@@ -97,10 +97,10 @@ mod test_http_request {
 
     use test_common::user::{mock_tomorrow, mock_user1};
 
-    fn registration_init(name: String, user: Principal, now: u64) {
+    fn registration_name_init(name: &String, user: Principal, now: u64) {
         STATE.with(|s| {
             let mut store = s.token_index_store.borrow_mut();
-            store.try_add_registration_name(RegistrationName(name.to_string()));
+            store.try_add_registration_name(name);
             let mut store = s.registration_store.borrow_mut();
             store.add_registration(Registration::new(
                 user.clone(),
@@ -122,7 +122,7 @@ mod test_http_request {
     fn test_http_request(mock_user1: Principal, mock_tomorrow: u64) {
         let test_name_str = create_test_name("icnaming");
         let time_str = time_format(mock_tomorrow);
-        registration_init(test_name_str.to_string(), mock_user1, mock_tomorrow);
+        registration_name_init(&test_name_str.to_string(), mock_user1, mock_tomorrow);
         let canisterid = get_named_get_canister_id(CanisterNames::Registrar);
         let token_id = encode_token_id(CanisterId(canisterid), TokenIndex(1u32));
         let param_str = format!("tokenid={}", token_id);

@@ -14,6 +14,7 @@ use common::named_canister_ids::{
     ensure_current_canister_id_match, update_dev_named_canister_ids, CanisterNames,
 };
 use common::state::StableState;
+use common::token_identifier::TokenIndex;
 
 use crate::name_locker::NameLocker;
 use crate::quota_import_store::QuotaImportStore;
@@ -27,6 +28,7 @@ thread_local! {
     pub static STATE : State = State::default();
     pub static MERTRICS_COUNTER: RefCell<MetricsCounter> = RefCell::new(MetricsCounter::default());
     pub static NAME_LOCKER: RefCell<NameLocker> = RefCell::new(NameLocker::new());
+    pub static NEXT_TOKEN_INDEX: RefCell<TokenIndex> = RefCell::new(TokenIndex::ZERO);
 }
 
 #[derive(Default)]

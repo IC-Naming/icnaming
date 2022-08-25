@@ -8,13 +8,16 @@ use candid::{CandidType, Deserialize, Principal};
 pub const CANISTER_ID_HASH_LEN_IN_BYTES: usize = 10;
 const TOKEN_ID_PREFIX: [u8; 4] = [10, 116, 105, 100]; //b"\x0Atid"
 
-#[derive(Default, Deserialize, Copy, CandidType, Clone, Hash, Eq, PartialEq, Debug)]
+#[derive(
+    Default, Deserialize, Copy, CandidType, Clone, Hash, Eq, PartialEq, Debug, Ord, PartialOrd,
+)]
 pub struct TokenIndex(pub u32);
 
 impl TokenIndex {
     pub fn get_value(&self) -> u32 {
         self.0
     }
+    pub const ZERO: Self = TokenIndex(0u32);
 }
 
 #[derive(CandidType, Debug, Clone, Deserialize)]
@@ -89,7 +92,7 @@ pub fn encode_token_id(canister_id: CanisterId, token_index: TokenIndex) -> Toke
 fn encode_decode_tx_id() {
     let token_id = CanisterId(Principal::from_text("e3izy-jiaaa-aaaah-qacbq-cai").unwrap());
     let tx_id = "7hsvu-sikor-uwiaa-aaaaa-b4aaq-maqca-aabke-q".to_string();
-    assert!(is_valid_token_id(&tx_id, &token_id,));
+    assert!(is_valid_token_id(&tx_id, &token_id));
     let decode_res = decode_token_id(&tx_id).unwrap();
     let de_tx_index = decode_res.index;
     let de_canister = Principal::from_slice(decode_res.canister.as_slice());
