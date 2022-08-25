@@ -76,6 +76,18 @@ impl TokenIndexStore {
     pub fn get_registration(&self, index: &TokenIndex) -> Option<&RegistrationName> {
         self.registrations.get(index)
     }
+
+    pub fn get_registrations_by_names(
+        &self,
+        names: &[&str],
+    ) -> Vec<(&TokenIndex, &RegistrationName)> {
+        self.registrations
+            .iter()
+            .filter(|(index, registration_name)| {
+                return names.contains(&registration_name.get_value().as_str());
+            })
+            .collect::<Vec<_>>()
+    }
 }
 
 impl StableState for TokenIndexStore {

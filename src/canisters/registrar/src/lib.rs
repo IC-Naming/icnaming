@@ -1,3 +1,5 @@
+extern crate core;
+
 mod http;
 mod name_locker;
 mod periodic_tasks_runner;

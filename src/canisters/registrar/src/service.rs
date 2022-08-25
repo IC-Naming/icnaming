@@ -1158,8 +1158,32 @@ impl RegistrarService {
         STATE.with(|s| {
             let token_index_store = s.token_index_store.borrow();
             let registration_store = s.registration_store.borrow();
-            let registrations = registration_store.get_valid_registrations_by_names(names);
+            let names = registration_store.get_valid_registrations_by_names(
+                names
+                    .iter()
+                    .map(|name| name.as_str())
+                    .collect::<Vec<&str>>()
+                    .as_slice(),
+            );
+            token_index_store
+                .get_registrations_by_names(names.as_slice())
+                .iter()
+                .for_each(|(id, name)| {
+                    token_id_map.insert(
+                        name.get_value(),
+                        (
+                            id.get_value(),
+                            encode_token_id(
+                                common::token_identifier::CanisterId(canister_id),
+                                *id.clone(),
+                            ),
+                        ),
+                    );
+                });
         });
+        if token_id_map.is_empty() {
+            return None;
+        }
         Some(token_id_map)
     }
 }
