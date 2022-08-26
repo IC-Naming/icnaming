@@ -38,7 +38,7 @@ jobs:
 
           npm run test-report
           # dfx stop
-      - uses: deblockt/cucumber-report-annotations-action@v1.10
+      - uses: deblockt/cucumber-report-annotations-action@v1.11
         with:
           access-token: ${{ secrets.GITHUB_TOKEN }}
           path: "**/cucumber-report.json"
