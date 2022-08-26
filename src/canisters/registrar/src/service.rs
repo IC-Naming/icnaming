@@ -33,7 +33,7 @@ use crate::name_locker::{try_lock_name, unlock_name};
 use crate::registration_store::{Registration, RegistrationDetails, RegistrationDto};
 use crate::reserved_list::RESERVED_NAMES;
 use crate::state::*;
-use crate::token_index_store::{get_current_token_index, RegistrationName};
+use crate::token_index_store::RegistrationName;
 use crate::token_service::TokenService;
 use crate::user_quota_store::{QuotaType, TransferQuotaDetails};
 
@@ -1037,7 +1037,10 @@ impl RegistrarService {
     }
 
     pub(crate) fn supply(&self) -> NFTServiceResult<u128> {
-        Ok(get_current_token_index().get_value() as u128)
+        STATE.with(|s| {
+            let token_index_store = s.token_index_store.borrow();
+            Ok(token_index_store.get_current_token_index().get_value() as u128)
+        })
     }
 
     pub(crate) fn bearer(&self, token: &TokenIdentifier) -> NFTServiceResult<String> {

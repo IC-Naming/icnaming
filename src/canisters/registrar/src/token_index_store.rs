@@ -10,35 +10,32 @@ use std::ops::Deref;
 use std::rc::Rc;
 use std::vec::Vec;
 
-pub fn next_token_index() -> TokenIndex {
-    NEXT_TOKEN_INDEX.with(|state| {
-        let mut state = state.borrow_mut();
-        let id = *state;
-        let new_id = TokenIndex(id.get_value() + 1);
-        *state = new_id;
-        new_id
-    })
-}
+// pub fn next_token_index() -> TokenIndex {
+//     NEXT_TOKEN_INDEX.with(|state| {
+//         let mut state = state.borrow_mut();
+//         let id = *state;
+//         let new_id = TokenIndex(id.get_value() + 1);
+//         *state = new_id;
+//         new_id
+//     })
+// }
+//
+// pub fn get_current_token_index() -> TokenIndex {
+//     NEXT_TOKEN_INDEX.with(|state| {
+//         let state = state.borrow();
+//         *state
+//     })
+// }
 
-pub fn get_current_token_index() -> TokenIndex {
-    NEXT_TOKEN_INDEX.with(|state| {
-        let state = state.borrow();
-        *state
-    })
-}
-
-#[derive(Deserialize, CandidType, Clone, Hash, Eq, PartialEq, Debug, Ord, PartialOrd)]
+#[derive(Clone, Hash, Eq, PartialEq, Debug, Ord, PartialOrd)]
 pub struct RegistrationName {
     id: TokenIndex,
     name: String,
 }
 
 impl RegistrationName {
-    pub fn new(name: String) -> RegistrationName {
-        RegistrationName {
-            id: next_token_index(),
-            name,
-        }
+    pub fn new(id: TokenIndex, name: String) -> RegistrationName {
+        RegistrationName { id, name }
     }
 
     pub fn get_name(&self) -> String {
@@ -66,6 +63,7 @@ pub type RegistrationNames = BinaryHeap<RegistrationNameRef>;
 
 #[derive(Default)]
 pub struct TokenIndexStore {
+    index: TokenIndex,
     registrations: RegistrationNames,
     token_indexes: HashMap<TokenIndex, RegistrationNameRef>,
     name_indexes: HashMap<String, RegistrationNameRef>,
@@ -90,8 +88,8 @@ impl TokenIndexStore {
         if self.get_registration_by_name(name).is_some() {
             return None;
         }
-        let registration_name = RegistrationName::new(name.to_owned());
-        let token_id = registration_name.id.clone();
+        let token_id = self.next_token_index();
+        let registration_name = RegistrationName::new(token_id, name.to_owned());
         let registration_name_ref = Rc::new(RefCell::new(registration_name));
         self.token_indexes
             .insert(token_id, registration_name_ref.clone());
@@ -100,12 +98,27 @@ impl TokenIndexStore {
         self.registrations.push(registration_name_ref);
         Some(token_id)
     }
+    pub fn add_registration_name(&mut self, registration_name: RegistrationName) {
+        let token_id = registration_name.id.to_owned();
+        let name = registration_name.name.to_owned();
+        self.token_indexes
+            .insert(token_id, Rc::new(RefCell::new(registration_name.clone())));
+        self.name_indexes
+            .insert(name, Rc::new(RefCell::new(registration_name.clone())));
+    }
 
     pub fn get_registrations(&self) -> Vec<RegistrationName> {
         self.registrations
             .iter()
-            .map(|registration_name_ref| registration_name_ref.deref().deref().borrow().clone())
-            .collect()
+            .map(|registration_name_ref| {
+                registration_name_ref
+                    .deref()
+                    .deref()
+                    .borrow()
+                    .deref()
+                    .to_owned()
+            })
+            .collect::<Vec<_>>()
     }
     pub fn get_registration(&self, index: &TokenIndex) -> Option<&RegistrationNameRef> {
         self.token_indexes.get(index)
@@ -113,24 +126,63 @@ impl TokenIndexStore {
     pub fn get_registration_by_name(&self, name: &String) -> Option<&RegistrationNameRef> {
         self.name_indexes.get(name)
     }
+    pub fn next_token_index(&mut self) -> TokenIndex {
+        let new_index = TokenIndex(self.index.get_value() + 1);
+        self.index = new_index.clone();
+        new_index
+    }
+    pub fn get_current_token_index(&self) -> TokenIndex {
+        self.index.clone()
+    }
+}
+
+#[derive(Clone, CandidType, Deserialize)]
+struct StableRegistrationName {
+    id: TokenIndex,
+    name: String,
+}
+
+impl From<&RegistrationName> for StableRegistrationName {
+    fn from(registration_name: &RegistrationName) -> Self {
+        StableRegistrationName {
+            id: registration_name.id.clone(),
+            name: registration_name.name.clone(),
+        }
+    }
+}
+
+impl From<&StableRegistrationName> for RegistrationName {
+    fn from(stable_registration_name: &StableRegistrationName) -> Self {
+        RegistrationName {
+            id: stable_registration_name.id.clone(),
+            name: stable_registration_name.name.clone(),
+        }
+    }
 }
 
 impl StableState for TokenIndexStore {
     fn encode(&self) -> Vec<u8> {
-        encode_args((&self.registrations, &self.token_indexes, &self.name_indexes)).unwrap()
+        let stable_registrations: Vec<StableRegistrationName> = self
+            .token_indexes
+            .values()
+            .map(|registration| {
+                let registration = registration.borrow();
+                StableRegistrationName::from(registration.deref())
+            })
+            .collect();
+        let token_index = self.index;
+        encode_args((token_index, stable_registrations)).unwrap()
     }
 
     fn decode(bytes: Vec<u8>) -> Result<Self, String> {
-        let (registrations, token_indexes, name_indexes): (
-            RegistrationNames,
-            HashMap<TokenIndex, RegistrationNameRef>,
-            HashMap<String, RegistrationNameRef>,
-        ) = decode_args(&bytes).unwrap();
+        let (token_index, stable_registrations): (TokenIndex, Vec<StableRegistrationName>) =
+            decode_args(&bytes).unwrap();
 
-        Ok(TokenIndexStore {
-            registrations,
-            token_indexes,
-            name_indexes,
-        })
+        let mut token_index_store = TokenIndexStore::default();
+        for registration in stable_registrations {
+            token_index_store.add_registration_name(RegistrationName::from(&registration));
+        }
+        token_index_store.index = token_index;
+        Ok(token_index_store)
     }
 }
