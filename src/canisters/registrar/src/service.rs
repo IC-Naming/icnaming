@@ -975,33 +975,15 @@ impl RegistrarService {
             let valid_registration_names = registration_names
                 .iter()
                 .filter(|registration_name_ref| {
-                    let name = registration_name_ref
-                        .deref()
-                        .deref()
-                        .borrow()
-                        .deref()
-                        .get_name();
-                    if let Some(registration) =
-                        registration_store.get_registration(&name.to_owned().into())
-                    {
+                    let name = registration_name_ref.borrow().get_name();
+                    if let Some(registration) = registration_store.get_registration(&name.into()) {
                         return !registration.is_expired();
                     }
                     return false;
                 })
                 .map(|registration_name_ref| {
-                    let name = registration_name_ref
-                        .deref()
-                        .deref()
-                        .borrow()
-                        .deref()
-                        .get_name();
-                    let id = registration_name_ref
-                        .deref()
-                        .deref()
-                        .borrow()
-                        .deref()
-                        .get_id()
-                        .get_value();
+                    let name = registration_name_ref.borrow().get_name();
+                    let id = registration_name_ref.borrow().get_id().get_value();
                     (id, name)
                 })
                 .collect::<Vec<_>>();
