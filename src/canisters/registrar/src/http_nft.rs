@@ -33,7 +33,7 @@ pub fn get_nft_http_response(param: &str) -> HttpResponse {
         }
     }
     let token_id_key = "tokenid";
-    let service = RegistrarService::default();
+    let _service = RegistrarService::default();
     if params.contains_key(token_id_key) {
         let token_id_res = params.get(token_id_key);
         match token_id_res {

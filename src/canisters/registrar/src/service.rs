@@ -1,4 +1,3 @@
-use std::cell::RefCell;
 use std::collections::HashMap;
 use std::fmt::{Debug, Formatter};
 use std::ops::Deref;
@@ -28,7 +27,7 @@ use common::permissions::{
 };
 use common::permissions::{must_be_named_principal, must_not_anonymous};
 use common::token_identifier::{
-    encode_token_id, get_token_index, get_valid_token_index, TokenIdentifier, TokenIndex,
+    encode_token_id, get_valid_token_index, TokenIdentifier, TokenIndex,
 };
 use common::{AuthPrincipal, CallContext, TimeInNs};
 

@@ -1451,7 +1451,7 @@ mod nft_transfer_service {
 
     #[rstest]
     fn test_get_registration_by_token_id_should_not_contain_expired(
-        service: RegistrarService,
+        _service: RegistrarService,
         mock_user1: Principal,
         mock_timestamp_1986: u64,
     ) {

@@ -1,10 +1,8 @@
-use crate::registration_store::{Registration, RegistrationStore};
 use candid::{decode_args, encode_args, CandidType, Deserialize};
-use common::errors::{NamingError, ServiceResult};
-use common::http::Token;
-use common::nft::{CommonError, NFTServiceResult};
+use common::errors::NamingError;
+
 use common::state::StableState;
-use common::token_identifier::{TokenIdentifier, TokenIndex};
+use common::token_identifier::TokenIndex;
 use log::error;
 use std::cell::RefCell;
 use std::collections::{BinaryHeap, HashMap};
