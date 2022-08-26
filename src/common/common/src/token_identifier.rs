@@ -17,7 +17,6 @@ impl TokenIndex {
     pub fn get_value(&self) -> u32 {
         self.0
     }
-    pub const ZERO: Self = TokenIndex(0u32);
 }
 
 #[derive(CandidType, Debug, Clone, Deserialize)]

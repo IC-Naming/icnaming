@@ -28,7 +28,6 @@ thread_local! {
     pub static STATE : State = State::default();
     pub static MERTRICS_COUNTER: RefCell<MetricsCounter> = RefCell::new(MetricsCounter::default());
     pub static NAME_LOCKER: RefCell<NameLocker> = RefCell::new(NameLocker::new());
-    pub static NEXT_TOKEN_INDEX: RefCell<TokenIndex> = RefCell::new(TokenIndex::ZERO);
 }
 
 #[derive(Default)]
