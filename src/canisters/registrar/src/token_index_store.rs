@@ -9,24 +9,6 @@ use std::hash::Hash;
 use std::ops::Deref;
 use std::rc::Rc;
 use std::vec::Vec;
-
-// pub fn next_token_index() -> TokenIndex {
-//     NEXT_TOKEN_INDEX.with(|state| {
-//         let mut state = state.borrow_mut();
-//         let id = *state;
-//         let new_id = TokenIndex(id.get_value() + 1);
-//         *state = new_id;
-//         new_id
-//     })
-// }
-//
-// pub fn get_current_token_index() -> TokenIndex {
-//     NEXT_TOKEN_INDEX.with(|state| {
-//         let state = state.borrow();
-//         *state
-//     })
-// }
-
 #[derive(Clone, Hash, Eq, PartialEq, Debug, Ord, PartialOrd)]
 pub struct RegistrationName {
     id: TokenIndex,
