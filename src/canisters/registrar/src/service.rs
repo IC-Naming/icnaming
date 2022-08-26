@@ -1102,18 +1102,17 @@ impl RegistrarService {
         token: &TokenIdentifier,
     ) -> NFTServiceResult<Registration> {
         let registration_name = self.get_token_index_registration_name(token)?;
-        let registration = STATE.with(|s| {
+        STATE.with(|s| {
             let registration_store = s.registration_store.borrow();
-            registration_store
-                .get_registration(&registration_name.get_name().into())
-                .cloned()
-        });
-        if let Some(registration) = registration {
-            if !registration.is_expired() {
-                return Ok(registration);
+            let registration =
+                registration_store.get_registration(&registration_name.get_name().into());
+            if let Some(registration) = registration {
+                if !registration.is_expired() {
+                    return Ok(registration.to_owned());
+                }
             }
-        }
-        return Err(CommonError::InvalidToken(token.clone()));
+            Err(CommonError::InvalidToken(token.to_owned()))
+        })
     }
 
     pub(crate) fn allowance(
