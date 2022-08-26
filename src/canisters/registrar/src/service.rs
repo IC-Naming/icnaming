@@ -968,59 +968,96 @@ impl RegistrarService {
     }
 
     pub(crate) fn get_registry(&self) -> Vec<(u32, String)> {
-        let mut list = self
-            .get_valid_registration_names()
-            .iter()
-            .map(|registration_name| {
-                (
-                    registration_name.get_id().get_value(),
-                    registration_name.get_name(),
-                )
-            })
-            .collect::<Vec<_>>();
-        list.sort_by(|a, b| a.0.cmp(&b.0));
-
-        list
-    }
-
-    fn get_valid_registration_names(&self) -> Vec<RegistrationName> {
-        STATE.with(|s| {
+        let mut list = STATE.with(|s| {
             let token_index_store = s.token_index_store.borrow();
             let registration_store = s.registration_store.borrow();
             let registration_names = token_index_store.get_registrations();
             let valid_registration_names = registration_names
                 .iter()
-                .filter(|registration_name| {
+                .filter(|registration_name_ref| {
+                    let name = registration_name_ref
+                        .deref()
+                        .deref()
+                        .borrow()
+                        .deref()
+                        .get_name();
                     if let Some(registration) =
-                        registration_store.get_registration(&registration_name.get_name().into())
+                        registration_store.get_registration(&name.to_owned().into())
                     {
                         return !registration.is_expired();
                     }
                     return false;
                 })
-                .cloned()
+                .map(|registration_name_ref| {
+                    let name = registration_name_ref
+                        .deref()
+                        .deref()
+                        .borrow()
+                        .deref()
+                        .get_name();
+                    let id = registration_name_ref
+                        .deref()
+                        .deref()
+                        .borrow()
+                        .deref()
+                        .get_id()
+                        .get_value();
+                    (id, name)
+                })
                 .collect::<Vec<_>>();
             valid_registration_names
-        })
+        });
+        list.sort_by(|a, b| a.0.cmp(&b.0));
+
+        list
     }
 
     pub(crate) fn get_tokens(&self) -> Vec<(u32, Metadata)> {
-        let mut list = self
-            .get_valid_registration_names()
-            .iter()
-            .map(|registration_name| {
-                (
-                    registration_name.get_id().get_value(),
-                    Metadata::NonFungible({
-                        let metadata = NonFungible {
-                            //encode map
-                            metadata: registration_name.get_metadata(),
-                        };
-                        metadata
-                    }),
-                )
-            })
-            .collect::<Vec<_>>();
+        let mut list = STATE.with(|s| {
+            let token_index_store = s.token_index_store.borrow();
+            let registration_store = s.registration_store.borrow();
+            let registration_names = token_index_store.get_registrations();
+            let valid_registration_names = registration_names
+                .iter()
+                .filter(|registration_name_ref| {
+                    let name = registration_name_ref
+                        .deref()
+                        .deref()
+                        .borrow()
+                        .deref()
+                        .get_name();
+                    if let Some(registration) =
+                        registration_store.get_registration(&name.to_owned().into())
+                    {
+                        return !registration.is_expired();
+                    }
+                    return false;
+                })
+                .map(|registration_name_ref| {
+                    let metadata = registration_name_ref
+                        .deref()
+                        .deref()
+                        .borrow()
+                        .deref()
+                        .get_metadata();
+                    let id = registration_name_ref
+                        .deref()
+                        .deref()
+                        .borrow()
+                        .deref()
+                        .get_id()
+                        .get_value();
+                    (
+                        id,
+                        Metadata::NonFungible({
+                            let metadata = NonFungible { metadata };
+                            metadata
+                        }),
+                    )
+                })
+                .collect::<Vec<_>>();
+            valid_registration_names
+        });
         list.sort_by(|a, b| a.0.cmp(&b.0));
 
         list

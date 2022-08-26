@@ -107,18 +107,8 @@ impl TokenIndexStore {
             .insert(name, Rc::new(RefCell::new(registration_name.clone())));
     }
 
-    pub fn get_registrations(&self) -> Vec<RegistrationName> {
-        self.registrations
-            .iter()
-            .map(|registration_name_ref| {
-                registration_name_ref
-                    .deref()
-                    .deref()
-                    .borrow()
-                    .deref()
-                    .to_owned()
-            })
-            .collect::<Vec<_>>()
+    pub fn get_registrations(&self) -> Vec<&RegistrationNameRef> {
+        self.registrations.iter().collect::<Vec<_>>()
     }
     pub fn get_registration(&self, index: &TokenIndex) -> Option<&RegistrationNameRef> {
         self.token_indexes.get(index)
