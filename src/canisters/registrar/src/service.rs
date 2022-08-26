@@ -1002,33 +1002,15 @@ impl RegistrarService {
             let valid_registration_names = registration_names
                 .iter()
                 .filter(|registration_name_ref| {
-                    let name = registration_name_ref
-                        .deref()
-                        .deref()
-                        .borrow()
-                        .deref()
-                        .get_name();
-                    if let Some(registration) =
-                        registration_store.get_registration(&name.to_owned().into())
-                    {
+                    let name = registration_name_ref.borrow().get_name();
+                    if let Some(registration) = registration_store.get_registration(&name.into()) {
                         return !registration.is_expired();
                     }
                     return false;
                 })
                 .map(|registration_name_ref| {
-                    let metadata = registration_name_ref
-                        .deref()
-                        .deref()
-                        .borrow()
-                        .deref()
-                        .get_metadata();
-                    let id = registration_name_ref
-                        .deref()
-                        .deref()
-                        .borrow()
-                        .deref()
-                        .get_id()
-                        .get_value();
+                    let metadata = registration_name_ref.borrow().get_metadata();
+                    let id = registration_name_ref.borrow().get_id().get_value();
                     (
                         id,
                         Metadata::NonFungible({
@@ -1105,14 +1087,14 @@ impl RegistrarService {
         token: &TokenIdentifier,
     ) -> NFTServiceResult<RegistrationName> {
         let token_index = get_valid_token_index(token, CanisterNames::Registrar)?;
-        let registration_name = STATE.with(|s| {
+        STATE.with(|s| {
             let token_index_store = s.token_index_store.borrow();
-            token_index_store.get_registration(&token_index).cloned()
-        });
-        if let Some(registration_name) = registration_name {
-            return Ok(registration_name.deref().deref().borrow().clone());
-        }
-        return Err(CommonError::InvalidToken(token.clone()));
+            let registration_name = token_index_store.get_registration(&token_index);
+            if let Some(registration_name) = registration_name {
+                return Ok(registration_name.borrow().to_owned());
+            }
+            return Err(CommonError::InvalidToken(token.to_owned()));
+        })
     }
 
     pub fn get_registration_by_token_id(
@@ -1203,8 +1185,7 @@ impl RegistrarService {
                         let registration_name_ref =
                             token_index_store.get_registration_by_name(&registration.get_name());
                         if let Some(registration_name_ref) = registration_name_ref {
-                            let registration_name_ref = registration_name_ref.deref();
-                            let registration_name = registration_name_ref.deref().borrow();
+                            let registration_name = registration_name_ref.borrow();
                             token_id_map.insert(
                                 registration_name.get_name(),
                                 Some((
