@@ -1,11 +1,12 @@
 use crate::registration_store::Registration;
-use crate::RegistrarService;
+use crate::{RegistrarService, RegistrationNameQueryContext};
 
 use common::http::{HeaderField, HttpResponse};
 use ic_cdk::api;
 use serde_bytes::ByteBuf;
 use std::collections::HashMap;
 
+use crate::state::STATE;
 use time::OffsetDateTime;
 
 fn time_format(time: u64) -> String {
@@ -37,18 +38,31 @@ pub fn get_nft_http_response(param: &str) -> HttpResponse {
         let token_id_res = params.get(token_id_key);
         match token_id_res {
             Some(token_id) => {
-                let registration_result = service.get_registration_by_token_id(&token_id);
-                return if registration_result.is_ok() {
-                    let registration = registration_result.unwrap();
-                    let nft_svg_bytes = get_nft_svg_bytes(&registration);
-                    http_response(200, generate_svg_headers(), nft_svg_bytes)
-                } else {
-                    http_response(
+                let query_result = RegistrationNameQueryContext::new(token_id.clone());
+                match query_result {
+                    Ok(query) => STATE.with(|s| {
+                        let token_index_store = s.token_index_store.borrow();
+                        let registration_store = s.registration_store.borrow();
+                        let registration_result = query
+                            .get_registration_by_token_id(token_index_store, registration_store);
+                        return if registration_result.is_ok() {
+                            let registration = registration_result.unwrap();
+                            let nft_svg_bytes = get_nft_svg_bytes(&registration);
+                            http_response(200, generate_svg_headers(), nft_svg_bytes)
+                        } else {
+                            http_response(
+                                500,
+                                vec![],
+                                ByteBuf::from(format!("registration not found: {}", token_id)),
+                            )
+                        };
+                    }),
+                    Err(_) => http_response(
                         500,
                         vec![],
                         ByteBuf::from(format!("registration not found: {}", token_id)),
-                    )
-                };
+                    ),
+                }
             }
             _ => http_response(404, vec![], ByteBuf::from(vec![])),
         }

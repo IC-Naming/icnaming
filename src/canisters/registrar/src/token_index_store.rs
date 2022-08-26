@@ -1,6 +1,10 @@
+use crate::registration_store::{Registration, RegistrationStore};
 use candid::{decode_args, encode_args, CandidType, Deserialize};
+use common::errors::{NamingError, ServiceResult};
+use common::http::Token;
+use common::nft::{CommonError, NFTServiceResult};
 use common::state::StableState;
-use common::token_identifier::TokenIndex;
+use common::token_identifier::{TokenIdentifier, TokenIndex};
 use log::error;
 use std::cell::RefCell;
 use std::collections::{BinaryHeap, HashMap};
@@ -8,22 +12,23 @@ use std::hash::Hash;
 use std::ops::Deref;
 use std::rc::Rc;
 use std::vec::Vec;
+
 #[derive(Clone, Hash, Eq, PartialEq, Debug, Ord, PartialOrd)]
 pub struct RegistrationName {
-    id: TokenIndex,
+    index: TokenIndex,
     name: String,
 }
 
 impl RegistrationName {
-    pub fn new(id: TokenIndex, name: String) -> RegistrationName {
-        RegistrationName { id, name }
+    pub fn new(index: TokenIndex, name: String) -> RegistrationName {
+        RegistrationName { index, name }
     }
 
     pub fn get_name(&self) -> String {
         self.name.clone()
     }
-    pub fn get_id(&self) -> TokenIndex {
-        self.id
+    pub fn get_index(&self) -> TokenIndex {
+        self.index
     }
 
     pub fn get_metadata(&self) -> Option<Vec<u8>> {
@@ -58,34 +63,35 @@ impl TokenIndexStore {
     pub fn import_from_registration_store(&mut self, names: &[String]) -> usize {
         let mut count = 0;
         for name in names {
-            if self.try_add_registration_name(name).is_some() {
-                count += 1;
+            match self.try_add_registration_name(name) {
+                Ok(_) => count += 1,
+                Err(e) => error!("import registration name error: {:?}", e),
             }
         }
         count
     }
 
-    pub fn try_add_registration_name(&mut self, name: &String) -> Option<TokenIndex> {
+    pub fn try_add_registration_name(&mut self, name: &String) -> Result<TokenIndex, NamingError> {
         if self.get_registration_by_name(name).is_some() {
-            return None;
+            return Err(NamingError::RegistrationNameIsAlreadyIndexed {
+                name: name.to_owned(),
+            });
         }
         let token_id = self.next_token_index();
         let registration_name = RegistrationName::new(token_id, name.to_owned());
-        let registration_name_ref = Rc::new(RefCell::new(registration_name));
-        self.token_indexes
-            .insert(token_id, registration_name_ref.clone());
-        self.name_indexes
-            .insert(name.to_owned(), registration_name_ref.clone());
-        self.registrations.push(registration_name_ref);
-        Some(token_id)
+        self.add_registration_name(&registration_name);
+        Ok(token_id)
     }
-    pub fn add_registration_name(&mut self, registration_name: RegistrationName) {
-        let token_id = registration_name.id.to_owned();
+    pub fn add_registration_name(&mut self, registration_name: &RegistrationName) -> TokenIndex {
+        let token_id = registration_name.index.to_owned();
         let name = registration_name.name.to_owned();
+        let registration_name_ref = Rc::new(RefCell::new(registration_name.to_owned()));
         self.token_indexes
-            .insert(token_id, Rc::new(RefCell::new(registration_name.clone())));
+            .insert(token_id, registration_name_ref.to_owned());
         self.name_indexes
-            .insert(name, Rc::new(RefCell::new(registration_name.clone())));
+            .insert(name, registration_name_ref.to_owned());
+        self.registrations.push(registration_name_ref);
+        token_id
     }
 
     pub fn get_registrations(&self) -> &RegistrationNames {
@@ -97,7 +103,7 @@ impl TokenIndexStore {
     pub fn get_registration_by_name(&self, name: &String) -> Option<&RegistrationNameRef> {
         self.name_indexes.get(name)
     }
-    pub fn next_token_index(&mut self) -> TokenIndex {
+    fn next_token_index(&mut self) -> TokenIndex {
         let new_index = TokenIndex(self.index.get_value() + 1);
         self.index = new_index.clone();
         new_index
@@ -109,14 +115,14 @@ impl TokenIndexStore {
 
 #[derive(Clone, CandidType, Deserialize)]
 struct StableRegistrationName {
-    id: TokenIndex,
+    index: TokenIndex,
     name: String,
 }
 
 impl From<&RegistrationName> for StableRegistrationName {
     fn from(registration_name: &RegistrationName) -> Self {
         StableRegistrationName {
-            id: registration_name.id.clone(),
+            index: registration_name.index.clone(),
             name: registration_name.name.clone(),
         }
     }
@@ -125,7 +131,7 @@ impl From<&RegistrationName> for StableRegistrationName {
 impl From<&StableRegistrationName> for RegistrationName {
     fn from(stable_registration_name: &StableRegistrationName) -> Self {
         RegistrationName {
-            id: stable_registration_name.id.clone(),
+            index: stable_registration_name.index.clone(),
             name: stable_registration_name.name.clone(),
         }
     }
@@ -151,7 +157,7 @@ impl StableState for TokenIndexStore {
 
         let mut token_index_store = TokenIndexStore::default();
         for registration in stable_registrations {
-            token_index_store.add_registration_name(RegistrationName::from(&registration));
+            token_index_store.add_registration_name(&RegistrationName::from(&registration));
         }
         token_index_store.index = token_index;
         Ok(token_index_store)
