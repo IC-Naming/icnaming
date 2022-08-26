@@ -14,7 +14,6 @@ use common::named_canister_ids::{
     ensure_current_canister_id_match, update_dev_named_canister_ids, CanisterNames,
 };
 use common::state::StableState;
-use common::token_identifier::TokenIndex;
 
 use crate::name_locker::NameLocker;
 use crate::quota_import_store::QuotaImportStore;
