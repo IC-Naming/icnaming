@@ -287,7 +287,7 @@ impl RegistrarService {
                 match token_index_store.try_add_registration_name(&registration.get_name()) {
                     Ok(token_index) => {
                         trace!(
-                            "The index value of the registered name is : {:?}",
+                            "The index value of the registered name is : {}",
                             token_index.get_value()
                         );
                     }
@@ -984,25 +984,18 @@ impl RegistrarService {
         let mut list = STATE.with(|s| {
             let token_index_store = s.token_index_store.borrow();
             let registration_store = s.registration_store.borrow();
-            let registration_names = token_index_store.get_registrations();
-            let valid_registration_names = registration_names
+            let query = RegistrationNameQueryContext::new(&token_index_store, &registration_store);
+            let unexpired_registration_names = query
+                .get_all_unexpired_registrations(now)
                 .iter()
-                .filter(|registration_name_ref| {
-                    let name = registration_name_ref.borrow().get_name();
-                    if let Some(registration) = registration_store.get_registration(&name.into()) {
-                        return !registration.is_expired(now);
-                    }
-                    return false;
-                })
-                .map(|registration_name_ref| {
-                    let registration_name = registration_name_ref.borrow();
+                .map(|registration_agg| {
                     (
-                        registration_name.get_index().get_value(),
-                        registration_name.get_name(),
+                        registration_agg.get_index().get_value(),
+                        registration_agg.get_name(),
                     )
                 })
                 .collect::<Vec<_>>();
-            valid_registration_names
+            unexpired_registration_names
         });
         list.sort_by(|a, b| a.0.cmp(&b.0));
 
@@ -1013,30 +1006,23 @@ impl RegistrarService {
         let mut list = STATE.with(|s| {
             let token_index_store = s.token_index_store.borrow();
             let registration_store = s.registration_store.borrow();
-            let registration_names = token_index_store.get_registrations();
-            let valid_registration_names = registration_names
+            let query = RegistrationNameQueryContext::new(&token_index_store, &registration_store);
+            let unexpired_registration_names = query
+                .get_all_unexpired_registrations(now)
                 .iter()
-                .filter(|registration_name_ref| {
-                    let name = registration_name_ref.borrow().get_name();
-                    if let Some(registration) = registration_store.get_registration(&name.into()) {
-                        return !registration.is_expired(now);
-                    }
-                    return false;
-                })
-                .map(|registration_name_ref| {
-                    let registration_name = registration_name_ref.borrow();
+                .map(|registration_agg| {
                     (
-                        registration_name.get_index().get_value(),
+                        registration_agg.get_index().get_value(),
                         Metadata::NonFungible({
                             let metadata = NonFungible {
-                                metadata: registration_name.get_metadata(),
+                                metadata: registration_agg.get_metadata(),
                             };
                             metadata
                         }),
                     )
                 })
                 .collect::<Vec<_>>();
-            valid_registration_names
+            unexpired_registration_names
         });
         list.sort_by(|a, b| a.0.cmp(&b.0));
 
@@ -1183,35 +1169,23 @@ impl RegistrarService {
         now: u64,
     ) -> HashMap<String, Option<(u32, String)>> {
         let mut token_id_map = HashMap::new();
-
-        let canister_id = get_named_get_canister_id(CanisterNames::Registrar);
         STATE.with(|s| {
             let token_index_store = s.token_index_store.borrow();
             let registration_store = s.registration_store.borrow();
-
-            for name in names {
-                let registration = registration_store.get_registration(&name.clone().into());
-                if let Some(registration) = registration {
-                    if !registration.is_expired(now) {
-                        let registration_name_ref =
-                            token_index_store.get_registration_by_name(&registration.get_name());
-                        if let Some(registration_name_ref) = registration_name_ref {
-                            let registration_name = registration_name_ref.borrow();
-                            token_id_map.insert(
-                                registration_name.get_name(),
-                                Some((
-                                    registration_name.get_index().get_value(),
-                                    encode_token_id(
-                                        common::token_identifier::CanisterId(canister_id),
-                                        registration_name.get_index(),
-                                    ),
-                                )),
-                            );
-                            continue;
-                        }
-                    }
-                }
-                token_id_map.insert(name.clone(), None);
+            let query = RegistrationNameQueryContext::new(&token_index_store, &registration_store);
+            let (registration_agg_list, not_found_name_list) =
+                query.get_unexpired_registration_agg_by_names(names, now);
+            for registration_agg in registration_agg_list {
+                token_id_map.insert(
+                    registration_agg.get_name(),
+                    Some((
+                        registration_agg.get_index().get_value(),
+                        registration_agg.get_id().to_owned(),
+                    )),
+                );
+            }
+            for not_found_name in not_found_name_list {
+                token_id_map.insert(not_found_name, None);
             }
         });
         token_id_map
@@ -1377,6 +1351,69 @@ impl<'a> RegistrationNameQueryContext<'a> {
         }
     }
 
+    pub fn get_all_unexpired_registrations(&self, now: u64) -> Vec<UnexpiredRegistrationAggDto> {
+        let registration_names = self.token_index_store.get_registrations();
+        let mut valid_registration_names = Vec::new();
+
+        for registration_name_ref in registration_names {
+            let registration_name = registration_name_ref.borrow();
+            let id = encode_token_id(
+                common::token_identifier::CanisterId(get_named_get_canister_id(
+                    CanisterNames::Registrar,
+                )),
+                registration_name.get_index(),
+            );
+            let registration_result =
+                self.get_unexpired_registration_by_name(&registration_name.get_name(), now);
+            match registration_result {
+                Ok(registration) => {
+                    valid_registration_names.push(UnexpiredRegistrationAggDto::new(
+                        &registration,
+                        &registration_name,
+                        &id,
+                    ));
+                }
+                Err(_) => {
+                    // ignore error
+                }
+            }
+        }
+
+        valid_registration_names
+    }
+    pub fn get_unexpired_registration_agg_by_names(
+        &self,
+        names: &Vec<String>,
+        now: u64,
+    ) -> (Vec<UnexpiredRegistrationAggDto>, Vec<String>) {
+        let mut valid_registration_names = Vec::new();
+        let mut not_found_names = Vec::new();
+        for name in names {
+            let registration_name_result = self.get_registration_name_by_name(name);
+            let registration_result = self.get_unexpired_registration_by_name(name, now);
+            match (registration_result, registration_name_result) {
+                (Ok(registration), Ok(registration_name)) => {
+                    let id = encode_token_id(
+                        common::token_identifier::CanisterId(get_named_get_canister_id(
+                            CanisterNames::Registrar,
+                        )),
+                        registration_name.get_index(),
+                    );
+                    valid_registration_names.push(UnexpiredRegistrationAggDto::new(
+                        &registration,
+                        &registration_name,
+                        &id,
+                    ));
+                }
+                _ => {
+                    // ignore error
+                    not_found_names.push(name.to_owned());
+                }
+            }
+        }
+        (valid_registration_names, not_found_names)
+    }
+
     pub fn get_unexpired_registration(
         &self,
         token_id: &TokenIdentifier,
@@ -1384,11 +1421,11 @@ impl<'a> RegistrationNameQueryContext<'a> {
     ) -> NFTServiceResult<UnexpiredRegistrationAggDto> {
         let registration_name = self.get_registration_name_by_token_id(token_id)?;
         let registration =
-            self.get_registration_by_name(registration_name.get_name(), token_id, now)?;
+            self.get_unexpired_registration_by_name(&registration_name.get_name(), now)?;
         let unexpired_registration_agg =
             UnexpiredRegistrationAggDto::new(&registration, &registration_name, token_id);
 
-        return Ok(unexpired_registration_agg);
+        Ok(unexpired_registration_agg)
     }
 
     pub fn get_registration_name_by_token_id(
@@ -1401,22 +1438,39 @@ impl<'a> RegistrationNameQueryContext<'a> {
         if let Some(registration_name) = registration_name {
             return Ok(registration_name.borrow().clone());
         }
-        return Err(CommonError::InvalidToken(token_id.to_owned()));
+        Err(CommonError::InvalidToken(token_id.to_owned()))
+    }
+    pub fn get_registration_name_by_name(
+        &self,
+        name: &String,
+    ) -> NFTServiceResult<RegistrationName> {
+        let registration_name = self.token_index_store.get_registration_by_name(name);
+        if let Some(registration_name) = registration_name {
+            return Ok(registration_name.borrow().clone());
+        }
+        Err(NamingError::RegistryNotFoundError {
+            name: name.to_owned(),
+        }
+        .into())
     }
 
-    pub fn get_registration_by_name(
+    pub fn get_unexpired_registration_by_name(
         &self,
-        name: String,
-        token_id: &TokenIdentifier,
+        name: &String,
         now: u64,
     ) -> NFTServiceResult<Registration> {
-        let registration = self.registration_store.get_registration(&name.into());
+        let registration = self
+            .registration_store
+            .get_registration(&name.to_owned().into());
         if let Some(registration) = registration {
             if !registration.is_expired(now) {
                 return Ok(registration.to_owned());
             }
         }
-        Err(CommonError::InvalidToken(token_id.to_owned()))
+        Err(NamingError::RegistryNotFoundError {
+            name: name.to_owned(),
+        }
+        .into())
     }
 }
 

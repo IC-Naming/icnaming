@@ -3,8 +3,11 @@ use common::errors::NamingError;
 
 use crate::registration_store::Registration;
 use crate::Principal;
+use common::named_canister_ids::{get_named_get_canister_id, CanisterNames};
 use common::state::StableState;
-use common::token_identifier::{TokenIdentifier, TokenIndex};
+use common::token_identifier::{
+    encode_token_id, get_valid_token_index, TokenIdentifier, TokenIndex,
+};
 use log::error;
 use std::cell::RefCell;
 use std::collections::{BinaryHeap, HashMap};
@@ -192,6 +195,13 @@ impl UnexpiredRegistrationAggDto {
 
     pub fn get_expired_at(&self) -> u64 {
         self.expired_at
+    }
+
+    pub fn get_index(&self) -> TokenIndex {
+        self.index
+    }
+    pub fn get_id(&self) -> &TokenIdentifier {
+        &self.id
     }
 
     pub fn get_name(&self) -> String {
