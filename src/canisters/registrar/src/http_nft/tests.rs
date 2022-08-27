@@ -1,4 +1,5 @@
 use rstest::*;
+
 mod test_http_request {
     use super::*;
     use crate::state::STATE;
@@ -12,7 +13,7 @@ mod test_http_request {
 
     use crate::http_nft::{get_nft_http_response, time_format};
     use crate::registration_store::Registration;
-    use test_common::user::{mock_tomorrow, mock_user1};
+    use test_common::user::{mock_std_time_now, mock_std_time_tomorrow, mock_user1};
 
     fn registration_name_init(name: &String, user: Principal, now: u64) {
         STATE.with(|s| {
@@ -36,14 +37,22 @@ mod test_http_request {
     }
 
     #[rstest]
-    fn test_http_request(mock_user1: Principal, mock_tomorrow: u64) {
+    fn test_http_request(
+        mock_user1: Principal,
+        mock_std_time_tomorrow: u64,
+        mock_std_time_now: u64,
+    ) {
         let test_name_str = create_test_name("icnaming");
-        let time_str = time_format(mock_tomorrow);
-        registration_name_init(&test_name_str.to_string(), mock_user1, mock_tomorrow);
+        let time_str = time_format(mock_std_time_tomorrow);
+        registration_name_init(
+            &test_name_str.to_string(),
+            mock_user1,
+            mock_std_time_tomorrow,
+        );
         let canisterid = get_named_get_canister_id(CanisterNames::Registrar);
         let token_id = encode_token_id(CanisterId(canisterid), TokenIndex(1u32));
         let param_str = format!("tokenid={}", token_id);
-        let res = get_nft_http_response(param_str.as_str());
+        let res = get_nft_http_response(param_str.as_str(), mock_std_time_now);
         let str = String::from_utf8(res.body.to_vec()).unwrap();
         assert!(str.contains(&time_str));
         assert!(str.contains(&test_name_str));

@@ -164,6 +164,7 @@ impl StableState for TokenIndexStore {
     }
 }
 
+#[derive(Debug)]
 pub struct UnexpiredRegistrationAggDto {
     owner: Principal,
     name: String,

@@ -57,13 +57,22 @@ pub fn mock_now() -> u64 {
 }
 
 #[fixture]
-pub fn mock_tomorrow() -> u64 {
+pub fn mock_std_time_tomorrow() -> u64 {
     std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .unwrap()
         .as_nanos() as u64
         + 1_000_000_000
 }
+
+#[fixture]
+pub fn mock_std_time_now() -> u64 {
+    std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap()
+        .as_nanos() as u64
+}
+
 #[fixture]
 pub fn mock_timestamp_1986() -> u64 {
     515_844_844_000_000_000
