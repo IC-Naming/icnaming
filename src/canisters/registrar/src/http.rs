@@ -52,6 +52,3 @@ fn http_request(req: HttpRequest) -> HttpResponse {
         },
     }
 }
-
-#[cfg(test)]
-mod tests;
