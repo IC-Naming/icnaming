@@ -1451,7 +1451,7 @@ mod nft_transfer_service {
 
     #[rstest]
     fn test_get_registration_by_token_id_should_not_contain_expired(
-        service: RegistrarService,
+        _service: RegistrarService,
         mock_user1: Principal,
         mock_timestamp_1986: u64,
     ) {
@@ -1459,7 +1459,13 @@ mod nft_transfer_service {
         registration_name_init(&test_name_str.to_string(), mock_user1, mock_timestamp_1986);
         let canisterid = get_named_get_canister_id(CanisterNames::Registrar);
         let token_id = encode_token_id(CanisterId(canisterid), TokenIndex(1u32));
-        let result = service.get_registration_by_token_id(&token_id);
+        let query = RegistrationNameQueryContext::new(token_id.clone());
+        let query = query.unwrap();
+        let result = STATE.with(|s| {
+            let token_index_store = s.token_index_store.borrow();
+            let registration_store = s.registration_store.borrow();
+            query.get_registration_by_token_id(token_index_store, registration_store)
+        });
         assert!(result.is_err());
         assert_eq!(
             result.unwrap_err(),
