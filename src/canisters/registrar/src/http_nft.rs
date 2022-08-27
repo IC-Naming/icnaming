@@ -1,4 +1,3 @@
-use crate::registration_store::Registration;
 use crate::{RegistrarService, RegistrationNameQueryContext};
 
 use common::http::{HeaderField, HttpResponse};

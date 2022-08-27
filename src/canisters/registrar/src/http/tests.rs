@@ -1,17 +1,9 @@
-use rstest::*;
 mod test_http_request {
-    use super::*;
+
     use crate::state::STATE;
     use candid::Principal;
 
-    use crate::http::http_request;
     use crate::registration_store::Registration;
-    use common::http::HttpRequest;
-    use common::named_canister_ids::{get_named_get_canister_id, CanisterNames};
-    use common::token_identifier::{encode_token_id, CanisterId, TokenIndex};
-
-    use test_common::create_test_name;
-    use test_common::user::{mock_std_time_now, mock_std_time_tomorrow, mock_user1};
 
     fn registration_name_init(name: &String, user: Principal, now: u64) {
         STATE.with(|s| {
