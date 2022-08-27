@@ -47,6 +47,9 @@ impl Registration {
     pub fn get_created_at(&self) -> u64 {
         self.created_at
     }
+    pub fn is_expired(&self, now: u64) -> bool {
+        self.expired_at < now
+    }
 }
 
 impl Debug for Registration {

@@ -1,3 +1,5 @@
+extern crate core;
+
 mod http;
 mod name_locker;
 mod periodic_tasks_runner;
@@ -580,9 +582,10 @@ pub type GetRegistryActorResponse = Vec<(u32, String)>;
 
 #[query(name = "getRegistry")]
 #[candid_method(query, rename = "getRegistry")]
-fn get_registry() -> GetRegistryActorResponse {
+pub fn get_registry() -> GetRegistryActorResponse {
     let service = RegistrarService::default();
-    let result = service.get_registry();
+    let now = api::time();
+    let result = service.get_registry(now);
     result
 }
 
@@ -590,9 +593,10 @@ pub type GetTokens = Vec<(u32, Metadata)>;
 
 #[query(name = "getTokens")]
 #[candid_method(query, rename = "getTokens")]
-fn get_tokens() -> GetTokens {
+pub fn get_tokens() -> GetTokens {
     let service = RegistrarService::default();
-    let result = service.get_tokens();
+    let now = api::time();
+    let result = service.get_tokens(now);
     result
 }
 
@@ -613,9 +617,10 @@ impl MetadataActorResponse {
 
 #[query(name = "metadata")]
 #[candid_method(query)]
-fn metadata(token: TokenIdentifier) -> MetadataActorResponse {
+pub fn metadata(token: TokenIdentifier) -> MetadataActorResponse {
     let service = RegistrarService::default();
-    let result = service.metadata(&token);
+    let now = api::time();
+    let result = service.metadata(&token, now);
     MetadataActorResponse::new(result)
 }
 
@@ -636,7 +641,7 @@ impl SupplyActorResponse {
 
 #[query(name = "supply")]
 #[candid_method(query)]
-fn supply() -> SupplyActorResponse {
+pub fn supply() -> SupplyActorResponse {
     let service = RegistrarService::default();
     let result = service.supply();
     SupplyActorResponse::new(result)
@@ -646,7 +651,7 @@ pub type GetMinterActorResponse = Principal;
 
 #[query(name = "getMinter")]
 #[candid_method(query, rename = "getMinter")]
-fn minter() -> GetMinterActorResponse {
+pub fn minter() -> GetMinterActorResponse {
     Principal::anonymous()
 }
 
@@ -667,9 +672,10 @@ impl BearerActorResponse {
 
 #[query(name = "bearer")]
 #[candid_method(query)]
-fn bearer(token: TokenIdentifier) -> BearerActorResponse {
+pub fn bearer(token: TokenIdentifier) -> BearerActorResponse {
     let service = RegistrarService::default();
-    let result = service.bearer(&token);
+    let now = api::time();
+    let result = service.bearer(&token, now);
     BearerActorResponse::new(result)
 }
 
@@ -688,8 +694,9 @@ impl ImportTokenIdResponse {
     }
 }
 
-#[query(name = "import_token_id_from_registration")]
-fn import_token_id_from_registration() -> ImportTokenIdResponse {
+#[update(name = "import_token_id_from_registration")]
+#[candid_method(update)]
+pub fn import_token_id_from_registration() -> ImportTokenIdResponse {
     let service = RegistrarService::default();
     let call_context = CallContext::from_ic();
     let result = service.import_token_id_from_registration(&call_context);
@@ -698,10 +705,11 @@ fn import_token_id_from_registration() -> ImportTokenIdResponse {
 
 #[update(name = "ext_approve")]
 #[candid_method(update)]
-fn ext_approve(request: ApproveRequest) {
+pub fn ext_approve(request: ApproveRequest) {
     let service = RegistrarService::default();
     let call_context = CallContext::from_ic();
-    let _ = service.ext_approve(&call_context, request.spender, &request.token);
+    let now = api::time();
+    let _ = service.ext_approve(&call_context, request.spender, &request.token, now);
 }
 
 #[derive(CandidType)]
@@ -721,9 +729,10 @@ impl AllowanceActorResponse {
 
 #[query(name = "allowance")]
 #[candid_method(query)]
-fn allowance(request: AllowanceRequest) -> AllowanceActorResponse {
+pub fn allowance(request: AllowanceRequest) -> AllowanceActorResponse {
     let service = RegistrarService::default();
-    let result = service.allowance(&request.owner, &request.spender, &request.token);
+    let now = api::time();
+    let result = service.allowance(&request.owner, &request.spender, &request.token, now);
     AllowanceActorResponse::new(result)
 }
 
@@ -744,13 +753,31 @@ impl EXTTransferResponse {
 
 #[update(name = "ext_transfer")]
 #[candid_method(update)]
-async fn ext_transfer(request: TransferRequest) -> EXTTransferResponse {
+pub async fn ext_transfer(request: TransferRequest) -> EXTTransferResponse {
     let service = RegistrarService::default();
     let call_context = CallContext::from_ic();
+    let now = api::time();
     let result = service
-        .ext_transfer(&call_context, &request.from, &request.to, &request.token)
+        .ext_transfer(
+            &call_context,
+            &request.from,
+            &request.to,
+            &request.token,
+            now,
+        )
         .await;
     EXTTransferResponse::new(result)
+}
+
+pub type GetTokenIdListByNamesResponse = HashMap<String, Option<(u32, String)>>;
+
+#[query(name = "get_token_details_by_names")]
+#[candid_method(query)]
+pub fn get_token_details_by_names(names: Vec<String>) -> GetTokenIdListByNamesResponse {
+    let service = RegistrarService::default();
+    let now = api::time();
+    let result = service.get_token_details_by_names(&names, now);
+    result
 }
 
 candid::export_service!();

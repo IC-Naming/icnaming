@@ -1,12 +1,12 @@
-use crate::registration_store::Registration;
-use crate::{Principal, RegistrarService};
+use crate::{RegistrarService, RegistrationNameQueryContext};
 
 use common::http::{HeaderField, HttpResponse};
 use ic_cdk::api;
-use rstest::*;
 use serde_bytes::ByteBuf;
 use std::collections::HashMap;
 
+use crate::state::STATE;
+use crate::token_index_store::UnexpiredRegistrationAggDto;
 use time::OffsetDateTime;
 
 fn time_format(time: u64) -> String {
@@ -21,7 +21,7 @@ fn time_format(time: u64) -> String {
     )
 }
 
-pub fn get_nft_http_response(param: &str) -> HttpResponse {
+pub fn get_nft_http_response(param: &str, now: u64) -> HttpResponse {
     let parsed_params_str_array = param.split('&');
     let mut params: HashMap<String, String> = HashMap::new();
     for p in parsed_params_str_array {
@@ -33,12 +33,16 @@ pub fn get_nft_http_response(param: &str) -> HttpResponse {
         }
     }
     let token_id_key = "tokenid";
-    let service = RegistrarService::default();
+    let _service = RegistrarService::default();
     if params.contains_key(token_id_key) {
         let token_id_res = params.get(token_id_key);
         match token_id_res {
-            Some(token_id) => {
-                let registration_result = service.get_registration_by_token_id(&token_id);
+            Some(token_id) => STATE.with(|s| {
+                let token_index_store = s.token_index_store.borrow();
+                let registration_store = s.registration_store.borrow();
+                let query =
+                    RegistrationNameQueryContext::new(&token_index_store, &registration_store);
+                let registration_result = query.get_unexpired_registration(&token_id, now);
                 return if registration_result.is_ok() {
                     let registration = registration_result.unwrap();
                     let nft_svg_bytes = get_nft_svg_bytes(&registration);
@@ -50,7 +54,7 @@ pub fn get_nft_http_response(param: &str) -> HttpResponse {
                         ByteBuf::from(format!("registration not found: {}", token_id)),
                     )
                 };
-            }
+            }),
             _ => http_response(404, vec![], ByteBuf::from(vec![])),
         }
     } else {
@@ -58,7 +62,7 @@ pub fn get_nft_http_response(param: &str) -> HttpResponse {
     }
 }
 
-fn get_nft_svg_bytes(registration: &Registration) -> ByteBuf {
+fn get_nft_svg_bytes(registration: &UnexpiredRegistrationAggDto) -> ByteBuf {
     let svg_content = include_str!("../../../../asset/icnaming_nft.svg").clone();
     let expired_at = registration.get_expired_at();
     let expired_at = time_format(expired_at);
@@ -85,50 +89,5 @@ fn generate_svg_headers() -> Vec<HeaderField> {
     ]
 }
 
-mod test_http_request {
-    use super::*;
-    use crate::state::STATE;
-    use crate::token_index_store::RegistrationName;
-    use common::named_canister_ids::{get_named_get_canister_id, CanisterNames};
-    use common::token_identifier::{encode_token_id, CanisterId, TokenIndex};
-
-    use std::string::String;
-    use test_common::create_test_name;
-
-    use test_common::user::mock_user1;
-
-    fn registration_init(name: String, user: Principal, now: u64) {
-        STATE.with(|s| {
-            let mut store = s.token_index_store.borrow_mut();
-            store.try_add_registration_name(RegistrationName(name.to_string()));
-            let mut store = s.registration_store.borrow_mut();
-            store.add_registration(Registration::new(
-                user.clone(),
-                name.to_string(),
-                now + 1,
-                now,
-            ));
-        });
-    }
-
-    #[rstest]
-    fn test_time_format() {
-        let now = 1598264204000000000;
-        let time_str = time_format(now);
-        assert_eq!(time_str, "10:16 UTC 8/24 2020");
-    }
-
-    #[rstest]
-    fn test_http_request(mock_user1: Principal) {
-        let test_name_str = create_test_name("icnaming");
-        let now = 1661334526000000000;
-        registration_init(test_name_str.to_string(), mock_user1, now);
-        let canisterid = get_named_get_canister_id(CanisterNames::Registrar);
-        let token_id = encode_token_id(CanisterId(canisterid), TokenIndex(1u32));
-        let param_str = format!("tokenid={}", token_id);
-        let res = get_nft_http_response(param_str.as_str());
-        let str = String::from_utf8(res.body.to_vec()).unwrap();
-        assert!(str.contains("9:48 UTC 8/24 2022"));
-        assert!(str.contains(&test_name_str));
-    }
-}
+#[cfg(test)]
+mod tests;

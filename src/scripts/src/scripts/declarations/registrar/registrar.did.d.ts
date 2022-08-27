@@ -231,6 +231,10 @@ export interface _SERVICE {
   'get_public_resolver' : ActorMethod<[], GetPublicResolverActorResponse>,
   'get_quota' : ActorMethod<[Principal, QuotaType], GetQuotaActorResponse>,
   'get_stats' : ActorMethod<[], GetStatsResponse>,
+  'get_token_details_by_names' : ActorMethod<
+    [Array<string>],
+    Array<[string, [] | [[number, string]]]>,
+  >,
   'get_wasm_info' : ActorMethod<[], Array<[string, string]>>,
   'http_request' : ActorMethod<[HttpRequest], HttpResponse>,
   'import_quota' : ActorMethod<[ImportQuotaRequest], ImportQuotaResponse>,
