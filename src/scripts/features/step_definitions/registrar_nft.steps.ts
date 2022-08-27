@@ -29,7 +29,7 @@ import {
 
 Then(/^registrar metadata "([^"]*)" result is$/, async function (name, table) {
 
-    const token_id = (await registrar.get_token_details_by_names([name]))[0];
+    const token_id = (await registrar.get_token_details_by_names([name.toString()]))[0];
     logger.debug(`token_id: ${token_id}`)
     const result = await registrar.metadata(name)
     logger.debug(result)

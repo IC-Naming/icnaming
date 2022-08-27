@@ -758,7 +758,7 @@ pub async fn ext_transfer(request: TransferRequest) -> EXTTransferResponse {
 
 pub type GetTokenIdListByNamesResponse = HashMap<String, Option<(u32, String)>>;
 
-#[update(name = "get_token_details_by_names")]
+#[query(name = "get_token_details_by_names")]
 #[candid_method(query)]
 pub fn get_token_details_by_names(names: Vec<String>) -> GetTokenIdListByNamesResponse {
     let service = RegistrarService::default();
