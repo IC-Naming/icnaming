@@ -9,6 +9,7 @@ Feature: Yumi market query Api
       | na2.ic    | user1 | 2     |
       | iiiiii.ic | user2 | 3     |
 
+  @dev
   Scenario: Metadata
     Then registrar get_details "name1.ic" result is
       | key        | value    |
