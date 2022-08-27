@@ -1448,10 +1448,7 @@ impl<'a> RegistrationNameQueryContext<'a> {
         if let Some(registration_name) = registration_name {
             return Ok(registration_name.borrow().clone());
         }
-        Err(NamingError::RegistryNotFoundError {
-            name: name.to_owned(),
-        }
-        .into())
+        Err(NamingError::RegistrationNotFound.into())
     }
 
     pub fn get_unexpired_registration_by_name(
@@ -1467,10 +1464,7 @@ impl<'a> RegistrationNameQueryContext<'a> {
                 return Ok(registration.to_owned());
             }
         }
-        Err(NamingError::RegistryNotFoundError {
-            name: name.to_owned(),
-        }
-        .into())
+        Err(NamingError::RegistrationNotFound.into())
     }
 }
 

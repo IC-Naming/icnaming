@@ -1484,7 +1484,7 @@ mod nft_transfer_service {
         assert!(result.is_err());
         assert_eq!(
             result.unwrap_err(),
-            CommonError::InvalidToken(token_id.to_string())
+            NamingError::RegistrationNotFound.into()
         );
     }
 
