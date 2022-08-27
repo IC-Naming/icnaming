@@ -584,7 +584,8 @@ pub type GetRegistryActorResponse = Vec<(u32, String)>;
 #[candid_method(query, rename = "getRegistry")]
 pub fn get_registry() -> GetRegistryActorResponse {
     let service = RegistrarService::default();
-    let result = service.get_registry();
+    let now = api::time();
+    let result = service.get_registry(now);
     result
 }
 
@@ -594,7 +595,8 @@ pub type GetTokens = Vec<(u32, Metadata)>;
 #[candid_method(query, rename = "getTokens")]
 pub fn get_tokens() -> GetTokens {
     let service = RegistrarService::default();
-    let result = service.get_tokens();
+    let now = api::time();
+    let result = service.get_tokens(now);
     result
 }
 
@@ -617,7 +619,8 @@ impl MetadataActorResponse {
 #[candid_method(query)]
 pub fn metadata(token: TokenIdentifier) -> MetadataActorResponse {
     let service = RegistrarService::default();
-    let result = service.metadata(&token);
+    let now = api::time();
+    let result = service.metadata(&token, now);
     MetadataActorResponse::new(result)
 }
 
@@ -671,7 +674,8 @@ impl BearerActorResponse {
 #[candid_method(query)]
 pub fn bearer(token: TokenIdentifier) -> BearerActorResponse {
     let service = RegistrarService::default();
-    let result = service.bearer(&token);
+    let now = api::time();
+    let result = service.bearer(&token, now);
     BearerActorResponse::new(result)
 }
 
@@ -704,7 +708,8 @@ pub fn import_token_id_from_registration() -> ImportTokenIdResponse {
 pub fn ext_approve(request: ApproveRequest) {
     let service = RegistrarService::default();
     let call_context = CallContext::from_ic();
-    let _ = service.ext_approve(&call_context, request.spender, &request.token);
+    let now = api::time();
+    let _ = service.ext_approve(&call_context, request.spender, &request.token, now);
 }
 
 #[derive(CandidType)]
@@ -726,7 +731,8 @@ impl AllowanceActorResponse {
 #[candid_method(query)]
 pub fn allowance(request: AllowanceRequest) -> AllowanceActorResponse {
     let service = RegistrarService::default();
-    let result = service.allowance(&request.owner, &request.spender, &request.token);
+    let now = api::time();
+    let result = service.allowance(&request.owner, &request.spender, &request.token, now);
     AllowanceActorResponse::new(result)
 }
 
@@ -750,8 +756,15 @@ impl EXTTransferResponse {
 pub async fn ext_transfer(request: TransferRequest) -> EXTTransferResponse {
     let service = RegistrarService::default();
     let call_context = CallContext::from_ic();
+    let now = api::time();
     let result = service
-        .ext_transfer(&call_context, &request.from, &request.to, &request.token)
+        .ext_transfer(
+            &call_context,
+            &request.from,
+            &request.to,
+            &request.token,
+            now,
+        )
         .await;
     EXTTransferResponse::new(result)
 }
@@ -762,7 +775,8 @@ pub type GetTokenIdListByNamesResponse = HashMap<String, Option<(u32, String)>>;
 #[candid_method(query)]
 pub fn get_token_details_by_names(names: Vec<String>) -> GetTokenIdListByNamesResponse {
     let service = RegistrarService::default();
-    let result = service.get_token_details_by_names(&names);
+    let now = api::time();
+    let result = service.get_token_details_by_names(&names, now);
     result
 }
 

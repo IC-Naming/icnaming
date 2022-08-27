@@ -37,7 +37,7 @@ use crate::registration_store::{
 };
 use crate::reserved_list::RESERVED_NAMES;
 use crate::state::*;
-use crate::token_index_store::{RegistrationName, TokenIndexStore};
+use crate::token_index_store::{RegistrationName, TokenIndexStore, UnexpiredRegistrationAggDto};
 use crate::token_service::TokenService;
 use crate::user_quota_store::{QuotaType, TransferQuotaDetails};
 
@@ -980,7 +980,7 @@ impl RegistrarService {
         });
     }
 
-    pub(crate) fn get_registry(&self) -> Vec<(u32, String)> {
+    pub(crate) fn get_registry(&self, now: u64) -> Vec<(u32, String)> {
         let mut list = STATE.with(|s| {
             let token_index_store = s.token_index_store.borrow();
             let registration_store = s.registration_store.borrow();
@@ -990,7 +990,7 @@ impl RegistrarService {
                 .filter(|registration_name_ref| {
                     let name = registration_name_ref.borrow().get_name();
                     if let Some(registration) = registration_store.get_registration(&name.into()) {
-                        return !registration.is_expired();
+                        return !registration.is_expired(now);
                     }
                     return false;
                 })
@@ -1009,7 +1009,7 @@ impl RegistrarService {
         list
     }
 
-    pub(crate) fn get_tokens(&self) -> Vec<(u32, Metadata)> {
+    pub(crate) fn get_tokens(&self, now: u64) -> Vec<(u32, Metadata)> {
         let mut list = STATE.with(|s| {
             let token_index_store = s.token_index_store.borrow();
             let registration_store = s.registration_store.borrow();
@@ -1019,7 +1019,7 @@ impl RegistrarService {
                 .filter(|registration_name_ref| {
                     let name = registration_name_ref.borrow().get_name();
                     if let Some(registration) = registration_store.get_registration(&name.into()) {
-                        return !registration.is_expired();
+                        return !registration.is_expired(now);
                     }
                     return false;
                 })
@@ -1043,11 +1043,12 @@ impl RegistrarService {
         list
     }
 
-    pub(crate) fn metadata(&self, token: &TokenIdentifier) -> NFTServiceResult<Metadata> {
-        let query = RegistrationNameQueryContext::new(token.to_owned())?;
+    pub(crate) fn metadata(&self, token: &TokenIdentifier, now: u64) -> NFTServiceResult<Metadata> {
         let registration_name = STATE.with(|s| {
             let token_index_store = s.token_index_store.borrow();
-            query.get_token_index_registration_name(token_index_store)
+            let registration_store = s.registration_store.borrow();
+            let query = RegistrationNameQueryContext::new(&token_index_store, &registration_store);
+            query.get_unexpired_registration(token, now)
         })?;
         return Ok(Metadata::NonFungible({
             let metadata = NonFungible {
@@ -1064,12 +1065,12 @@ impl RegistrarService {
         })
     }
 
-    pub(crate) fn bearer(&self, token: &TokenIdentifier) -> NFTServiceResult<String> {
-        let query = RegistrationNameQueryContext::new(token.to_owned())?;
+    pub(crate) fn bearer(&self, token: &TokenIdentifier, now: u64) -> NFTServiceResult<String> {
         let registration = STATE.with(|s| {
             let token_index_store = s.token_index_store.borrow();
             let registration_store = s.registration_store.borrow();
-            query.get_registration_by_token_id(token_index_store, registration_store)
+            let query = RegistrationNameQueryContext::new(&token_index_store, &registration_store);
+            query.get_unexpired_registration(token, now)
         })?;
         Ok(registration.get_owner().to_text())
     }
@@ -1096,16 +1097,18 @@ impl RegistrarService {
         call_context: &CallContext,
         spender: Principal,
         token: &TokenIdentifier,
+        now: u64,
     ) -> NFTServiceResult<()> {
-        let query = RegistrationNameQueryContext::new(token.to_owned())?;
-        let name = STATE.with(|s| {
+        let registrationAgg = STATE.with(|s| {
             let token_index_store = s.token_index_store.borrow();
-            query.get_token_index_registration_name(token_index_store)
+            let registration_store = s.registration_store.borrow();
+            let query = RegistrationNameQueryContext::new(&token_index_store, &registration_store);
+            query.get_unexpired_registration(token, now)
         })?;
         let _ = self.approve(
             &call_context.caller,
             call_context.now.0,
-            name.get_name().as_str(),
+            registrationAgg.get_name().as_str(),
             spender,
         );
         Ok(())
@@ -1116,13 +1119,14 @@ impl RegistrarService {
         owner: &common::nft::User,
         spender: &Principal,
         token: &TokenIdentifier,
+        now: u64,
     ) -> NFTServiceResult<u128> {
         let owner = owner.get_principal()?;
-        let query = RegistrationNameQueryContext::new(token.to_owned())?;
         let registration = STATE.with(|s| {
             let token_index_store = s.token_index_store.borrow();
             let registration_store = s.registration_store.borrow();
-            query.get_registration_by_token_id(token_index_store, registration_store)
+            let query = RegistrationNameQueryContext::new(&token_index_store, &registration_store);
+            query.get_unexpired_registration(token, now)
         })?;
         if !registration.is_owner(&owner) {
             return Err(NamingError::InvalidOwner.into());
@@ -1141,14 +1145,15 @@ impl RegistrarService {
         from: &common::nft::User,
         to: &common::nft::User,
         token: &TokenIdentifier,
+        now: u64,
     ) -> NFTTransferServiceResult<u128> {
         let from = from.get_principal()?;
         let to = to.get_principal()?;
-        let query = RegistrationNameQueryContext::new(token.to_owned())?;
         let registration = STATE.with(|s| {
             let token_index_store = s.token_index_store.borrow();
             let registration_store = s.registration_store.borrow();
-            query.get_registration_by_token_id(token_index_store, registration_store)
+            let query = RegistrationNameQueryContext::new(&token_index_store, &registration_store);
+            query.get_unexpired_registration(token, now)
         })?;
         if !registration.is_owner(&from) {
             return Err(NamingError::InvalidOwner.into());
@@ -1175,6 +1180,7 @@ impl RegistrarService {
     pub(crate) fn get_token_details_by_names(
         &self,
         names: &Vec<String>,
+        now: u64,
     ) -> HashMap<String, Option<(u32, String)>> {
         let mut token_id_map = HashMap::new();
 
@@ -1186,7 +1192,7 @@ impl RegistrarService {
             for name in names {
                 let registration = registration_store.get_registration(&name.clone().into());
                 if let Some(registration) = registration {
-                    if !registration.is_expired() {
+                    if !registration.is_expired(now) {
                         let registration_name_ref =
                             token_index_store.get_registration_by_name(&registration.get_name());
                         if let Some(registration_name_ref) = registration_name_ref {
@@ -1355,42 +1361,62 @@ impl RegisterCoreContext {
     }
 }
 
-pub struct RegistrationNameQueryContext {
-    index: TokenIndex,
-    id: TokenIdentifier,
+pub struct RegistrationNameQueryContext<'a> {
+    token_index_store: &'a TokenIndexStore,
+    registration_store: &'a RegistrationStore,
 }
 
-impl RegistrationNameQueryContext {
-    pub fn new(id: TokenIdentifier) -> NFTServiceResult<RegistrationNameQueryContext> {
-        let index = get_valid_token_index(&id, CanisterNames::Registrar)?;
-        Ok(RegistrationNameQueryContext { index, id })
-    }
-
-    pub fn get_token_index_registration_name(
-        &self,
-        token_index_store: std::cell::Ref<TokenIndexStore>,
-    ) -> NFTServiceResult<RegistrationName> {
-        let registration_name = token_index_store.get_registration(&self.index);
-        if let Some(registration_name) = registration_name {
-            return Ok(registration_name.borrow().to_owned());
+impl<'a> RegistrationNameQueryContext<'a> {
+    pub fn new(
+        token_index_store: &'a TokenIndexStore,
+        registration_store: &'a RegistrationStore,
+    ) -> Self {
+        Self {
+            token_index_store: token_index_store,
+            registration_store: registration_store,
         }
-        return Err(CommonError::InvalidToken(self.id.to_owned()));
     }
 
-    pub fn get_registration_by_token_id(
+    pub fn get_unexpired_registration(
         &self,
-        token_index_store: std::cell::Ref<TokenIndexStore>,
-        registration_store: std::cell::Ref<RegistrationStore>,
-    ) -> NFTServiceResult<Registration> {
-        let registration_name = self.get_token_index_registration_name(token_index_store)?;
+        token_id: &TokenIdentifier,
+        now: u64,
+    ) -> NFTServiceResult<UnexpiredRegistrationAggDto> {
+        let registration_name = self.get_registration_name_by_token_id(token_id)?;
         let registration =
-            registration_store.get_registration(&registration_name.get_name().into());
+            self.get_registration_by_name(registration_name.get_name(), token_id, now)?;
+        let unexpired_registration_agg =
+            UnexpiredRegistrationAggDto::new(&registration, &registration_name, token_id);
+
+        return Ok(unexpired_registration_agg);
+    }
+
+    pub fn get_registration_name_by_token_id(
+        &self,
+        token_id: &TokenIdentifier,
+    ) -> NFTServiceResult<RegistrationName> {
+        let index = get_valid_token_index(token_id, CanisterNames::Registrar)?;
+
+        let registration_name = self.token_index_store.get_registration(&index);
+        if let Some(registration_name) = registration_name {
+            return Ok(registration_name.borrow().clone());
+        }
+        return Err(CommonError::InvalidToken(token_id.to_owned()));
+    }
+
+    pub fn get_registration_by_name(
+        &self,
+        name: String,
+        token_id: &TokenIdentifier,
+        now: u64,
+    ) -> NFTServiceResult<Registration> {
+        let registration = self.registration_store.get_registration(&name.into());
         if let Some(registration) = registration {
-            if !registration.is_expired() {
+            if !registration.is_expired(now) {
                 return Ok(registration.to_owned());
             }
         }
-        Err(CommonError::InvalidToken(self.id.to_owned()))
+        Err(CommonError::InvalidToken(token_id.to_owned()))
     }
 }
 

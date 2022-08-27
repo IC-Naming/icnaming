@@ -13,6 +13,7 @@ use crate::stats_service::encode_metrics;
 #[candid_method(query, rename = "http_request")]
 fn http_request(req: HttpRequest) -> HttpResponse {
     let parts: Vec<&str> = req.url.split('?').collect();
+    let now = ic_cdk::api::time();
     match parts[0] {
         "/metrics" => {
             let now;
@@ -42,7 +43,7 @@ fn http_request(req: HttpRequest) -> HttpResponse {
                 },
             }
         }
-        "/" => get_nft_http_response(&parts[1]),
+        "/" => get_nft_http_response(&parts[1], now),
         request_path => HttpResponse {
             status_code: 404,
             headers: vec![],

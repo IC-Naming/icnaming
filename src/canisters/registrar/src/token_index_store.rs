@@ -1,8 +1,10 @@
 use candid::{decode_args, encode_args, CandidType, Deserialize};
 use common::errors::NamingError;
 
+use crate::registration_store::Registration;
+use crate::Principal;
 use common::state::StableState;
-use common::token_identifier::TokenIndex;
+use common::token_identifier::{TokenIdentifier, TokenIndex};
 use log::error;
 use std::cell::RefCell;
 use std::collections::{BinaryHeap, HashMap};
@@ -159,5 +161,58 @@ impl StableState for TokenIndexStore {
         }
         token_index_store.index = token_index;
         Ok(token_index_store)
+    }
+}
+
+pub struct UnexpiredRegistrationAggDto {
+    owner: Principal,
+    name: String,
+    expired_at: u64,
+    created_at: u64,
+    index: TokenIndex,
+    id: TokenIdentifier,
+}
+
+impl UnexpiredRegistrationAggDto {
+    pub fn new(
+        registration: &Registration,
+        registration_name: &RegistrationName,
+        id: &TokenIdentifier,
+    ) -> Self {
+        Self {
+            owner: registration.get_owner(),
+            name: registration.get_name(),
+            expired_at: registration.get_expired_at(),
+            created_at: registration.get_created_at(),
+            index: registration_name.get_index(),
+            id: id.clone(),
+        }
+    }
+
+    pub fn get_expired_at(&self) -> u64 {
+        self.expired_at
+    }
+
+    pub fn get_name(&self) -> String {
+        self.name.clone()
+    }
+
+    pub fn get_metadata(&self) -> Option<Vec<u8>> {
+        let mut metadata = HashMap::new();
+        metadata.insert("name".to_string(), self.get_name());
+        match encode_args((metadata,)) {
+            Ok(data) => Some(data),
+            Err(e) => {
+                error!("error encoding metadata: {:?}", e);
+                None
+            }
+        }
+    }
+    pub fn is_owner(&self, principal: &Principal) -> bool {
+        self.owner == *principal
+    }
+
+    pub fn get_owner(&self) -> Principal {
+        self.owner.clone()
     }
 }

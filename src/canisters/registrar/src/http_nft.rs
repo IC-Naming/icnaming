@@ -7,6 +7,7 @@ use serde_bytes::ByteBuf;
 use std::collections::HashMap;
 
 use crate::state::STATE;
+use crate::token_index_store::UnexpiredRegistrationAggDto;
 use time::OffsetDateTime;
 
 fn time_format(time: u64) -> String {
@@ -21,7 +22,7 @@ fn time_format(time: u64) -> String {
     )
 }
 
-pub fn get_nft_http_response(param: &str) -> HttpResponse {
+pub fn get_nft_http_response(param: &str, now: u64) -> HttpResponse {
     let parsed_params_str_array = param.split('&');
     let mut params: HashMap<String, String> = HashMap::new();
     for p in parsed_params_str_array {
@@ -37,33 +38,24 @@ pub fn get_nft_http_response(param: &str) -> HttpResponse {
     if params.contains_key(token_id_key) {
         let token_id_res = params.get(token_id_key);
         match token_id_res {
-            Some(token_id) => {
-                let query_result = RegistrationNameQueryContext::new(token_id.clone());
-                match query_result {
-                    Ok(query) => STATE.with(|s| {
-                        let token_index_store = s.token_index_store.borrow();
-                        let registration_store = s.registration_store.borrow();
-                        let registration_result = query
-                            .get_registration_by_token_id(token_index_store, registration_store);
-                        return if registration_result.is_ok() {
-                            let registration = registration_result.unwrap();
-                            let nft_svg_bytes = get_nft_svg_bytes(&registration);
-                            http_response(200, generate_svg_headers(), nft_svg_bytes)
-                        } else {
-                            http_response(
-                                500,
-                                vec![],
-                                ByteBuf::from(format!("registration not found: {}", token_id)),
-                            )
-                        };
-                    }),
-                    Err(_) => http_response(
+            Some(token_id) => STATE.with(|s| {
+                let token_index_store = s.token_index_store.borrow();
+                let registration_store = s.registration_store.borrow();
+                let query =
+                    RegistrationNameQueryContext::new(&token_index_store, &registration_store);
+                let registration_result = query.get_unexpired_registration(&token_id, now);
+                return if registration_result.is_ok() {
+                    let registration = registration_result.unwrap();
+                    let nft_svg_bytes = get_nft_svg_bytes(&registration);
+                    http_response(200, generate_svg_headers(), nft_svg_bytes)
+                } else {
+                    http_response(
                         500,
                         vec![],
                         ByteBuf::from(format!("registration not found: {}", token_id)),
-                    ),
-                }
-            }
+                    )
+                };
+            }),
             _ => http_response(404, vec![], ByteBuf::from(vec![])),
         }
     } else {
@@ -71,7 +63,7 @@ pub fn get_nft_http_response(param: &str) -> HttpResponse {
     }
 }
 
-fn get_nft_svg_bytes(registration: &Registration) -> ByteBuf {
+fn get_nft_svg_bytes(registration: &UnexpiredRegistrationAggDto) -> ByteBuf {
     let svg_content = include_str!("../../../../asset/icnaming_nft.svg").clone();
     let expired_at = registration.get_expired_at();
     let expired_at = time_format(expired_at);

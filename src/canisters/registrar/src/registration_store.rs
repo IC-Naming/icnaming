@@ -47,12 +47,8 @@ impl Registration {
     pub fn get_created_at(&self) -> u64 {
         self.created_at
     }
-    pub fn is_expired(&self) -> bool {
-        (self.expired_at as u128)
-            < std::time::SystemTime::now()
-                .duration_since(std::time::UNIX_EPOCH)
-                .unwrap()
-                .as_nanos()
+    pub fn is_expired(&self, now: u64) -> bool {
+        self.expired_at < now
     }
 }
 
