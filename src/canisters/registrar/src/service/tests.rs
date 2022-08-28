@@ -1877,7 +1877,7 @@ mod nft_transfer_service {
 
     #[rstest]
     async fn test_import_token_id_from_registration(
-        mut service: RegistrarService,
+        service: RegistrarService,
         mut _mock_registry_api: MockRegistryApi,
         mock_user1: Principal,
         mock_std_time_tomorrow: u64,
@@ -1885,7 +1885,6 @@ mod nft_transfer_service {
     ) {
         let icnaming_name_str = create_test_name("icnaming");
         let test_name_str = create_test_name("test");
-        let unregistered_name_str = create_test_name("unregistered");
         let admin = get_admin();
         registration_init(
             &icnaming_name_str.to_string(),
@@ -1914,7 +1913,6 @@ mod nft_transfer_service {
         assert_eq!(registry_result.len(), 2);
         assert!(names.contains(&icnaming_name_str));
         assert!(names.contains(&test_name_str));
-        assert!(!names.contains(&unregistered_name_str));
     }
 }
 
