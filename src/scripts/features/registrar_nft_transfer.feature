@@ -140,6 +140,6 @@ Feature: Yumi market transfer Api
       | expired_at | 1        |
       | created_at | 0        |
     Given registrar allowance action
-      | name     | from                                                             | to        | from_type |
+      | name     | from                                                             | to    | from_type |
       | name1.ic | 3352b4176f9818dfa25c862cbca82f0f05b8e150dded0263e2ef05b094103e34 | user2 | address   |
     When last registrar allowance result is err,expected err is "Other" and message is "account identifier is not supported"
