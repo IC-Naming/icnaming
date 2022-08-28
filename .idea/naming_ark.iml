@@ -13,6 +13,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/common/common/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/common/common_actor/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/common/test_common/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/common/build_common/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/src/target" />
     </content>
     <orderEntry type="inheritedJdk" />

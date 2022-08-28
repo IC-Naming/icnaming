@@ -14,7 +14,13 @@ import {
     BooleanActorResponse as RenewNameResult,
     QuotaType,
     GetDetailsActorResponse as RegisterWithPaymentResponse,
-    GetNameStatueActorResponse, User, TransferRequest, EXTTransferResponse, ApproveRequest,
+    GetNameStatueActorResponse,
+    User,
+    TransferRequest,
+    EXTTransferResponse,
+    ApproveRequest,
+    AllowanceRequest,
+    AllowanceActorResponse,
 } from '~/declarations/registrar/registrar.did'
 import {identities} from '~/identityHelper'
 import {Result} from '~/utils/Result'
@@ -30,6 +36,7 @@ import {IDL} from '@dfinity/candid'
 
 
 let global_transfer_result_list: EXTTransferResponse[] = []
+let global_allowance_result_list: AllowanceActorResponse[] = []
 
 export const get_metadata_type = () => {
     return [IDL.Vec(IDL.Tuple(
@@ -183,11 +190,26 @@ Given(/^registrar ext_transfer action$/, async function (table) {
             localRegistrar = registrar
         }
         if (id != undefined) {
-            let from: User = {
-                principal: identities.getPrincipal(targetData.from)
+
+            let from: User
+            if (targetData.from_type == "principal") {
+                from = {
+                    principal: identities.getPrincipal(targetData.from)
+                } as User
+            } else {
+                from = {
+                    address: targetData.from
+                } as User
             }
-            let to: User = {
-                principal: identities.getPrincipal(targetData.to)
+            let to: User
+            if (targetData.to_type == "principal") {
+                to = {
+                    principal: identities.getPrincipal(targetData.to)
+                } as User
+            } else {
+                to = {
+                    address: targetData.to
+                } as User
             }
 
             const result = await localRegistrar
@@ -219,8 +241,70 @@ Given(/^registrar ext_approve action$/, async function (table) {
                 allowance: BigInt(1),
                 spender: identities.getPrincipal(spender)
             } as ApproveRequest
-            const result = await registrar.ext_approve(approve_request)
+            const _ = await registrar.ext_approve(approve_request)
 
+        }
+    }
+});
+When(/^last registrar ext_transfer result is err,expected err is "([^"]*)"$/, function (err) {
+
+    let last_result = global_transfer_result_list[global_transfer_result_list.length - 1]
+    if ('Err' in last_result) {
+        logger.debug(`last_result: ${JSON.stringify(JSON.stringify(last_result.Err).toString())}`)
+        let exp = JSON.stringify(last_result.Err)
+            .toString()
+            .replace("\"", "")
+            .replace("{", "")
+            .replace("}", "")
+        expect(JSON.stringify(last_result.Err).toString()).to.equal(err)
+    }
+});
+When(/^last registrar ext_transfer result is err,expected err is "([^"]*)" and message is "([^"]*)"$/, function (err, message) {
+    let last_result = global_transfer_result_list[global_transfer_result_list.length - 1]
+    if ('Err' in last_result) {
+        if (err in last_result.Err) {
+            logger.debug(`last_result: ${JSON.stringify(last_result.Err[err])}`)
+            expect(last_result.Err[err]).to.equal(message)
+        }
+    }
+});
+Given(/^registrar allowance action$/, async function (table) {
+    let dataTable = table.hashes()
+    for (let targetData of dataTable) {
+        const spender = identities.getPrincipal(targetData.to)
+        let owner
+        if (targetData.from_type == 'principal') {
+            owner = {
+                principal: identities.getPrincipal(targetData.from)
+            } as User
+        } else {
+            owner = {
+                address: targetData.from
+            } as User
+        }
+        const token = await get_token_id_by_name(targetData.name)
+        if (token != undefined) {
+            let request = {
+                token: token,
+                owner: owner,
+                spender: spender
+            } as AllowanceRequest
+            const result = await registrar.allowance(request)
+            global_allowance_result_list.push(result)
+        }
+    }
+});
+When(/^all registrar allowance is ok$/, function () {
+    for (let result of global_allowance_result_list) {
+        assert_remote_result(result)
+    }
+});
+When(/^last registrar allowance result is err,expected err is "([^"]*)" and message is "([^"]*)"$/, function (err, message) {
+    let last_result = global_allowance_result_list[global_allowance_result_list.length - 1]
+    if ('Err' in last_result) {
+        if (err in last_result.Err) {
+            logger.debug(`last_result: ${JSON.stringify(last_result.Err[err])}`)
+            expect(last_result.Err[err]).to.equal(message)
         }
     }
 });
