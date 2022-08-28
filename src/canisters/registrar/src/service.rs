@@ -26,9 +26,7 @@ use common::permissions::{
     must_be_in_named_canister, must_be_named_canister, must_be_system_owner,
 };
 use common::permissions::{must_be_named_principal, must_not_anonymous};
-use common::token_identifier::{
-    encode_token_id, get_valid_token_index, TokenIdentifier, TokenIndex,
-};
+use common::token_identifier::{encode_token_id, get_valid_token_index, TokenIdentifier};
 use common::{AuthPrincipal, CallContext, TimeInNs};
 
 use crate::name_locker::{try_lock_name, unlock_name};
@@ -1085,7 +1083,7 @@ impl RegistrarService {
         token: &TokenIdentifier,
         now: u64,
     ) -> NFTServiceResult<()> {
-        let registrationAgg = STATE.with(|s| {
+        let reggistration_agg = STATE.with(|s| {
             let token_index_store = s.token_index_store.borrow();
             let registration_store = s.registration_store.borrow();
             let query = RegistrationNameQueryContext::new(&token_index_store, &registration_store);
@@ -1094,7 +1092,7 @@ impl RegistrarService {
         let _ = self.approve(
             &call_context.caller,
             call_context.now.0,
-            registrationAgg.get_name().as_str(),
+            reggistration_agg.get_name().as_str(),
             spender,
         );
         Ok(())
@@ -1168,27 +1166,28 @@ impl RegistrarService {
         names: &Vec<String>,
         now: u64,
     ) -> HashMap<String, Option<(u32, String)>> {
-        let mut token_id_map = HashMap::new();
         STATE.with(|s| {
             let token_index_store = s.token_index_store.borrow();
             let registration_store = s.registration_store.borrow();
             let query = RegistrationNameQueryContext::new(&token_index_store, &registration_store);
-            let (registration_agg_list, not_found_name_list) =
-                query.get_unexpired_registration_agg_by_names(names, now);
-            for registration_agg in registration_agg_list {
-                token_id_map.insert(
-                    registration_agg.get_name(),
-                    Some((
-                        registration_agg.get_index().get_value(),
-                        registration_agg.get_id().to_owned(),
-                    )),
-                );
-            }
-            for not_found_name in not_found_name_list {
-                token_id_map.insert(not_found_name, None);
-            }
-        });
-        token_id_map
+            let list = query.get_unexpired_registration_agg_by_names(names, now);
+            list.iter()
+                .map(|item| {
+                    return match item {
+                        GetUnexpiredRegistrationAggByNamesResult::Valid(registration_agg) => (
+                            registration_agg.get_name(),
+                            Some((
+                                registration_agg.get_index().get_value(),
+                                registration_agg.get_id().to_owned(),
+                            )),
+                        ),
+                        GetUnexpiredRegistrationAggByNamesResult::NotFound(name) => {
+                            (name.to_owned(), None)
+                        }
+                    };
+                })
+                .collect()
+        })
     }
 }
 
@@ -1355,44 +1354,12 @@ impl<'a> RegistrationNameQueryContext<'a> {
         let registration_names = self.token_index_store.get_registrations();
         let mut valid_registration_names = Vec::new();
 
-        for registration_name_ref in registration_names {
+        registration_names.iter().for_each(|registration_name_ref| {
             let registration_name = registration_name_ref.borrow();
-            let id = encode_token_id(
-                common::token_identifier::CanisterId(get_named_get_canister_id(
-                    CanisterNames::Registrar,
-                )),
-                registration_name.get_index(),
-            );
             let registration_result =
                 self.get_unexpired_registration_by_name(&registration_name.get_name(), now);
             match registration_result {
                 Ok(registration) => {
-                    valid_registration_names.push(UnexpiredRegistrationAggDto::new(
-                        &registration,
-                        &registration_name,
-                        &id,
-                    ));
-                }
-                Err(_) => {
-                    // ignore error
-                }
-            }
-        }
-
-        valid_registration_names
-    }
-    pub fn get_unexpired_registration_agg_by_names(
-        &self,
-        names: &Vec<String>,
-        now: u64,
-    ) -> (Vec<UnexpiredRegistrationAggDto>, Vec<String>) {
-        let mut valid_registration_names = Vec::new();
-        let mut not_found_names = Vec::new();
-        for name in names {
-            let registration_name_result = self.get_registration_name_by_name(name);
-            let registration_result = self.get_unexpired_registration_by_name(name, now);
-            match (registration_result, registration_name_result) {
-                (Ok(registration), Ok(registration_name)) => {
                     let id = encode_token_id(
                         common::token_identifier::CanisterId(get_named_get_canister_id(
                             CanisterNames::Registrar,
@@ -1405,13 +1372,46 @@ impl<'a> RegistrationNameQueryContext<'a> {
                         &id,
                     ));
                 }
-                _ => {
+                Err(_) => {
                     // ignore error
-                    not_found_names.push(name.to_owned());
                 }
             }
-        }
-        (valid_registration_names, not_found_names)
+        });
+        valid_registration_names
+    }
+    pub fn get_unexpired_registration_agg_by_names(
+        &self,
+        names: &Vec<String>,
+        now: u64,
+    ) -> Vec<GetUnexpiredRegistrationAggByNamesResult> {
+        names
+            .iter()
+            .map(|name| {
+                let registration_name_result = self.get_registration_name_by_name(name);
+                let registration_result = self.get_unexpired_registration_by_name(name, now);
+                return match (registration_result, registration_name_result) {
+                    (Ok(registration), Ok(registration_name)) => {
+                        let id = encode_token_id(
+                            common::token_identifier::CanisterId(get_named_get_canister_id(
+                                CanisterNames::Registrar,
+                            )),
+                            registration_name.get_index(),
+                        );
+                        GetUnexpiredRegistrationAggByNamesResult::Valid(
+                            UnexpiredRegistrationAggDto::new(
+                                &registration,
+                                &registration_name,
+                                &id,
+                            ),
+                        )
+                    }
+                    _ => {
+                        // ignore error
+                        GetUnexpiredRegistrationAggByNamesResult::NotFound(name.to_owned())
+                    }
+                };
+            })
+            .collect()
     }
 
     pub fn get_unexpired_registration(
@@ -1448,10 +1448,7 @@ impl<'a> RegistrationNameQueryContext<'a> {
         if let Some(registration_name) = registration_name {
             return Ok(registration_name.borrow().clone());
         }
-        Err(NamingError::RegistryNotFoundError {
-            name: name.to_owned(),
-        }
-        .into())
+        Err(NamingError::RegistrationNotFound.into())
     }
 
     pub fn get_unexpired_registration_by_name(
@@ -1467,11 +1464,13 @@ impl<'a> RegistrationNameQueryContext<'a> {
                 return Ok(registration.to_owned());
             }
         }
-        Err(NamingError::RegistryNotFoundError {
-            name: name.to_owned(),
-        }
-        .into())
+        Err(NamingError::RegistrationNotFound.into())
     }
+}
+
+pub enum GetUnexpiredRegistrationAggByNamesResult {
+    Valid(UnexpiredRegistrationAggDto),
+    NotFound(String),
 }
 
 #[derive(Debug, Deserialize, CandidType)]

@@ -1484,7 +1484,7 @@ mod nft_transfer_service {
         assert!(result.is_err());
         assert_eq!(
             result.unwrap_err(),
-            CommonError::InvalidToken(token_id.to_string())
+            NamingError::RegistrationNotFound.into()
         );
     }
 
@@ -1495,7 +1495,7 @@ mod nft_transfer_service {
         mock_user2: Principal,
         mock_std_time_tomorrow: u64,
         mock_std_time_now: u64,
-        mock_timestamp_1986: u64,
+        _mock_timestamp_1986: u64,
     ) {
         let test_name_str = create_test_name("icnaming");
         registration_name_init(
