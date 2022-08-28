@@ -1335,7 +1335,7 @@ mod set_record_value {
 
 mod nft_query_service {
     use super::*;
-    use crate::token_identifier::{encode_token_id, CanisterId, TokenIndex};
+    use crate::token_identifier::{encode_token_id, TokenIndex};
     use candid::decode_args;
     use std::string::String;
 
@@ -1500,7 +1500,7 @@ mod nft_query_service {
 mod nft_transfer_service {
     use super::*;
     use crate::nft::{TransferError, User};
-    use crate::token_identifier::{encode_token_id, CanisterId, TokenIndex};
+    use crate::token_identifier::{encode_token_id, TokenIndex};
 
     fn registration_name_init(name: &String, user: Principal, now: u64) {
         STATE.with(|s| {

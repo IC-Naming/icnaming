@@ -14,9 +14,7 @@ use time::{OffsetDateTime, Time};
 use crate::nft::{
     CommonError, Metadata, NFTServiceResult, NFTTransferServiceResult, NonFungible, User,
 };
-use crate::token_identifier::{
-    encode_token_id, get_valid_token_index, CanisterId, TokenIdentifier,
-};
+use crate::token_identifier::{encode_token_id, get_valid_token_index, TokenIdentifier};
 use common::canister_api::ic_impl::{CyclesMintingApi, RegistryApi, ResolverApi};
 use common::canister_api::{AccountIdentifier, ICyclesMintingApi, IRegistryApi, IResolverApi};
 use common::constants::*;
@@ -31,7 +29,7 @@ use common::permissions::{
     must_be_in_named_canister, must_be_named_canister, must_be_system_owner,
 };
 use common::permissions::{must_be_named_principal, must_not_anonymous};
-use common::{AuthPrincipal, CallContext, TimeInNs};
+use common::{AuthPrincipal, CallContext, CanisterId, TimeInNs};
 
 use crate::name_locker::{try_lock_name, unlock_name};
 use crate::registration_store::{
