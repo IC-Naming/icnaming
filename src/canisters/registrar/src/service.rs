@@ -14,7 +14,9 @@ use time::{OffsetDateTime, Time};
 use crate::nft::{
     CommonError, Metadata, NFTServiceResult, NFTTransferServiceResult, NonFungible, User,
 };
-use crate::token_identifier::{encode_token_id, get_valid_token_index, TokenIdentifier};
+use crate::token_identifier::{
+    encode_token_id, get_valid_token_index, CanisterId, TokenIdentifier,
+};
 use common::canister_api::ic_impl::{CyclesMintingApi, RegistryApi, ResolverApi};
 use common::canister_api::{AccountIdentifier, ICyclesMintingApi, IRegistryApi, IResolverApi};
 use common::constants::*;
@@ -1152,7 +1154,7 @@ impl RegistrarService {
             return Err(NamingError::InvalidOwner.into());
         }
         if !registration.is_owner(&call_context.caller) {
-            let to_auth = must_not_anonymous(&to)?;
+            let to_auth = must_not_anonymous(&to)?.into();
             let transfer_result = self
                 .transfer_from(
                     &call_context.caller,
@@ -1375,9 +1377,7 @@ impl<'a> RegistrationNameQueryContext<'a> {
             match registration_result {
                 Ok(registration) => {
                     let id = encode_token_id(
-                        crate::token_identifier::CanisterId(get_named_get_canister_id(
-                            CanisterNames::Registrar,
-                        )),
+                        CanisterId(get_named_get_canister_id(CanisterNames::Registrar)),
                         registration_name.get_index(),
                     );
                     valid_registration_names.push(UnexpiredRegistrationAggDto::new(
@@ -1406,9 +1406,7 @@ impl<'a> RegistrationNameQueryContext<'a> {
                 return match (registration_result, registration_name_result) {
                     (Ok(registration), Ok(registration_name)) => {
                         let id = encode_token_id(
-                            crate::token_identifier::CanisterId(get_named_get_canister_id(
-                                CanisterNames::Registrar,
-                            )),
+                            CanisterId(get_named_get_canister_id(CanisterNames::Registrar)),
                             registration_name.get_index(),
                         );
                         GetUnexpiredRegistrationAggByNamesResult::Valid(

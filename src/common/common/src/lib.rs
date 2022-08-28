@@ -151,3 +151,5 @@ impl CallContext {
         return Err(NamingError::Unauthorized);
     }
 }
+#[derive(CandidType, Debug, Clone, Deserialize)]
+pub struct CanisterId(pub Principal);
