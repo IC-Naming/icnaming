@@ -1066,7 +1066,7 @@ mod transfer_from {
     use super::*;
 
     #[rstest]
-    async fn test_transfer_from_success(
+    async fn test_transfer_from_owner_to_allowance_success(
         mut service: RegistrarService,
         mut mock_registry_api: MockRegistryApi,
         mock_user1: Principal,
@@ -1075,6 +1075,10 @@ mod transfer_from {
     ) {
         let test_name_str = create_test_name("icnaming");
         let test_name = FirstLevelName::from(test_name_str.as_str());
+
+        let owner = mock_user1;
+        let allowance_user = mock_user2;
+        let api_receive_name = test_name_str.clone();
         STATE.with(|s| {
             let mut store = s.registration_store.borrow_mut();
             store.add_registration(Registration::new(
@@ -1085,42 +1089,49 @@ mod transfer_from {
             ));
         });
         service
-            .approve(&mock_user1, mock_now, &test_name_str, mock_user2.clone())
+            .approve(&owner, mock_now, &test_name_str, allowance_user.clone())
             .unwrap();
 
-        let api_received_name = test_name_str.clone();
-        let api_received_owner = mock_user2.clone();
         mock_registry_api
             .expect_transfer()
             .returning(move |name, new_owner, _resolver| {
-                assert_eq!(name, api_received_name);
-                assert_eq!(new_owner, api_received_owner);
+                assert_eq!(name, api_receive_name);
+                assert_eq!(new_owner, allowance_user.clone());
                 Ok(true)
             });
+
         service.registry_api = Arc::new(mock_registry_api);
 
         // act
-        let result = service.transfer_from(&mock_user2, &test_name_str).await;
+        let result = service
+            .transfer_from(&allowance_user, &test_name_str, None)
+            .await;
 
         // assert
         assert!(result.is_ok());
         STATE.with(|s| {
             let store = s.registration_store.borrow();
             let registration = store.get_registration(&test_name).unwrap();
-            assert_eq!(registration.get_owner(), mock_user2);
+            assert_eq!(registration.get_owner(), allowance_user);
         });
     }
 
     #[rstest]
-    async fn test_transfer_from_failed_not_approve(
-        service: RegistrarService,
-        _mock_registry_api: MockRegistryApi,
+    async fn test_transfer_from_owner_to_receiver_success(
+        mut service: RegistrarService,
+        mut mock_registry_api: MockRegistryApi,
         mock_user1: Principal,
         mock_user2: Principal,
+        mock_user3: Principal,
         mock_now: u64,
     ) {
         let test_name_str = create_test_name("icnaming");
         let test_name = FirstLevelName::from(test_name_str.as_str());
+
+        let owner = mock_user1;
+        let receiver = mock_user2;
+        let allowance_user = mock_user3;
+        let api_receive_name = test_name_str.clone();
         STATE.with(|s| {
             let mut store = s.registration_store.borrow_mut();
             store.add_registration(Registration::new(
@@ -1130,10 +1141,59 @@ mod transfer_from {
                 mock_now,
             ));
         });
+        service
+            .approve(&owner, mock_now, &test_name_str, allowance_user.clone())
+            .unwrap();
+
+        mock_registry_api
+            .expect_transfer()
+            .returning(move |name, new_owner, _resolver| {
+                assert_eq!(name, api_receive_name);
+                assert_eq!(new_owner, receiver.clone());
+                Ok(true)
+            });
+
+        service.registry_api = Arc::new(mock_registry_api);
 
         // act
         let result = service
-            .transfer_from(&mock_user2, test_name_str.as_str())
+            .transfer_from(&allowance_user, &test_name_str, Some(receiver))
+            .await;
+
+        // assert
+        assert!(result.is_ok());
+        STATE.with(|s| {
+            let store = s.registration_store.borrow();
+            let registration = store.get_registration(&test_name).unwrap();
+            assert_eq!(registration.get_owner(), receiver);
+        });
+    }
+
+    #[rstest]
+    async fn test_transfer_from_owner_to_allowance_failed_not_approve(
+        service: RegistrarService,
+        _mock_registry_api: MockRegistryApi,
+        mock_user1: Principal,
+        mock_user2: Principal,
+        mock_now: u64,
+    ) {
+        let test_name_str = create_test_name("icnaming");
+        let test_name = FirstLevelName::from(test_name_str.as_str());
+        let owner = mock_user1;
+        let allowance_user = mock_user2;
+        STATE.with(|s| {
+            let mut store = s.registration_store.borrow_mut();
+            store.add_registration(Registration::new(
+                owner.clone(),
+                test_name.to_string(),
+                mock_now + 1,
+                mock_now,
+            ));
+        });
+
+        // act
+        let result = service
+            .transfer_from(&allowance_user, test_name_str.as_str(), None)
             .await;
 
         // assert
@@ -1757,20 +1817,29 @@ mod nft_transfer_service {
     }
 
     #[rstest]
-    async fn test_ext_transfer_from_success(
+    async fn test_ext_transfer_from_owner_to_receiver_success(
         mut service: RegistrarService,
         mut _mock_registry_api: MockRegistryApi,
         mock_user1: Principal,
         mock_user2: Principal,
+        mock_user3: Principal,
         mock_std_time_tomorrow: u64,
         mock_std_time_now: u64,
     ) {
+        let test_name_str = create_test_name("icnaming");
+        let owner = mock_user1;
+        let receiver = mock_user2;
+        let allowance_user = mock_user3;
+        let api_receive_name = test_name_str.clone();
         _mock_registry_api
             .expect_transfer()
-            .returning(|_name, _owner, _resolver| Ok(true));
+            .returning(move |_name, _new_owner, _resolver| {
+                assert_eq!(_name, api_receive_name);
+                assert_eq!(_new_owner, receiver.clone());
+                Ok(true)
+            });
         service.registry_api = Arc::new(_mock_registry_api);
 
-        let test_name_str = create_test_name("icnaming");
         registration_name_init(
             &test_name_str.to_string(),
             mock_user1,
@@ -1780,19 +1849,26 @@ mod nft_transfer_service {
         let canister_id = get_named_get_canister_id(CanisterNames::Registrar);
         let token_id = encode_token_id(CanisterId(canister_id), TokenIndex(1u32));
 
-        let result = service.ext_approve(&call_context, canister_id, &token_id, mock_std_time_now);
-        assert!(result.is_ok());
+        let result =
+            service.ext_approve(&call_context, allowance_user, &token_id, mock_std_time_now);
 
-        let call_context = CallContext::new(canister_id, TimeInNs(mock_std_time_tomorrow));
+        let call_context = CallContext::new(allowance_user, TimeInNs(mock_std_time_tomorrow));
 
-        let from = common::nft::User::Principal(mock_user1.clone());
-        let to = common::nft::User::Principal(mock_user2.clone());
+        let from = common::nft::User::Principal(owner.clone());
+        let to = common::nft::User::Principal(receiver.clone());
 
+        // act
         let result = service
             .ext_transfer(&call_context, &from, &to, &token_id, mock_std_time_now)
             .await;
+
+        // assert
         assert!(result.is_ok());
-        assert_eq!(result.unwrap(), 1u128);
+        STATE.with(|s| {
+            let store = s.registration_store.borrow();
+            let registration = store.get_registration(&test_name_str.into()).unwrap();
+            assert_eq!(registration.get_owner(), receiver);
+        });
     }
 }
 

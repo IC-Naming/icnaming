@@ -762,7 +762,12 @@ impl RegistrarService {
         })
     }
 
-    pub async fn transfer_from(&self, caller: &Principal, name: &str) -> ServiceResult<bool> {
+    pub async fn transfer_from(
+        &self,
+        caller: &Principal,
+        name: &str,
+        to: Option<Principal>,
+    ) -> ServiceResult<bool> {
         let name = validate_name(name)?;
         must_not_anonymous(caller)?;
         STATE.with(|s| {
@@ -773,8 +778,13 @@ impl RegistrarService {
 
             Ok(())
         })?;
-
-        self.transfer_core(&name, caller).await
+        match to {
+            Some(to) => {
+                must_not_anonymous(caller)?;
+                self.transfer_core(&name, &to).await
+            }
+            None => self.transfer_core(&name, &caller).await,
+        }
     }
 
     pub fn transfer_from_quota(
@@ -1144,7 +1154,11 @@ impl RegistrarService {
         }
         if !registration.is_owner(&call_context.caller) {
             let transfer_result = self
-                .transfer_from(&call_context.caller, registration.get_name().as_str())
+                .transfer_from(
+                    &call_context.caller,
+                    registration.get_name().as_str(),
+                    Some(to),
+                )
                 .await;
             match transfer_result {
                 Ok(value) => Ok(value as u128),

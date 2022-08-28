@@ -439,7 +439,7 @@ async fn transfer_from(name: String) -> BooleanActorResponse {
     let _now = api::time();
 
     let service = RegistrarService::default();
-    let result = service.transfer_from(caller, name.as_str()).await;
+    let result = service.transfer_from(caller, name.as_str(), None).await;
     BooleanActorResponse::new(result)
 }
 
