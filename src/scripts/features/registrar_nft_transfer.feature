@@ -40,13 +40,13 @@ Feature: EXT token standard transfer API
       | expired_at | 1        |
       | created_at | 0        |
 
-  Scenario: Ext transfer from the allowed caller success,The parameter to user is ignored
-    Given registrar ext_approve action
+  Scenario: Ext transfer from the allowed caller success, the parameter to user is anonymous
+    Given registrar ext_approve name to spender, the caller is the name owner
       | spender | name     |
       | user3   | name1.ic |
     And registrar ext_transfer action
-      | caller | name     | from  | to    | from_type | to_type   |
-      | user3  | name1.ic | user1 | user2 | principal | principal |
+      | caller | name     | from  | to        | from_type | to_type   |
+      | user3  | name1.ic | user1 | anonymous | principal | principal |
     When all registrar ext_transfer is ok
     Then registrar get_details "name1.ic" result is
       | key        | value    |
@@ -55,40 +55,40 @@ Feature: EXT token standard transfer API
       | expired_at | 1        |
       | created_at | 0        |
 
-  Scenario: Ext transfer failed from is invalid owner,caller is none
+  Scenario: Ext transfer failed from is invalid owner, caller is none
     Given registrar ext_transfer action
       | caller | name     | from  | to    | from_type | to_type   |
       | none   | name1.ic | user3 | user2 | principal | principal |
-    When last registrar ext_transfer result is err,expected err is "Other" and message is "owner is invalid"
+    When last registrar ext_transfer result is err, expected err is "Other" and message is "owner is invalid"
 
-  Scenario: Ext transfer failed from is invalid owner,caller is owner
+  Scenario: Ext transfer failed from is invalid owner, caller is owner
     Given registrar ext_transfer action
       | caller | name     | from  | to    | from_type | to_type   |
       | user1  | name1.ic | user3 | user2 | principal | principal |
-    When last registrar ext_transfer result is err,expected err is "Other" and message is "owner is invalid"
+    When last registrar ext_transfer result is err, expected err is "Other" and message is "owner is invalid"
 
   Scenario: Ext transfer failed caller unknown
     Given registrar ext_transfer action
       | caller | name     | from  | to    | from_type | to_type   |
       | user3  | name1.ic | user1 | user2 | principal | principal |
-    When last registrar ext_transfer result is err,expected err is "Other" and message is "permission deny"
+    When last registrar ext_transfer result is err, expected err is "Other" and message is "permission deny"
 
   Scenario: Ext transfer failed account id not supported
-    Given registrar ext_approve action
+    Given registrar ext_approve name to spender, the caller is the name owner
       | spender | name     |
       | user3   | name1.ic |
     And registrar ext_transfer action
       | caller | name     | from                                                             | to    | from_type | to_type   |
       | user3  | name1.ic | 3352b4176f9818dfa25c862cbca82f0f05b8e150dded0263e2ef05b094103e34 | user2 | address   | principal |
-    When last registrar ext_transfer result is err,expected err is "Other" and message is "account identifier is not supported"
+    When last registrar ext_transfer result is err, expected err is "Other" and message is "account identifier is not supported"
     Given registrar ext_transfer action
       | caller | name     | from  | to                                                               | from_type | to_type |
       | user3  | name1.ic | user1 | 3352b4176f9818dfa25c862cbca82f0f05b8e150dded0263e2ef05b094103e34 | principal | address |
-    When last registrar ext_transfer result is err,expected err is "Other" and message is "account identifier is not supported"
+    When last registrar ext_transfer result is err, expected err is "Other" and message is "account identifier is not supported"
     Given registrar ext_transfer action
       | caller | name     | from                                                             | to                                                               | from_type | to_type |
       | user3  | name1.ic | 3352b4176f9818dfa25c862cbca82f0f05b8e150dded0263e2ef05b094103e34 | 3352b4176f9818dfa25c862cbca82f0f05b8e150dded0263e2ef05b094103e34 | address   | address |
-    When last registrar ext_transfer result is err,expected err is "Other" and message is "account identifier is not supported"
+    When last registrar ext_transfer result is err, expected err is "Other" and message is "account identifier is not supported"
 
   Scenario: Ext allowance success
     Given registrar allowance action, caller is none
@@ -100,10 +100,10 @@ Feature: EXT token standard transfer API
     Given registrar allowance action, caller is none
       | name     | from  | to    | from_type |
       | name1.ic | user3 | user2 | principal |
-    When last registrar allowance result is err,expected err is "Other" and message is "owner is invalid"
+    When last registrar allowance result is err, expected err is "Other" and message is "owner is invalid"
 
   Scenario: Ext allowance failed account id not supported
     Given registrar allowance action, caller is none
       | name     | from                                                             | to    | from_type |
       | name1.ic | 3352b4176f9818dfa25c862cbca82f0f05b8e150dded0263e2ef05b094103e34 | user2 | address   |
-    When last registrar allowance result is err,expected err is "Other" and message is "account identifier is not supported"
+    When last registrar allowance result is err, expected err is "Other" and message is "account identifier is not supported"

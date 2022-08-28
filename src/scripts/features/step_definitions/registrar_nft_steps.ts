@@ -35,6 +35,12 @@ import {
 import {IDL} from '@dfinity/candid'
 
 
+interface getTokensDto {
+    index: number,
+    key: string,
+    value: string,
+}
+
 let global_transfer_result_list: EXTTransferResponse[] = []
 let global_allowance_result_list: AllowanceActorResponse[] = []
 
@@ -55,6 +61,7 @@ const get_token_id_by_name = async (name: string) => {
         }
     })
     let token_id = map[0][name].tokenId;
+    expect(token_id).to.not.be.undefined
     if (token_id != undefined) {
         return token_id[1]
     }
@@ -112,7 +119,14 @@ Then(/^registrar metadata "([^"]*)" result is$/, async function (name, table) {
 });
 Then(/^registrar getTokens result is$/, async function (table) {
     const result = await registrar.getTokens()
-    const dataTable = table.hashes()
+    const dataTable: getTokensDto[] = table.hashes()
+        .map((item) => {
+            return {
+                index: Number(item.index),
+                key: item.key,
+                value: item.value,
+            }
+        })
     for (let i = 0; i < dataTable.length; i++) {
         let targetData = dataTable[i]
         let index = result[i][0]
@@ -124,12 +138,13 @@ Then(/^registrar getTokens result is$/, async function (table) {
             let args = IDL.decode(get_metadata_type(), Buffer.from(metadata))
             let exp = args.map((item) => {
                 return {
-                    'key': item[0][0],
-                    'value': item[0][1]
-                }
+                    index: index,
+                    key: item[0][0],
+                    value: item[0][1]
+                } as getTokensDto
             })[0];
             logger.debug(`args: ${JSON.stringify(args)}`)
-            expect(index).to.equal(Number(targetData.index))
+            expect(index).to.equal(targetData.index)
             expect(exp.key).to.equal(targetData.key)
             expect(exp.value).to.equal(targetData.value)
         } else {
@@ -167,6 +182,8 @@ Then(/^registrar bearer result is$/, async function (table) {
                 logger.debug(`result: ${JSON.stringify(result)}`)
                 expect(result.Ok).to.equal(principal)
             }
+        } else {
+            expect(false, 'get registrar bearer failed').to.equal(true)
         }
     }
 });
@@ -220,7 +237,7 @@ When(/^all registrar ext_transfer is ok$/, function () {
         assert_remote_result(result)
     }
 });
-Given(/^registrar ext_approve action$/, async function (table) {
+Given(/^registrar ext_approve name to spender, the caller is the name owner$/, async function (table) {
     let dataTable = table.hashes()
     for (let targetData of dataTable) {
         const spender = targetData.spender
@@ -241,7 +258,7 @@ Given(/^registrar ext_approve action$/, async function (table) {
         }
     }
 });
-When(/^last registrar ext_transfer result is err,expected err is "([^"]*)" and message is "([^"]*)"$/, function (err, message) {
+When(/^last registrar ext_transfer result is err, expected err is "([^"]*)" and message is "([^"]*)"$/, function (err, message) {
     let last_result = global_transfer_result_list[global_transfer_result_list.length - 1]
     if ('Err' in last_result) {
         if (err in last_result.Err) {
@@ -280,7 +297,7 @@ When(/^all registrar allowance is ok$/, function () {
         assert_remote_result(result)
     }
 });
-When(/^last registrar allowance result is err,expected err is "([^"]*)" and message is "([^"]*)"$/, function (err, message) {
+When(/^last registrar allowance result is err, expected err is "([^"]*)" and message is "([^"]*)"$/, function (err, message) {
     let last_result = global_allowance_result_list[global_allowance_result_list.length - 1]
     if ('Err' in last_result) {
         if (err in last_result.Err) {
