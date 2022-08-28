@@ -780,7 +780,7 @@ impl RegistrarService {
         })?;
         match to {
             Some(to) => {
-                must_not_anonymous(caller)?;
+                must_not_anonymous(&to)?;
                 self.transfer_core(&name, &to).await
             }
             None => self.transfer_core(&name, &caller).await,
