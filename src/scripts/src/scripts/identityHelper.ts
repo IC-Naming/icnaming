@@ -1,5 +1,5 @@
-import { identity, IdentityInfo, canister } from '@deland-labs/ic-dev-kit'
-import { Principal } from '@dfinity/principal'
+import {identity, IdentityInfo, canister} from '@deland-labs/ic-dev-kit'
+import {Principal} from '@dfinity/principal'
 
 const getIdentity = (user: string): IdentityInfo => {
     return identity.identityFactory.getIdentity(`icnaming_${user}`)!
@@ -24,14 +24,38 @@ class Identities {
     public get main(): IdentityInfo {
         return getIdentity("main")
     }
+
     public get user1(): IdentityInfo {
         return getIdentity("user1")
     }
+
+    public get user2(): IdentityInfo {
+        return getIdentity("user2")
+    }
+
+    public get user3(): IdentityInfo {
+        return getIdentity("user3")
+    }
+
+    public get allUsers(): [string, IdentityInfo][] {
+        return [["main", this.main], ["user1", this.user1], ["user2", this.user2], ["user3", this.user3]]
+    }
+
     getIdentity(user: string): IdentityInfo {
         return getIdentity(user)
     }
+
     getPrincipal(user: string): Principal {
         return getPrincipal(user)
+    }
+
+    getUserByPrincipal(principal: string): string | undefined {
+        for (let user of this.allUsers) {
+            if (user[1].identity.getPrincipal().toText() == principal) {
+                return user[0]
+            }
+        }
+        return undefined
     }
 }
 

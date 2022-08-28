@@ -226,6 +226,10 @@ export const idlFactory = ({ IDL }) => {
   const ImportNameRegistrationRequest = IDL.Record({
     'items' : IDL.Vec(ImportNameRegistrationItem),
   });
+  const ImportTokenIdResponse = IDL.Variant({
+    'Ok' : IDL.Nat64,
+    'Err' : ErrorInfo,
+  });
   const MetadataActorResponse = IDL.Variant({
     'Ok' : Metadata,
     'Err' : CommonError,
@@ -347,6 +351,11 @@ export const idlFactory = ({ IDL }) => {
     'import_registrations' : IDL.Func(
         [ImportNameRegistrationRequest],
         [BooleanActorResponse],
+        [],
+      ),
+    'import_token_id_from_registration' : IDL.Func(
+        [],
+        [ImportTokenIdResponse],
         [],
       ),
     'load_state' : IDL.Func([StateExportData], [BooleanActorResponse], []),

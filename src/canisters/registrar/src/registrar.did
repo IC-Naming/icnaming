@@ -86,6 +86,7 @@ type ImportQuotaRequest = record {
 };
 type ImportQuotaResponse = variant { Ok : ImportQuotaStatus; Err : ErrorInfo };
 type ImportQuotaStatus = variant { Ok; AlreadyExists };
+type ImportTokenIdResponse = variant { Ok : nat64; Err : ErrorInfo };
 type InitArgs = record {
   dev_named_canister_ids : vec record { CanisterNames; principal };
 };
@@ -214,6 +215,7 @@ service : (opt InitArgs) -> {
   import_registrations : (ImportNameRegistrationRequest) -> (
       BooleanActorResponse,
     );
+  import_token_id_from_registration : () -> (ImportTokenIdResponse);
   load_state : (StateExportData) -> (BooleanActorResponse);
   metadata : (text) -> (MetadataActorResponse) query;
   reclaim_name : (text) -> (BooleanActorResponse);
