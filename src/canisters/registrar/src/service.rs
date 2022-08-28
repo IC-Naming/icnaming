@@ -11,7 +11,9 @@ use num_bigint::BigUint;
 use num_traits::ToPrimitive;
 use time::{OffsetDateTime, Time};
 
-use crate::nft::{CommonError, Metadata, NFTServiceResult, NFTTransferServiceResult, NonFungible};
+use crate::nft::{
+    CommonError, Metadata, NFTServiceResult, NFTTransferServiceResult, NonFungible, User,
+};
 use crate::token_identifier::{encode_token_id, get_valid_token_index, TokenIdentifier};
 use common::canister_api::ic_impl::{CyclesMintingApi, RegistryApi, ResolverApi};
 use common::canister_api::{AccountIdentifier, ICyclesMintingApi, IRegistryApi, IResolverApi};
@@ -1107,7 +1109,7 @@ impl RegistrarService {
 
     pub(crate) fn allowance(
         &self,
-        owner: &crate::nft::User,
+        owner: &User,
         spender: &Principal,
         token: &TokenIdentifier,
         now: u64,
@@ -1133,8 +1135,8 @@ impl RegistrarService {
     pub(crate) async fn ext_transfer(
         &self,
         call_context: &CallContext,
-        from: &crate::nft::User,
-        to: &crate::nft::User,
+        from: &User,
+        to: &User,
         token: &TokenIdentifier,
         now: u64,
     ) -> NFTTransferServiceResult<u128> {

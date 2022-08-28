@@ -1353,16 +1353,6 @@ mod nft_query_service {
         });
     }
 
-    // #[rstest]
-    // fn test_invalid_canister_id(mock_user1: Principal, mock_now: u64) {
-    //     let call_context = CallContext {
-    //         caller: mock_user1,
-    //         now: TimeInNs(mock_now),
-    //     };
-    //     let result = call_context.must_be_canister_id();
-    //     assert!(result.is_err());
-    // }
-
     #[rstest]
     fn test_get_registry(
         service: RegistrarService,
