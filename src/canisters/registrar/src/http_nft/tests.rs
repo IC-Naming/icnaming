@@ -4,10 +4,11 @@ mod test_http_request {
     use super::*;
     use crate::state::STATE;
 
+    use crate::token_identifier::{encode_token_id, TokenIndex};
     use common::named_canister_ids::{get_named_get_canister_id, CanisterNames};
-    use common::token_identifier::{encode_token_id, CanisterId, TokenIndex};
 
     use candid::Principal;
+    use common::CanisterId;
     use std::string::String;
     use test_common::create_test_name;
 
@@ -49,8 +50,8 @@ mod test_http_request {
             mock_user1,
             mock_std_time_tomorrow,
         );
-        let canisterid = get_named_get_canister_id(CanisterNames::Registrar);
-        let token_id = encode_token_id(CanisterId(canisterid), TokenIndex(1u32));
+        let canister_id = get_named_get_canister_id(CanisterNames::Registrar);
+        let token_id = encode_token_id(CanisterId(canister_id), TokenIndex(1u32));
         let param_str = format!("tokenid={}", token_id);
         let res = get_nft_http_response(param_str.as_str(), mock_std_time_now);
         let str = String::from_utf8(res.body.to_vec()).unwrap();

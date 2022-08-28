@@ -1066,7 +1066,7 @@ mod transfer_from {
     use super::*;
 
     #[rstest]
-    async fn test_transfer_from_success(
+    async fn test_transfer_from_owner_to_allowance_success(
         mut service: RegistrarService,
         mut mock_registry_api: MockRegistryApi,
         mock_user1: Principal,
@@ -1075,6 +1075,10 @@ mod transfer_from {
     ) {
         let test_name_str = create_test_name("icnaming");
         let test_name = FirstLevelName::from(test_name_str.as_str());
+
+        let owner = mock_user1;
+        let allowance_user = mock_user2;
+        let api_receive_name = test_name_str.clone();
         STATE.with(|s| {
             let mut store = s.registration_store.borrow_mut();
             store.add_registration(Registration::new(
@@ -1085,42 +1089,50 @@ mod transfer_from {
             ));
         });
         service
-            .approve(&mock_user1, mock_now, &test_name_str, mock_user2.clone())
+            .approve(&owner, mock_now, &test_name_str, allowance_user.clone())
             .unwrap();
 
-        let api_received_name = test_name_str.clone();
-        let api_received_owner = mock_user2.clone();
         mock_registry_api
             .expect_transfer()
             .returning(move |name, new_owner, _resolver| {
-                assert_eq!(name, api_received_name);
-                assert_eq!(new_owner, api_received_owner);
+                assert_eq!(name, api_receive_name);
+                assert_eq!(new_owner, allowance_user.clone());
                 Ok(true)
             });
+
         service.registry_api = Arc::new(mock_registry_api);
 
         // act
-        let result = service.transfer_from(&mock_user2, &test_name_str).await;
+        let result = service
+            .transfer_from(&allowance_user, &test_name_str, None)
+            .await;
 
         // assert
         assert!(result.is_ok());
         STATE.with(|s| {
             let store = s.registration_store.borrow();
             let registration = store.get_registration(&test_name).unwrap();
-            assert_eq!(registration.get_owner(), mock_user2);
+            assert_eq!(registration.get_owner(), allowance_user);
         });
     }
 
     #[rstest]
-    async fn test_transfer_from_failed_not_approve(
-        service: RegistrarService,
-        _mock_registry_api: MockRegistryApi,
+    async fn test_transfer_from_owner_to_receiver_success(
+        mut service: RegistrarService,
+        mut mock_registry_api: MockRegistryApi,
         mock_user1: Principal,
         mock_user2: Principal,
+        mock_user3: Principal,
         mock_now: u64,
     ) {
         let test_name_str = create_test_name("icnaming");
         let test_name = FirstLevelName::from(test_name_str.as_str());
+
+        let owner = mock_user1;
+        let receiver = mock_user2;
+        let receiver_auth = AuthPrincipal(receiver);
+        let allowance_user = mock_user3;
+        let api_receive_name = test_name_str.clone();
         STATE.with(|s| {
             let mut store = s.registration_store.borrow_mut();
             store.add_registration(Registration::new(
@@ -1130,10 +1142,59 @@ mod transfer_from {
                 mock_now,
             ));
         });
+        service
+            .approve(&owner, mock_now, &test_name_str, allowance_user.clone())
+            .unwrap();
+
+        mock_registry_api
+            .expect_transfer()
+            .returning(move |name, new_owner, _resolver| {
+                assert_eq!(name, api_receive_name);
+                assert_eq!(new_owner, receiver.clone());
+                Ok(true)
+            });
+
+        service.registry_api = Arc::new(mock_registry_api);
 
         // act
         let result = service
-            .transfer_from(&mock_user2, test_name_str.as_str())
+            .transfer_from(&allowance_user, &test_name_str, Some(receiver_auth))
+            .await;
+
+        // assert
+        assert!(result.is_ok());
+        STATE.with(|s| {
+            let store = s.registration_store.borrow();
+            let registration = store.get_registration(&test_name).unwrap();
+            assert_eq!(registration.get_owner(), receiver);
+        });
+    }
+
+    #[rstest]
+    async fn test_transfer_from_owner_to_allowance_failed_not_approve(
+        service: RegistrarService,
+        _mock_registry_api: MockRegistryApi,
+        mock_user1: Principal,
+        mock_user2: Principal,
+        mock_now: u64,
+    ) {
+        let test_name_str = create_test_name("icnaming");
+        let test_name = FirstLevelName::from(test_name_str.as_str());
+        let owner = mock_user1;
+        let allowance_user = mock_user2;
+        STATE.with(|s| {
+            let mut store = s.registration_store.borrow_mut();
+            store.add_registration(Registration::new(
+                owner.clone(),
+                test_name.to_string(),
+                mock_now + 1,
+                mock_now,
+            ));
+        });
+
+        // act
+        let result = service
+            .transfer_from(&allowance_user, test_name_str.as_str(), None)
             .await;
 
         // assert
@@ -1274,8 +1335,8 @@ mod set_record_value {
 
 mod nft_query_service {
     use super::*;
+    use crate::token_identifier::{encode_token_id, TokenIndex};
     use candid::decode_args;
-    use common::token_identifier::{encode_token_id, CanisterId, TokenIndex};
     use std::string::String;
 
     fn registration_name_init(name: &String, user: Principal, now: u64) {
@@ -1290,16 +1351,6 @@ mod nft_query_service {
                 now,
             ));
         });
-    }
-
-    #[rstest]
-    fn test_invalid_canister_id(mock_user1: Principal, mock_now: u64) {
-        let call_context = CallContext {
-            caller: mock_user1,
-            now: TimeInNs(mock_now),
-        };
-        let result = call_context.must_be_canister_id();
-        assert!(result.is_err());
     }
 
     #[rstest]
@@ -1448,7 +1499,8 @@ mod nft_query_service {
 
 mod nft_transfer_service {
     use super::*;
-    use common::token_identifier::{encode_token_id, CanisterId, TokenIndex};
+    use crate::nft::{TransferError, User};
+    use crate::token_identifier::{encode_token_id, TokenIndex};
 
     fn registration_name_init(name: &String, user: Principal, now: u64) {
         STATE.with(|s| {
@@ -1554,7 +1606,7 @@ mod nft_transfer_service {
         let result = service.ext_approve(&call_context, mock_user2, &token_id, mock_std_time_now);
         assert!(result.is_ok());
 
-        let owner = common::nft::User::Principal(call_context.caller.clone());
+        let owner = User::Principal(call_context.caller.clone());
 
         let result = service.allowance(&owner, &mock_user2, &token_id, mock_std_time_now);
         assert!(result.is_ok());
@@ -1583,13 +1635,12 @@ mod nft_transfer_service {
         let result = service.ext_approve(&call_context, mock_user2, &token_id, mock_std_time_now);
         assert!(result.is_ok());
 
-        let owner = common::nft::User::Address(AccountIdentifier::new(call_context.caller, None));
+        let owner = User::Address(AccountIdentifier::new(call_context.caller, None));
 
         let result = service.allowance(&owner, &mock_user2, &token_id, mock_std_time_now);
         assert!(result.is_err());
         let result = result.unwrap_err();
-        let expect_err: common::nft::CommonError =
-            NamingError::AccountIdentifierNotSupported.into();
+        let expect_err: crate::nft::CommonError = NamingError::AccountIdentifierNotSupported.into();
         assert_eq!(result, expect_err);
     }
 
@@ -1614,7 +1665,7 @@ mod nft_transfer_service {
         let result = service.ext_approve(&call_context, mock_user1, &token_id, mock_std_time_now);
         assert!(result.is_ok());
 
-        let owner = common::nft::User::Principal(call_context.caller.clone());
+        let owner = User::Principal(call_context.caller.clone());
 
         let result = service.allowance(&owner, &mock_user1, &token_id, mock_std_time_now);
         assert!(result.is_err());
@@ -1645,7 +1696,7 @@ mod nft_transfer_service {
         let result = service.ext_approve(&call_context, mock_user2, &token_id, mock_std_time_now);
         assert!(result.is_ok());
 
-        let owner = common::nft::User::Principal(call_context.caller.clone());
+        let owner = User::Principal(call_context.caller.clone());
 
         let result = service.allowance(&owner, &mock_user3, &token_id, mock_std_time_now);
         assert!(result.is_ok());
@@ -1676,8 +1727,8 @@ mod nft_transfer_service {
         let call_context = CallContext::new(mock_user1, TimeInNs(mock_std_time_tomorrow));
         let canister_id = get_named_get_canister_id(CanisterNames::Registrar);
         let token_id = encode_token_id(CanisterId(canister_id), TokenIndex(1u32));
-        let from = common::nft::User::Principal(mock_user1.clone());
-        let to = common::nft::User::Principal(mock_user2.clone());
+        let from = User::Principal(mock_user1.clone());
+        let to = User::Principal(mock_user2.clone());
 
         let result = service
             .ext_transfer(&call_context, &from, &to, &token_id, mock_std_time_now)
@@ -1708,15 +1759,15 @@ mod nft_transfer_service {
         let call_context = CallContext::new(mock_user2, TimeInNs(mock_std_time_tomorrow));
         let canister_id = get_named_get_canister_id(CanisterNames::Registrar);
         let token_id = encode_token_id(CanisterId(canister_id), TokenIndex(1u32));
-        let from = common::nft::User::Principal(mock_user2.clone());
-        let to = common::nft::User::Principal(mock_user1.clone());
+        let from = User::Principal(mock_user2.clone());
+        let to = User::Principal(mock_user1.clone());
 
         let result = service
             .ext_transfer(&call_context, &from, &to, &token_id, mock_std_time_now)
             .await;
         assert!(result.is_err());
         let result = result.unwrap_err();
-        let expect_error: common::nft::TransferError = NamingError::InvalidOwner.into();
+        let expect_error: crate::nft::TransferError = NamingError::InvalidOwner.into();
         assert_eq!(result, expect_error);
     }
 
@@ -1744,33 +1795,42 @@ mod nft_transfer_service {
         let call_context = CallContext::new(mock_user3, TimeInNs(mock_std_time_tomorrow));
         let canister_id = get_named_get_canister_id(CanisterNames::Registrar);
         let token_id = encode_token_id(CanisterId(canister_id), TokenIndex(1u32));
-        let from = common::nft::User::Principal(mock_user1.clone());
-        let to = common::nft::User::Principal(mock_user2.clone());
+        let from = User::Principal(mock_user1.clone());
+        let to = User::Principal(mock_user2.clone());
 
         let result = service
             .ext_transfer(&call_context, &from, &to, &token_id, mock_std_time_now)
             .await;
         assert!(result.is_err());
         let result = result.unwrap_err();
-        let expect_error: common::nft::TransferError = NamingError::PermissionDenied.into();
+        let expect_error: TransferError = NamingError::PermissionDenied.into();
         assert_eq!(result, expect_error);
     }
 
     #[rstest]
-    async fn test_ext_transfer_from_success(
+    async fn test_ext_transfer_from_owner_to_receiver_success(
         mut service: RegistrarService,
         mut _mock_registry_api: MockRegistryApi,
         mock_user1: Principal,
         mock_user2: Principal,
+        mock_user3: Principal,
         mock_std_time_tomorrow: u64,
         mock_std_time_now: u64,
     ) {
+        let test_name_str = create_test_name("icnaming");
+        let owner = mock_user1;
+        let receiver = mock_user2;
+        let allowance_user = mock_user3;
+        let api_receive_name = test_name_str.clone();
         _mock_registry_api
             .expect_transfer()
-            .returning(|_name, _owner, _resolver| Ok(true));
+            .returning(move |_name, _new_owner, _resolver| {
+                assert_eq!(_name, api_receive_name);
+                assert_eq!(_new_owner, receiver.clone());
+                Ok(true)
+            });
         service.registry_api = Arc::new(_mock_registry_api);
 
-        let test_name_str = create_test_name("icnaming");
         registration_name_init(
             &test_name_str.to_string(),
             mock_user1,
@@ -1780,19 +1840,26 @@ mod nft_transfer_service {
         let canister_id = get_named_get_canister_id(CanisterNames::Registrar);
         let token_id = encode_token_id(CanisterId(canister_id), TokenIndex(1u32));
 
-        let result = service.ext_approve(&call_context, canister_id, &token_id, mock_std_time_now);
-        assert!(result.is_ok());
+        let _result =
+            service.ext_approve(&call_context, allowance_user, &token_id, mock_std_time_now);
 
-        let call_context = CallContext::new(canister_id, TimeInNs(mock_std_time_tomorrow));
+        let call_context = CallContext::new(allowance_user, TimeInNs(mock_std_time_tomorrow));
 
-        let from = common::nft::User::Principal(mock_user1.clone());
-        let to = common::nft::User::Principal(mock_user2.clone());
+        let from = User::Principal(owner.clone());
+        let to = User::Principal(receiver.clone());
 
+        // act
         let result = service
             .ext_transfer(&call_context, &from, &to, &token_id, mock_std_time_now)
             .await;
+
+        // assert
         assert!(result.is_ok());
-        assert_eq!(result.unwrap(), 1u128);
+        STATE.with(|s| {
+            let store = s.registration_store.borrow();
+            let registration = store.get_registration(&test_name_str.into()).unwrap();
+            assert_eq!(registration.get_owner(), receiver);
+        });
     }
 }
 

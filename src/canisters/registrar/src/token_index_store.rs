@@ -4,8 +4,8 @@ use common::errors::NamingError;
 use crate::registration_store::Registration;
 use crate::Principal;
 
+use crate::token_identifier::{TokenIdentifier, TokenIndex};
 use common::state::StableState;
-use common::token_identifier::{TokenIdentifier, TokenIndex};
 use log::error;
 use std::cell::RefCell;
 use std::collections::{BinaryHeap, HashMap};

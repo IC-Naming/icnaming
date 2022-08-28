@@ -11,6 +11,10 @@ use num_bigint::BigUint;
 use num_traits::ToPrimitive;
 use time::{OffsetDateTime, Time};
 
+use crate::nft::{
+    CommonError, Metadata, NFTServiceResult, NFTTransferServiceResult, NonFungible, User,
+};
+use crate::token_identifier::{encode_token_id, get_valid_token_index, TokenIdentifier};
 use common::canister_api::ic_impl::{CyclesMintingApi, RegistryApi, ResolverApi};
 use common::canister_api::{AccountIdentifier, ICyclesMintingApi, IRegistryApi, IResolverApi};
 use common::constants::*;
@@ -21,13 +25,11 @@ use common::errors::{NamingError, ServiceResult};
 use common::named_canister_ids::{get_named_get_canister_id, CanisterNames};
 use common::named_principals::{PRINCIPAL_NAME_STATE_EXPORTER, PRINCIPAL_NAME_TIMER_TRIGGER};
 use common::naming::{normalize_name, FirstLevelName, NameParseResult};
-use common::nft::{CommonError, Metadata, NFTServiceResult, NFTTransferServiceResult, NonFungible};
 use common::permissions::{
     must_be_in_named_canister, must_be_named_canister, must_be_system_owner,
 };
 use common::permissions::{must_be_named_principal, must_not_anonymous};
-use common::token_identifier::{encode_token_id, get_valid_token_index, TokenIdentifier};
-use common::{AuthPrincipal, CallContext, TimeInNs};
+use common::{AuthPrincipal, CallContext, CanisterId, TimeInNs};
 
 use crate::name_locker::{try_lock_name, unlock_name};
 use crate::registration_store::{
@@ -762,7 +764,12 @@ impl RegistrarService {
         })
     }
 
-    pub async fn transfer_from(&self, caller: &Principal, name: &str) -> ServiceResult<bool> {
+    pub async fn transfer_from(
+        &self,
+        caller: &Principal,
+        name: &str,
+        to: Option<AuthPrincipal>,
+    ) -> ServiceResult<bool> {
         let name = validate_name(name)?;
         must_not_anonymous(caller)?;
         STATE.with(|s| {
@@ -773,8 +780,10 @@ impl RegistrarService {
 
             Ok(())
         })?;
-
-        self.transfer_core(&name, caller).await
+        match to {
+            Some(to) => self.transfer_core(&name, &to.0).await,
+            None => self.transfer_core(&name, &caller).await,
+        }
     }
 
     pub fn transfer_from_quota(
@@ -1100,7 +1109,7 @@ impl RegistrarService {
 
     pub(crate) fn allowance(
         &self,
-        owner: &common::nft::User,
+        owner: &User,
         spender: &Principal,
         token: &TokenIdentifier,
         now: u64,
@@ -1126,8 +1135,8 @@ impl RegistrarService {
     pub(crate) async fn ext_transfer(
         &self,
         call_context: &CallContext,
-        from: &common::nft::User,
-        to: &common::nft::User,
+        from: &User,
+        to: &User,
         token: &TokenIdentifier,
         now: u64,
     ) -> NFTTransferServiceResult<u128> {
@@ -1143,8 +1152,13 @@ impl RegistrarService {
             return Err(NamingError::InvalidOwner.into());
         }
         if !registration.is_owner(&call_context.caller) {
+            let to_auth = must_not_anonymous(&to)?.into();
             let transfer_result = self
-                .transfer_from(&call_context.caller, registration.get_name().as_str())
+                .transfer_from(
+                    &call_context.caller,
+                    registration.get_name().as_str(),
+                    Some(to_auth),
+                )
                 .await;
             match transfer_result {
                 Ok(value) => Ok(value as u128),
@@ -1361,9 +1375,7 @@ impl<'a> RegistrationNameQueryContext<'a> {
             match registration_result {
                 Ok(registration) => {
                     let id = encode_token_id(
-                        common::token_identifier::CanisterId(get_named_get_canister_id(
-                            CanisterNames::Registrar,
-                        )),
+                        CanisterId(get_named_get_canister_id(CanisterNames::Registrar)),
                         registration_name.get_index(),
                     );
                     valid_registration_names.push(UnexpiredRegistrationAggDto::new(
@@ -1392,9 +1404,7 @@ impl<'a> RegistrationNameQueryContext<'a> {
                 return match (registration_result, registration_name_result) {
                     (Ok(registration), Ok(registration_name)) => {
                         let id = encode_token_id(
-                            common::token_identifier::CanisterId(get_named_get_canister_id(
-                                CanisterNames::Registrar,
-                            )),
+                            CanisterId(get_named_get_canister_id(CanisterNames::Registrar)),
                             registration_name.get_index(),
                         );
                         GetUnexpiredRegistrationAggByNamesResult::Valid(
