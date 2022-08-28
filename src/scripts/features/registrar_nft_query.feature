@@ -1,5 +1,4 @@
 @registrar
-@dev
 Feature: EXT token standard query API
 
   Background:
@@ -16,17 +15,17 @@ Feature: EXT token standard query API
       | expired_at | 1        |
       | created_at | 0        |
     And registrar get_details "na2.ic" result is
-      | key        | value    |
-      | owner      | user1    |
+      | key        | value  |
+      | owner      | user1  |
       | name       | na2.ic |
-      | expired_at | 2       |
-      | created_at | 0        |
+      | expired_at | 2      |
+      | created_at | 0      |
     And registrar get_details "iiiiii.ic" result is
-      | key        | value    |
-      | owner      | user2    |
+      | key        | value     |
+      | owner      | user2     |
       | name       | iiiiii.ic |
-      | expired_at | 3        |
-      | created_at | 0        |
+      | expired_at | 3         |
+      | created_at | 0         |
 
 
   Scenario: Metadata
@@ -34,7 +33,7 @@ Feature: EXT token standard query API
       | key  | value    |
       | name | name1.ic |
     And registrar metadata "na2.ic" result is
-      | key  | value    |
+      | key  | value  |
       | name | na2.ic |
     And registrar metadata "iiiiii.ic" result is
       | key  | value     |

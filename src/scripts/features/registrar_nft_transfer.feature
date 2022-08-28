@@ -1,5 +1,4 @@
 @registrar
-@dev
 Feature: EXT token standard transfer API
 
   Background:
@@ -40,13 +39,28 @@ Feature: EXT token standard transfer API
       | expired_at | 1        |
       | created_at | 0        |
 
-  Scenario: Ext transfer from the allowed caller success, the parameter to user is anonymous
+  Scenario: Ext transfer from owner to receiver
     Given registrar ext_approve name to spender, the caller is the name owner
       | spender | name     |
       | user3   | name1.ic |
     And registrar ext_transfer action
-      | caller | name     | from  | to        | from_type | to_type   |
-      | user3  | name1.ic | user1 | anonymous | principal | principal |
+      | caller | name     | from  | to    | from_type | to_type   |
+      | user3  | name1.ic | user1 | user2 | principal | principal |
+    When all registrar ext_transfer is ok
+    Then registrar get_details "name1.ic" result is
+      | key        | value    |
+      | owner      | user2    |
+      | name       | name1.ic |
+      | expired_at | 1        |
+      | created_at | 0        |
+
+  Scenario: Ext transfer from owner to allowance
+    Given registrar ext_approve name to spender, the caller is the name owner
+      | spender | name     |
+      | user3   | name1.ic |
+    And registrar ext_transfer action
+      | caller | name     | from  | to    | from_type | to_type   |
+      | user3  | name1.ic | user1 | user3 | principal | principal |
     When all registrar ext_transfer is ok
     Then registrar get_details "name1.ic" result is
       | key        | value    |
@@ -55,19 +69,19 @@ Feature: EXT token standard transfer API
       | expired_at | 1        |
       | created_at | 0        |
 
-  Scenario: Ext transfer failed from is invalid owner, caller is none
+  Scenario: Ext transfer failed, from is invalid owner, caller is none
     Given registrar ext_transfer action
       | caller | name     | from  | to    | from_type | to_type   |
       | none   | name1.ic | user3 | user2 | principal | principal |
     When last registrar ext_transfer result is err, expected err is "Other" and message is "owner is invalid"
 
-  Scenario: Ext transfer failed from is invalid owner, caller is owner
+  Scenario: Ext transfer failed, from is invalid owner, caller is owner
     Given registrar ext_transfer action
       | caller | name     | from  | to    | from_type | to_type   |
       | user1  | name1.ic | user3 | user2 | principal | principal |
     When last registrar ext_transfer result is err, expected err is "Other" and message is "owner is invalid"
 
-  Scenario: Ext transfer failed caller unknown
+  Scenario: Ext transfer failed, caller unknown
     Given registrar ext_transfer action
       | caller | name     | from  | to    | from_type | to_type   |
       | user3  | name1.ic | user1 | user2 | principal | principal |
