@@ -19,6 +19,12 @@ Feature: Yumi market query Api
     Then registrar metadata "name1.ic" result is
       | key  | value    |
       | name | name1.ic |
+    And registrar metadata "na2.ic" result is
+      | key  | value    |
+      | name | name1.ic |
+    And registrar metadata "iiiiii.ic" result is
+      | key  | value    |
+      | name | iiiiii.ic |
 
 
   Scenario: getTokens
