@@ -81,7 +81,7 @@ Feature: EXT token standard transfer API
       | user1  | name1.ic | user3 | user2 | principal | principal |
     When last registrar ext_transfer result is err, expected err is "Other" and message is "owner is invalid"
 
-  Scenario: Ext transfer failed, caller unknown
+  Scenario: Ext transfer failed, caller is not approved
     Given registrar ext_transfer action
       | caller | name     | from  | to    | from_type | to_type   |
       | user3  | name1.ic | user1 | user2 | principal | principal |
