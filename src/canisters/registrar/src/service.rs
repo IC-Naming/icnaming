@@ -766,7 +766,7 @@ impl RegistrarService {
         &self,
         caller: &Principal,
         name: &str,
-        to: Option<Principal>,
+        to: Option<AuthPrincipal>,
     ) -> ServiceResult<bool> {
         let name = validate_name(name)?;
         must_not_anonymous(caller)?;
@@ -779,10 +779,7 @@ impl RegistrarService {
             Ok(())
         })?;
         match to {
-            Some(to) => {
-                must_not_anonymous(&to)?;
-                self.transfer_core(&name, &to).await
-            }
+            Some(to) => self.transfer_core(&name, &to.0).await,
             None => self.transfer_core(&name, &caller).await,
         }
     }
@@ -1153,11 +1150,12 @@ impl RegistrarService {
             return Err(NamingError::InvalidOwner.into());
         }
         if !registration.is_owner(&call_context.caller) {
+            let to_auth = must_not_anonymous(&to)?;
             let transfer_result = self
                 .transfer_from(
                     &call_context.caller,
                     registration.get_name().as_str(),
-                    Some(to),
+                    Some(to_auth),
                 )
                 .await;
             match transfer_result {

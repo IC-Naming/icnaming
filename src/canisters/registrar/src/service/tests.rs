@@ -1130,6 +1130,7 @@ mod transfer_from {
 
         let owner = mock_user1;
         let receiver = mock_user2;
+        let receiver_auth = AuthPrincipal(receiver);
         let allowance_user = mock_user3;
         let api_receive_name = test_name_str.clone();
         STATE.with(|s| {
@@ -1157,7 +1158,7 @@ mod transfer_from {
 
         // act
         let result = service
-            .transfer_from(&allowance_user, &test_name_str, Some(receiver))
+            .transfer_from(&allowance_user, &test_name_str, Some(receiver_auth))
             .await;
 
         // assert
