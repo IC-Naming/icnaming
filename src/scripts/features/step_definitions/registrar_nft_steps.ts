@@ -5,13 +5,13 @@ import {createRegistrar, registrar} from '~/declarations/registrar'
 import {expect} from 'chai'
 
 import {
-
-    User,
-    TransferRequest,
-    EXTTransferResponse,
-    ApproveRequest,
-    AllowanceRequest,
     AllowanceActorResponse,
+    AllowanceRequest,
+    ApproveRequest,
+    EXTTransferResponse,
+    ImportTokenIdResponse,
+    TransferRequest,
+    User,
 } from '~/declarations/registrar/registrar.did'
 import {identities} from '~/identityHelper'
 
@@ -28,6 +28,7 @@ interface getTokensDto {
 
 let global_transfer_result_list: EXTTransferResponse[] = []
 let global_allowance_result_list: AllowanceActorResponse[] = []
+let global_import_token_id_from_registration_result: ImportTokenIdResponse
 
 export const get_metadata_type = () => {
     return [IDL.Vec(IDL.Tuple(
@@ -288,5 +289,22 @@ When(/^last registrar allowance result is err, expected err is "([^"]*)" and mes
         if (err in last_result.Err) {
             expect(last_result.Err[err]).to.equal(message)
         }
+    }
+});
+When(/^all registrar allowance is ok, and the value is "([^"]*)"$/, function (value) {
+    for (let result of global_allowance_result_list) {
+        assert_remote_result(result)
+        if ('Ok' in result) {
+            expect(result.Ok).to.equal(BigInt(value))
+        }
+    }
+});
+Given(/^registrar import token id from registration$/, async function () {
+    global_import_token_id_from_registration_result = await registrar.import_token_id_from_registration()
+});
+When(/^last registrar import token id from registration result is ok, and value is "([^"]*)"$/, function (value) {
+    assert_remote_result(global_import_token_id_from_registration_result)
+    if ('Ok' in global_import_token_id_from_registration_result) {
+        expect(global_import_token_id_from_registration_result.Ok).to.equal(BigInt(value))
     }
 });

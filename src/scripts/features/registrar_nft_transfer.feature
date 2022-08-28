@@ -108,7 +108,7 @@ Feature: EXT token standard transfer API
     Given registrar allowance action, caller is none
       | name     | from  | to    | from_type |
       | name1.ic | user1 | user2 | principal |
-    When all registrar allowance is ok
+    When all registrar allowance is ok, and the value is "1"
 
   Scenario: Ext allowance failed invalid owner
     Given registrar allowance action, caller is none
@@ -121,3 +121,7 @@ Feature: EXT token standard transfer API
       | name     | from                                                             | to    | from_type |
       | name1.ic | 3352b4176f9818dfa25c862cbca82f0f05b8e150dded0263e2ef05b094103e34 | user2 | address   |
     When last registrar allowance result is err, expected err is "Other" and message is "account identifier is not supported"
+
+  Scenario: Import token id from registration
+    Given registrar import token id from registration
+    When last registrar import token id from registration result is ok, and value is "0"

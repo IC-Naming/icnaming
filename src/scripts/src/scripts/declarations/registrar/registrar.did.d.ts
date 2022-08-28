@@ -102,6 +102,8 @@ export type ImportQuotaResponse = { 'Ok' : ImportQuotaStatus } |
   { 'Err' : ErrorInfo };
 export type ImportQuotaStatus = { 'Ok' : null } |
   { 'AlreadyExists' : null };
+export type ImportTokenIdResponse = { 'Ok' : bigint } |
+  { 'Err' : ErrorInfo };
 export interface InitArgs {
   'dev_named_canister_ids' : Array<[CanisterNames, Principal]>,
 }
@@ -242,6 +244,7 @@ export interface _SERVICE {
     [ImportNameRegistrationRequest],
     BooleanActorResponse,
   >,
+  'import_token_id_from_registration' : ActorMethod<[], ImportTokenIdResponse>,
   'load_state' : ActorMethod<[StateExportData], BooleanActorResponse>,
   'metadata' : ActorMethod<[string], MetadataActorResponse>,
   'reclaim_name' : ActorMethod<[string], BooleanActorResponse>,
