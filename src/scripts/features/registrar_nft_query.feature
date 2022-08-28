@@ -1,4 +1,5 @@
 @registrar
+@dev
 Feature: Yumi market query Api
 
   Background:
@@ -21,9 +22,9 @@ Feature: Yumi market query Api
       | name | name1.ic |
     And registrar metadata "na2.ic" result is
       | key  | value    |
-      | name | name1.ic |
+      | name | na2.ic |
     And registrar metadata "iiiiii.ic" result is
-      | key  | value    |
+      | key  | value     |
       | name | iiiiii.ic |
 
 
