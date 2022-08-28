@@ -116,13 +116,6 @@ impl CallContext {
         Ok(AuthPrincipal(self.caller))
     }
 
-    // pub fn must_be_canister_id(&self) -> ServiceResult<CanisterId> {
-    //     if self.caller.as_slice().len() == CANISTER_ID_HASH_LEN_IN_BYTES {
-    //         return Ok(CanisterId(self.caller.clone()));
-    //     }
-    //     Err(NamingError::InvalidCanisterId)
-    // }
-
     pub fn must_be_named_principal(&self, name: &str) -> ServiceResult<AuthPrincipal> {
         if !is_named_principal(name, &self.caller) {
             return Err(NamingError::Unauthorized);

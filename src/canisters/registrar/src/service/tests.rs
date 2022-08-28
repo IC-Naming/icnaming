@@ -1840,7 +1840,7 @@ mod nft_transfer_service {
         let canister_id = get_named_get_canister_id(CanisterNames::Registrar);
         let token_id = encode_token_id(CanisterId(canister_id), TokenIndex(1u32));
 
-        let result =
+        let _result =
             service.ext_approve(&call_context, allowance_user, &token_id, mock_std_time_now);
 
         let call_context = CallContext::new(allowance_user, TimeInNs(mock_std_time_tomorrow));
