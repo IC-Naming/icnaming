@@ -104,8 +104,12 @@ Feature: EXT token standard transfer API
       | user3  | name1.ic | 3352b4176f9818dfa25c862cbca82f0f05b8e150dded0263e2ef05b094103e34 | 3352b4176f9818dfa25c862cbca82f0f05b8e150dded0263e2ef05b094103e34 | address   | address |
     When last registrar ext_transfer result is err, expected err is "Other" and message is "account identifier is not supported"
 
+  @dev
   Scenario: Ext allowance success
-    Given registrar allowance action, caller is none
+    Given registrar ext_approve name to spender, the caller is the name owner
+      | spender | name     |
+      | user2   | name1.ic |
+    And registrar allowance action, caller is none
       | name     | from  | to    | from_type |
       | name1.ic | user1 | user2 | principal |
     When all registrar allowance is ok, and the value is "1"
