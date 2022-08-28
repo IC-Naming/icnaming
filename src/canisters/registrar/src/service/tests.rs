@@ -1501,11 +1501,24 @@ mod nft_transfer_service {
     use super::*;
     use crate::nft::{TransferError, User};
     use crate::token_identifier::{encode_token_id, TokenIndex};
+    use common::permissions::get_admin;
 
     fn registration_name_init(name: &String, user: Principal, now: u64) {
         STATE.with(|s| {
             let mut store = s.token_index_store.borrow_mut();
             store.try_add_registration_name(name);
+            let mut store = s.registration_store.borrow_mut();
+            store.add_registration(Registration::new(
+                user.clone(),
+                name.to_string(),
+                now + 1,
+                now,
+            ));
+        });
+    }
+
+    fn registration_init(name: &String, user: Principal, now: u64) {
+        STATE.with(|s| {
             let mut store = s.registration_store.borrow_mut();
             store.add_registration(Registration::new(
                 user.clone(),
@@ -1860,6 +1873,48 @@ mod nft_transfer_service {
             let registration = store.get_registration(&test_name_str.into()).unwrap();
             assert_eq!(registration.get_owner(), receiver);
         });
+    }
+
+    #[rstest]
+    async fn test_import_token_id_from_registration(
+        mut service: RegistrarService,
+        mut _mock_registry_api: MockRegistryApi,
+        mock_user1: Principal,
+        mock_std_time_tomorrow: u64,
+        mock_std_time_now: u64,
+    ) {
+        let icnaming_name_str = create_test_name("icnaming");
+        let test_name_str = create_test_name("test");
+        let unregistered_name_str = create_test_name("unregistered");
+        let admin = get_admin();
+        registration_init(
+            &icnaming_name_str.to_string(),
+            mock_user1,
+            mock_std_time_tomorrow,
+        );
+        registration_init(
+            &test_name_str.to_string(),
+            mock_user1,
+            mock_std_time_tomorrow,
+        );
+
+        let call_context = CallContext::new(admin, TimeInNs(mock_std_time_now));
+
+        // act
+        let import_result = service.import_token_id_from_registration(&call_context);
+        let registry_result = service.get_registry(mock_std_time_now);
+        let names = registry_result
+            .iter()
+            .map(|item| item.1.clone())
+            .collect::<Vec<_>>();
+
+        // assert
+        assert!(import_result.is_ok());
+        assert_eq!(import_result.unwrap(), 2);
+        assert_eq!(registry_result.len(), 2);
+        assert!(names.contains(&icnaming_name_str));
+        assert!(names.contains(&test_name_str));
+        assert!(!names.contains(&unregistered_name_str));
     }
 }
 
