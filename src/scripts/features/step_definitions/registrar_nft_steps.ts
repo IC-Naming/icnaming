@@ -47,7 +47,6 @@ export const get_metadata_type = () => {
 
 const get_token_id_by_name = async (name: string) => {
     const token_ids = await registrar.get_token_details_by_names([name])
-
     let map = token_ids.map((item) => {
         return {
             [item[0]]: {
@@ -56,12 +55,9 @@ const get_token_id_by_name = async (name: string) => {
         }
     })
     let token_id = map[0][name].tokenId;
-
     if (token_id != undefined) {
         return token_id[1]
     }
-
-
 }
 
 const get_transfer_request = (from: User, to: User, token: string) => {
@@ -246,24 +242,10 @@ Given(/^registrar ext_approve action$/, async function (table) {
         }
     }
 });
-When(/^last registrar ext_transfer result is err,expected err is "([^"]*)"$/, function (err) {
-
-    let last_result = global_transfer_result_list[global_transfer_result_list.length - 1]
-    if ('Err' in last_result) {
-        logger.debug(`last_result: ${JSON.stringify(JSON.stringify(last_result.Err).toString())}`)
-        let exp = JSON.stringify(last_result.Err)
-            .toString()
-            .replace("\"", "")
-            .replace("{", "")
-            .replace("}", "")
-        expect(JSON.stringify(last_result.Err).toString()).to.equal(err)
-    }
-});
 When(/^last registrar ext_transfer result is err,expected err is "([^"]*)" and message is "([^"]*)"$/, function (err, message) {
     let last_result = global_transfer_result_list[global_transfer_result_list.length - 1]
     if ('Err' in last_result) {
         if (err in last_result.Err) {
-            logger.debug(`last_result: ${JSON.stringify(last_result.Err[err])}`)
             expect(last_result.Err[err]).to.equal(message)
         }
     }
@@ -303,7 +285,6 @@ When(/^last registrar allowance result is err,expected err is "([^"]*)" and mess
     let last_result = global_allowance_result_list[global_allowance_result_list.length - 1]
     if ('Err' in last_result) {
         if (err in last_result.Err) {
-            logger.debug(`last_result: ${JSON.stringify(last_result.Err[err])}`)
             expect(last_result.Err[err]).to.equal(message)
         }
     }
