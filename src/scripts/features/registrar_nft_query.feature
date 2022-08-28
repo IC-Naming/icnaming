@@ -50,7 +50,6 @@ Feature: Yumi market query Api
       | created_at | 0        |
     Then registrar supply result is "3"
 
-  @dev
   Scenario: bearer
     Then registrar get_details "name1.ic" result is
       | key        | value    |

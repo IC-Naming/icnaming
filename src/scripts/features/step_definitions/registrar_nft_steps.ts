@@ -14,7 +14,7 @@ import {
     BooleanActorResponse as RenewNameResult,
     QuotaType,
     GetDetailsActorResponse as RegisterWithPaymentResponse,
-    GetNameStatueActorResponse,
+    GetNameStatueActorResponse, User, TransferRequest, EXTTransferResponse, ApproveRequest,
 } from '~/declarations/registrar/registrar.did'
 import {identities} from '~/identityHelper'
 import {Result} from '~/utils/Result'
@@ -28,6 +28,8 @@ import {
 } from '~/declarations/registrar_control_gateway/registrar_control_gateway.did'
 import {IDL} from '@dfinity/candid'
 
+
+let global_transfer_result_list: EXTTransferResponse[] = []
 
 export const get_metadata_type = () => {
     return [IDL.Vec(IDL.Tuple(
@@ -54,6 +56,29 @@ const get_token_id_by_name = async (name: string) => {
 
 
 }
+
+const get_transfer_request = (from: User, to: User, token: string) => {
+    return {
+        from: from,
+        to: to,
+        token: token,
+        amount: BigInt(1),
+        subaccount: [],
+        notify: false,
+        memo: [],
+    } as TransferRequest
+}
+
+const get_name_bear = async (name: string) => {
+    const token_id = await get_token_id_by_name(name)
+    if (token_id != undefined) {
+        const result = await registrar.bearer(token_id)
+        if ('Ok' in result) {
+            return identities.getUserByPrincipal(result.Ok)
+        }
+    }
+}
+
 
 Then(/^registrar metadata "([^"]*)" result is$/, async function (name, table) {
 
@@ -126,7 +151,7 @@ Then(/^registrar supply result is "([^"]*)"$/, async function (count) {
         expect(Number(result.Ok)).to.equal(Number(count))
     }
 });
-Then(/^registrar bearer result is$/,async function (table) {
+Then(/^registrar bearer result is$/, async function (table) {
 
     let dataTable = table.hashes()
 
@@ -139,6 +164,63 @@ Then(/^registrar bearer result is$/,async function (table) {
                 logger.debug(`result: ${JSON.stringify(result)}`)
                 expect(result.Ok).to.equal(principal)
             }
+        }
+    }
+});
+
+
+Given(/^registrar ext_transfer action$/, async function (table) {
+    let dataTable = table.hashes()
+    for (let targetData of dataTable) {
+        const id = await get_token_id_by_name(targetData.name)
+
+        const caller = targetData.caller
+        let localRegistrar
+        if (targetData.caller != 'none') {
+            const identityInfo = identities.getIdentity(caller)
+            localRegistrar = createRegistrar(identityInfo)
+        } else {
+            localRegistrar = registrar
+        }
+        if (id != undefined) {
+            let from: User = {
+                principal: identities.getPrincipal(targetData.from)
+            }
+            let to: User = {
+                principal: identities.getPrincipal(targetData.to)
+            }
+
+            const result = await localRegistrar
+                .ext_transfer(get_transfer_request(from, to, id))
+            global_transfer_result_list.push(result)
+        }
+    }
+
+});
+When(/^all registrar ext_transfer is ok$/, function () {
+    for (let result of global_transfer_result_list) {
+        assert_remote_result(result)
+    }
+});
+Given(/^registrar ext_approve action$/, async function (table) {
+    let dataTable = table.hashes()
+    for (let targetData of dataTable) {
+        const spender = targetData.spender
+
+        const owner = await get_name_bear(targetData.name)
+        const token = await get_token_id_by_name(targetData.name)
+        logger.debug(`owner: ${JSON.stringify(owner)}`)
+        if (owner != undefined) {
+            const identityInfo = identities.getIdentity(owner)
+            let registrar = createRegistrar(identityInfo)
+            let approve_request = {
+                token: token,
+                subaccount: [],
+                allowance: BigInt(1),
+                spender: identities.getPrincipal(spender)
+            } as ApproveRequest
+            const result = await registrar.ext_approve(approve_request)
+
         }
     }
 });
