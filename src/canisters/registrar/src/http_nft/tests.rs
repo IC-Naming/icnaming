@@ -4,8 +4,8 @@ mod test_http_request {
     use super::*;
     use crate::state::STATE;
 
+    use crate::token_identifier::{encode_token_id, CanisterId, TokenIndex};
     use common::named_canister_ids::{get_named_get_canister_id, CanisterNames};
-    use common::token_identifier::{encode_token_id, CanisterId, TokenIndex};
 
     use candid::Principal;
     use std::string::String;

@@ -1,9 +1,8 @@
 #![allow(dead_code)]
 
-use crate::named_canister_ids::get_named_get_canister_id;
 use crate::nft::{CommonError, NFTServiceResult};
-use crate::CanisterNames;
 use candid::{CandidType, Deserialize, Principal};
+use common::named_canister_ids::{get_named_get_canister_id, CanisterNames};
 
 pub const CANISTER_ID_HASH_LEN_IN_BYTES: usize = 10;
 const TOKEN_ID_PREFIX: [u8; 4] = [10, 116, 105, 100]; //b"\x0Atid"

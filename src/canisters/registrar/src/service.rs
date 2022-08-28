@@ -11,6 +11,8 @@ use num_bigint::BigUint;
 use num_traits::ToPrimitive;
 use time::{OffsetDateTime, Time};
 
+use crate::nft::{CommonError, Metadata, NFTServiceResult, NFTTransferServiceResult, NonFungible};
+use crate::token_identifier::{encode_token_id, get_valid_token_index, TokenIdentifier};
 use common::canister_api::ic_impl::{CyclesMintingApi, RegistryApi, ResolverApi};
 use common::canister_api::{AccountIdentifier, ICyclesMintingApi, IRegistryApi, IResolverApi};
 use common::constants::*;
@@ -21,12 +23,10 @@ use common::errors::{NamingError, ServiceResult};
 use common::named_canister_ids::{get_named_get_canister_id, CanisterNames};
 use common::named_principals::{PRINCIPAL_NAME_STATE_EXPORTER, PRINCIPAL_NAME_TIMER_TRIGGER};
 use common::naming::{normalize_name, FirstLevelName, NameParseResult};
-use common::nft::{CommonError, Metadata, NFTServiceResult, NFTTransferServiceResult, NonFungible};
 use common::permissions::{
     must_be_in_named_canister, must_be_named_canister, must_be_system_owner,
 };
 use common::permissions::{must_be_named_principal, must_not_anonymous};
-use common::token_identifier::{encode_token_id, get_valid_token_index, TokenIdentifier};
 use common::{AuthPrincipal, CallContext, TimeInNs};
 
 use crate::name_locker::{try_lock_name, unlock_name};
@@ -1107,7 +1107,7 @@ impl RegistrarService {
 
     pub(crate) fn allowance(
         &self,
-        owner: &common::nft::User,
+        owner: &crate::nft::User,
         spender: &Principal,
         token: &TokenIdentifier,
         now: u64,
@@ -1133,8 +1133,8 @@ impl RegistrarService {
     pub(crate) async fn ext_transfer(
         &self,
         call_context: &CallContext,
-        from: &common::nft::User,
-        to: &common::nft::User,
+        from: &crate::nft::User,
+        to: &crate::nft::User,
         token: &TokenIdentifier,
         now: u64,
     ) -> NFTTransferServiceResult<u128> {
@@ -1373,7 +1373,7 @@ impl<'a> RegistrationNameQueryContext<'a> {
             match registration_result {
                 Ok(registration) => {
                     let id = encode_token_id(
-                        common::token_identifier::CanisterId(get_named_get_canister_id(
+                        crate::token_identifier::CanisterId(get_named_get_canister_id(
                             CanisterNames::Registrar,
                         )),
                         registration_name.get_index(),
@@ -1404,7 +1404,7 @@ impl<'a> RegistrationNameQueryContext<'a> {
                 return match (registration_result, registration_name_result) {
                     (Ok(registration), Ok(registration_name)) => {
                         let id = encode_token_id(
-                            common::token_identifier::CanisterId(get_named_get_canister_id(
+                            crate::token_identifier::CanisterId(get_named_get_canister_id(
                                 CanisterNames::Registrar,
                             )),
                             registration_name.get_index(),
