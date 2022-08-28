@@ -237,8 +237,7 @@ Given(/^registrar ext_approve action$/, async function (table) {
                 allowance: BigInt(1),
                 spender: identities.getPrincipal(spender)
             } as ApproveRequest
-            const _ = await registrar.ext_approve(approve_request)
-
+            await registrar.ext_approve(approve_request)
         }
     }
 });
@@ -250,7 +249,7 @@ When(/^last registrar ext_transfer result is err,expected err is "([^"]*)" and m
         }
     }
 });
-Given(/^registrar allowance action$/, async function (table) {
+Given(/^registrar allowance action, caller is none/, async function (table) {
     let dataTable = table.hashes()
     for (let targetData of dataTable) {
         const spender = identities.getPrincipal(targetData.to)

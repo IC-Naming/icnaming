@@ -91,19 +91,19 @@ Feature: EXT token standard transfer API
     When last registrar ext_transfer result is err,expected err is "Other" and message is "account identifier is not supported"
 
   Scenario: Ext allowance success
-    Given registrar allowance action
+    Given registrar allowance action, caller is none
       | name     | from  | to    | from_type |
       | name1.ic | user1 | user2 | principal |
     When all registrar allowance is ok
 
   Scenario: Ext allowance failed invalid owner
-    Given registrar allowance action
+    Given registrar allowance action, caller is none
       | name     | from  | to    | from_type |
       | name1.ic | user3 | user2 | principal |
     When last registrar allowance result is err,expected err is "Other" and message is "owner is invalid"
 
   Scenario: Ext allowance failed account id not supported
-    Given registrar allowance action
+    Given registrar allowance action, caller is none
       | name     | from                                                             | to    | from_type |
       | name1.ic | 3352b4176f9818dfa25c862cbca82f0f05b8e150dded0263e2ef05b094103e34 | user2 | address   |
     When last registrar allowance result is err,expected err is "Other" and message is "account identifier is not supported"
