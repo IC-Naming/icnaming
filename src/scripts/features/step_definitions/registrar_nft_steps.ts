@@ -26,7 +26,15 @@ import {
     AssignNameResponse,
     ImportQuotaResponse
 } from '~/declarations/registrar_control_gateway/registrar_control_gateway.did'
+import {IDL} from '@dfinity/candid'
 
+
+export const get_metadata_type = () => {
+    return [IDL.Vec(IDL.Tuple(
+        IDL.Text,
+        IDL.Text,
+    ))]
+}
 
 const get_token_id_by_name = async (name: string) => {
     const token_ids = await registrar.get_token_details_by_names([name])
@@ -48,6 +56,8 @@ const get_token_id_by_name = async (name: string) => {
 }
 
 Then(/^registrar metadata "([^"]*)" result is$/, async function (name, table) {
+
+    let dataTable = table.hashes()
     let token_id = await get_token_id_by_name(name)
     if (token_id != undefined) {
         logger.debug(`id: ${JSON.stringify(token_id)}`)
@@ -56,22 +66,79 @@ Then(/^registrar metadata "([^"]*)" result is$/, async function (name, table) {
         if ('Ok' in result && 'nonfungible' in result.Ok) {
             const metadata = result.Ok.nonfungible.metadata[0]
             if (metadata != undefined) {
-                //metadata byte to string
-                const metadata_str = Buffer.from(metadata).toString('utf8')
-                //const metadata_json = JSON.parse(metadata_str)
-                logger.debug(`metadata: ${metadata_str}`)
+                let targetData = dataTable[0];
+                let args = IDL.decode(get_metadata_type(), Buffer.from(metadata))
+                let exp = args.map((item) => {
+                    return {
+                        'key': item[0][0],
+                        'value': item[0][1]
+                    }
+                })[0];
+                expect(exp.key).to.equal(targetData.key)
+                expect(exp.value).to.equal(targetData.value)
+                return;
             }
         }
     }
+    expect(false, 'get registrar metadata failed').to.equal(true)
 });
-Then(/^registrar getTokens result is$/, async function (name, table) {
+Then(/^registrar getTokens result is$/, async function (table) {
     const result = await registrar.getTokens()
-    assert_remote_result(result, table)
-});
-Then(/^registrar getRegistry result is$/, function () {
+    const dataTable = table.hashes()
+    for (let i = 0; i < dataTable.length; i++) {
+        let targetData = dataTable[i]
+        let index = result[i][0]
+        let nonfungible = result[i][1]
+        if ('nonfungible' in nonfungible) {
+            let metadata = nonfungible.nonfungible.metadata[0].map((item) => {
+                return Number(item)
+            })
+            let args = IDL.decode(get_metadata_type(), Buffer.from(metadata))
+            let exp = args.map((item) => {
+                return {
+                    'key': item[0][0],
+                    'value': item[0][1]
+                }
+            })[0];
+            logger.debug(`args: ${JSON.stringify(args)}`)
+            expect(index).to.equal(Number(targetData.index))
+            expect(exp.key).to.equal(targetData.key)
+            expect(exp.value).to.equal(targetData.value)
+        } else {
+            expect(false, 'get registrar getTokens failed').to.equal(true)
+        }
+    }
 
+
+});
+Then(/^registrar getRegistry result is$/, async function (table) {
+    const result = await registrar.getRegistry()
+    let dataTable = table.hashes()
+    for (let i = 0; i < dataTable.length; i++) {
+        let targetData = dataTable[i]
+        expect(result[i][0]).to.equal(Number(targetData.index))
+        expect(result[i][1]).to.equal(targetData.name)
+    }
 });
 Then(/^registrar supply result is "([^"]*)"$/, async function (count) {
     const result = await registrar.supply()
-    assert_remote_result(result, count)
+    if ('Ok' in result) {
+        expect(Number(result.Ok)).to.equal(Number(count))
+    }
+});
+Then(/^registrar bearer result is$/,async function (table) {
+
+    let dataTable = table.hashes()
+
+    for (let targetData of dataTable) {
+        const id = await get_token_id_by_name(targetData.name)
+        if (id != undefined) {
+            const result = await registrar.bearer(id)
+            const principal = identities.getPrincipal(targetData.user).toText()
+            if ('Ok' in result) {
+                logger.debug(`result: ${JSON.stringify(result)}`)
+                expect(result.Ok).to.equal(principal)
+            }
+        }
+    }
 });
