@@ -1,7 +1,7 @@
-use crate::canister_api::{AccountIdentifier, Subaccount};
 use crate::token_identifier::TokenIdentifier;
-use crate::NamingError;
 use candid::{CandidType, Deserialize, Principal};
+use common::canister_api::{AccountIdentifier, Subaccount};
+use common::errors::NamingError;
 
 // Additional data field for transfers to describe the tx
 // Data will also be forwarded to notify callback

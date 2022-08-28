@@ -19,6 +19,8 @@ mod stats_service;
 mod token_service;
 
 mod http_nft;
+mod nft;
+mod token_identifier;
 mod token_index_store;
 
 use crate::state::InitArgs;
@@ -33,15 +35,15 @@ use log::debug;
 use stats_service::*;
 use std::collections::HashMap;
 
-use common::dto::{GetPageInput, GetPageOutput, ImportQuotaRequest, ImportQuotaStatus};
-use common::errors::{BooleanActorResponse, ErrorInfo, ServiceResult};
-use common::named_principals::PRINCIPAL_NAME_TIMER_TRIGGER;
-use common::nft::{
+use crate::nft::{
     AllowanceRequest, ApproveRequest, CommonError, Metadata, NFTServiceResult,
     NFTTransferServiceResult, TransferError, TransferRequest,
 };
+use crate::token_identifier::TokenIdentifier;
+use common::dto::{GetPageInput, GetPageOutput, ImportQuotaRequest, ImportQuotaStatus};
+use common::errors::{BooleanActorResponse, ErrorInfo, ServiceResult};
+use common::named_principals::PRINCIPAL_NAME_TIMER_TRIGGER;
 use common::permissions::must_be_named_principal;
-use common::token_identifier::TokenIdentifier;
 use common::{CallContext, TimeInNs};
 
 use crate::periodic_tasks_runner::run_periodic_tasks;
@@ -439,7 +441,7 @@ async fn transfer_from(name: String) -> BooleanActorResponse {
     let _now = api::time();
 
     let service = RegistrarService::default();
-    let result = service.transfer_from(caller, name.as_str()).await;
+    let result = service.transfer_from(caller, name.as_str(), None).await;
     BooleanActorResponse::new(result)
 }
 
