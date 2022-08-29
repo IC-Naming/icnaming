@@ -132,13 +132,9 @@ impl ResolverService {
             // remove primary names
             {
                 let mut store = s.reverse_resolver_store.borrow_mut();
-                for resolver in resolvers.iter() {
-                    let values = resolver.get_record_value();
-                    if let Some(principal) =
-                        values.get(RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL)
-                    {
+                for name in names.iter() {
+                    if let Some(principal) = store.remove_primary_name_by_name(name) {
                         debug!("Removing reverse resolution principal {}", principal);
-                        store.remove_primary_name(Principal::from_text(principal).unwrap());
                     }
                 }
             }
