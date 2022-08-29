@@ -697,11 +697,10 @@ mod batch_get_reverse_resolver {
     use super::*;
 
     #[rstest]
-    fn test_remove_resolvers_success(
+    fn test_batch_get_reverse_resolver_success(
         service: ResolverService,
         mock_user1: Principal,
         mock_user2: Principal,
-        mock_now: u64,
     ) {
         let test1_str = "test1.ic";
         let test2_str = "test2.ic";
@@ -724,5 +723,34 @@ mod batch_get_reverse_resolver {
         assert!(result.is_ok());
         let result = result.unwrap();
         assert_eq!(result.len(), 2);
+    }
+    #[rstest]
+    fn test_batch_get_reverse_resolver_failed_anonymous(
+        service: ResolverService,
+        mock_user1: Principal,
+        mock_user2: Principal,
+    ) {
+        let test1_str = "test1.ic";
+        let test2_str = "test2.ic";
+        let test3_str = "test3.ic";
+        let anonymous = Principal::anonymous();
+        STATE.with(|s| {
+            let mut store = s.resolver_store.borrow_mut();
+            store.ensure_created(test1_str.clone());
+            store.ensure_created(test2_str.clone());
+
+            let mut store = s.reverse_resolver_store.borrow_mut();
+            store.set_primary_name(mock_user1.clone(), test1_str.into());
+            store.set_primary_name(mock_user2.clone(), test2_str.into());
+            store.set_primary_name(anonymous.clone(), test3_str.into());
+        });
+
+        let principals = vec![mock_user1, mock_user2, anonymous];
+
+        // act
+        let result = service.batch_get_reverse_resolver(principals);
+
+        //assert
+        assert!(result.is_err());
     }
 }
