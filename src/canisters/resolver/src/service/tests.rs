@@ -641,13 +641,20 @@ mod remove_resolvers {
     use super::*;
 
     #[rstest]
-    fn test_remove_resolvers_success(service: ResolverService, mock_now: u64) {
+    fn test_remove_resolvers_success(
+        service: ResolverService,
+        mock_now: u64,
+        mock_user1: Principal,
+    ) {
         STATE.with(|s| {
             let mut store = s.resolver_store.borrow_mut();
             store.ensure_created("test1.ic");
             store.ensure_created("test2.ic");
             store.ensure_created("app.test3.ic");
             store.ensure_created("app.nice.ic");
+
+            let mut store = s.reverse_resolver_store.borrow_mut();
+            store.set_primary_name(mock_user1, "app.test3.ic".to_string());
         });
 
         // act
@@ -665,6 +672,12 @@ mod remove_resolvers {
             assert_eq!(resolvers.len(), 2);
             resolvers.get("test1.ic").unwrap();
             resolvers.get("app.nice.ic").unwrap();
+
+            let store = s.reverse_resolver_store.borrow();
+            assert_eq!(
+                store.get_primary_name_reverse(&"app.test3.ic".to_string()),
+                None
+            );
         })
     }
 
