@@ -50,7 +50,7 @@ Feature: Name Transaction
       | token.ltc                             | LUwxSibYhxq2u6RfhQmkuTPZRk2wNjwLbE         |
       | token.eth                             | 0xb436ef6cc9f24193ccb42f98be2b1db764484514 |
       | canister.icp                          | qsgjb-riaaa-aaaaa-aaaga-cai                |
-      | settings.reverse_resolution.principal | user2                                      |
+      | settings.reverse_resolution.principal | 4kbq5-quwq5-x52xb-jbojt-6y72h-rzbnf-676wu-kendm-rw4ga-iipjb-pqe|
     And User "user2" transfer name "hello.ic" to User "user3"
     Then last name transfer result status is "Ok"
     And registrar get_details "hello.ic" result is
@@ -82,7 +82,7 @@ Feature: Name Transaction
       | token.ltc                             | LUwxSibYhxq2u6RfhQmkuTPZRk2wNjwLbE         |
       | token.eth                             | 0xb436ef6cc9f24193ccb42f98be2b1db764484514 |
       | canister.icp                          | qsgjb-riaaa-aaaaa-aaaga-cai                |
-      | settings.reverse_resolution.principal | user1                                      |
+      | settings.reverse_resolution.principal | xyfny-5blvy-v36rs-n6ijf-ayzfn-yh2bo-f2blw-7jbrw-jlmuy-grqts-qae|
     And User "user1" approve name "hello.ic" to User "user2"
     When User "user2" transfer name "hello.ic" by transfer_from
     Then last name transfer_from result status is "Ok"
