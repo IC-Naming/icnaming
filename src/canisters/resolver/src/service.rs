@@ -115,6 +115,28 @@ impl ResolverService {
         })
     }
 
+    pub fn batch_get_record_value(
+        &self,
+        names: Vec<String>,
+    ) -> ServiceResult<HashMap<String, Option<HashMap<String, String>>>> {
+        let mut result = HashMap::new();
+        for name in names {
+            match self.get_record_value(&name) {
+                Ok(value) => {
+                    if value.is_empty() {
+                        result.insert(name, None);
+                    } else {
+                        result.insert(name, Some(value));
+                    }
+                }
+                Err(_) => {
+                    result.insert(name, None);
+                }
+            }
+        }
+        Ok(result)
+    }
+
     pub fn remove_resolvers(&self, caller: CallContext, names: Vec<String>) -> ServiceResult<bool> {
         caller.must_be_named_canister(CanisterNames::Registry)?;
         STATE.with(|s| {
@@ -156,6 +178,12 @@ impl ResolverService {
                 .map(|value| Ok(Some(value.clone())))
                 .unwrap_or(Ok(None))
         })
+    }
+
+    pub fn batch_get_reverse_resolver(
+        &self,
+        address: Vec<String>,
+    ) -> ServiceResult<HashMap<String, String>> {
     }
 }
 
