@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::str::FromStr;
 use std::sync::Arc;
+use std::vec::Vec;
 
 use candid::Principal;
 
@@ -182,8 +183,26 @@ impl ResolverService {
 
     pub fn batch_get_reverse_resolver(
         &self,
-        address: Vec<String>,
-    ) -> ServiceResult<HashMap<String, String>> {
+        principals: Vec<Principal>,
+    ) -> ServiceResult<HashMap<String, Option<String>>> {
+        let mut auth_principals = Vec::new();
+        for principal in principals {
+            auth_principals.push(must_not_anonymous(&principal)?);
+        }
+        STATE.with(|s| {
+            let reverse_resolver_store = s.reverse_resolver_store.borrow();
+            let result = auth_principals
+                .iter()
+                .map(|auth_principal| {
+                    let value = reverse_resolver_store.get_primary_name(&auth_principal.0);
+                    match value {
+                        Some(value) => (auth_principal.0.to_text(), Some(value.clone())),
+                        None => (auth_principal.0.to_text(), None),
+                    }
+                })
+                .collect();
+            Ok(result)
+        })
     }
 }
 

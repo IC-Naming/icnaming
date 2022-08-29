@@ -532,6 +532,7 @@ mod set_record_validation {
             UpdatePrimaryNameInput::Set(owner.clone())
         );
     }
+
     #[rstest]
     async fn test_set_record_validation_call_from_canister_not_registrar_permission_denied(
         _init_test: (),
@@ -689,5 +690,39 @@ mod remove_resolvers {
         // assert
         assert!(result.is_err());
         assert_eq!(result.unwrap_err(), NamingError::Unauthorized);
+    }
+}
+
+mod batch_get_reverse_resolver {
+    use super::*;
+
+    #[rstest]
+    fn test_remove_resolvers_success(
+        service: ResolverService,
+        mock_user1: Principal,
+        mock_user2: Principal,
+        mock_now: u64,
+    ) {
+        let test1_str = "test1.ic";
+        let test2_str = "test2.ic";
+        STATE.with(|s| {
+            let mut store = s.resolver_store.borrow_mut();
+            store.ensure_created(test1_str.clone());
+            store.ensure_created(test2_str.clone());
+
+            let mut store = s.reverse_resolver_store.borrow_mut();
+            store.set_primary_name(mock_user1.clone(), test1_str.into());
+            store.set_primary_name(mock_user2.clone(), test2_str.into());
+        });
+
+        let principals = vec![mock_user1, mock_user2];
+
+        // act
+        let result = service.batch_get_reverse_resolver(principals);
+
+        //assert
+        assert!(result.is_ok());
+        let result = result.unwrap();
+        assert_eq!(result.len(), 2);
     }
 }
