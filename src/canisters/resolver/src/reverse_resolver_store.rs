@@ -41,6 +41,14 @@ impl ReverseResolverStore {
             None
         }
     }
+    pub fn remove_primary_name_by_name(&mut self, name: &String) -> Option<Principal> {
+        if let Some(principal) = self.primary_names_reverse.remove(name) {
+            self.primary_names.remove(&principal);
+            Some(principal)
+        } else {
+            None
+        }
+    }
     pub fn get_primary_name(&self, principal: &Principal) -> Option<&String> {
         self.primary_names.get(principal)
     }

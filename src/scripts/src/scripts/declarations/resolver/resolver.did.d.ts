@@ -1,6 +1,10 @@
 import type { Principal } from '@dfinity/principal';
 import type { ActorMethod } from '@dfinity/agent';
 
+export type BatchGetReverseResolvePrincipalResponse = {
+    'Ok' : Array<[Principal, [] | [string]]>
+  } |
+  { 'Err' : ErrorInfo };
 export type BooleanActorResponse = { 'Ok' : boolean } |
   { 'Err' : ErrorInfo };
 export interface CallbackStrategy {
@@ -51,6 +55,10 @@ export interface Token {
   'content_encoding' : string,
 }
 export interface _SERVICE {
+  'batch_get_reverse_resolve_principal' : ActorMethod<
+    [Array<Principal>],
+    BatchGetReverseResolvePrincipalResponse,
+  >,
   'ensure_resolver_created' : ActorMethod<[string], BooleanActorResponse>,
   'export_state' : ActorMethod<[], StateExportResponse>,
   'get_record_value' : ActorMethod<[string], GetRecordValueResponse>,

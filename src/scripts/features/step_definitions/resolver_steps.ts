@@ -2,6 +2,7 @@ import "./setup"
 import {DataTable, Given, Then, When} from '@cucumber/cucumber'
 import {createResolver, resolver} from '~/declarations/resolver'
 import {
+    BatchGetReverseResolvePrincipalResponse,
     BooleanActorResponse as EnsureResolverCreatedResult,
     BooleanActorResponse as UpdateRecordValueResult
 } from '~/declarations/resolver/resolver.did'
@@ -11,10 +12,12 @@ import {assert_remote_result} from './utils'
 import {identities} from '~/identityHelper'
 import {Principal} from "@dfinity/principal"
 import logger from "node-color-log";
-import {identity, utils} from "@deland-labs/ic-dev-kit";
+import {utils} from "@deland-labs/ic-dev-kit";
 
 let global_ensure_resolver_created_result: EnsureResolverCreatedResult
 let global_update_record_value_result: UpdateRecordValueResult
+
+let global_batch_get_reverse_resolve_principal_result: BatchGetReverseResolvePrincipalResponse
 
 When(/^I call ensure_resolver_created "([^"]*)"$/,
     async function (name: string) {
@@ -52,15 +55,15 @@ Then(/^auto resolve get_record_value "([^"]*)" should be as below$/,
         } else {
             expect(results.length).to.equal(rows.length, "expected same number of results")
             for (const item of results) {
-                const target_row = rows.find(row =>{
+                const target_row = rows.find(row => {
 
                     if (item[0] == "account_id.icp") {
                         logger.debug(`row:${utils.principalToAccountID(identities.getPrincipal(row.to))}, item:${item[1]}`);
-                        return  row.from == item[0] && utils.principalToAccountID(identities.getPrincipal(row.to)) == item[1];
+                        return row.from == item[0] && utils.principalToAccountID(identities.getPrincipal(row.to)) == item[1];
                     }
 
                     logger.debug(`row:${identities.getPrincipal(row.to).toText()}, item:${item[1]}`);
-                    return  row.from == item[0] && identities.getPrincipal(row.to).toText() == item[1];
+                    return row.from == item[0] && identities.getPrincipal(row.to).toText() == item[1];
                 })
                 expect(target_row).to.not.equal(undefined)
             }
@@ -110,3 +113,33 @@ When(/^I update resolver "([^"]*)" with "([^"]*)" keys$/,
         }
         global_update_record_value_result = await resolver.set_record_value(name, items)
     })
+When(/^batch get reverse resolve principal$/, async function (table) {
+    let dataTable = table.hashes()
+    let principals: Principal[] = dataTable.map((item) => identities.getPrincipal(item.user))
+    global_batch_get_reverse_resolve_principal_result = await resolver.batch_get_reverse_resolve_principal(principals)
+});
+Then(/^batch check reverse resolve principal$/, async function (table) {
+
+    let dataTable = table.hashes()
+    if ('Ok' in global_batch_get_reverse_resolve_principal_result) {
+        let list = global_batch_get_reverse_resolve_principal_result.Ok.map((item) => {
+            return {
+                principal: item[0],
+                name: item[1][0]
+            }
+        })
+        for (let data of dataTable) {
+            let target = list.find((item) => {
+                return item.principal.toText() == identities.getPrincipal(data.user).toText()
+            })
+            if (data.name == 'undefined') {
+                expect(target?.name).to.undefined
+            } else {
+                expect(target?.name).to.equal(data.name)
+            }
+        }
+
+    } else {
+        expect.fail(`batch check reverse resolve principal failed: ${global_batch_get_reverse_resolve_principal_result.Err}`)
+    }
+});

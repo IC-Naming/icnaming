@@ -34,7 +34,6 @@ Feature: Register a name with quota
       | name       | hello.ic |
       | expired_at | 3        |
       | created_at | 0        |
-
     And  User quota status should be as below
       | user  | quota_type1 | quota_type2 | value |
       | user1 | LenGte      | 3           | 10    |

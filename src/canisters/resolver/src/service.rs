@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::str::FromStr;
 use std::sync::Arc;
+use std::vec::Vec;
 
 use candid::Principal;
 
@@ -132,13 +133,9 @@ impl ResolverService {
             // remove primary names
             {
                 let mut store = s.reverse_resolver_store.borrow_mut();
-                for resolver in resolvers.iter() {
-                    let values = resolver.get_record_value();
-                    if let Some(principal) =
-                        values.get(RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL)
-                    {
+                for name in names.iter() {
+                    if let Some(principal) = store.remove_primary_name_by_name(name) {
                         debug!("Removing reverse resolution principal {}", principal);
-                        store.remove_primary_name(Principal::from_text(principal).unwrap());
                     }
                 }
             }
@@ -155,6 +152,30 @@ impl ResolverService {
             value
                 .map(|value| Ok(Some(value.clone())))
                 .unwrap_or(Ok(None))
+        })
+    }
+
+    pub fn batch_get_reverse_resolve_principal(
+        &self,
+        principals: Vec<Principal>,
+    ) -> ServiceResult<HashMap<Principal, Option<String>>> {
+        let mut auth_principals = Vec::new();
+        for principal in principals {
+            auth_principals.push(must_not_anonymous(&principal)?);
+        }
+        STATE.with(|s| {
+            let reverse_resolver_store = s.reverse_resolver_store.borrow();
+            let result = auth_principals
+                .iter()
+                .map(|auth_principal| {
+                    let value = reverse_resolver_store.get_primary_name(&auth_principal.0);
+                    match value {
+                        Some(value) => (auth_principal.0, Some(value.clone())),
+                        None => (auth_principal.0, None),
+                    }
+                })
+                .collect();
+            Ok(result)
         })
     }
 }

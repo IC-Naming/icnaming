@@ -72,9 +72,9 @@ Feature: Query Api
       | key                                   | value |
       | settings.reverse_resolution.principal |       |
     Then get_record_value "hello.ic" should be as below
-      | key                                   | value                                                            |
-      | principal.icp                         | 2eis6-ev3kx-wr3pi-otbsb-kzzrp-z3oyb-poe6w-bdbtz-gtigi-6ipki-3qe  |
-      | account_id.icp                        | 3445e6cc1bb5397fd89fd1e81090f09541923359bc37fab92c29873b168ba70e |
+      | key            | value                                                            |
+      | principal.icp  | 2eis6-ev3kx-wr3pi-otbsb-kzzrp-z3oyb-poe6w-bdbtz-gtigi-6ipki-3qe  |
+      | account_id.icp | 3445e6cc1bb5397fd89fd1e81090f09541923359bc37fab92c29873b168ba70e |
     And Reverse resolve name "2eis6-ev3kx-wr3pi-otbsb-kzzrp-z3oyb-poe6w-bdbtz-gtigi-6ipki-3qe" should be "none"
 
   Scenario: Update reverse resolution principal multiple times
@@ -85,13 +85,24 @@ Feature: Query Api
       | key                                   | value                                                           |
       | settings.reverse_resolution.principal | 2eis6-ev3kx-wr3pi-otbsb-kzzrp-z3oyb-poe6w-bdbtz-gtigi-6ipki-3qe |
     Then get_record_value "hello.ic" should be as below
-      | key                                   | value                                                            |
-      | principal.icp                         | 2eis6-ev3kx-wr3pi-otbsb-kzzrp-z3oyb-poe6w-bdbtz-gtigi-6ipki-3qe  |
-      | account_id.icp                        | 3445e6cc1bb5397fd89fd1e81090f09541923359bc37fab92c29873b168ba70e |
+      | key            | value                                                            |
+      | principal.icp  | 2eis6-ev3kx-wr3pi-otbsb-kzzrp-z3oyb-poe6w-bdbtz-gtigi-6ipki-3qe  |
+      | account_id.icp | 3445e6cc1bb5397fd89fd1e81090f09541923359bc37fab92c29873b168ba70e |
     And get_record_value "wonderful.ic" should be as below
-      | key                                   | value                                                           |
+      | key                                   | value                                                            |
       | settings.reverse_resolution.principal | 2eis6-ev3kx-wr3pi-otbsb-kzzrp-z3oyb-poe6w-bdbtz-gtigi-6ipki-3qe  |
       | principal.icp                         | 2eis6-ev3kx-wr3pi-otbsb-kzzrp-z3oyb-poe6w-bdbtz-gtigi-6ipki-3qe  |
       | account_id.icp                        | 3445e6cc1bb5397fd89fd1e81090f09541923359bc37fab92c29873b168ba70e |
     And Reverse resolve name "2eis6-ev3kx-wr3pi-otbsb-kzzrp-z3oyb-poe6w-bdbtz-gtigi-6ipki-3qe" should be "wonderful.ic"
 
+  Scenario: Batch get reverse resolve principal
+    When batch get reverse resolve principal
+      | user  |
+      | main  |
+      | user2 |
+      | user3 |
+    Then batch check reverse resolve principal
+      | user  | name      |
+      | main  | hello.ic  |
+      | user2 | undefined |
+      | user3 | undefined |
