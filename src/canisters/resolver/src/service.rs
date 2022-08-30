@@ -17,7 +17,7 @@ use common::dto::IRegistryUsers;
 use common::errors::*;
 
 use common::named_canister_ids::{is_named_canister_id, CanisterNames};
-use common::permissions::must_not_anonymous;
+use common::permissions::{must_be_system_owner, must_not_anonymous};
 
 use crate::coinaddress::{validate_btc_address, validate_ltc_address};
 use crate::resolver_store::*;
@@ -156,6 +156,67 @@ impl ResolverService {
                 .map(|value| Ok(Some(value.clone())))
                 .unwrap_or(Ok(None))
         })
+    }
+}
+
+pub struct SetRecordPairValidator {
+    patch_value: HashMap<String, String>,
+}
+
+impl From<SetRecordValueValidator> for SetRecordPairValidator {
+    fn from(input: SetRecordValueValidator) -> Self {
+        SetRecordPairValidator {
+            patch_value: input.patch_value,
+        }
+    }
+}
+
+pub struct SetRecordCallerValidator {
+    pub caller: Principal,
+    pub name: String,
+    pub registry_api: Arc<dyn IRegistryApi>,
+}
+
+impl From<SetRecordValueValidator> for SetRecordCallerValidator {
+    fn from(main: SetRecordCallerValidator) -> Self {
+        SetRecordCallerValidator {
+            caller: main.caller,
+            registry_api: main.registry_api,
+            name: main.name,
+        }
+    }
+}
+
+impl SetRecordCallerValidator {
+    pub fn is_system_owner(&self) -> ServiceResult<Principal> {
+        must_be_system_owner(&self.caller);
+    }
+
+    pub async fn is_name_owner(&self) -> ServiceResult<Principal> {
+        let users = self.registry_api.get_users(&self.name).await?;
+        let owner = users.get_owner();
+
+        let owner = if is_named_canister_id(CanisterNames::Registrar, self.caller.0) {
+            owner.clone()
+        } else {
+            // check permission
+            if !users.can_operate(&self.caller.0) {
+                debug!("Permission denied for {}", self.caller.0);
+                return Err(NamingError::PermissionDenied);
+            }
+
+            // check ResolverKey::SettingReverseResolutionPrincipal
+            if update_primary_name_input_value.is_some() {
+                if &self.caller.0 != owner {
+                    debug!(
+                    "SettingReverseResolutionPrincipal is not allowed since caller is not owner"
+                );
+                    return Err(NamingError::PermissionDenied);
+                }
+            }
+            self.caller.0.clone()
+        };
+        Ok(owner)
     }
 }
 
