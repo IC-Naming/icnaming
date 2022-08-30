@@ -181,10 +181,10 @@ impl ResolverService {
         })
     }
 
-    pub fn batch_get_reverse_resolver(
+    pub fn batch_get_reverse_resolve_principal(
         &self,
         principals: Vec<Principal>,
-    ) -> ServiceResult<HashMap<String, Option<String>>> {
+    ) -> ServiceResult<HashMap<Principal, Option<String>>> {
         let mut auth_principals = Vec::new();
         for principal in principals {
             auth_principals.push(must_not_anonymous(&principal)?);
@@ -196,8 +196,8 @@ impl ResolverService {
                 .map(|auth_principal| {
                     let value = reverse_resolver_store.get_primary_name(&auth_principal.0);
                     match value {
-                        Some(value) => (auth_principal.0.to_text(), Some(value.clone())),
-                        None => (auth_principal.0.to_text(), None),
+                        Some(value) => (auth_principal.0, Some(value.clone())),
+                        None => (auth_principal.0, None),
                     }
                 })
                 .collect();
