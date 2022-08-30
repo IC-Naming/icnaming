@@ -95,7 +95,6 @@ Feature: Query Api
       | account_id.icp                        | 3445e6cc1bb5397fd89fd1e81090f09541923359bc37fab92c29873b168ba70e |
     And Reverse resolve name "2eis6-ev3kx-wr3pi-otbsb-kzzrp-z3oyb-poe6w-bdbtz-gtigi-6ipki-3qe" should be "wonderful.ic"
 
-  @dev
   Scenario: Batch get reverse resolve principal
     When batch get reverse resolve principal
       | user  |
