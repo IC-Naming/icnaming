@@ -717,7 +717,7 @@ mod batch_get_reverse_resolver {
         let principals = vec![mock_user1, mock_user2];
 
         // act
-        let result = service.batch_get_reverse_resolver(principals);
+        let result = service.batch_get_reverse_resolve_principal(principals);
 
         //assert
         assert!(result.is_ok());
@@ -748,7 +748,7 @@ mod batch_get_reverse_resolver {
         let principals = vec![mock_user1, mock_user2, anonymous];
 
         // act
-        let result = service.batch_get_reverse_resolver(principals);
+        let result = service.batch_get_reverse_resolve_principal(principals);
 
         //assert
         assert!(result.is_err());
