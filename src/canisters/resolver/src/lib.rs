@@ -120,6 +120,31 @@ impl ReverseResolvePrincipalResponse {
     }
 }
 
+#[derive(CandidType)]
+pub enum BatchGetReverseResolvePrincipalResponse {
+    Ok(HashMap<Principal, Option<String>>),
+    Err(ErrorInfo),
+}
+
+impl BatchGetReverseResolvePrincipalResponse {
+    pub fn new(result: ServiceResult<HashMap<Principal, Option<String>>>) -> Self {
+        match result {
+            Ok(name) => BatchGetReverseResolvePrincipalResponse::Ok(name),
+            Err(err) => BatchGetReverseResolvePrincipalResponse::Err(err.into()),
+        }
+    }
+}
+
+#[query(name = "batch_get_reverse_resolve_principal")]
+#[candid_method(query)]
+fn batch_get_reverse_resolve_principal(
+    principals: Vec<Principal>,
+) -> BatchGetReverseResolvePrincipalResponse {
+    let service = ResolverService::default();
+    let result = service.batch_get_reverse_resolve_principal(principals);
+    BatchGetReverseResolvePrincipalResponse::new(result)
+}
+
 candid::export_service!();
 
 #[query(name = "__get_candid_interface_tmp_hack")]

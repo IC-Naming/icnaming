@@ -532,6 +532,7 @@ mod set_record_validation {
             UpdatePrimaryNameInput::Set(owner.clone())
         );
     }
+
     #[rstest]
     async fn test_set_record_validation_call_from_canister_not_registrar_permission_denied(
         _init_test: (),
@@ -702,5 +703,67 @@ mod remove_resolvers {
         // assert
         assert!(result.is_err());
         assert_eq!(result.unwrap_err(), NamingError::Unauthorized);
+    }
+}
+
+mod batch_get_reverse_resolver {
+    use super::*;
+
+    #[rstest]
+    fn test_batch_get_reverse_resolver_success(
+        service: ResolverService,
+        mock_user1: Principal,
+        mock_user2: Principal,
+    ) {
+        let test1_str = "test1.ic";
+        let test2_str = "test2.ic";
+        STATE.with(|s| {
+            let mut store = s.resolver_store.borrow_mut();
+            store.ensure_created(test1_str.clone());
+            store.ensure_created(test2_str.clone());
+
+            let mut store = s.reverse_resolver_store.borrow_mut();
+            store.set_primary_name(mock_user1.clone(), test1_str.into());
+            store.set_primary_name(mock_user2.clone(), test2_str.into());
+        });
+
+        let principals = vec![mock_user1, mock_user2];
+
+        // act
+        let result = service.batch_get_reverse_resolve_principal(principals);
+
+        //assert
+        assert!(result.is_ok());
+        let result = result.unwrap();
+        assert_eq!(result.len(), 2);
+    }
+    #[rstest]
+    fn test_batch_get_reverse_resolver_failed_anonymous(
+        service: ResolverService,
+        mock_user1: Principal,
+        mock_user2: Principal,
+    ) {
+        let test1_str = "test1.ic";
+        let test2_str = "test2.ic";
+        let test3_str = "test3.ic";
+        let anonymous = Principal::anonymous();
+        STATE.with(|s| {
+            let mut store = s.resolver_store.borrow_mut();
+            store.ensure_created(test1_str.clone());
+            store.ensure_created(test2_str.clone());
+
+            let mut store = s.reverse_resolver_store.borrow_mut();
+            store.set_primary_name(mock_user1.clone(), test1_str.into());
+            store.set_primary_name(mock_user2.clone(), test2_str.into());
+            store.set_primary_name(anonymous.clone(), test3_str.into());
+        });
+
+        let principals = vec![mock_user1, mock_user2, anonymous];
+
+        // act
+        let result = service.batch_get_reverse_resolve_principal(principals);
+
+        //assert
+        assert!(result.is_err());
     }
 }
