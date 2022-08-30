@@ -15,6 +15,10 @@ export const idlFactory = ({ IDL }) => {
     'dev_named_canister_ids' : IDL.Vec(IDL.Tuple(CanisterNames, IDL.Principal)),
   });
   const ErrorInfo = IDL.Record({ 'code' : IDL.Nat32, 'message' : IDL.Text });
+  const BatchGetReverseResolvePrincipalResponse = IDL.Variant({
+    'Ok' : IDL.Vec(IDL.Tuple(IDL.Principal, IDL.Opt(IDL.Text))),
+    'Err' : ErrorInfo,
+  });
   const BooleanActorResponse = IDL.Variant({
     'Ok' : IDL.Bool,
     'Err' : ErrorInfo,
@@ -61,6 +65,11 @@ export const idlFactory = ({ IDL }) => {
     'Err' : ErrorInfo,
   });
   return IDL.Service({
+    'batch_get_reverse_resolve_principal' : IDL.Func(
+        [IDL.Vec(IDL.Principal)],
+        [BatchGetReverseResolvePrincipalResponse],
+        ['query'],
+      ),
     'ensure_resolver_created' : IDL.Func(
         [IDL.Text],
         [BooleanActorResponse],

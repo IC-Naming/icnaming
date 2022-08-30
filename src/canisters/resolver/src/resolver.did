@@ -1,3 +1,7 @@
+type BatchGetReverseResolvePrincipalResponse = variant {
+  Ok : vec record { principal; opt text };
+  Err : ErrorInfo;
+};
 type BooleanActorResponse = variant { Ok : bool; Err : ErrorInfo };
 type CallbackStrategy = record { token : Token; callback : func () -> () };
 type CanisterNames = variant {
@@ -48,6 +52,9 @@ type Token = record {
   content_encoding : text;
 };
 service : (opt InitArgs) -> {
+  batch_get_reverse_resolve_principal : (vec principal) -> (
+      BatchGetReverseResolvePrincipalResponse,
+    ) query;
   ensure_resolver_created : (text) -> (BooleanActorResponse);
   export_state : () -> (StateExportResponse);
   get_record_value : (text) -> (GetRecordValueResponse) query;
