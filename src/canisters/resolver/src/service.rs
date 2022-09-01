@@ -4,6 +4,7 @@ use std::sync::Arc;
 use std::vec::Vec;
 
 use candid::Principal;
+use ic_cdk::caller;
 
 use common::{AuthPrincipal, CallContext};
 use log::{debug, info};
@@ -178,93 +179,23 @@ impl ResolverService {
             Ok(result)
         })
     }
-}
 
-pub struct SetRecordPairValidator {
-    patch_value: HashMap<String, String>,
-}
-
-impl From<SetRecordValueValidator> for SetRecordPairValidator {
-    fn from(input: SetRecordValueValidator) -> Self {
-        SetRecordPairValidator {
-            patch_value: input.patch_value,
+    pub fn import_record_value(
+        &self,
+        call_context: &CallContext,
+        items: Vec<ResolverValueImportItem>,
+    ) -> ServiceResult<()> {
+        let _ = call_context.must_be_system_owner()?;
+        for item in items {
+            item.validate()?;
         }
+
+        Ok(())
     }
 }
 
-pub struct SetRecordCallerValidator {
-    pub caller: Principal,
-    pub name: String,
-    pub registry_api: Arc<dyn IRegistryApi>,
-}
-
-impl From<SetRecordValueValidator> for SetRecordCallerValidator {
-    fn from(main: SetRecordCallerValidator) -> Self {
-        SetRecordCallerValidator {
-            caller: main.caller,
-            registry_api: main.registry_api,
-            name: main.name,
-        }
-    }
-}
-
-impl SetRecordCallerValidator {
-    pub fn is_system_owner(&self) -> ServiceResult<Principal> {
-        must_be_system_owner(&self.caller);
-    }
-
-    pub async fn is_name_owner(&self) -> ServiceResult<Principal> {
-        let users = self.registry_api.get_users(&self.name).await?;
-        let owner = users.get_owner();
-
-        let owner = if is_named_canister_id(CanisterNames::Registrar, self.caller.0) {
-            owner.clone()
-        } else {
-            // check permission
-            if !users.can_operate(&self.caller.0) {
-                debug!("Permission denied for {}", self.caller.0);
-                return Err(NamingError::PermissionDenied);
-            }
-
-            // check ResolverKey::SettingReverseResolutionPrincipal
-            if update_primary_name_input_value.is_some() {
-                if &self.caller.0 != owner {
-                    debug!(
-                    "SettingReverseResolutionPrincipal is not allowed since caller is not owner"
-                );
-                    return Err(NamingError::PermissionDenied);
-                }
-            }
-            self.caller.0.clone()
-        };
-        Ok(owner)
-    }
-}
-
-pub struct SetRecordValueValidator {
-    caller: AuthPrincipal,
-    name: String,
-    patch_value: HashMap<String, String>,
-    resolver: Resolver,
-    pub registry_api: Arc<dyn IRegistryApi>,
-}
-
-impl SetRecordValueValidator {
-    pub fn new(
-        caller: AuthPrincipal,
-        name: String,
-        patch_value: HashMap<String, String>,
-        resolver: Resolver,
-    ) -> Self {
-        Self {
-            caller,
-            name,
-            patch_value,
-            registry_api: Arc::new(RegistryApi::default()),
-            resolver,
-        }
-    }
-
+trait PatchValueValidator {
+    fn patch_values_validate(&self) -> ServiceResult<Vec<(String, String)>>;
     fn validate_key_value(&self, key: &str, value: &str) -> ServiceResult<String> {
         if !value.is_empty() {
             {
@@ -293,19 +224,81 @@ impl SetRecordValueValidator {
             Ok(value.to_string())
         }
     }
+}
 
-    pub async fn validate(&self) -> ServiceResult<SetRecordValueInput> {
+pub enum ResolverValueImportItem {
+    Upsert {
+        name: String,
+        key: String,
+        value: String,
+    },
+    InsertOrIgnore {
+        name: String,
+        key: String,
+        value: String,
+    },
+    Delete {
+        name: String,
+        key: String,
+    },
+}
+
+impl PatchValueValidator for ResolverValueImportItem {
+    fn patch_values_validate(&self) -> ServiceResult<Vec<(String, String)>> {
+        match self {
+            ResolverValueImportItem::Upsert { name, key, value } => {
+                let _ = self.validate_key_value(key, value)?;
+                Ok(vec![(key.to_string(), value.to_string())])
+            }
+            ResolverValueImportItem::InsertOrIgnore { name, key, value } => {
+                let _ = self.validate_key_value(key, value)?;
+                Ok(vec![(key.to_string(), value.to_string())])
+            }
+            ResolverValueImportItem::Delete { name, key } => {
+                Ok(vec![(key.to_string(), "".to_string())])
+            }
+        }
+    }
+}
+
+impl ResolverValueImportItem {
+    fn validate(&self) -> ServiceResult<()> {
+        self.patch_values_validate()?;
+        Ok(())
+    }
+}
+
+pub struct SetRecordValueValidator {
+    caller: AuthPrincipal,
+    name: String,
+    patch_value: HashMap<String, String>,
+    resolver: Resolver,
+    pub registry_api: Arc<dyn IRegistryApi>,
+}
+
+impl SetRecordValueValidator {
+    pub fn new(
+        caller: AuthPrincipal,
+        name: String,
+        patch_value: HashMap<String, String>,
+        resolver: Resolver,
+    ) -> Self {
+        Self {
+            caller,
+            name,
+            patch_value,
+            registry_api: Arc::new(RegistryApi::default()),
+            resolver,
+        }
+    }
+    fn patch_values_validate(&self) -> ServiceResult<Vec<(String, String)>> {
         let mut patch_values = vec![];
         // validate and normalize key and value
-        let update_primary_name_input_value = self
-            .patch_value
-            .get(RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL)
-            .cloned();
 
         for (key, value) in self.patch_value.iter() {
             let valid_value = self.validate_key_value(key, value)?;
             if key != RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL {
-                patch_values.push((key.clone(), valid_value));
+                patch_values.push((key.clone(), value.clone()));
             }
         }
 
@@ -321,7 +314,46 @@ impl SetRecordValueValidator {
                 max: RESOLVER_ITEM_MAX_COUNT as u32,
             });
         }
+        Ok(patch_values)
+    }
+    async fn name_owner_validate(&self) -> ServiceResult<Principal> {
+        let update_primary_name_input_value = self
+            .patch_value
+            .get(RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL)
+            .cloned();
+        let users = self.registry_api.get_users(&self.name).await?;
+        let owner = users.get_owner();
 
+        let owner = if is_named_canister_id(CanisterNames::Registrar, self.caller.0) {
+            owner.clone()
+        } else {
+            // check permission
+            if !users.can_operate(&self.caller.0) {
+                debug!("Permission denied for {}", self.caller.0);
+                return Err(NamingError::PermissionDenied);
+            }
+
+            // check ResolverKey::SettingReverseResolutionPrincipal
+            if update_primary_name_input_value.is_some() {
+                if &self.caller.0 != owner {
+                    debug!(
+                    "SettingReverseResolutionPrincipal is not allowed since caller is not owner"
+                );
+                    return Err(NamingError::PermissionDenied);
+                }
+            }
+            self.caller.0.clone()
+        };
+        Ok(owner)
+    }
+
+    pub async fn validate(&self) -> ServiceResult<SetRecordValueInput> {
+        let mut patch_values = self.patch_values_validate()?;
+        // validate and normalize key and value
+        let update_primary_name_input_value = self
+            .patch_value
+            .get(RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL)
+            .cloned();
         let users = self.registry_api.get_users(&self.name).await?;
         let owner = users.get_owner();
 
@@ -373,6 +405,34 @@ impl SetRecordValueValidator {
                 UpdatePrimaryNameInput::DoNothing
             },
         })
+    }
+}
+
+impl PatchValueValidator for SetRecordValueValidator {
+    fn patch_values_validate(&self) -> ServiceResult<Vec<(String, String)>> {
+        let mut patch_values = vec![];
+        // validate and normalize key and value
+
+        for (key, value) in self.patch_value.iter() {
+            let valid_value = self.validate_key_value(key, value)?;
+            if key != RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL {
+                patch_values.push((key.clone(), value.clone()));
+            }
+        }
+
+        // validate max item count
+        let mut count_new = self.resolver.string_value_map().len();
+        for (key, _) in patch_values.iter() {
+            if !self.resolver.contains_key(key) {
+                count_new += 1;
+            }
+        }
+        if count_new > RESOLVER_ITEM_MAX_COUNT {
+            return Err(NamingError::TooManyResolverKeys {
+                max: RESOLVER_ITEM_MAX_COUNT as u32,
+            });
+        }
+        Ok(patch_values)
     }
 }
 
