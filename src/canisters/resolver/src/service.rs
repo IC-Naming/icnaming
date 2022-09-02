@@ -187,7 +187,9 @@ impl ResolverService {
     ) -> ServiceResult<()> {
         let _ = call_context.must_be_system_owner()?;
         for item in items {
-            item.validate()?;
+            let patch_value = item.validate()?;
+            let input = item.generate_input(patch_value)?;
+            input.update_state()?;
         }
 
         Ok(())
@@ -255,6 +257,7 @@ impl PatchValueValidator for ResolverValueImportItem {
                 Ok(vec![(key.to_string(), value.to_string())])
             }
             ResolverValueImportItem::Delete { name, key } => {
+                self.remove_validate(key)?;
                 Ok(vec![(key.to_string(), "".to_string())])
             }
         }
@@ -262,9 +265,82 @@ impl PatchValueValidator for ResolverValueImportItem {
 }
 
 impl ResolverValueImportItem {
-    fn validate(&self) -> ServiceResult<()> {
-        self.patch_values_validate()?;
+    fn validate(&self) -> ServiceResult<Vec<(String, String)>> {
+        let result = self.patch_values_validate()?;
+        Ok(result)
+    }
+
+    fn remove_validate(&self, key: &String) -> ServiceResult<()> {
         Ok(())
+    }
+
+    fn generate_input(
+        &self,
+        patch_values: Vec<(String, String)>,
+    ) -> ServiceResult<SetRecordValueInput> {
+        match self {
+            ResolverValueImportItem::Upsert { name, key, value } => Ok(SetRecordValueInput {
+                name: name.clone(),
+                update_records_input: patch_values
+                    .iter()
+                    .map(|(k, v)| {
+                        (
+                            k.clone(),
+                            if v.is_empty() {
+                                UpdateRecordInput::Remove
+                            } else {
+                                UpdateRecordInput::Set(v.clone())
+                            },
+                        )
+                    })
+                    .collect(),
+                update_primary_name_input: if let Ok(principal) = Principal::from_str(value) {
+                    UpdatePrimaryNameInput::Set(principal)
+                } else {
+                    UpdatePrimaryNameInput::DoNothing
+                },
+            }),
+            ResolverValueImportItem::InsertOrIgnore { name, key, value } => {
+                Ok(SetRecordValueInput {
+                    name: name.clone(),
+                    update_records_input: patch_values
+                        .iter()
+                        .map(|(k, v)| {
+                            (
+                                k.clone(),
+                                if v.is_empty() {
+                                    UpdateRecordInput::Remove
+                                } else {
+                                    UpdateRecordInput::Set(v.clone())
+                                },
+                            )
+                        })
+                        .collect(),
+                    update_primary_name_input: if let Ok(principal) = Principal::from_str(value) {
+                        UpdatePrimaryNameInput::Set(principal)
+                    } else {
+                        UpdatePrimaryNameInput::DoNothing
+                    },
+                })
+            }
+            ResolverValueImportItem::Delete { name, key } => Ok(SetRecordValueInput {
+                name: name.clone(),
+                update_records_input: patch_values
+                    .iter()
+                    .map(|(k, v)| {
+                        (
+                            k.clone(),
+                            if v.is_empty() {
+                                UpdateRecordInput::Remove
+                            } else {
+                                UpdateRecordInput::Set(v.clone())
+                            },
+                        )
+                    })
+                    .collect(),
+                update_primary_name_input: UpdatePrimaryNameInput::DoNothing,
+            }),
+        }
     }
 }
 
@@ -291,62 +367,6 @@ impl SetRecordValueValidator {
             resolver,
         }
     }
-    fn patch_values_validate(&self) -> ServiceResult<Vec<(String, String)>> {
-        let mut patch_values = vec![];
-        // validate and normalize key and value
-
-        for (key, value) in self.patch_value.iter() {
-            let valid_value = self.validate_key_value(key, value)?;
-            if key != RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL {
-                patch_values.push((key.clone(), value.clone()));
-            }
-        }
-
-        // validate max item count
-        let mut count_new = self.resolver.string_value_map().len();
-        for (key, _) in patch_values.iter() {
-            if !self.resolver.contains_key(key) {
-                count_new += 1;
-            }
-        }
-        if count_new > RESOLVER_ITEM_MAX_COUNT {
-            return Err(NamingError::TooManyResolverKeys {
-                max: RESOLVER_ITEM_MAX_COUNT as u32,
-            });
-        }
-        Ok(patch_values)
-    }
-    async fn name_owner_validate(&self) -> ServiceResult<Principal> {
-        let update_primary_name_input_value = self
-            .patch_value
-            .get(RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL)
-            .cloned();
-        let users = self.registry_api.get_users(&self.name).await?;
-        let owner = users.get_owner();
-
-        let owner = if is_named_canister_id(CanisterNames::Registrar, self.caller.0) {
-            owner.clone()
-        } else {
-            // check permission
-            if !users.can_operate(&self.caller.0) {
-                debug!("Permission denied for {}", self.caller.0);
-                return Err(NamingError::PermissionDenied);
-            }
-
-            // check ResolverKey::SettingReverseResolutionPrincipal
-            if update_primary_name_input_value.is_some() {
-                if &self.caller.0 != owner {
-                    debug!(
-                    "SettingReverseResolutionPrincipal is not allowed since caller is not owner"
-                );
-                    return Err(NamingError::PermissionDenied);
-                }
-            }
-            self.caller.0.clone()
-        };
-        Ok(owner)
-    }
-
     pub async fn validate(&self) -> ServiceResult<SetRecordValueInput> {
         let mut patch_values = self.patch_values_validate()?;
         // validate and normalize key and value
