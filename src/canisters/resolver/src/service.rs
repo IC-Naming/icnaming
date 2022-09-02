@@ -271,6 +271,10 @@ impl ResolverValueImportItem {
     }
 
     fn remove_validate(&self, key: &String) -> ServiceResult<()> {
+        let max_length = RESOLVER_KEY_MAX_LENGTH;
+        if key.len() > max_length {
+            return Err(NamingError::KeyMaxLengthError { max: max_length });
+        }
         Ok(())
     }
 
