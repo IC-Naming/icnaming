@@ -278,36 +278,38 @@ impl ResolverValueImportItem {
         Ok(())
     }
 
+    fn insert_or_upsert(
+        &self,
+        name: &String,
+        value: &String,
+        patch_values: Vec<(String, String)>,
+    ) -> ServiceResult<SetRecordValueInput> {
+        Ok(SetRecordValueInput {
+            name: name.clone(),
+            update_records_input: patch_values
+                .iter()
+                .map(|(k, v)| (k.clone(), UpdateRecordInput::Set(v.clone())))
+                .collect(),
+            update_primary_name_input: if let Ok(principal) = Principal::from_str(value) {
+                UpdatePrimaryNameInput::Set(principal)
+            } else {
+                UpdatePrimaryNameInput::DoNothing
+            },
+        })
+    }
+
     fn generate_input(
         &self,
         patch_values: Vec<(String, String)>,
     ) -> ServiceResult<SetRecordValueInput> {
         match self {
-            ResolverValueImportItem::Upsert { name, key, value } => Ok(SetRecordValueInput {
-                name: name.clone(),
-                update_records_input: patch_values
-                    .iter()
-                    .map(|(k, v)| (k.clone(), UpdateRecordInput::Set(v.clone())))
-                    .collect(),
-                update_primary_name_input: if let Ok(principal) = Principal::from_str(value) {
-                    UpdatePrimaryNameInput::Set(principal)
-                } else {
-                    UpdatePrimaryNameInput::DoNothing
-                },
-            }),
+            ResolverValueImportItem::Upsert { name, key, value } => {
+                let result = self.insert_or_upsert(name, value, patch_values)?;
+                Ok(result)
+            }
             ResolverValueImportItem::InsertOrIgnore { name, key, value } => {
-                Ok(SetRecordValueInput {
-                    name: name.clone(),
-                    update_records_input: patch_values
-                        .iter()
-                        .map(|(k, v)| (k.clone(), UpdateRecordInput::Set(v.clone())))
-                        .collect(),
-                    update_primary_name_input: if let Ok(principal) = Principal::from_str(value) {
-                        UpdatePrimaryNameInput::Set(principal)
-                    } else {
-                        UpdatePrimaryNameInput::DoNothing
-                    },
-                })
+                let result = self.insert_or_upsert(name, value, patch_values)?;
+                Ok(result)
             }
             ResolverValueImportItem::Delete { name, key } => Ok(SetRecordValueInput {
                 name: name.clone(),
