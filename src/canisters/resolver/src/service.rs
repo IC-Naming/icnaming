@@ -187,8 +187,8 @@ impl ResolverService {
     ) -> ServiceResult<()> {
         let _ = call_context.must_be_system_owner()?;
         for item in items {
-            let patch_value = item.validate()?;
-            let input = item.generate_input(patch_value)?;
+            let _ = item.validate()?;
+            let input = item.generate_input()?;
             input.update_state()?;
         }
 
@@ -281,15 +281,14 @@ impl ResolverValueImportItem {
     fn insert_or_upsert(
         &self,
         name: &String,
+        key: &String,
         value: &String,
-        patch_values: Vec<(String, String)>,
     ) -> ServiceResult<SetRecordValueInput> {
+        let mut map = HashMap::new();
+        map.insert(key.to_string(), UpdateRecordInput::Set(value.clone()));
         Ok(SetRecordValueInput {
             name: name.clone(),
-            update_records_input: patch_values
-                .iter()
-                .map(|(k, v)| (k.clone(), UpdateRecordInput::Set(v.clone())))
-                .collect(),
+            update_records_input: map,
             update_primary_name_input: if let Ok(principal) = Principal::from_str(value) {
                 UpdatePrimaryNameInput::Set(principal)
             } else {
@@ -298,27 +297,25 @@ impl ResolverValueImportItem {
         })
     }
 
-    fn generate_input(
-        &self,
-        patch_values: Vec<(String, String)>,
-    ) -> ServiceResult<SetRecordValueInput> {
+    fn generate_input(&self) -> ServiceResult<SetRecordValueInput> {
         match self {
             ResolverValueImportItem::Upsert { name, key, value } => {
-                let result = self.insert_or_upsert(name, value, patch_values)?;
+                let result = self.insert_or_upsert(name, key, value)?;
                 Ok(result)
             }
             ResolverValueImportItem::InsertOrIgnore { name, key, value } => {
-                let result = self.insert_or_upsert(name, value, patch_values)?;
+                let result = self.insert_or_upsert(name, key, value)?;
                 Ok(result)
             }
-            ResolverValueImportItem::Delete { name, key } => Ok(SetRecordValueInput {
-                name: name.clone(),
-                update_records_input: patch_values
-                    .iter()
-                    .map(|(k, v)| (k.clone(), UpdateRecordInput::Remove))
-                    .collect(),
-                update_primary_name_input: UpdatePrimaryNameInput::DoNothing,
-            }),
+            ResolverValueImportItem::Delete { name, key } => {
+                let mut map = HashMap::new();
+                map.insert(key.to_string(), UpdateRecordInput::Remove);
+                Ok(SetRecordValueInput {
+                    name: name.clone(),
+                    update_records_input: map,
+                    update_primary_name_input: UpdatePrimaryNameInput::DoNothing,
+                })
+            }
         }
     }
 }
