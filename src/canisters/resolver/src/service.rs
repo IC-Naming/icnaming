@@ -283,16 +283,7 @@ impl ResolverValueImportItem {
                 name: name.clone(),
                 update_records_input: patch_values
                     .iter()
-                    .map(|(k, v)| {
-                        (
-                            k.clone(),
-                            if v.is_empty() {
-                                UpdateRecordInput::Remove
-                            } else {
-                                UpdateRecordInput::Set(v.clone())
-                            },
-                        )
-                    })
+                    .map(|(k, v)| (k.clone(), UpdateRecordInput::Set(v.clone())))
                     .collect(),
                 update_primary_name_input: if let Ok(principal) = Principal::from_str(value) {
                     UpdatePrimaryNameInput::Set(principal)
@@ -305,16 +296,7 @@ impl ResolverValueImportItem {
                     name: name.clone(),
                     update_records_input: patch_values
                         .iter()
-                        .map(|(k, v)| {
-                            (
-                                k.clone(),
-                                if v.is_empty() {
-                                    UpdateRecordInput::Remove
-                                } else {
-                                    UpdateRecordInput::Set(v.clone())
-                                },
-                            )
-                        })
+                        .map(|(k, v)| (k.clone(), UpdateRecordInput::Set(v.clone())))
                         .collect(),
                     update_primary_name_input: if let Ok(principal) = Principal::from_str(value) {
                         UpdatePrimaryNameInput::Set(principal)
@@ -327,16 +309,7 @@ impl ResolverValueImportItem {
                 name: name.clone(),
                 update_records_input: patch_values
                     .iter()
-                    .map(|(k, v)| {
-                        (
-                            k.clone(),
-                            if v.is_empty() {
-                                UpdateRecordInput::Remove
-                            } else {
-                                UpdateRecordInput::Set(v.clone())
-                            },
-                        )
-                    })
+                    .map(|(k, v)| (k.clone(), UpdateRecordInput::Remove))
                     .collect(),
                 update_primary_name_input: UpdatePrimaryNameInput::DoNothing,
             }),
