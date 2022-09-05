@@ -737,6 +737,7 @@ mod batch_get_reverse_resolver {
         let result = result.unwrap();
         assert_eq!(result.len(), 2);
     }
+
     #[rstest]
     fn test_batch_get_reverse_resolver_failed_anonymous(
         service: ResolverService,
@@ -766,4 +767,47 @@ mod batch_get_reverse_resolver {
         //assert
         assert!(result.is_err());
     }
+}
+
+mod import_record_value {
+    use super::*;
+    use common::permissions::get_admin;
+    //
+    // #[rstest]
+    // fn test_import_record_value(_init_test: (), _mock_now: u64, mock_user1: Principal, service: ResolverService) {
+    //     let admin = get_admin();
+    //     let name = "nice.ic";
+    //     let mut patch_values: HashMap<String, String> = HashMap::new();
+    //     patch_values.insert(RESOLVER_KEY_GITHUB.to_string(), "icns".to_string());
+    //     // add resolver
+    //     add_test_resolver(name);
+    //
+    //     // act
+    //     let mut resolver = Resolver::new(name.to_string());
+    //     for i in 0..RESOLVER_ITEM_MAX_COUNT {
+    //         resolver.set_record_value(format!("{}", i), format!("{}", i));
+    //     }
+    //     let result = SetRecordValueValidator::new(
+    //         must_not_anonymous(&mock_user1).unwrap(),
+    //         name.to_string(),
+    //         patch_values,
+    //         resolver,
+    //     )
+    //         .validate()
+    //         .await;
+    //
+    //     // assert
+    //     assert!(result.is_err());
+    //     match result {
+    //         Err(e) => {
+    //             assert_eq!(
+    //                 e,
+    //                 NamingError::TooManyResolverKeys {
+    //                     max: RESOLVER_ITEM_MAX_COUNT as u32,
+    //                 }
+    //             );
+    //         }
+    //         _ => assert!(false),
+    //     }
+    // }
 }

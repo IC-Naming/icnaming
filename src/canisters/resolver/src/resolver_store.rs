@@ -27,6 +27,10 @@ impl Resolver {
     pub fn set_record_value(&mut self, key: String, value: String) {
         self.string_value_map.insert(key, value);
     }
+    pub fn has_record_value(&self, key: &String) -> bool {
+        self.string_value_map.contains_key(key)
+    }
+
     pub fn remove_record_value(&mut self, key: String) {
         let value = self.string_value_map.remove(&key);
         if let Some(value) = value {
