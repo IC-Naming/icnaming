@@ -1,10 +1,11 @@
 use std::collections::HashMap;
+use std::hash::Hash;
 use std::str::FromStr;
 use std::sync::Arc;
 use std::vec::Vec;
 
 use candid::Principal;
-use ic_cdk::caller;
+use ic_cdk::{call, caller};
 
 use common::{AuthPrincipal, CallContext};
 use log::{debug, info};
@@ -78,9 +79,10 @@ impl ResolverService {
         // let input = context.validate().await?;
         //
         // input.update_state()?;
-        let patch_value_validator =
-            PatchValuesValidator::new(name.to_string(), patch_value, Some(resolver), None);
-        let owner_validator = patch_value_validator.owner_validate(caller)?;
+        let patch_values: PatchValuesInput = patch_value.into();
+
+        let patch_value_validator = PatchValuesValidator::new(name.to_string(), patch_values);
+        let owner_validator = patch_value_validator.owner_validate(caller, resolver)?;
 
         let owner_validator = owner_validator.validate().await?;
         let input = owner_validator.generate()?;
@@ -198,8 +200,11 @@ impl ResolverService {
 
         let mut list = Vec::new();
         for item in items {
-            let patch_values_validator: PatchValuesValidator = item.into();
-            let input_generator = patch_values_validator.system_owner_validate()?;
+            let name = item.name.clone();
+            let patch_values = item.into();
+            let patch_values_validator: PatchValuesValidator =
+                PatchValuesValidator::new(name, patch_values);
+            let input_generator = patch_values_validator.resolver_value_import_validate()?;
             let input = input_generator.generate()?;
             list.push(input);
         }
@@ -211,58 +216,108 @@ impl ResolverService {
     }
 }
 
+pub struct PatchValuesInput(HashMap<String, PatchValueOperation>);
+
+impl From<HashMap<String, String>> for PatchValuesInput {
+    fn from(map: HashMap<String, String>) -> Self {
+        let mut result = HashMap::new();
+        for (key, value) in map {
+            if value.is_empty() {
+                result.insert(key, PatchValueOperation::Remove(value));
+            } else {
+                result.insert(key, PatchValueOperation::Upsert(value));
+            }
+        }
+        PatchValuesInput(result)
+    }
+}
+
+impl From<ResolverValueImportItem> for PatchValuesInput {
+    fn from(item: ResolverValueImportItem) -> Self {
+        let mut result = HashMap::new();
+        result.insert(item.key, item.value_and_operation);
+        PatchValuesInput(result)
+    }
+}
+
 pub struct ResolverValueImportItem {
     pub name: String,
     pub key: String,
-    pub value: String,
-    pub operation: ResolverValueImportPatchOperation,
+    pub value_and_operation: PatchValueOperation,
 }
 
-#[derive(Eq, PartialEq, Debug, Clone, Copy)]
-pub enum ResolverValueImportPatchOperation {
-    Upsert,
-    InsertOrIgnore,
-    Remove,
+#[derive(Eq, PartialEq, Debug, Clone)]
+pub enum PatchValueOperation {
+    Upsert(String),
+    InsertOrIgnore(String),
+    Remove(String),
+}
+
+impl PatchValueOperation {
+    pub fn get_value(&self) -> &String {
+        match self {
+            PatchValueOperation::Upsert(value) => value,
+            PatchValueOperation::InsertOrIgnore(value) => value,
+            PatchValueOperation::Remove(value) => value,
+        }
+    }
+}
+
+impl From<PatchValueOperation> for UpdatePrimaryNameInput {
+    fn from(item: PatchValueOperation) -> Self {
+        match item {
+            PatchValueOperation::Upsert(value) => {
+                UpdatePrimaryNameInput::Set(Principal::from_text(value).unwrap())
+            }
+            PatchValueOperation::InsertOrIgnore(value) => {
+                UpdatePrimaryNameInput::InsertOrIgnore(Principal::from_text(value).unwrap())
+            }
+            PatchValueOperation::Remove(value) => {
+                UpdatePrimaryNameInput::Remove(Principal::from_text(value).unwrap())
+            }
+        }
+    }
 }
 
 pub struct PatchValuesValidator {
     pub name: String,
-    pub patch_values: HashMap<String, String>,
-    pub resolver: Option<Resolver>,
-    pub operation: Option<ResolverValueImportPatchOperation>,
+    pub patch_values: PatchValuesInput,
 }
 
 impl PatchValuesValidator {
-    pub fn new(
-        name: String,
-        patch_values: HashMap<String, String>,
-        resolver: Option<Resolver>,
-        operation: Option<ResolverValueImportPatchOperation>,
-    ) -> Self {
-        Self {
-            name,
-            patch_values,
-            resolver,
-            operation,
-        }
+    pub fn new(name: String, patch_values: PatchValuesInput) -> Self {
+        Self { name, patch_values }
     }
-    fn patch_values_validate(&self) -> ServiceResult<HashMap<String, UpdateRecordInput>> {
+
+    fn patch_values_validate(
+        &self,
+        resolver: Option<Resolver>,
+    ) -> ServiceResult<HashMap<String, UpdateRecordInput>> {
         let mut patch_values = HashMap::new();
         // validate and normalize key and value
 
-        for (key, value) in self.patch_values.iter() {
-            let _ = self.validate_key_value(key, value)?;
+        for (key, value) in self.patch_values.0.iter() {
+            let _ = self.validate_key_value(key, value.get_value())?;
             if key != RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL {
-                if value.is_empty() {
-                    patch_values.insert(key.to_string(), UpdateRecordInput::Remove);
-                } else {
-                    patch_values.insert(key.to_string(), UpdateRecordInput::Set(value.to_string()));
+                match value {
+                    PatchValueOperation::Upsert(value) => {
+                        patch_values.insert(key.clone(), UpdateRecordInput::Set(value.clone()));
+                    }
+                    PatchValueOperation::InsertOrIgnore(value) => {
+                        patch_values.insert(
+                            key.clone(),
+                            UpdateRecordInput::InsertOrIgnore(value.clone()),
+                        );
+                    }
+                    PatchValueOperation::Remove(_) => {
+                        patch_values.insert(key.clone(), UpdateRecordInput::Remove);
+                    }
                 }
             }
         }
 
         // validate max item count
-        if let Some(resolver) = &self.resolver {
+        if let Some(resolver) = resolver {
             let mut count_new = resolver.string_value_map().len();
             for (key, _) in patch_values.iter() {
                 if !resolver.contains_key(key) {
@@ -307,17 +362,41 @@ impl PatchValuesValidator {
         }
     }
 
-    fn get_update_primary_name_input(&self) -> Option<String> {
+    fn get_update_primary_name_input(&self) -> Option<PatchValueOperation> {
         self.patch_values
+            .0
             .get(RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL)
             .cloned()
+    }
+
+    fn get_remove_update_primary_name_input(&self) -> Option<HashMap<String, UpdateRecordInput>> {
+        if let Some(value) = self
+            .patch_values
+            .0
+            .get(RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL)
+        {
+            match value {
+                PatchValueOperation::Remove(value) => {
+                    let mut patch_values = HashMap::new();
+                    patch_values.insert(
+                        RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL.to_string(),
+                        UpdateRecordInput::Remove,
+                    );
+                    Some(patch_values)
+                }
+                _ => None,
+            }
+        } else {
+            None
+        }
     }
 
     pub fn owner_validate(
         &self,
         caller: AuthPrincipal,
+        resolver: Resolver,
     ) -> ServiceResult<SetRecordByOwnerValidator> {
-        let patch_values = self.patch_values_validate()?;
+        let patch_values = self.patch_values_validate(Some(resolver))?;
         let update_primary_name_input_value = self.get_update_primary_name_input();
 
         Ok(SetRecordByOwnerValidator::new(
@@ -328,36 +407,22 @@ impl PatchValuesValidator {
         ))
     }
 
-    pub fn system_owner_validate(&self) -> ServiceResult<SetRecordBySystemOwnerInput> {
-        let _ = self.patch_values_validate()?;
-        let patch_value = self.patch_values.iter().next().unwrap();
-        Ok(SetRecordBySystemOwnerInput::new(
-            self.name.clone(),
-            patch_value.0.clone(),
-            patch_value.1.clone(),
-            self.operation.unwrap().clone(),
-        ))
-    }
-}
+    pub fn resolver_value_import_validate(&self) -> ServiceResult<SetRecordByOwnerInputGenerator> {
+        if let Some(patch_values) = self.get_remove_update_primary_name_input() {
+            return Ok(SetRecordByOwnerInputGenerator::new(
+                self.name.clone(),
+                patch_values,
+                None,
+            ));
+        } else {
+            let patch_values = self.patch_values_validate(None)?;
+            let update_primary_name_input_value = self.get_update_primary_name_input();
 
-impl From<ResolverValueImportItem> for PatchValuesValidator {
-    fn from(item: ResolverValueImportItem) -> Self {
-        match item.operation {
-            ResolverValueImportPatchOperation::Upsert => {
-                let mut map = HashMap::new();
-                map.insert(item.key, item.value);
-                Self::new(item.name, map, None, Some(item.operation))
-            }
-            ResolverValueImportPatchOperation::InsertOrIgnore => {
-                let mut map = HashMap::new();
-                map.insert(item.key, item.value);
-                Self::new(item.name, map, None, Some(item.operation))
-            }
-            ResolverValueImportPatchOperation::Remove => {
-                let mut map = HashMap::new();
-                map.insert(item.key, item.value);
-                Self::new(item.name, map, None, Some(item.operation))
-            }
+            Ok(SetRecordByOwnerInputGenerator::new(
+                self.name.clone(),
+                patch_values,
+                update_primary_name_input_value,
+            ))
         }
     }
 }
@@ -366,7 +431,7 @@ pub struct SetRecordByOwnerValidator {
     pub caller: AuthPrincipal,
     pub name: String,
     pub patch_values: HashMap<String, UpdateRecordInput>,
-    pub update_primary_name_input_value: Option<String>,
+    pub update_primary_name_input_value: Option<PatchValueOperation>,
     pub registry_api: Arc<dyn IRegistryApi>,
 }
 
@@ -375,7 +440,7 @@ impl SetRecordByOwnerValidator {
         caller: AuthPrincipal,
         name: String,
         patch_values: HashMap<String, UpdateRecordInput>,
-        update_primary_name_input_value: Option<String>,
+        update_primary_name_input_value: Option<PatchValueOperation>,
     ) -> Self {
         Self {
             caller,
@@ -386,7 +451,7 @@ impl SetRecordByOwnerValidator {
         }
     }
 
-    pub async fn validate(&self) -> ServiceResult<SetRecordByOwnerInput> {
+    pub async fn validate(&self) -> ServiceResult<SetRecordByOwnerInputGenerator> {
         let users = self.registry_api.get_users(&self.name).await?;
         let owner = users.get_owner();
 
@@ -410,34 +475,42 @@ impl SetRecordByOwnerValidator {
             }
             self.caller.0.clone()
         };
-        Ok(SetRecordByOwnerInput::new(
-            self.caller.0,
+
+        Ok(SetRecordByOwnerInputGenerator::new(
             self.name.clone(),
             self.patch_values
                 .iter()
                 .map(|(k, v)| (k.clone(), v.clone()))
                 .collect(),
-            self.update_primary_name_input_value.clone(),
+            match self.update_primary_name_input_value {
+                Some(PatchValueOperation::Upsert(_)) => {
+                    Some(PatchValueOperation::Upsert(owner.to_text()))
+                }
+                Some(PatchValueOperation::Remove(_)) => {
+                    Some(PatchValueOperation::Remove(owner.to_text()))
+                }
+                Some(PatchValueOperation::InsertOrIgnore(_)) => {
+                    Some(PatchValueOperation::Upsert(owner.to_text()))
+                }
+                _ => None,
+            },
         ))
     }
 }
 
-pub struct SetRecordByOwnerInput {
-    pub owner: Principal,
+pub struct SetRecordByOwnerInputGenerator {
     pub name: String,
     pub patch_values: HashMap<String, UpdateRecordInput>,
-    pub update_primary_name_input_value: Option<String>,
+    pub update_primary_name_input_value: Option<PatchValueOperation>,
 }
 
-impl SetRecordByOwnerInput {
+impl SetRecordByOwnerInputGenerator {
     pub fn new(
-        owner: Principal,
         name: String,
         patch_values: HashMap<String, UpdateRecordInput>,
-        update_primary_name_input_value: Option<String>,
+        update_primary_name_input_value: Option<PatchValueOperation>,
     ) -> Self {
         Self {
-            owner,
             name,
             patch_values,
             update_primary_name_input_value,
@@ -448,88 +521,12 @@ impl SetRecordByOwnerInput {
         Ok(SetRecordValueInput {
             name: self.name.clone(),
             update_records_input: self.patch_values.clone(),
-            update_primary_name_input: if let Some(principalString) =
+            update_primary_name_input: if let Some(value) =
                 self.update_primary_name_input_value.clone()
             {
-                if principalString.is_empty() {
-                    UpdatePrimaryNameInput::Remove(self.owner)
-                } else {
-                    UpdatePrimaryNameInput::Set(self.owner)
-                }
+                value.into()
             } else {
                 UpdatePrimaryNameInput::DoNothing
-            },
-        })
-    }
-}
-
-pub struct SetRecordBySystemOwnerInput {
-    pub name: String,
-    pub key: String,
-    pub value: String,
-    pub operation: ResolverValueImportPatchOperation,
-}
-
-impl SetRecordBySystemOwnerInput {
-    pub fn new(
-        name: String,
-        key: String,
-        value: String,
-        operation: ResolverValueImportPatchOperation,
-    ) -> Self {
-        Self {
-            name,
-            key,
-            value,
-            operation,
-        }
-    }
-
-    pub fn generate(&self) -> ServiceResult<SetRecordValueInput> {
-        Ok(SetRecordValueInput {
-            name: self.name.clone(),
-            update_records_input: match self.operation {
-                ResolverValueImportPatchOperation::Remove => {
-                    let mut map = HashMap::new();
-                    map.insert(self.key.clone(), UpdateRecordInput::Remove);
-                    map
-                }
-                ResolverValueImportPatchOperation::InsertOrIgnore => {
-                    let mut map = HashMap::new();
-                    map.insert(
-                        self.key.clone(),
-                        UpdateRecordInput::InsertOrIgnore(self.value.clone()),
-                    );
-                    map
-                }
-                ResolverValueImportPatchOperation::Upsert => {
-                    let mut map = HashMap::new();
-                    map.insert(self.key.clone(), UpdateRecordInput::Set(self.value.clone()));
-                    map
-                }
-            },
-            update_primary_name_input: match self.operation {
-                ResolverValueImportPatchOperation::Upsert => {
-                    if let Ok(principal) = Principal::from_text(self.value.clone()) {
-                        UpdatePrimaryNameInput::Set(principal)
-                    } else {
-                        UpdatePrimaryNameInput::DoNothing
-                    }
-                }
-                ResolverValueImportPatchOperation::InsertOrIgnore => {
-                    if let Ok(principal) = Principal::from_text(self.value.clone()) {
-                        UpdatePrimaryNameInput::InsertOrIgnore(principal)
-                    } else {
-                        UpdatePrimaryNameInput::DoNothing
-                    }
-                }
-                ResolverValueImportPatchOperation::Remove => {
-                    if let Ok(principal) = Principal::from_text(self.value.clone()) {
-                        UpdatePrimaryNameInput::Remove(principal)
-                    } else {
-                        UpdatePrimaryNameInput::DoNothing
-                    }
-                }
             },
         })
     }

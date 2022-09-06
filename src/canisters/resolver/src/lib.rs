@@ -56,7 +56,7 @@ async fn set_record_value(
     let call_context = CallContext::from_ic();
     let mut service = ResolverService::default();
     let result = service
-        .set_record_value(call_context, name.as_str(), patch_values)
+        .set_record_value(call_context, &name, patch_values)
         .await;
     BooleanActorResponse::new(result)
 }
