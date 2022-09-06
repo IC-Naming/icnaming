@@ -498,13 +498,13 @@ impl SetRecordByOwnerValidator {
     }
 }
 
-pub struct SetRecordByOwnerInputGenerator {
+pub struct SetRecordValueInputGenerator {
     pub name: String,
     pub patch_values: HashMap<String, UpdateRecordInput>,
     pub update_primary_name_input_value: Option<PatchValueOperation>,
 }
 
-impl SetRecordByOwnerInputGenerator {
+impl SetRecordValueInputGenerator {
     pub fn new(
         name: String,
         patch_values: HashMap<String, UpdateRecordInput>,
