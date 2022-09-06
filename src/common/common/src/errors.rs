@@ -84,8 +84,6 @@ pub enum NamingError {
     AccountIdentifierNotSupported,
     #[error("registration name is already indexed")]
     RegistrationNameIsAlreadyIndexed { name: String },
-    #[error("it is not a valid principal")]
-    InvalidPrincipal,
 }
 
 impl NamingError {
@@ -127,7 +125,6 @@ impl NamingError {
             NamingError::InvalidCanisterId => 34,
             NamingError::AccountIdentifierNotSupported => 35,
             NamingError::RegistrationNameIsAlreadyIndexed { .. } => 36,
-            NamingError::InvalidPrincipal => 37,
         }
     }
 }
