@@ -364,32 +364,6 @@ impl PatchValuesValidator {
             .cloned()
     }
 
-    fn get_remove_all(&self) -> Option<HashMap<String, UpdateRecordInput>> {
-        if let Some(value) = self
-            .patch_values
-            .0
-            .get(RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL)
-        {
-            match value {
-                PatchValueOperation::Remove(value) => {
-                    if value.is_empty() {
-                        let mut patch_values = HashMap::new();
-                        patch_values.insert(
-                            RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL.to_string(),
-                            UpdateRecordInput::Remove,
-                        );
-                        Some(patch_values)
-                    } else {
-                        None
-                    }
-                }
-                _ => None,
-            }
-        } else {
-            None
-        }
-    }
-
     pub fn owner_validate(
         &self,
         caller: AuthPrincipal,
@@ -407,22 +381,27 @@ impl PatchValuesValidator {
     }
 
     pub fn resolver_value_import_validate(&self) -> ServiceResult<SetRecordValueInputGenerator> {
-        if let Some(patch_values) = self.get_remove_all() {
-            return Ok(SetRecordValueInputGenerator::new(
-                self.name.clone(),
-                patch_values,
-                None,
-            ));
-        } else {
-            let patch_values = self.patch_values_validate(None)?;
-            let update_primary_name_input_value = self.get_update_primary_name_input();
-
-            Ok(SetRecordValueInputGenerator::new(
-                self.name.clone(),
-                patch_values,
-                update_primary_name_input_value,
-            ))
+        let update_primary_name_input_value = self.get_update_primary_name_input();
+        if let Some(update_primary_name_input_value) = update_primary_name_input_value.clone() {
+            if update_primary_name_input_value.get_value().is_empty() {
+                let mut patch_values = HashMap::new();
+                patch_values.insert(
+                    RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL.to_string(),
+                    UpdateRecordInput::Remove,
+                );
+                return Ok(SetRecordValueInputGenerator::new(
+                    self.name.clone(),
+                    patch_values,
+                    None,
+                ));
+            }
         }
+        let patch_values = self.patch_values_validate(None)?;
+        Ok(SetRecordValueInputGenerator::new(
+            self.name.clone(),
+            patch_values,
+            update_primary_name_input_value,
+        ))
     }
 }
 
