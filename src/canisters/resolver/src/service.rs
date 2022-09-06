@@ -561,7 +561,7 @@ impl SetRecordValueInput {
                             "Insert or ignore reverse resolution principal {} {}",
                             self.name, value
                         );
-                        if store.has_primary_name(&value) {
+                        if !store.has_primary_name_reverse(self.name.clone()) {
                             store.set_primary_name(value, self.name.clone());
                         }
                     }

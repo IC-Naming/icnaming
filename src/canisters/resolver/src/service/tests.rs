@@ -777,6 +777,7 @@ mod batch_get_reverse_resolver {
 
 mod import_record_value {
     use super::*;
+    use common::permissions::get_admin;
 
     fn generate_resolver_value_import_item(
         name: &str,
@@ -872,6 +873,95 @@ mod import_record_value {
         assert_eq!(
             result.update_records_input.get(RESOLVER_KEY_ICP).unwrap(),
             &expect_update_record_input
+        );
+    }
+
+    #[rstest]
+    fn test_import_record_value_insert_ignore_success(
+        _init_test: (),
+        service: ResolverService,
+        _mock_now: u64,
+    ) {
+        // arrange
+        let admin = get_admin();
+        let call_context = CallContext::new(admin, TimeInNs(_mock_now));
+        let name = "nice.ic";
+        let icp_addr_before = "rrkah-fqaaa-aaaaa-aaaaq-cai";
+        let icp_addr_after = "qjdve-lqaaa-aaaaa-aaaeq-cai";
+        let before_item = generate_resolver_value_import_item(
+            name,
+            RESOLVER_KEY_ICP,
+            icp_addr_before,
+            "insert_or_ignore".to_string(),
+        );
+        let after_item = generate_resolver_value_import_item(
+            name,
+            RESOLVER_KEY_ICP,
+            icp_addr_after,
+            "insert_or_ignore".to_string(),
+        );
+
+        let list = vec![before_item, after_item];
+        // add resolver
+        add_test_resolver(name);
+
+        // act
+        let result = service.import_record_value(&call_context, list);
+        let validation_result = service.get_record_value(name);
+
+        // assert
+        assert!(result.is_ok(), "{:?}", result);
+        assert!(validation_result.is_ok(), "{:?}", validation_result);
+        let validation_result = validation_result.unwrap();
+        assert_eq!(
+            validation_result.get(RESOLVER_KEY_ICP).unwrap(),
+            icp_addr_before
+        );
+    }
+
+    #[rstest]
+    fn test_import_record_value_primary_name_insert_ignore_success(
+        _init_test: (),
+        service: ResolverService,
+        _mock_now: u64,
+    ) {
+        // arrange
+        let admin = get_admin();
+        let call_context = CallContext::new(admin, TimeInNs(_mock_now));
+        let name = "nice.ic";
+        let icp_addr_before = "rrkah-fqaaa-aaaaa-aaaaq-cai";
+        let icp_addr_after = "qjdve-lqaaa-aaaaa-aaaeq-cai";
+        let before_item = generate_resolver_value_import_item(
+            name,
+            RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL,
+            icp_addr_before,
+            "insert_or_ignore".to_string(),
+        );
+        let after_item = generate_resolver_value_import_item(
+            name,
+            RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL,
+            icp_addr_after,
+            "insert_or_ignore".to_string(),
+        );
+
+        let list = vec![before_item, after_item];
+        // add resolver
+        add_test_resolver(name);
+
+        // act
+        let result = service.import_record_value(&call_context, list);
+        let validation_result = service.get_record_value(name);
+
+        // assert
+        assert!(result.is_ok(), "{:?}", result);
+        assert!(validation_result.is_ok(), "{:?}", validation_result);
+        let validation_result = validation_result.unwrap();
+        debug!("{:?}", validation_result);
+        assert_eq!(
+            validation_result
+                .get(RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL)
+                .unwrap(),
+            icp_addr_before
         );
     }
 
