@@ -4,11 +4,11 @@ use std::str::FromStr;
 use std::sync::Arc;
 use std::vec::Vec;
 
-use candid::Principal;
+use candid::{CandidType, Deserialize, Principal};
 use ic_cdk::{call, caller};
 
 use common::{AuthPrincipal, CallContext};
-use log::{debug, info};
+use log::{debug, error, info, warn};
 
 use common::canister_api::ic_impl::RegistryApi;
 use common::canister_api::IRegistryApi;
@@ -190,9 +190,8 @@ impl ResolverService {
         &self,
         call_context: &CallContext,
         items: Vec<ResolverValueImportItem>,
-    ) -> ServiceResult<()> {
+    ) -> ServiceResult<bool> {
         let _ = call_context.must_be_system_owner()?;
-
         let mut list = Vec::new();
         for item in items {
             let name = item.name.clone();
@@ -204,10 +203,19 @@ impl ResolverService {
             list.push(input);
         }
         for input in list {
-            input.update_state()?;
+            let result = input.update_state();
+            match result {
+                Ok(_) => info!("Imported registration: {:?}", input),
+                Err(err) => {
+                    error!(
+                        "Failed to import resolver value: {:?}, error:{:?}",
+                        input, err
+                    );
+                    return Err(err);
+                }
+            }
         }
-
-        Ok(())
+        Ok(true)
     }
 }
 
@@ -235,13 +243,14 @@ impl From<ResolverValueImportItem> for PatchValuesInput {
     }
 }
 
+#[derive(Debug, Deserialize, CandidType)]
 pub struct ResolverValueImportItem {
     pub name: String,
     pub key: String,
     pub value_and_operation: PatchValueOperation,
 }
 
-#[derive(Eq, PartialEq, Debug, Clone)]
+#[derive(Debug, Deserialize, CandidType, Clone)]
 pub enum PatchValueOperation {
     Upsert(String),
     InsertOrIgnore(String),
@@ -553,7 +562,7 @@ impl SetRecordValueInput {
                             "Insert or ignore reverse resolution principal {} {}",
                             self.name, value
                         );
-                        if store.get_primary_name(&value).is_none() {
+                        if store.has_primary_name(&value) {
                             store.set_primary_name(value, self.name.clone());
                         }
                     }

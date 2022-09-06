@@ -33,6 +33,10 @@ impl ReverseResolverStore {
         }
         self.primary_names_reverse.insert(name, principal);
     }
+    pub fn has_primary_name(&self, principal: &Principal) -> bool {
+        self.primary_names.contains_key(principal)
+    }
+
     pub fn remove_primary_name(&mut self, principal: Principal) -> Option<String> {
         if let Some(name) = self.primary_names.remove(&principal) {
             self.primary_names_reverse.remove(&name);

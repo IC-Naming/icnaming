@@ -14,7 +14,7 @@ use common::http::*;
 use stats_service::*;
 use std::collections::HashMap;
 
-use candid::{candid_method, CandidType, Principal};
+use candid::{candid_method, CandidType, Deserialize, Principal};
 use common::CallContext;
 
 use ic_cdk_macros::*;
@@ -22,7 +22,7 @@ use ic_cdk_macros::*;
 use common::errors::{BooleanActorResponse, ErrorInfo, ServiceResult};
 use common::named_canister_ids::CanisterNames;
 
-use crate::service::ResolverService;
+use crate::service::{ResolverService, ResolverValueImportItem};
 use crate::state::InitArgs;
 
 /// Ensure the resolver is created.
@@ -143,6 +143,20 @@ fn batch_get_reverse_resolve_principal(
     let service = ResolverService::default();
     let result = service.batch_get_reverse_resolve_principal(principals);
     BatchGetReverseResolvePrincipalResponse::new(result)
+}
+
+#[derive(Debug, Deserialize, CandidType)]
+pub struct ImportRecordValueRequest {
+    pub items: Vec<ResolverValueImportItem>,
+}
+
+#[update(name = "import_record_value")]
+#[candid_method(update)]
+fn import_record_value(request: ImportRecordValueRequest) -> BooleanActorResponse {
+    let call_context = CallContext::from_ic();
+    let service = ResolverService::default();
+    let result = service.import_record_value(&call_context, request.items);
+    BooleanActorResponse::new(result)
 }
 
 candid::export_service!();
