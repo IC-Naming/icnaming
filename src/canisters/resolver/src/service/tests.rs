@@ -779,7 +779,7 @@ mod import_record_value {
     use super::*;
     use common::permissions::get_admin;
 
-    fn generate_resolver_value_import_upsert_items(
+    fn generate_resolver_value_import_upsert_item(
         name: &str,
         key: &str,
         value: &str,
@@ -792,7 +792,7 @@ mod import_record_value {
         item
     }
 
-    fn generate_resolver_value_import_insert_or_ignore_items(
+    fn generate_resolver_value_import_insert_or_ignore_item(
         name: &str,
         key: &str,
         value: &str,
@@ -805,7 +805,7 @@ mod import_record_value {
         item
     }
 
-    fn generate_resolver_value_import_remove_items(
+    fn generate_resolver_value_import_remove_item(
         name: &str,
         key: &str,
         value: &str,
@@ -819,16 +819,11 @@ mod import_record_value {
     }
 
     #[rstest]
-    fn test_import_record_value_upsert_success(
-        _init_test: (),
-        _mock_now: u64,
-        mock_user1: Principal,
-        service: ResolverService,
-    ) {
+    fn test_import_record_value_upsert_success(_init_test: (), _mock_now: u64) {
         // arrange
         let name = "nice.ic";
         let icp_addr = "rrkah-fqaaa-aaaaa-aaaaq-cai";
-        let item = generate_resolver_value_import_upsert_items(name, RESOLVER_KEY_ICP, icp_addr);
+        let item = generate_resolver_value_import_upsert_item(name, RESOLVER_KEY_ICP, icp_addr);
 
         // add resolver
         add_test_resolver(name);
@@ -857,17 +852,12 @@ mod import_record_value {
     }
 
     #[rstest]
-    fn test_import_record_value_insert_or_ignore_success(
-        _init_test: (),
-        _mock_now: u64,
-        mock_user1: Principal,
-        service: ResolverService,
-    ) {
+    fn test_import_record_value_insert_or_ignore_success(_init_test: (), _mock_now: u64) {
         // arrange
         let name = "nice.ic";
         let icp_addr = "rrkah-fqaaa-aaaaa-aaaaq-cai";
         let item =
-            generate_resolver_value_import_insert_or_ignore_items(name, RESOLVER_KEY_ICP, icp_addr);
+            generate_resolver_value_import_insert_or_ignore_item(name, RESOLVER_KEY_ICP, icp_addr);
 
         // add resolver
         add_test_resolver(name);
@@ -896,16 +886,11 @@ mod import_record_value {
     }
 
     #[rstest]
-    fn test_import_record_value_remove_normal_resolver_success(
-        _init_test: (),
-        _mock_now: u64,
-        mock_user1: Principal,
-        service: ResolverService,
-    ) {
+    fn test_import_record_value_remove_normal_resolver_success(_init_test: (), _mock_now: u64) {
         // arrange
         let name = "nice.ic";
         let icp_addr = "rrkah-fqaaa-aaaaa-aaaaq-cai";
-        let item = generate_resolver_value_import_remove_items(name, RESOLVER_KEY_ICP, icp_addr);
+        let item = generate_resolver_value_import_remove_item(name, RESOLVER_KEY_ICP, icp_addr);
 
         // add resolver
         add_test_resolver(name);
@@ -934,15 +919,10 @@ mod import_record_value {
     }
 
     #[rstest]
-    fn test_import_record_value_remove_prime_name_empty_success(
-        _init_test: (),
-        _mock_now: u64,
-        mock_user1: Principal,
-        service: ResolverService,
-    ) {
+    fn test_import_record_value_remove_prime_name_empty_success(_init_test: (), _mock_now: u64) {
         // arrange
         let name = "nice.ic";
-        let item = generate_resolver_value_import_remove_items(
+        let item = generate_resolver_value_import_remove_item(
             name,
             RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL,
             "",
@@ -977,16 +957,11 @@ mod import_record_value {
         );
     }
     #[rstest]
-    fn test_import_record_value_remove_prime_name_normal_success(
-        _init_test: (),
-        _mock_now: u64,
-        mock_user1: Principal,
-        service: ResolverService,
-    ) {
+    fn test_import_record_value_remove_prime_name_normal_success(_init_test: (), _mock_now: u64) {
         // arrange
         let name = "nice.ic";
         let icp_addr = "rrkah-fqaaa-aaaaa-aaaaq-cai";
-        let item = generate_resolver_value_import_remove_items(
+        let item = generate_resolver_value_import_remove_item(
             name,
             RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL,
             icp_addr,
@@ -1012,5 +987,28 @@ mod import_record_value {
             UpdatePrimaryNameInput::Remove(Principal::from_text(icp_addr).unwrap())
         );
         assert!(result.update_records_input.is_empty());
+    }
+    #[rstest]
+    fn test_import_record_value_remove_prime_name_invalid(_init_test: (), _mock_now: u64) {
+        // arrange
+        let name = "nice.ic";
+        let icp_addr = "123456789";
+        let item = generate_resolver_value_import_remove_item(
+            name,
+            RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL,
+            icp_addr,
+        );
+
+        // add resolver
+        add_test_resolver(name);
+
+        // act
+        let patch_values = item.into();
+        let patch_values_validator: PatchValuesValidator =
+            PatchValuesValidator::new(name.to_string(), patch_values);
+        let input_generator = patch_values_validator.resolver_value_import_validate();
+
+        // assert
+        assert!(input_generator.is_err(), "{:?}", input_generator);
     }
 }

@@ -497,6 +497,7 @@ impl SetRecordByOwnerValidator {
     }
 }
 
+#[derive(Debug)]
 pub struct SetRecordValueInputGenerator {
     pub name: String,
     pub patch_values: HashMap<String, UpdateRecordInput>,
