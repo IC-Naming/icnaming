@@ -118,20 +118,17 @@ mod set_record_validation {
         patch_values.insert(invalid_resolver_key.to_string(), "icns".to_string());
         // add resolver
         add_test_resolver(name);
-
         // act
-        let result = SetRecordValueValidator::new(
+        let patch_values: PatchValuesInput = patch_values.into();
+        let patch_value_validator = PatchValuesValidator::new(name.to_string(), patch_values);
+        let owner_validator = patch_value_validator.owner_validate(
             must_not_anonymous(&mock_user1).unwrap(),
-            name.to_string(),
-            patch_values,
             Resolver::new(name.to_string()),
-        )
-        .validate()
-        .await;
+        );
 
         // assert
-        assert!(result.is_err());
-        match result {
+        assert!(owner_validator.is_err());
+        match owner_validator {
             Err(e) => {
                 assert_eq!(
                     e,
@@ -162,18 +159,16 @@ mod set_record_validation {
         add_test_resolver(name);
 
         // act
-        let result = SetRecordValueValidator::new(
+        let patch_values: PatchValuesInput = patch_values.into();
+        let patch_value_validator = PatchValuesValidator::new(name.to_string(), patch_values);
+        let owner_validator = patch_value_validator.owner_validate(
             must_not_anonymous(&mock_user1).unwrap(),
-            name.to_string(),
-            patch_values,
             Resolver::new(name.to_string()),
-        )
-        .validate()
-        .await;
+        );
 
         // assert
-        assert!(result.is_err());
-        match result {
+        assert!(owner_validator.is_err());
+        match owner_validator {
             Err(e) => {
                 assert_eq!(
                     e,
@@ -203,18 +198,14 @@ mod set_record_validation {
         for i in 0..RESOLVER_ITEM_MAX_COUNT {
             resolver.set_record_value(format!("{}", i), format!("{}", i));
         }
-        let result = SetRecordValueValidator::new(
-            must_not_anonymous(&mock_user1).unwrap(),
-            name.to_string(),
-            patch_values,
-            resolver,
-        )
-        .validate()
-        .await;
+        let patch_values: PatchValuesInput = patch_values.into();
+        let patch_value_validator = PatchValuesValidator::new(name.to_string(), patch_values);
+        let owner_validator = patch_value_validator
+            .owner_validate(must_not_anonymous(&mock_user1).unwrap(), resolver);
 
         // assert
-        assert!(result.is_err());
-        match result {
+        assert!(owner_validator.is_err());
+        match owner_validator {
             Err(e) => {
                 assert_eq!(
                     e,
@@ -252,15 +243,17 @@ mod set_record_validation {
             });
 
         // act
-        let mut context = SetRecordValueValidator::new(
-            must_not_anonymous(&mock_user1).unwrap(),
-            name.to_string(),
-            patch_values,
-            Resolver::new(name.to_string()),
-        );
-        context.registry_api = Arc::new(mock_registry_api);
+        let patch_values: PatchValuesInput = patch_values.into();
+        let patch_value_validator = PatchValuesValidator::new(name.to_string(), patch_values);
 
-        let result = context.validate().await;
+        let mut owner_validator = patch_value_validator
+            .owner_validate(
+                must_not_anonymous(&mock_user1).unwrap(),
+                Resolver::new(name.to_string()),
+            )
+            .unwrap();
+        owner_validator.registry_api = Arc::new(mock_registry_api);
+        let result = owner_validator.validate().await;
 
         // assert
         assert!(result.is_err());
@@ -301,15 +294,17 @@ mod set_record_validation {
             });
 
         // act
-        let mut context = SetRecordValueValidator::new(
-            must_not_anonymous(&owner).unwrap(),
-            name.to_string(),
-            patch_values,
-            Resolver::new(name.to_string()),
-        );
-        context.registry_api = Arc::new(mock_registry_api);
-
-        let result = context.validate().await;
+        let patch_values: PatchValuesInput = patch_values.into();
+        let patch_value_validator = PatchValuesValidator::new(name.to_string(), patch_values);
+        let mut owner_validator = patch_value_validator
+            .owner_validate(
+                must_not_anonymous(&owner).unwrap(),
+                Resolver::new(name.to_string()),
+            )
+            .unwrap();
+        owner_validator.registry_api = Arc::new(mock_registry_api);
+        let input_generator = owner_validator.validate().await.unwrap();
+        let result = input_generator.generate();
 
         // assert
         assert!(result.is_ok(), "{:?}", result);
@@ -364,15 +359,18 @@ mod set_record_validation {
             });
 
         // act
-        let mut context = SetRecordValueValidator::new(
-            must_not_anonymous(&owner).unwrap(),
-            name.to_string(),
-            patch_values,
-            Resolver::new(name.to_string()),
-        );
-        context.registry_api = Arc::new(mock_registry_api);
+        let patch_values: PatchValuesInput = patch_values.into();
+        let patch_value_validator = PatchValuesValidator::new(name.to_string(), patch_values);
 
-        let result = context.validate().await;
+        let mut owner_validator = patch_value_validator
+            .owner_validate(
+                must_not_anonymous(&owner).unwrap(),
+                Resolver::new(name.to_string()),
+            )
+            .unwrap();
+        owner_validator.registry_api = Arc::new(mock_registry_api);
+        let input_generator = owner_validator.validate().await.unwrap();
+        let result = input_generator.generate();
 
         // assert
         assert!(result.is_ok(), "{:?}", result);
@@ -414,15 +412,18 @@ mod set_record_validation {
             });
 
         // act
-        let mut context = SetRecordValueValidator::new(
-            must_not_anonymous(&owner).unwrap(),
-            name.to_string(),
-            patch_values,
-            Resolver::new(name.to_string()),
-        );
-        context.registry_api = Arc::new(mock_registry_api);
+        let patch_values: PatchValuesInput = patch_values.into();
+        let patch_value_validator = PatchValuesValidator::new(name.to_string(), patch_values);
 
-        let result = context.validate().await;
+        let mut owner_validator = patch_value_validator
+            .owner_validate(
+                must_not_anonymous(&owner).unwrap(),
+                Resolver::new(name.to_string()),
+            )
+            .unwrap();
+        owner_validator.registry_api = Arc::new(mock_registry_api);
+        let input_generator = owner_validator.validate().await.unwrap();
+        let result = input_generator.generate();
 
         // assert
         assert!(result.is_ok(), "{:?}", result);
@@ -464,19 +465,21 @@ mod set_record_validation {
             });
 
         // act
-        let mut context = SetRecordValueValidator::new(
-            must_not_anonymous(&mock_user1).unwrap(),
-            name.to_string(),
-            patch_values,
-            Resolver::new(name.to_string()),
-        );
-        context.registry_api = Arc::new(mock_registry_api);
+        let patch_values: PatchValuesInput = patch_values.into();
+        let patch_value_validator = PatchValuesValidator::new(name.to_string(), patch_values);
 
-        let result = context.validate().await;
+        let mut owner_validator = patch_value_validator
+            .owner_validate(
+                must_not_anonymous(&mock_user1).unwrap(),
+                Resolver::new(name.to_string()),
+            )
+            .unwrap();
+        owner_validator.registry_api = Arc::new(mock_registry_api);
+        let input_generator = owner_validator.validate().await;
 
         // assert
-        assert!(result.is_err());
-        let result = result.err().unwrap();
+        assert!(input_generator.is_err());
+        let result = input_generator.err().unwrap();
         assert_eq!(result, NamingError::PermissionDenied);
     }
 
@@ -514,15 +517,17 @@ mod set_record_validation {
             });
 
         // act
-        let mut context = SetRecordValueValidator::new(
-            must_not_anonymous(&caller_registration).unwrap(),
-            name.to_string(),
-            patch_values,
-            Resolver::new(name.to_string()),
-        );
-        context.registry_api = Arc::new(mock_registry_api);
-
-        let result = context.validate().await;
+        let patch_values: PatchValuesInput = patch_values.into();
+        let patch_value_validator = PatchValuesValidator::new(name.to_string(), patch_values);
+        let mut owner_validator = patch_value_validator
+            .owner_validate(
+                must_not_anonymous(&caller_registration).unwrap(),
+                Resolver::new(name.to_string()),
+            )
+            .unwrap();
+        owner_validator.registry_api = Arc::new(mock_registry_api);
+        let input_generator = owner_validator.validate().await.unwrap();
+        let result = input_generator.generate();
 
         // assert
         assert!(result.is_ok(), "{:?}", result);
@@ -567,19 +572,20 @@ mod set_record_validation {
             });
 
         // act
-        let mut context = SetRecordValueValidator::new(
-            must_not_anonymous(&caller_registration).unwrap(),
-            name.to_string(),
-            patch_values,
-            Resolver::new(name.to_string()),
-        );
-        context.registry_api = Arc::new(mock_registry_api);
-
-        let result = context.validate().await;
+        let patch_values: PatchValuesInput = patch_values.into();
+        let patch_value_validator = PatchValuesValidator::new(name.to_string(), patch_values);
+        let mut owner_validator = patch_value_validator
+            .owner_validate(
+                must_not_anonymous(&caller_registration).unwrap(),
+                Resolver::new(name.to_string()),
+            )
+            .unwrap();
+        owner_validator.registry_api = Arc::new(mock_registry_api);
+        let input_generator = owner_validator.validate().await;
 
         // assert
-        assert!(result.is_err());
-        let result = result.err().unwrap();
+        assert!(input_generator.is_err());
+        let result = input_generator.err().unwrap();
         assert_eq!(result, NamingError::PermissionDenied);
     }
 }

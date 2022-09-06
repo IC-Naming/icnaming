@@ -61,7 +61,7 @@ impl ResolverService {
         &mut self,
         call_context: CallContext,
         name: &str,
-        patch_value: HashMap<String, String>,
+        patch_values: HashMap<String, String>,
     ) -> ServiceResult<bool> {
         let caller = call_context.must_not_anonymous()?;
 
@@ -74,12 +74,7 @@ impl ResolverService {
                 Resolver::new(name.to_string())
             }
         });
-
-        // let context = SetRecordValueValidator::new(caller, name.to_string(), patch_value, resolver);
-        // let input = context.validate().await?;
-        //
-        // input.update_state()?;
-        let patch_values: PatchValuesInput = patch_value.into();
+        let patch_values: PatchValuesInput = patch_values.into();
 
         let patch_value_validator = PatchValuesValidator::new(name.to_string(), patch_values);
         let owner_validator = patch_value_validator.owner_validate(caller, resolver)?;
@@ -407,9 +402,9 @@ impl PatchValuesValidator {
         ))
     }
 
-    pub fn resolver_value_import_validate(&self) -> ServiceResult<SetRecordByOwnerInputGenerator> {
+    pub fn resolver_value_import_validate(&self) -> ServiceResult<SetRecordValueInputGenerator> {
         if let Some(patch_values) = self.get_remove_update_primary_name_input() {
-            return Ok(SetRecordByOwnerInputGenerator::new(
+            return Ok(SetRecordValueInputGenerator::new(
                 self.name.clone(),
                 patch_values,
                 None,
@@ -418,7 +413,7 @@ impl PatchValuesValidator {
             let patch_values = self.patch_values_validate(None)?;
             let update_primary_name_input_value = self.get_update_primary_name_input();
 
-            Ok(SetRecordByOwnerInputGenerator::new(
+            Ok(SetRecordValueInputGenerator::new(
                 self.name.clone(),
                 patch_values,
                 update_primary_name_input_value,
@@ -451,7 +446,7 @@ impl SetRecordByOwnerValidator {
         }
     }
 
-    pub async fn validate(&self) -> ServiceResult<SetRecordByOwnerInputGenerator> {
+    pub async fn validate(&self) -> ServiceResult<SetRecordValueInputGenerator> {
         let users = self.registry_api.get_users(&self.name).await?;
         let owner = users.get_owner();
 
@@ -476,7 +471,7 @@ impl SetRecordByOwnerValidator {
             self.caller.0.clone()
         };
 
-        Ok(SetRecordByOwnerInputGenerator::new(
+        Ok(SetRecordValueInputGenerator::new(
             self.name.clone(),
             self.patch_values
                 .iter()
@@ -501,19 +496,19 @@ impl SetRecordByOwnerValidator {
 pub struct SetRecordValueInputGenerator {
     pub name: String,
     pub patch_values: HashMap<String, UpdateRecordInput>,
-    pub update_primary_name_input_value: Option<PatchValueOperation>,
+    pub update_primary_name_input: Option<PatchValueOperation>,
 }
 
 impl SetRecordValueInputGenerator {
     pub fn new(
         name: String,
         patch_values: HashMap<String, UpdateRecordInput>,
-        update_primary_name_input_value: Option<PatchValueOperation>,
+        update_primary_name_input: Option<PatchValueOperation>,
     ) -> Self {
         Self {
             name,
             patch_values,
-            update_primary_name_input_value,
+            update_primary_name_input,
         }
     }
 
@@ -521,9 +516,7 @@ impl SetRecordValueInputGenerator {
         Ok(SetRecordValueInput {
             name: self.name.clone(),
             update_records_input: self.patch_values.clone(),
-            update_primary_name_input: if let Some(value) =
-                self.update_primary_name_input_value.clone()
-            {
+            update_primary_name_input: if let Some(value) = self.update_primary_name_input.clone() {
                 value.into()
             } else {
                 UpdatePrimaryNameInput::DoNothing
