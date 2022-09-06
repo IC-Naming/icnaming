@@ -777,7 +777,6 @@ mod batch_get_reverse_resolver {
 
 mod import_record_value {
     use super::*;
-    use common::permissions::get_admin;
 
     fn generate_resolver_value_import_item(
         name: &str,

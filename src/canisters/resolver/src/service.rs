@@ -1,14 +1,13 @@
 use std::collections::HashMap;
-use std::hash::Hash;
+
 use std::str::FromStr;
 use std::sync::Arc;
 use std::vec::Vec;
 
 use candid::{CandidType, Deserialize, Principal};
-use ic_cdk::{call, caller};
 
 use common::{AuthPrincipal, CallContext};
-use log::{debug, error, info, warn};
+use log::{debug, error, info};
 
 use common::canister_api::ic_impl::RegistryApi;
 use common::canister_api::IRegistryApi;
@@ -20,7 +19,7 @@ use common::dto::IRegistryUsers;
 use common::errors::*;
 
 use common::named_canister_ids::{is_named_canister_id, CanisterNames};
-use common::permissions::{must_be_system_owner, must_not_anonymous};
+use common::permissions::must_not_anonymous;
 
 use crate::coinaddress::{validate_btc_address, validate_ltc_address};
 use crate::resolver_store::*;
