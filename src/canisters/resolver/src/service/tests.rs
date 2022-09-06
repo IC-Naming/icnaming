@@ -779,85 +779,76 @@ mod import_record_value {
     use super::*;
     use common::permissions::get_admin;
 
-    fn generate_resolver_value_import_upsert_item(
+    fn generate_resolver_value_import_item(
         name: &str,
         key: &str,
         value: &str,
+        operator: String,
     ) -> ResolverValueImportItem {
-        let item = ResolverValueImportItem {
-            name: name.to_string(),
-            key: key.to_string(),
-            value_and_operation: PatchValueOperation::Upsert(value.to_string()),
-        };
-        item
+        match operator.as_str() {
+            "upsert" => {
+                let item = ResolverValueImportItem {
+                    name: name.to_string(),
+                    key: key.to_string(),
+                    value_and_operation: PatchValueOperation::Upsert(value.to_string()),
+                };
+                item
+            }
+            "insert_or_ignore" => {
+                let item = ResolverValueImportItem {
+                    name: name.to_string(),
+                    key: key.to_string(),
+                    value_and_operation: PatchValueOperation::InsertOrIgnore(value.to_string()),
+                };
+                item
+            }
+            "remove" => {
+                let item = ResolverValueImportItem {
+                    name: name.to_string(),
+                    key: key.to_string(),
+                    value_and_operation: PatchValueOperation::Remove(value.to_string()),
+                };
+                item
+            }
+            _ => panic!("invalid operator"),
+        }
     }
 
-    fn generate_resolver_value_import_insert_or_ignore_item(
-        name: &str,
-        key: &str,
-        value: &str,
-    ) -> ResolverValueImportItem {
-        let item = ResolverValueImportItem {
-            name: name.to_string(),
-            key: key.to_string(),
-            value_and_operation: PatchValueOperation::InsertOrIgnore(value.to_string()),
-        };
-        item
+    fn get_expect_update_record_input(value: &str, operator: String) -> UpdateRecordInput {
+        match operator.as_str() {
+            "upsert" => UpdateRecordInput::Set(value.to_string()),
+            "insert_or_ignore" => UpdateRecordInput::InsertOrIgnore(value.to_string()),
+            "remove" => UpdateRecordInput::Remove,
+            _ => panic!("invalid operator"),
+        }
     }
 
-    fn generate_resolver_value_import_remove_item(
-        name: &str,
-        key: &str,
+    fn get_expect_update_primary_name_input(
         value: &str,
-    ) -> ResolverValueImportItem {
-        let item = ResolverValueImportItem {
-            name: name.to_string(),
-            key: key.to_string(),
-            value_and_operation: PatchValueOperation::Remove(value.to_string()),
-        };
-        item
+        operator: String,
+    ) -> UpdatePrimaryNameInput {
+        match operator.as_str() {
+            "upsert" => UpdatePrimaryNameInput::Set(Principal::from_text(value).unwrap()),
+            "insert_or_ignore" => {
+                UpdatePrimaryNameInput::InsertOrIgnore(Principal::from_text(value).unwrap())
+            }
+            "remove" => UpdatePrimaryNameInput::Remove(Principal::from_text(value).unwrap()),
+            _ => panic!("invalid operator"),
+        }
     }
 
     #[rstest]
-    fn test_import_record_value_upsert_success(_init_test: (), _mock_now: u64) {
-        // arrange
-        let name = "nice.ic";
-        let icp_addr = "rrkah-fqaaa-aaaaa-aaaaq-cai";
-        let item = generate_resolver_value_import_upsert_item(name, RESOLVER_KEY_ICP, icp_addr);
-
-        // add resolver
-        add_test_resolver(name);
-
-        // act
-        let patch_values = item.into();
-        let patch_values_validator: PatchValuesValidator =
-            PatchValuesValidator::new(name.to_string(), patch_values);
-        let input_generator = patch_values_validator
-            .resolver_value_import_validate()
-            .unwrap();
-        let result = input_generator.generate();
-
-        // assert
-        assert!(result.is_ok(), "{:?}", result);
-        let result = result.unwrap();
-        assert_eq!(
-            result.update_primary_name_input,
-            UpdatePrimaryNameInput::DoNothing
-        );
-        assert_eq!(result.update_records_input.len(), 1);
-        assert_eq!(
-            result.update_records_input.get(RESOLVER_KEY_ICP).unwrap(),
-            &UpdateRecordInput::Set(icp_addr.to_string())
-        );
-    }
-
-    #[rstest]
-    fn test_import_record_value_insert_or_ignore_success(_init_test: (), _mock_now: u64) {
+    #[case("upsert")]
+    #[case("insert_or_ignore")]
+    #[case("remove")]
+    fn test_import_record_value_success(_init_test: (), #[case] operator: String) {
         // arrange
         let name = "nice.ic";
         let icp_addr = "rrkah-fqaaa-aaaaa-aaaaq-cai";
         let item =
-            generate_resolver_value_import_insert_or_ignore_item(name, RESOLVER_KEY_ICP, icp_addr);
+            generate_resolver_value_import_item(name, RESOLVER_KEY_ICP, icp_addr, operator.clone());
+
+        let expect_update_record_input = get_expect_update_record_input(icp_addr, operator.clone());
 
         // add resolver
         add_test_resolver(name);
@@ -881,16 +872,27 @@ mod import_record_value {
         assert_eq!(result.update_records_input.len(), 1);
         assert_eq!(
             result.update_records_input.get(RESOLVER_KEY_ICP).unwrap(),
-            &UpdateRecordInput::InsertOrIgnore(icp_addr.to_string())
+            &expect_update_record_input
         );
     }
 
     #[rstest]
-    fn test_import_record_value_remove_normal_resolver_success(_init_test: (), _mock_now: u64) {
+    #[case("upsert")]
+    #[case("insert_or_ignore")]
+    #[case("remove")]
+    fn test_import_record_value_primary_name_success(_init_test: (), #[case] operator: String) {
         // arrange
         let name = "nice.ic";
         let icp_addr = "rrkah-fqaaa-aaaaa-aaaaq-cai";
-        let item = generate_resolver_value_import_remove_item(name, RESOLVER_KEY_ICP, icp_addr);
+        let item = generate_resolver_value_import_item(
+            name,
+            RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL,
+            icp_addr,
+            operator.clone(),
+        );
+
+        let expect_update_primary_name_input =
+            get_expect_update_primary_name_input(icp_addr, operator.clone());
 
         // add resolver
         add_test_resolver(name);
@@ -909,23 +911,20 @@ mod import_record_value {
         let result = result.unwrap();
         assert_eq!(
             result.update_primary_name_input,
-            UpdatePrimaryNameInput::DoNothing
+            expect_update_primary_name_input
         );
-        assert_eq!(result.update_records_input.len(), 1);
-        assert_eq!(
-            result.update_records_input.get(RESOLVER_KEY_ICP).unwrap(),
-            &UpdateRecordInput::Remove
-        );
+        assert!(result.update_records_input.is_empty());
     }
 
     #[rstest]
-    fn test_import_record_value_remove_prime_name_empty_success(_init_test: (), _mock_now: u64) {
+    fn test_import_record_value_remove_primary_name_empty_success(_init_test: ()) {
         // arrange
         let name = "nice.ic";
-        let item = generate_resolver_value_import_remove_item(
+        let item = generate_resolver_value_import_item(
             name,
             RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL,
             "",
+            "remove".to_string(),
         );
 
         // add resolver
@@ -956,15 +955,17 @@ mod import_record_value {
             &UpdateRecordInput::Remove
         );
     }
+
     #[rstest]
-    fn test_import_record_value_remove_prime_name_normal_success(_init_test: (), _mock_now: u64) {
+    fn test_import_record_value_remove_primary_name_normal_success(_init_test: ()) {
         // arrange
         let name = "nice.ic";
         let icp_addr = "rrkah-fqaaa-aaaaa-aaaaq-cai";
-        let item = generate_resolver_value_import_remove_item(
+        let item = generate_resolver_value_import_item(
             name,
             RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL,
             icp_addr,
+            "remove".to_string(),
         );
 
         // add resolver
@@ -988,15 +989,17 @@ mod import_record_value {
         );
         assert!(result.update_records_input.is_empty());
     }
+
     #[rstest]
-    fn test_import_record_value_remove_prime_name_invalid(_init_test: (), _mock_now: u64) {
+    fn test_import_record_value_remove_primary_name_addr_invalid_principal(_init_test: ()) {
         // arrange
         let name = "nice.ic";
-        let icp_addr = "123456789";
-        let item = generate_resolver_value_import_remove_item(
+        let primary_name_addr = "123456789";
+        let item = generate_resolver_value_import_item(
             name,
             RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL,
-            icp_addr,
+            primary_name_addr,
+            "remove".to_string(),
         );
 
         // add resolver
@@ -1010,5 +1013,137 @@ mod import_record_value {
 
         // assert
         assert!(input_generator.is_err(), "{:?}", input_generator);
+        assert_eq!(
+            input_generator.unwrap_err(),
+            NamingError::InvalidResolverValueFormat {
+                value: primary_name_addr.to_string(),
+                format: "it is no a valid principal text".to_string(),
+            }
+        );
+    }
+
+    #[rstest]
+    #[case("upsert")]
+    #[case("insert_or_ignore")]
+    #[case("remove")]
+    fn test_import_record_value_validation_value_invalid(_init_test: (), #[case] operator: String) {
+        // arrange
+        let name = "nice.ic";
+        let mut value = String::new();
+        for _ in 0..(RESOLVER_VALUE_MAX_LENGTH + 1) {
+            value.push('a');
+        }
+        let item =
+            generate_resolver_value_import_item(name, RESOLVER_KEY_ICP, value.as_str(), operator);
+
+        // add resolver
+        add_test_resolver(name);
+
+        // act
+        let patch_values = item.into();
+        let patch_values_validator: PatchValuesValidator =
+            PatchValuesValidator::new(name.to_string(), patch_values);
+        let input_generator = patch_values_validator.resolver_value_import_validate();
+
+        // assert
+        assert!(input_generator.is_err());
+        match input_generator {
+            Err(e) => {
+                assert_eq!(
+                    e,
+                    NamingError::ValueMaxLengthError {
+                        max: RESOLVER_VALUE_MAX_LENGTH
+                    }
+                );
+            }
+            _ => assert!(false),
+        }
+    }
+
+    #[rstest]
+    #[case("upsert")]
+    #[case("insert_or_ignore")]
+    #[case("remove")]
+    fn test_import_record_value_primary_name_value_validation_value_invalid(
+        _init_test: (),
+        #[case] operator: String,
+    ) {
+        // arrange
+        let name = "nice.ic";
+        let mut value = String::new();
+        for _ in 0..(RESOLVER_VALUE_MAX_LENGTH + 1) {
+            value.push('a');
+        }
+        let item = generate_resolver_value_import_item(
+            name,
+            RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL,
+            value.as_str(),
+            operator,
+        );
+
+        // add resolver
+        add_test_resolver(name);
+
+        // act
+        let patch_values = item.into();
+        let patch_values_validator: PatchValuesValidator =
+            PatchValuesValidator::new(name.to_string(), patch_values);
+        let input_generator = patch_values_validator.resolver_value_import_validate();
+
+        // assert
+        assert!(input_generator.is_err());
+        match input_generator {
+            Err(e) => {
+                assert_eq!(
+                    e,
+                    NamingError::ValueMaxLengthError {
+                        max: RESOLVER_VALUE_MAX_LENGTH
+                    }
+                );
+            }
+            _ => assert!(false),
+        }
+    }
+
+    #[rstest]
+    #[case("upsert")]
+    #[case("insert_or_ignore")]
+    #[case("remove")]
+    fn test_set_record_validation_key_too_long(_init_test: (), #[case] operator: String) {
+        // arrange
+        let name = "nice.ic";
+        let mut value = String::new();
+        for _ in 0..(RESOLVER_VALUE_MAX_LENGTH + 1) {
+            value.push('a');
+        }
+        let item = generate_resolver_value_import_item(
+            name,
+            RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL,
+            value.as_str(),
+            operator,
+        );
+
+        // add resolver
+        add_test_resolver(name);
+
+        // act
+        let patch_values = item.into();
+        let patch_values_validator: PatchValuesValidator =
+            PatchValuesValidator::new(name.to_string(), patch_values);
+        let input_generator = patch_values_validator.resolver_value_import_validate();
+
+        // assert
+        assert!(input_generator.is_err());
+        match input_generator {
+            Err(e) => {
+                assert_eq!(
+                    e,
+                    NamingError::ValueMaxLengthError {
+                        max: RESOLVER_VALUE_MAX_LENGTH
+                    }
+                );
+            }
+            _ => assert!(false),
+        }
     }
 }
