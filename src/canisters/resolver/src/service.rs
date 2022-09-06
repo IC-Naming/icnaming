@@ -204,7 +204,7 @@ impl ResolverService {
         for input in list {
             let result = input.update_state();
             match result {
-                Ok(_) => info!("Imported registration: {:?}", input),
+                Ok(_) => info!("Imported resolver value: {:?}", input),
                 Err(err) => {
                     error!(
                         "Failed to import resolver value: {:?}, error:{:?}",
@@ -558,7 +558,7 @@ impl SetRecordValueInput {
                     }
                     UpdatePrimaryNameInput::InsertOrIgnore(value) => {
                         info!(
-                            "Insert or ignore reverse resolution principal {} {}",
+                            "Inserting or ignore reverse resolution principal {} {}",
                             self.name, value
                         );
                         if !store.has_primary_name_reverse(self.name.clone()) {
@@ -588,7 +588,7 @@ impl SetRecordValueInput {
                             resolver.set_record_value(key.clone(), value.clone());
                         }
                         UpdateRecordInput::InsertOrIgnore(value) => {
-                            info!("Inserting resolver record {}:{}", &self.name, key);
+                            info!("Inserting or ignore resolver record {}:{}", &self.name, key);
                             if !resolver.has_record_value(key) {
                                 resolver.set_record_value(key.clone(), value.clone());
                             }
