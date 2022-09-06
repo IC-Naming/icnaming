@@ -778,42 +778,239 @@ mod batch_get_reverse_resolver {
 mod import_record_value {
     use super::*;
     use common::permissions::get_admin;
-    //
-    // #[rstest]
-    // fn test_import_record_value(_init_test: (), _mock_now: u64, mock_user1: Principal, service: ResolverService) {
-    //     let admin = get_admin();
-    //     let name = "nice.ic";
-    //     let mut patch_values: HashMap<String, String> = HashMap::new();
-    //     patch_values.insert(RESOLVER_KEY_GITHUB.to_string(), "icns".to_string());
-    //     // add resolver
-    //     add_test_resolver(name);
-    //
-    //     // act
-    //     let mut resolver = Resolver::new(name.to_string());
-    //     for i in 0..RESOLVER_ITEM_MAX_COUNT {
-    //         resolver.set_record_value(format!("{}", i), format!("{}", i));
-    //     }
-    //     let result = SetRecordValueValidator::new(
-    //         must_not_anonymous(&mock_user1).unwrap(),
-    //         name.to_string(),
-    //         patch_values,
-    //         resolver,
-    //     )
-    //         .validate()
-    //         .await;
-    //
-    //     // assert
-    //     assert!(result.is_err());
-    //     match result {
-    //         Err(e) => {
-    //             assert_eq!(
-    //                 e,
-    //                 NamingError::TooManyResolverKeys {
-    //                     max: RESOLVER_ITEM_MAX_COUNT as u32,
-    //                 }
-    //             );
-    //         }
-    //         _ => assert!(false),
-    //     }
-    // }
+
+    fn generate_resolver_value_import_upsert_items(
+        name: &str,
+        key: &str,
+        value: &str,
+    ) -> ResolverValueImportItem {
+        let item = ResolverValueImportItem {
+            name: name.to_string(),
+            key: key.to_string(),
+            value_and_operation: PatchValueOperation::Upsert(value.to_string()),
+        };
+        item
+    }
+
+    fn generate_resolver_value_import_insert_or_ignore_items(
+        name: &str,
+        key: &str,
+        value: &str,
+    ) -> ResolverValueImportItem {
+        let item = ResolverValueImportItem {
+            name: name.to_string(),
+            key: key.to_string(),
+            value_and_operation: PatchValueOperation::InsertOrIgnore(value.to_string()),
+        };
+        item
+    }
+
+    fn generate_resolver_value_import_remove_items(
+        name: &str,
+        key: &str,
+        value: &str,
+    ) -> ResolverValueImportItem {
+        let item = ResolverValueImportItem {
+            name: name.to_string(),
+            key: key.to_string(),
+            value_and_operation: PatchValueOperation::Remove(value.to_string()),
+        };
+        item
+    }
+
+    #[rstest]
+    fn test_import_record_value_upsert_success(
+        _init_test: (),
+        _mock_now: u64,
+        mock_user1: Principal,
+        service: ResolverService,
+    ) {
+        // arrange
+        let name = "nice.ic";
+        let icp_addr = "rrkah-fqaaa-aaaaa-aaaaq-cai";
+        let item = generate_resolver_value_import_upsert_items(name, RESOLVER_KEY_ICP, icp_addr);
+
+        // add resolver
+        add_test_resolver(name);
+
+        // act
+        let patch_values = item.into();
+        let patch_values_validator: PatchValuesValidator =
+            PatchValuesValidator::new(name.to_string(), patch_values);
+        let input_generator = patch_values_validator
+            .resolver_value_import_validate()
+            .unwrap();
+        let result = input_generator.generate();
+
+        // assert
+        assert!(result.is_ok(), "{:?}", result);
+        let result = result.unwrap();
+        assert_eq!(
+            result.update_primary_name_input,
+            UpdatePrimaryNameInput::DoNothing
+        );
+        assert_eq!(result.update_records_input.len(), 1);
+        assert_eq!(
+            result.update_records_input.get(RESOLVER_KEY_ICP).unwrap(),
+            &UpdateRecordInput::Set(icp_addr.to_string())
+        );
+    }
+
+    #[rstest]
+    fn test_import_record_value_insert_or_ignore_success(
+        _init_test: (),
+        _mock_now: u64,
+        mock_user1: Principal,
+        service: ResolverService,
+    ) {
+        // arrange
+        let name = "nice.ic";
+        let icp_addr = "rrkah-fqaaa-aaaaa-aaaaq-cai";
+        let item =
+            generate_resolver_value_import_insert_or_ignore_items(name, RESOLVER_KEY_ICP, icp_addr);
+
+        // add resolver
+        add_test_resolver(name);
+
+        // act
+        let patch_values = item.into();
+        let patch_values_validator: PatchValuesValidator =
+            PatchValuesValidator::new(name.to_string(), patch_values);
+        let input_generator = patch_values_validator
+            .resolver_value_import_validate()
+            .unwrap();
+        let result = input_generator.generate();
+
+        // assert
+        assert!(result.is_ok(), "{:?}", result);
+        let result = result.unwrap();
+        assert_eq!(
+            result.update_primary_name_input,
+            UpdatePrimaryNameInput::DoNothing
+        );
+        assert_eq!(result.update_records_input.len(), 1);
+        assert_eq!(
+            result.update_records_input.get(RESOLVER_KEY_ICP).unwrap(),
+            &UpdateRecordInput::InsertOrIgnore(icp_addr.to_string())
+        );
+    }
+
+    #[rstest]
+    fn test_import_record_value_remove_normal_resolver_success(
+        _init_test: (),
+        _mock_now: u64,
+        mock_user1: Principal,
+        service: ResolverService,
+    ) {
+        // arrange
+        let name = "nice.ic";
+        let icp_addr = "rrkah-fqaaa-aaaaa-aaaaq-cai";
+        let item = generate_resolver_value_import_remove_items(name, RESOLVER_KEY_ICP, icp_addr);
+
+        // add resolver
+        add_test_resolver(name);
+
+        // act
+        let patch_values = item.into();
+        let patch_values_validator: PatchValuesValidator =
+            PatchValuesValidator::new(name.to_string(), patch_values);
+        let input_generator = patch_values_validator
+            .resolver_value_import_validate()
+            .unwrap();
+        let result = input_generator.generate();
+
+        // assert
+        assert!(result.is_ok(), "{:?}", result);
+        let result = result.unwrap();
+        assert_eq!(
+            result.update_primary_name_input,
+            UpdatePrimaryNameInput::DoNothing
+        );
+        assert_eq!(result.update_records_input.len(), 1);
+        assert_eq!(
+            result.update_records_input.get(RESOLVER_KEY_ICP).unwrap(),
+            &UpdateRecordInput::Remove
+        );
+    }
+
+    #[rstest]
+    fn test_import_record_value_remove_prime_name_empty_success(
+        _init_test: (),
+        _mock_now: u64,
+        mock_user1: Principal,
+        service: ResolverService,
+    ) {
+        // arrange
+        let name = "nice.ic";
+        let item = generate_resolver_value_import_remove_items(
+            name,
+            RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL,
+            "",
+        );
+
+        // add resolver
+        add_test_resolver(name);
+
+        // act
+        let patch_values = item.into();
+        let patch_values_validator: PatchValuesValidator =
+            PatchValuesValidator::new(name.to_string(), patch_values);
+        let input_generator = patch_values_validator
+            .resolver_value_import_validate()
+            .unwrap();
+        let result = input_generator.generate();
+
+        // assert
+        assert!(result.is_ok(), "{:?}", result);
+        let result = result.unwrap();
+        assert_eq!(
+            result.update_primary_name_input,
+            UpdatePrimaryNameInput::DoNothing
+        );
+        assert_eq!(result.update_records_input.len(), 1);
+        assert_eq!(
+            result
+                .update_records_input
+                .get(RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL)
+                .unwrap(),
+            &UpdateRecordInput::Remove
+        );
+    }
+    #[rstest]
+    fn test_import_record_value_remove_prime_name_normal_success(
+        _init_test: (),
+        _mock_now: u64,
+        mock_user1: Principal,
+        service: ResolverService,
+    ) {
+        // arrange
+        let name = "nice.ic";
+        let icp_addr = "rrkah-fqaaa-aaaaa-aaaaq-cai";
+        let item = generate_resolver_value_import_remove_items(
+            name,
+            RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL,
+            icp_addr,
+        );
+
+        // add resolver
+        add_test_resolver(name);
+
+        // act
+        let patch_values = item.into();
+        let patch_values_validator: PatchValuesValidator =
+            PatchValuesValidator::new(name.to_string(), patch_values);
+        let input_generator = patch_values_validator
+            .resolver_value_import_validate()
+            .unwrap();
+        let result = input_generator.generate();
+
+        // assert
+        assert!(result.is_ok(), "{:?}", result);
+        let result = result.unwrap();
+        assert_eq!(
+            result.update_primary_name_input,
+            UpdatePrimaryNameInput::Remove(Principal::from_text(icp_addr).unwrap())
+        );
+        assert!(result.update_records_input.is_empty());
+    }
 }

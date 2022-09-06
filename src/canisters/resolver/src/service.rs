@@ -364,7 +364,7 @@ impl PatchValuesValidator {
             .cloned()
     }
 
-    fn get_remove_update_primary_name_input(&self) -> Option<HashMap<String, UpdateRecordInput>> {
+    fn get_remove_all(&self) -> Option<HashMap<String, UpdateRecordInput>> {
         if let Some(value) = self
             .patch_values
             .0
@@ -372,12 +372,16 @@ impl PatchValuesValidator {
         {
             match value {
                 PatchValueOperation::Remove(value) => {
-                    let mut patch_values = HashMap::new();
-                    patch_values.insert(
-                        RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL.to_string(),
-                        UpdateRecordInput::Remove,
-                    );
-                    Some(patch_values)
+                    if value.is_empty() {
+                        let mut patch_values = HashMap::new();
+                        patch_values.insert(
+                            RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL.to_string(),
+                            UpdateRecordInput::Remove,
+                        );
+                        Some(patch_values)
+                    } else {
+                        None
+                    }
                 }
                 _ => None,
             }
@@ -403,7 +407,7 @@ impl PatchValuesValidator {
     }
 
     pub fn resolver_value_import_validate(&self) -> ServiceResult<SetRecordValueInputGenerator> {
-        if let Some(patch_values) = self.get_remove_update_primary_name_input() {
+        if let Some(patch_values) = self.get_remove_all() {
             return Ok(SetRecordValueInputGenerator::new(
                 self.name.clone(),
                 patch_values,
