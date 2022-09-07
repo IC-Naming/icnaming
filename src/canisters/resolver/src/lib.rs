@@ -1,7 +1,10 @@
+extern crate core;
+
 mod coinaddress;
 mod http;
 mod resolver_store;
 mod service;
+mod set_record_value_input;
 mod state;
 
 mod reverse_resolver_store;
@@ -22,7 +25,8 @@ use ic_cdk_macros::*;
 use common::errors::{BooleanActorResponse, ErrorInfo, ServiceResult};
 use common::named_canister_ids::CanisterNames;
 
-use crate::service::{ResolverService, ResolverValueImportItem};
+use crate::service::ResolverService;
+use crate::set_record_value_input::ResolverValueImportItem;
 use crate::state::InitArgs;
 
 /// Ensure the resolver is created.
