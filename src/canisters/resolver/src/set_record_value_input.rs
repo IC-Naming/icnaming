@@ -87,7 +87,7 @@ pub fn group_up_resolver_value_import_items(
                             acc.get_mut(i)
                                 .unwrap()
                                 .insert(item.key.clone(), item.value_and_operation.clone());
-                            break;
+                            return acc;
                         }
                     }
                     let mut map = HashMap::new();
@@ -105,7 +105,7 @@ pub fn group_up_resolver_value_import_items(
     result
 }
 
-#[derive(Debug, Deserialize, CandidType, Clone)]
+#[derive(Debug, Deserialize, CandidType, Clone, PartialEq, Eq)]
 pub enum PatchValueOperation {
     Upsert(String),
     InsertOrIgnore(String),

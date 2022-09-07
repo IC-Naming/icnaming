@@ -556,6 +556,8 @@ mod import_record_value {
     use crate::set_record_value_input::{
         PatchValueOperation, UpdatePrimaryNameInput, UpdateRecordInput,
     };
+    use crate::ImportRecordValueRequest;
+    use itertools::cloned;
 
     fn generate_resolver_value_import_item(
         name: &str,
@@ -987,29 +989,58 @@ mod import_record_value {
     }
 
     #[rstest]
-    fn group_test(_init_test: ()) {
-        let name = "nice.ic";
-        let icp_addr_before = "rrkah-fqaaa-aaaaa-aaaaq-cai";
-        let icp_addr_after = "qjdve-lqaaa-aaaaa-aaaeq-cai";
-        let before_item = generate_resolver_value_import_item(
-            name,
-            RESOLVER_KEY_ICP,
-            icp_addr_before,
-            "insert_or_ignore".to_string(),
-        );
-        let after_item = generate_resolver_value_import_item(
-            name,
-            RESOLVER_KEY_ICP,
-            icp_addr_after,
-            "insert_or_ignore".to_string(),
-        );
+    fn group_up_resolver_value_import_items_test(_init_test: ()) {
+        let key_list = vec![RESOLVER_KEY_ICP, RESOLVER_KEY_BTC, RESOLVER_KEY_ETH];
+        let operation_list = vec!["upsert", "upsert", "insert_or_ignore", "remove", "upsert"];
+        let mut list = vec![];
+        let nice = "nice.ic";
+        let hello = "hello.ic";
 
-        let list = vec![before_item, after_item];
+        for key in &key_list {
+            for operation in &operation_list {
+                let item =
+                    generate_resolver_value_import_item(nice, key, "value", operation.to_string());
+                list.push(item);
+            }
+        }
+        for key in &key_list {
+            for operation in &operation_list {
+                let item =
+                    generate_resolver_value_import_item(hello, key, "value", operation.to_string());
+                list.push(item);
+            }
+        }
 
         let result = group_up_resolver_value_import_items(list);
-        assert!(!result.is_empty());
-        for item in result {
-            debug!("{:?}", item);
+
+        for item in result.clone() {
+            debug!("name: {}", item.name);
+            for sub_item in item.patch_values {
+                debug!("{:?}", sub_item);
+            }
+        }
+
+        let nice_group = result.iter().find(|item| item.name == nice).unwrap();
+
+        assert_eq!(nice_group.patch_values.len(), operation_list.len());
+        for (i, operation) in operation_list.iter().enumerate() {
+            for key in &key_list {
+                let item = nice_group.patch_values[i].0.get(key.to_owned()).unwrap();
+                let expect_item =
+                    generate_resolver_value_import_item(nice, key, "value", operation.to_string());
+                assert_eq!(item.to_owned(), expect_item.value_and_operation);
+            }
+        }
+
+        let hello_group = result.iter().find(|item| item.name == hello).unwrap();
+        assert_eq!(hello_group.patch_values.len(), operation_list.len());
+        for (i, operation) in operation_list.iter().enumerate() {
+            for key in &key_list {
+                let item = hello_group.patch_values[i].0.get(key.to_owned()).unwrap();
+                let expect_item =
+                    generate_resolver_value_import_item(hello, key, "value", operation.to_string());
+                assert_eq!(item.to_owned(), expect_item.value_and_operation);
+            }
         }
     }
 }
