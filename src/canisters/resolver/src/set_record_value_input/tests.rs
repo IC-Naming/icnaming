@@ -556,8 +556,6 @@ mod import_record_value {
     use crate::set_record_value_input::{
         PatchValueOperation, UpdatePrimaryNameInput, UpdateRecordInput,
     };
-    use crate::ImportRecordValueRequest;
-    use itertools::cloned;
 
     fn generate_resolver_value_import_item(
         name: &str,
