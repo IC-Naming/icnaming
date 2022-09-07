@@ -117,8 +117,7 @@ mod set_record_validation {
             .validate_and_generate_owner_validator(must_not_anonymous(&owner).unwrap())
             .unwrap();
         owner_validator.registry_api = Arc::new(mock_registry_api);
-        let input_generator = owner_validator.validate().await.unwrap();
-        let result = input_generator.generate();
+        let result = owner_validator.validate().await;
 
         // assert
         assert!(result.is_ok(), "{:?}", result);
@@ -180,8 +179,7 @@ mod set_record_validation {
             .validate_and_generate_owner_validator(must_not_anonymous(&owner).unwrap())
             .unwrap();
         owner_validator.registry_api = Arc::new(mock_registry_api);
-        let input_generator = owner_validator.validate().await.unwrap();
-        let result = input_generator.generate();
+        let result = owner_validator.validate().await;
 
         // assert
         assert!(result.is_ok(), "{:?}", result);
@@ -230,8 +228,7 @@ mod set_record_validation {
             .validate_and_generate_owner_validator(must_not_anonymous(&owner).unwrap())
             .unwrap();
         owner_validator.registry_api = Arc::new(mock_registry_api);
-        let input_generator = owner_validator.validate().await.unwrap();
-        let result = input_generator.generate();
+        let result = owner_validator.validate().await;
 
         // assert
         assert!(result.is_ok(), "{:?}", result);
@@ -487,8 +484,7 @@ mod set_record_validation {
             )
             .unwrap();
         owner_validator.registry_api = Arc::new(mock_registry_api);
-        let input_generator = owner_validator.validate().await.unwrap();
-        let result = input_generator.generate();
+        let result = owner_validator.validate().await;
 
         // assert
         assert!(result.is_ok(), "{:?}", result);
@@ -636,10 +632,7 @@ mod import_record_value {
         let patch_values = item.into();
         let patch_values_validator: PatchValuesValidator =
             PatchValuesValidator::new(name.to_string(), patch_values, resolver);
-        let input_generator = patch_values_validator
-            .validate_and_generate_input_generator()
-            .unwrap();
-        let result = input_generator.generate();
+        let result = patch_values_validator.validate_and_generate_input_generator();
 
         // assert
         assert!(result.is_ok(), "{:?}", result);
@@ -676,10 +669,7 @@ mod import_record_value {
         let patch_values = item.into();
         let patch_values_validator: PatchValuesValidator =
             PatchValuesValidator::new(name.to_string(), patch_values, resolver);
-        let input_generator = patch_values_validator
-            .validate_and_generate_input_generator()
-            .unwrap();
-        let result = input_generator.generate();
+        let result = patch_values_validator.validate_and_generate_input_generator();
 
         // assert
         assert!(result.is_ok(), "{:?}", result);
@@ -720,10 +710,7 @@ mod import_record_value {
         let patch_values = item.into();
         let patch_values_validator: PatchValuesValidator =
             PatchValuesValidator::new(name.to_string(), patch_values, resolver);
-        let input_generator = patch_values_validator
-            .validate_and_generate_input_generator()
-            .unwrap();
-        let result = input_generator.generate();
+        let result = patch_values_validator.validate_and_generate_input_generator();
 
         // assert
         assert!(result.is_ok(), "{:?}", result);
@@ -753,10 +740,7 @@ mod import_record_value {
         let patch_values = item.into();
         let patch_values_validator: PatchValuesValidator =
             PatchValuesValidator::new(name.to_string(), patch_values, resolver);
-        let input_generator = patch_values_validator
-            .validate_and_generate_input_generator()
-            .unwrap();
-        let result = input_generator.generate();
+        let result = patch_values_validator.validate_and_generate_input_generator();
 
         // assert
         assert!(result.is_ok(), "{:?}", result);
@@ -788,10 +772,7 @@ mod import_record_value {
         let patch_values = item.into();
         let patch_values_validator: PatchValuesValidator =
             PatchValuesValidator::new(name.to_string(), patch_values, resolver);
-        let input_generator = patch_values_validator
-            .validate_and_generate_input_generator()
-            .unwrap();
-        let result = input_generator.generate();
+        let result = patch_values_validator.validate_and_generate_input_generator();
 
         // assert
         assert!(result.is_ok(), "{:?}", result);
@@ -820,10 +801,7 @@ mod import_record_value {
         let patch_values = item.into();
         let patch_values_validator: PatchValuesValidator =
             PatchValuesValidator::new(name.to_string(), patch_values, resolver);
-        let input_generator = patch_values_validator
-            .validate_and_generate_input_generator()
-            .unwrap();
-        let result = input_generator.generate();
+        let result = patch_values_validator.validate_and_generate_input_generator();
 
         // assert
         assert!(result.is_ok(), "{:?}", result);

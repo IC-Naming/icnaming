@@ -1,5 +1,3 @@
-extern crate core;
-
 mod coinaddress;
 mod http;
 mod resolver_store;

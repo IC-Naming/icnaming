@@ -179,14 +179,11 @@ When(/^import_record_value$/, async function (table) {
     import_record_value_response = await localResolver.import_record_value(request)
 });
 Then(/^batch check record_value$/, async function (table) {
-    let dataTable = table.hashes()
-        .map((item) => {
-            return {
-                name: item.name,
-                key: item.key,
-                value: item.value
-            }
-        })
+    let dataTable: {
+        name: string,
+        key: string,
+        value: string
+    }[] = table.hashes();
     for (let data of dataTable) {
         let result = await resolver.get_record_value(data.name)
         logger.debug(result);
@@ -205,14 +202,11 @@ Then(/^batch check record_value$/, async function (table) {
     }
 });
 Then(/^batch check record_value should not in$/, async function (table) {
-    let dataTable = table.hashes()
-        .map((item) => {
-            return {
-                name: item.name,
-                key: item.key,
-                value: item.value
-            }
-        })
+    let dataTable: {
+        name: string,
+        key: string,
+        value: string
+    }[] = table.hashes();
     for (let data of dataTable) {
         let result = await resolver.get_record_value(data.name)
         logger.debug(result);

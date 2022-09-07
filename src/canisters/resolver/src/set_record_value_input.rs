@@ -205,7 +205,7 @@ impl PatchValuesValidator {
     }
 
     pub fn validate_and_generate_owner_validator(
-        &self,
+        self,
         caller: AuthPrincipal,
     ) -> ServiceResult<SetRecordByOwnerValidator> {
         let patch_values = self.validate_patch_values()?;
@@ -218,13 +218,10 @@ impl PatchValuesValidator {
             update_primary_name_input_value,
         ))
     }
-
-    pub fn validate_and_generate_input_generator(
-        &self,
-    ) -> ServiceResult<SetRecordValueInputGenerator> {
+    pub fn validate_and_generate_input_generator(self) -> ServiceResult<SetRecordValueInput> {
         let patch_values = self.validate_patch_values()?;
         let update_primary_name_input_value = self.validate_update_primary_name_input()?;
-        Ok(SetRecordValueInputGenerator::new(
+        Ok(SetRecordValueInput::new(
             self.name.clone(),
             patch_values,
             update_primary_name_input_value,
@@ -256,7 +253,7 @@ impl SetRecordByOwnerValidator {
         }
     }
 
-    pub async fn validate(&self) -> ServiceResult<SetRecordValueInputGenerator> {
+    pub async fn validate(self) -> ServiceResult<SetRecordValueInput> {
         let users = self.registry_api.get_users(&self.name).await?;
         let owner = users.get_owner();
 
@@ -281,7 +278,7 @@ impl SetRecordByOwnerValidator {
             self.caller.0.clone()
         };
 
-        Ok(SetRecordValueInputGenerator::new(
+        Ok(SetRecordValueInput::new(
             self.name.clone(),
             self.patch_values
                 .iter()
@@ -301,35 +298,6 @@ impl SetRecordByOwnerValidator {
                 UpdatePrimaryNameInput::DoNothing
             },
         ))
-    }
-}
-
-#[derive(Debug)]
-pub struct SetRecordValueInputGenerator {
-    pub name: String,
-    pub patch_values: HashMap<String, UpdateRecordInput>,
-    pub update_primary_name_input: UpdatePrimaryNameInput,
-}
-
-impl SetRecordValueInputGenerator {
-    pub fn new(
-        name: String,
-        patch_values: HashMap<String, UpdateRecordInput>,
-        update_primary_name_input: UpdatePrimaryNameInput,
-    ) -> Self {
-        Self {
-            name,
-            patch_values,
-            update_primary_name_input,
-        }
-    }
-
-    pub fn generate(&self) -> ServiceResult<SetRecordValueInput> {
-        Ok(SetRecordValueInput {
-            name: self.name.clone(),
-            update_records_input: self.patch_values.clone(),
-            update_primary_name_input: self.update_primary_name_input.clone(),
-        })
     }
 }
 
@@ -356,6 +324,18 @@ pub struct SetRecordValueInput {
 }
 
 impl SetRecordValueInput {
+    pub fn new(
+        name: String,
+        update_records_input: HashMap<String, UpdateRecordInput>,
+        update_primary_name_input: UpdatePrimaryNameInput,
+    ) -> Self {
+        Self {
+            name,
+            update_records_input,
+            update_primary_name_input,
+        }
+    }
+
     pub fn update_state(&self) -> ServiceResult<()> {
         STATE.with(|s| {
             // set primary name

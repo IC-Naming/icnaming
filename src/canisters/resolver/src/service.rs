@@ -65,9 +65,7 @@ impl ResolverService {
         let owner_validator =
             patch_value_validator.validate_and_generate_owner_validator(caller)?;
 
-        let owner_validator = owner_validator.validate().await?;
-        let input = owner_validator.generate()?;
-
+        let input = owner_validator.validate().await?;
         input.update_state()?;
 
         Ok(true)
@@ -202,9 +200,7 @@ impl ResolverService {
             for patch_value in patch_values {
                 let patch_values_validator: PatchValuesValidator =
                     PatchValuesValidator::new(name.clone(), patch_value, resolver.clone());
-                let input_generator =
-                    patch_values_validator.validate_and_generate_input_generator()?;
-                let input = input_generator.generate()?;
+                let input = patch_values_validator.validate_and_generate_input_generator()?;
                 list.push(input);
             }
         }

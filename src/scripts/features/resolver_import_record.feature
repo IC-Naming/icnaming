@@ -1,4 +1,5 @@
 @resolver
+@dev
 Feature: Resolver import Api
 
   Background: Registry name and auto resolver
@@ -23,7 +24,7 @@ Feature: Resolver import Api
       | wonderful.ic | settings.reverse_resolution.principal | xat7x-vbdo7-g6upd-ko36c-wa4f3-2ni3u-476z3-66eyd-hxmi3-mvsgo-mae  |
       | wonderful.ic | account_id.icp                        | 5445e6cc1bb5397fd89fd1e81090f09541923359bc37fab92c29873b168ba70e |
 
-  Scenario: Import resolver record, insert should ignore
+  Scenario: Import resolver record, if the key exists the insert_or_ignore operation will be ignored
     When import_record_value
       | name         | operation      | key                                   | value                                                            |
       | hello.ic     | Upsert         | principal.icp                         | 2eis6-ev3kx-wr3pi-otbsb-kzzrp-z3oyb-poe6w-bdbtz-gtigi-6ipki-3qe  |
@@ -44,22 +45,38 @@ Feature: Resolver import Api
 
   Scenario: Import resolver record, remove success
     When import_record_value
-      | name         | operation      | key                                   | value                                                           |
-      | hello.ic     | Upsert         | principal.icp                         | 2eis6-ev3kx-wr3pi-otbsb-kzzrp-z3oyb-poe6w-bdbtz-gtigi-6ipki-3qe |
-      | hello.ic     | InsertOrIgnore | principal.icp                         | xat7x-vbdo7-g6upd-ko36c-wa4f3-2ni3u-476z3-66eyd-hxmi3-mvsgo-mae |
-      | hello.ic     | Upsert         | Unknown                               | Unknown1                                                        |
-      | hello.ic     | Upsert         | Unknown                               | Unknown2                                                        |
-      | wonderful.ic | Upsert         | settings.reverse_resolution.principal | xat7x-vbdo7-g6upd-ko36c-wa4f3-2ni3u-476z3-66eyd-hxmi3-mvsgo-mae |
-      | wonderful.ic | InsertOrIgnore | settings.reverse_resolution.principal | 2eis6-ev3kx-wr3pi-otbsb-kzzrp-z3oyb-poe6w-bdbtz-gtigi-6ipki-3qe |
-      | hello.ic     | Remove         | principal.icp                         |                                                                 |
-      | hello.ic     | Remove         | Unknown                               |                                                                 |
-      | wonderful.ic | Remove         | settings.reverse_resolution.principal |                                                                 |
+      | name         | operation      | key                                   | value                                                            |
+      | hello.ic     | Upsert         | principal.icp                         | 2eis6-ev3kx-wr3pi-otbsb-kzzrp-z3oyb-poe6w-bdbtz-gtigi-6ipki-3qe  |
+      | hello.ic     | Upsert         | account_id.icp                        | 3445e6cc1bb5397fd89fd1e81090f09541923359bc37fab92c29873b168ba70e |
+      | hello.ic     | InsertOrIgnore | principal.icp                         | xat7x-vbdo7-g6upd-ko36c-wa4f3-2ni3u-476z3-66eyd-hxmi3-mvsgo-mae  |
+      | hello.ic     | Upsert         | Unknown                               | Unknown1                                                         |
+      | hello.ic     | Upsert         | Unknown                               | Unknown2                                                         |
+      | wonderful.ic | Upsert         | settings.reverse_resolution.principal | xat7x-vbdo7-g6upd-ko36c-wa4f3-2ni3u-476z3-66eyd-hxmi3-mvsgo-mae  |
+      | wonderful.ic | InsertOrIgnore | settings.reverse_resolution.principal | 2eis6-ev3kx-wr3pi-otbsb-kzzrp-z3oyb-poe6w-bdbtz-gtigi-6ipki-3qe  |
+      | wonderful.ic | Upsert         | account_id.icp                        | 5445e6cc1bb5397fd89fd1e81090f09541923359bc37fab92c29873b168ba70e |
+    Then check import_record_value response is ok
+    And batch check record_value
+      | name         | key                                   | value                                                            |
+      | hello.ic     | principal.icp                         | 2eis6-ev3kx-wr3pi-otbsb-kzzrp-z3oyb-poe6w-bdbtz-gtigi-6ipki-3qe  |
+      | hello.ic     | Unknown                               | Unknown2                                                         |
+      | hello.ic     | account_id.icp                        | 3445e6cc1bb5397fd89fd1e81090f09541923359bc37fab92c29873b168ba70e |
+      | wonderful.ic | settings.reverse_resolution.principal | xat7x-vbdo7-g6upd-ko36c-wa4f3-2ni3u-476z3-66eyd-hxmi3-mvsgo-mae  |
+      | wonderful.ic | account_id.icp                        | 5445e6cc1bb5397fd89fd1e81090f09541923359bc37fab92c29873b168ba70e |
+    When import_record_value
+      | name         | operation | key                                   | value |
+      | hello.ic     | Remove    | principal.icp                         |       |
+      | hello.ic     | Remove    | Unknown                               |       |
+      | wonderful.ic | Remove    | settings.reverse_resolution.principal |       |
     Then check import_record_value response is ok
     And batch check record_value should not in
       | name         | key                                   |
       | hello.ic     | principal.icp                         |
       | hello.ic     | Unknown                               |
       | wonderful.ic | settings.reverse_resolution.principal |
+    Then batch check record_value
+      | name         | key            | value                                                            |
+      | hello.ic     | account_id.icp | 3445e6cc1bb5397fd89fd1e81090f09541923359bc37fab92c29873b168ba70e |
+      | wonderful.ic | account_id.icp | 5445e6cc1bb5397fd89fd1e81090f09541923359bc37fab92c29873b168ba70e |
 
 
   Scenario: Import resolver record, will not be updated if an error occurs
