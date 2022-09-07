@@ -2,7 +2,8 @@ use std::collections::HashMap;
 
 use std::vec::Vec;
 
-use candid::Principal;
+use candid::{CandidType, Deserialize, Principal};
+use itertools::Itertools;
 
 use common::CallContext;
 use log::{debug, error, info};
@@ -16,8 +17,8 @@ use common::permissions::must_not_anonymous;
 
 use crate::resolver_store::*;
 use crate::set_record_value_input::{
-    group_up_resolver_value_import_items, PatchValuesInput, PatchValuesValidator,
-    ResolverValueImportGroup, ResolverValueImportItem,
+    PatchValueOperation, PatchValuesInput, PatchValuesValidator, ResolverValueImportGroup,
+    ResolverValueImportItem,
 };
 use crate::state::STATE;
 
@@ -174,12 +175,12 @@ impl ResolverService {
     pub fn import_record_value(
         &self,
         call_context: &CallContext,
-        items: Vec<ResolverValueImportItem>,
+        request: &ImportRecordValueRequest,
     ) -> ServiceResult<bool> {
         let _ = call_context.must_be_system_owner()?;
         let mut list = Vec::new();
 
-        let group = group_up_resolver_value_import_items(items);
+        let group = request.group_up_resolver_value_import_items();
 
         let items: Vec<(ResolverValueImportGroup, Resolver)> = STATE.with(|s| {
             let resolvers_store = s.resolver_store.borrow();
@@ -222,5 +223,44 @@ impl ResolverService {
             }
         }
         Ok(true)
+    }
+}
+
+#[derive(Debug, Deserialize, CandidType)]
+pub struct ImportRecordValueRequest {
+    pub items: Vec<ResolverValueImportItem>,
+}
+
+impl ImportRecordValueRequest {
+    pub fn group_up_resolver_value_import_items(&self) -> Vec<ResolverValueImportGroup> {
+        let mut result = Vec::new();
+        self.items
+            .iter()
+            .group_by(|item| item.name.clone())
+            .into_iter()
+            .for_each(|(name, items)| {
+                let t1: Vec<HashMap<String, PatchValueOperation>> =
+                    items.into_iter().fold(Vec::new(), |mut acc, item| {
+                        for (i, x) in acc.iter().enumerate() {
+                            if !x.contains_key(&item.key) {
+                                acc.get_mut(i)
+                                    .unwrap()
+                                    .insert(item.key.clone(), item.value_and_operation.clone());
+                                return acc;
+                            }
+                        }
+                        let mut map = HashMap::new();
+                        map.insert(item.key.clone(), item.value_and_operation.clone());
+                        acc.push(map);
+                        acc
+                    });
+                let patch_values = t1
+                    .into_iter()
+                    .map(|map| PatchValuesInput(map))
+                    .collect::<Vec<PatchValuesInput>>();
+
+                result.push(ResolverValueImportGroup { name, patch_values });
+            });
+        result
     }
 }

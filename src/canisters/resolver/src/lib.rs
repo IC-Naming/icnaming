@@ -25,7 +25,7 @@ use ic_cdk_macros::*;
 use common::errors::{BooleanActorResponse, ErrorInfo, ServiceResult};
 use common::named_canister_ids::CanisterNames;
 
-use crate::service::ResolverService;
+use crate::service::{ImportRecordValueRequest, ResolverService};
 use crate::set_record_value_input::ResolverValueImportItem;
 use crate::state::InitArgs;
 
@@ -149,17 +149,12 @@ fn batch_get_reverse_resolve_principal(
     BatchGetReverseResolvePrincipalResponse::new(result)
 }
 
-#[derive(Debug, Deserialize, CandidType)]
-pub struct ImportRecordValueRequest {
-    pub items: Vec<ResolverValueImportItem>,
-}
-
 #[update(name = "import_record_value")]
 #[candid_method(update)]
 fn import_record_value(request: ImportRecordValueRequest) -> BooleanActorResponse {
     let call_context = CallContext::from_ic();
     let service = ResolverService::default();
-    let result = service.import_record_value(&call_context, request.items);
+    let result = service.import_record_value(&call_context, &request);
     BooleanActorResponse::new(result)
 }
 

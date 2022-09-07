@@ -231,6 +231,7 @@ mod batch_get_reverse_resolver {
         assert!(result.is_err());
     }
 }
+
 mod import_record_value {
     use super::*;
     use crate::set_record_value_input::{
@@ -322,11 +323,12 @@ mod import_record_value {
         );
 
         let list = vec![before_item, after_item];
+        let request = ImportRecordValueRequest { items: list };
         // add resolver
         add_test_resolver(name);
 
         // act
-        let result = service.import_record_value(&call_context, list);
+        let result = service.import_record_value(&call_context, &request);
         let validation_result = service.get_record_value(name);
 
         // assert
@@ -365,11 +367,12 @@ mod import_record_value {
         );
 
         let list = vec![before_item, after_item];
+        let request = ImportRecordValueRequest { items: list };
         // add resolver
         add_test_resolver(name);
 
         // act
-        let result = service.import_record_value(&call_context, list);
+        let result = service.import_record_value(&call_context, &request);
         let validation_result = service.get_record_value(name);
 
         // assert
@@ -410,11 +413,12 @@ mod import_record_value {
         );
 
         let list = vec![before_item, remove_item];
+        let request = ImportRecordValueRequest { items: list };
         // add resolver
         add_test_resolver(name);
 
         // act
-        let result = service.import_record_value(&call_context, list);
+        let result = service.import_record_value(&call_context, &request);
         let validation_result = service.get_record_value(name);
 
         // assert

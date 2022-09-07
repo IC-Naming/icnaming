@@ -556,6 +556,7 @@ mod import_record_value {
     use crate::set_record_value_input::{
         PatchValueOperation, UpdatePrimaryNameInput, UpdateRecordInput,
     };
+    use crate::ImportRecordValueRequest;
 
     fn generate_resolver_value_import_item(
         name: &str,
@@ -1008,8 +1009,9 @@ mod import_record_value {
                 list.push(item);
             }
         }
+        let request = ImportRecordValueRequest { items: list };
 
-        let result = group_up_resolver_value_import_items(list);
+        let result = request.group_up_resolver_value_import_items();
 
         for item in result.clone() {
             debug!("name: {}", item.name);
