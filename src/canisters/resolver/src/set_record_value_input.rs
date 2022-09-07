@@ -213,7 +213,7 @@ impl PatchValuesValidator {
 
         Ok(SetRecordByOwnerValidator::new(
             caller,
-            self.name.clone(),
+            self.name,
             patch_values,
             update_primary_name_input_value,
         ))
@@ -222,7 +222,7 @@ impl PatchValuesValidator {
         let patch_values = self.validate_patch_values()?;
         let update_primary_name_input_value = self.validate_update_primary_name_input()?;
         Ok(SetRecordValueInput::new(
-            self.name.clone(),
+            self.name,
             patch_values,
             update_primary_name_input_value,
         ))
@@ -279,7 +279,7 @@ impl SetRecordByOwnerValidator {
         };
 
         Ok(SetRecordValueInput::new(
-            self.name.clone(),
+            self.name,
             self.patch_values
                 .iter()
                 .map(|(k, v)| (k.clone(), v.clone()))
