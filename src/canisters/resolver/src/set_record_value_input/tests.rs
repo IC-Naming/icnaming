@@ -658,6 +658,46 @@ mod import_record_value {
     #[case("upsert")]
     #[case("insert_or_ignore")]
     #[case("remove")]
+    fn test_import_record_value_unknown_key_success(_init_test: (), #[case] operator: String) {
+        // arrange
+        let name = "nice.ic";
+        let unknown_key = "@#$%^!";
+        let icp_addr = "rrkah-fqaaa-aaaaa-aaaaq-cai";
+        let item =
+            generate_resolver_value_import_item(name, unknown_key, icp_addr, operator.clone());
+
+        let expect_update_record_input = get_expect_update_record_input(icp_addr, operator.clone());
+
+        // add resolver
+        let resolver = add_test_resolver(name);
+
+        // act
+        let patch_values = item.into();
+        let patch_values_validator: PatchValuesValidator =
+            PatchValuesValidator::new(name.to_string(), patch_values, resolver);
+        let input_generator = patch_values_validator
+            .validate_and_generate_input_generator()
+            .unwrap();
+        let result = input_generator.generate();
+
+        // assert
+        assert!(result.is_ok(), "{:?}", result);
+        let result = result.unwrap();
+        assert_eq!(
+            result.update_primary_name_input,
+            UpdatePrimaryNameInput::DoNothing
+        );
+        assert_eq!(result.update_records_input.len(), 1);
+        assert_eq!(
+            result.update_records_input.get(unknown_key).unwrap(),
+            &expect_update_record_input
+        );
+    }
+
+    #[rstest]
+    #[case("upsert")]
+    #[case("insert_or_ignore")]
+    #[case("remove")]
     fn test_import_record_value_primary_name_success(_init_test: (), #[case] operator: String) {
         // arrange
         let name = "nice.ic";
@@ -728,14 +768,47 @@ mod import_record_value {
     }
 
     #[rstest]
+    #[case("upsert")]
+    #[case("insert_or_ignore")]
+    fn test_import_record_value_validator_upsert_or_insert_value_too_short(
+        _init_test: (),
+        #[case] operator: String,
+    ) {
+        // arrange
+        let name = "nice.ic";
+        let item =
+            generate_resolver_value_import_item(name, RESOLVER_KEY_ICP, "", operator.to_string());
+        let expect_update_record_input = get_expect_update_record_input("", operator.to_string());
+
+        // add resolver
+        let resolver = add_test_resolver(name);
+
+        // act
+        let patch_values = item.into();
+        let patch_values_validator: PatchValuesValidator =
+            PatchValuesValidator::new(name.to_string(), patch_values, resolver);
+        let input_generator = patch_values_validator
+            .validate_and_generate_input_generator()
+            .unwrap();
+        let result = input_generator.generate();
+
+        // assert
+        assert!(result.is_ok(), "{:?}", result);
+        let result = result.unwrap();
+        assert_eq!(
+            result.update_records_input.get(RESOLVER_KEY_ICP).unwrap(),
+            &expect_update_record_input
+        );
+    }
+
+    #[rstest]
     fn test_import_record_value_remove_primary_name_normal_success(_init_test: ()) {
         // arrange
         let name = "nice.ic";
-        let icp_addr = "rrkah-fqaaa-aaaaa-aaaaq-cai";
         let item = generate_resolver_value_import_item(
             name,
             RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL,
-            icp_addr,
+            "",
             "remove".to_string(),
         );
 
@@ -910,6 +983,33 @@ mod import_record_value {
                 );
             }
             _ => assert!(false),
+        }
+    }
+
+    #[rstest]
+    fn group_test(_init_test: ()) {
+        let name = "nice.ic";
+        let icp_addr_before = "rrkah-fqaaa-aaaaa-aaaaq-cai";
+        let icp_addr_after = "qjdve-lqaaa-aaaaa-aaaeq-cai";
+        let before_item = generate_resolver_value_import_item(
+            name,
+            RESOLVER_KEY_ICP,
+            icp_addr_before,
+            "insert_or_ignore".to_string(),
+        );
+        let after_item = generate_resolver_value_import_item(
+            name,
+            RESOLVER_KEY_ICP,
+            icp_addr_after,
+            "insert_or_ignore".to_string(),
+        );
+
+        let list = vec![before_item, after_item];
+
+        let result = group_up_resolver_value_import_items(list);
+        assert!(!result.is_empty());
+        for item in result {
+            debug!("{:?}", item);
         }
     }
 }

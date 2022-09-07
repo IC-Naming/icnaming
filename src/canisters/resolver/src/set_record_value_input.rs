@@ -12,6 +12,7 @@ use common::dto::IRegistryUsers;
 use common::errors::{NamingError, ServiceResult};
 use common::named_canister_ids::{is_named_canister_id, CanisterNames};
 use common::AuthPrincipal;
+use itertools::Itertools;
 use log::{debug, info};
 use std::collections::HashMap;
 use std::str::FromStr;
@@ -32,6 +33,7 @@ fn get_resolver_mut<'a>(
     }
 }
 
+#[derive(Clone, Debug)]
 pub struct PatchValuesInput(HashMap<String, PatchValueOperation>);
 
 impl From<HashMap<String, String>> for PatchValuesInput {
@@ -56,11 +58,51 @@ impl From<ResolverValueImportItem> for PatchValuesInput {
     }
 }
 
-#[derive(Debug, Deserialize, CandidType, Clone)]
+#[derive(Debug, Deserialize, CandidType)]
 pub struct ResolverValueImportItem {
     pub name: String,
     pub key: String,
     pub value_and_operation: PatchValueOperation,
+}
+
+#[derive(Clone, Debug)]
+pub struct ResolverValueImportGroup {
+    pub name: String,
+    pub patch_values: Vec<PatchValuesInput>,
+}
+
+pub fn group_up_resolver_value_import_items(
+    items: Vec<ResolverValueImportItem>,
+) -> Vec<ResolverValueImportGroup> {
+    let mut result = Vec::new();
+    items
+        .iter()
+        .group_by(|item| item.name.clone())
+        .into_iter()
+        .for_each(|(name, items)| {
+            let t1: Vec<HashMap<String, PatchValueOperation>> =
+                items.into_iter().fold(Vec::new(), |mut acc, item| {
+                    for (i, x) in acc.iter().enumerate() {
+                        if !x.contains_key(&item.key) {
+                            acc.get_mut(i)
+                                .unwrap()
+                                .insert(item.key.clone(), item.value_and_operation.clone());
+                            break;
+                        }
+                    }
+                    let mut map = HashMap::new();
+                    map.insert(item.key.clone(), item.value_and_operation.clone());
+                    acc.push(map);
+                    acc
+                });
+            let patch_values = t1
+                .into_iter()
+                .map(|map| PatchValuesInput(map))
+                .collect::<Vec<PatchValuesInput>>();
+
+            result.push(ResolverValueImportGroup { name, patch_values });
+        });
+    result
 }
 
 #[derive(Debug, Deserialize, CandidType, Clone)]

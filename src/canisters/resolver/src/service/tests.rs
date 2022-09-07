@@ -231,9 +231,6 @@ mod batch_get_reverse_resolver {
         assert!(result.is_err());
     }
 }
-
-mod set_record_validation {}
-
 mod import_record_value {
     use super::*;
     use crate::set_record_value_input::{

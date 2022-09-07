@@ -16,7 +16,8 @@ use common::permissions::must_not_anonymous;
 
 use crate::resolver_store::*;
 use crate::set_record_value_input::{
-    PatchValuesInput, PatchValuesValidator, ResolverValueImportItem,
+    group_up_resolver_value_import_items, PatchValuesInput, PatchValuesValidator,
+    ResolverValueImportGroup, ResolverValueImportItem,
 };
 use crate::state::STATE;
 
@@ -178,10 +179,12 @@ impl ResolverService {
         let _ = call_context.must_be_system_owner()?;
         let mut list = Vec::new();
 
-        let items: Vec<(ResolverValueImportItem, Resolver)> = STATE.with(|s| {
+        let group = group_up_resolver_value_import_items(items);
+
+        let items: Vec<(ResolverValueImportGroup, Resolver)> = STATE.with(|s| {
             let resolvers_store = s.resolver_store.borrow();
             let resolvers = resolvers_store.get_resolvers();
-            items
+            group
                 .iter()
                 .map(|item| match get_resolver(resolvers, &item.name) {
                     Ok(resolver) => (item.clone(), resolver.clone()),
@@ -191,14 +194,18 @@ impl ResolverService {
         });
 
         for item in items {
-            let name = item.0.name.clone();
-            let patch_values = item.0.into();
+            let name = item.0.name;
+            let patch_values = item.0.patch_values;
             let resolver = item.1;
-            let patch_values_validator: PatchValuesValidator =
-                PatchValuesValidator::new(name, patch_values, resolver.clone());
-            let input_generator = patch_values_validator.validate_and_generate_input_generator()?;
-            let input = input_generator.generate()?;
-            list.push(input);
+
+            for patch_value in patch_values {
+                let patch_values_validator: PatchValuesValidator =
+                    PatchValuesValidator::new(name.clone(), patch_value, resolver.clone());
+                let input_generator =
+                    patch_values_validator.validate_and_generate_input_generator()?;
+                let input = input_generator.generate()?;
+                list.push(input);
+            }
         }
 
         for input in list {
