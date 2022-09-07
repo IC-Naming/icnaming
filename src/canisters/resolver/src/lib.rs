@@ -15,7 +15,7 @@ use common::http::*;
 use stats_service::*;
 use std::collections::HashMap;
 
-use candid::{candid_method, CandidType, Deserialize, Principal};
+use candid::{candid_method, CandidType, Principal};
 use common::CallContext;
 
 use ic_cdk_macros::*;
@@ -24,7 +24,7 @@ use common::errors::{BooleanActorResponse, ErrorInfo, ServiceResult};
 use common::named_canister_ids::CanisterNames;
 
 use crate::service::{ImportRecordValueRequest, ResolverService};
-use crate::set_record_value_input::ResolverValueImportItem;
+
 use crate::state::InitArgs;
 
 /// Ensure the resolver is created.

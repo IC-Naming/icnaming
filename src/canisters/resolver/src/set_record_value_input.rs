@@ -12,7 +12,7 @@ use common::dto::IRegistryUsers;
 use common::errors::{NamingError, ServiceResult};
 use common::named_canister_ids::{is_named_canister_id, CanisterNames};
 use common::AuthPrincipal;
-use itertools::Itertools;
+
 use log::{debug, info};
 use std::collections::HashMap;
 use std::str::FromStr;
