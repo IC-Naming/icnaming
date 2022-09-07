@@ -239,7 +239,7 @@ impl ImportRecordValueRequest {
             .group_by(|item| item.name.clone())
             .into_iter()
             .for_each(|(name, items)| {
-                let t1: Vec<HashMap<String, PatchValueOperation>> =
+                let map_list: Vec<HashMap<String, PatchValueOperation>> =
                     items.into_iter().fold(Vec::new(), |mut acc, item| {
                         for (i, x) in acc.iter().enumerate() {
                             if !x.contains_key(&item.key) {
@@ -254,7 +254,7 @@ impl ImportRecordValueRequest {
                         acc.push(map);
                         acc
                     });
-                let patch_values = t1
+                let patch_values = map_list
                     .into_iter()
                     .map(|map| PatchValuesInput(map))
                     .collect::<Vec<PatchValuesInput>>();
