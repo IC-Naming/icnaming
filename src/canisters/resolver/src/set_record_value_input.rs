@@ -283,8 +283,8 @@ impl SetRecordByOwnerValidator {
                 self.update_primary_name_input_value.clone()
             {
                 match update_primary_name_input_value {
-                    PatchValueOperation::Upsert(value) => UpdatePrimaryNameInput::Set(owner),
-                    PatchValueOperation::InsertOrIgnore(value) => {
+                    PatchValueOperation::Upsert(_value) => UpdatePrimaryNameInput::Set(owner),
+                    PatchValueOperation::InsertOrIgnore(_value) => {
                         UpdatePrimaryNameInput::Set(owner)
                     }
                     PatchValueOperation::Remove => UpdatePrimaryNameInput::Remove,

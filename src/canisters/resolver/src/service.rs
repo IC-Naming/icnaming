@@ -1,32 +1,24 @@
 use std::collections::HashMap;
 
-use std::str::FromStr;
-use std::sync::Arc;
 use std::vec::Vec;
 
-use candid::{CandidType, Deserialize, Principal};
+use candid::Principal;
 
-use common::{AuthPrincipal, CallContext};
+use common::CallContext;
 use log::{debug, error, info};
 
-use common::canister_api::ic_impl::RegistryApi;
-use common::canister_api::IRegistryApi;
-use common::constants::{
-    WellKnownResolverKey, RESOLVER_ITEM_MAX_COUNT, RESOLVER_KEY_MAX_LENGTH,
-    RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL, RESOLVER_VALUE_MAX_LENGTH,
-};
-use common::dto::IRegistryUsers;
+use common::constants::RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL;
+
 use common::errors::*;
 
-use common::named_canister_ids::{is_named_canister_id, CanisterNames};
+use common::named_canister_ids::CanisterNames;
 use common::permissions::must_not_anonymous;
 
-use crate::coinaddress::{validate_btc_address, validate_ltc_address};
 use crate::resolver_store::*;
 use crate::set_record_value_input::{
     PatchValuesInput, PatchValuesValidator, ResolverValueImportItem,
 };
-use crate::state::{State, STATE};
+use crate::state::STATE;
 
 #[cfg(test)]
 mod tests;

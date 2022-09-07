@@ -1,13 +1,9 @@
-use std::collections::HashSet;
-
 use candid::Principal;
 use common::TimeInNs;
 use rstest::*;
 
 use common::constants::*;
-use common::dto::RegistryUsers;
-use test_common::canister_api::mock_registry_api;
-use test_common::canister_api::MockRegistryApi;
+
 use test_common::ic_api::init_test;
 use test_common::user::*;
 
@@ -235,10 +231,7 @@ mod batch_get_reverse_resolver {
     }
 }
 
-mod set_record_validation {
-    use super::*;
-    use crate::set_record_value_input::{UpdatePrimaryNameInput, UpdateRecordInput};
-}
+mod set_record_validation {}
 mod import_record_value {
     use super::*;
     use crate::set_record_value_input::{
