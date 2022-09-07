@@ -30,7 +30,7 @@
     "secp256k1": "4.0.3",
     "sha256": "^0.2.0",
     "shelljs": "^0.8.4",
-    "supports-color": "9.2.2",
+    "supports-color": "9.2.3",
     "text-encoding": "^0.7.0",
     "tslib": "2.4.0",
     "yargs": "17.5.1"
