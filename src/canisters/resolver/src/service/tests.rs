@@ -1006,7 +1006,7 @@ mod import_record_value {
     }
 
     #[rstest]
-    fn test_import_record_value_remove_primary_name_empty_success(_init_test: ()) {
+    fn test_import_record_value_validator_remove_primary_name_empty_success(_init_test: ()) {
         // arrange
         let name = "nice.ic";
         let item = generate_resolver_value_import_item(
@@ -1031,17 +1031,53 @@ mod import_record_value {
         // assert
         assert!(result.is_ok(), "{:?}", result);
         let result = result.unwrap();
+        assert!(result.update_records_input.is_empty());
         assert_eq!(
             result.update_primary_name_input,
-            UpdatePrimaryNameInput::DoNothing
+            UpdatePrimaryNameInput::RemoveByName
         );
-        assert_eq!(result.update_records_input.len(), 1);
+    }
+
+    #[rstest]
+    fn test_import_record_value_service_remove_primary_name_empty_success(
+        _init_test: (),
+        service: ResolverService,
+        _mock_now: u64,
+    ) {
+        // arrange
+        let admin = get_admin();
+        let call_context = CallContext::new(admin, TimeInNs(_mock_now));
+        let name = "nice.ic";
+        let icp_addr = "rrkah-fqaaa-aaaaa-aaaaq-cai";
+        let before_item = generate_resolver_value_import_item(
+            name,
+            RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL,
+            icp_addr,
+            "insert_or_ignore".to_string(),
+        );
+        let remove_item = generate_resolver_value_import_item(
+            name,
+            RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL,
+            "",
+            "remove".to_string(),
+        );
+
+        let list = vec![before_item, remove_item];
+        // add resolver
+        add_test_resolver(name);
+
+        // act
+        let result = service.import_record_value(&call_context, list);
+        let validation_result = service.get_record_value(name);
+
+        // assert
+        assert!(result.is_ok(), "{:?}", result);
+        assert!(validation_result.is_ok(), "{:?}", validation_result);
+        let validation_result = validation_result.unwrap();
+        debug!("{:?}", validation_result);
         assert_eq!(
-            result
-                .update_records_input
-                .get(RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL)
-                .unwrap(),
-            &UpdateRecordInput::Remove
+            validation_result.get(RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL),
+            None
         );
     }
 

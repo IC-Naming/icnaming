@@ -4,7 +4,7 @@ import {createResolver, resolver} from '~/declarations/resolver'
 import {
     BatchGetReverseResolvePrincipalResponse,
     BooleanActorResponse as EnsureResolverCreatedResult,
-    BooleanActorResponse as UpdateRecordValueResult
+    BooleanActorResponse as UpdateRecordValueResult, ImportRecordValueRequest, ResolverValueImportItem
 } from '~/declarations/resolver/resolver.did'
 import {expect} from 'chai'
 import {Result} from '~/utils/Result'
@@ -141,5 +141,89 @@ Then(/^batch check reverse resolve principal$/, async function (table) {
 
     } else {
         expect.fail(`batch check reverse resolve principal failed: ${global_batch_get_reverse_resolve_principal_result.Err}`)
+    }
+});
+When(/^import_record_value$/, async function (table) {
+    let dataTable: ResolverValueImportItem[] = table.hashes().map((item) => {
+
+        let operation = item.operation;
+        let value_and_operation;
+        if (operation == 'InsertOrIgnore') {
+            value_and_operation = {
+                InsertOrIgnore: item.value
+            }
+        } else if (operation == 'Upsert') {
+            value_and_operation = {
+                Upsert: item.value
+            }
+        } else if (operation == 'Remove') {
+            value_and_operation = {
+                Remove: item.value
+            }
+        } else {
+            expect.fail(`import_record_value failed: ${operation} not support`)
+        }
+        return {
+            key: item.key,
+            name: item.name,
+            value_and_operation: value_and_operation
+        } as ResolverValueImportItem
+    })
+    const identityInfo = identities.getIdentity("main")
+    let localResolver = createResolver(identityInfo)
+    let request = {
+        items: dataTable
+    } as ImportRecordValueRequest
+    logger.debug(`import_record_value request: ${JSON.stringify(request)}`)
+    let result = await localResolver.import_record_value(request)
+    assert_remote_result(result, 'Ok')
+
+});
+Then(/^batch check record_value$/, async function (table) {
+    let dataTable = table.hashes()
+        .map((item) => {
+            return {
+                name: item.name,
+                key: item.key,
+                value: item.value
+            }
+        })
+    for (let data of dataTable) {
+        let result = await resolver.get_record_value(data.name)
+        logger.debug(result);
+        if ('Ok' in result) {
+            let target = result.Ok.find((item) => {
+                return item[0] == data.key
+            })
+            if (target) {
+                expect(target[1]).to.equal(data.value)
+            } else {
+                expect.fail(`batch check record_value failed: ${data.name} ${data.key} not found`)
+            }
+        } else {
+            expect.fail(`batch check record_value failed: ${result.Err}`)
+        }
+    }
+});
+Then(/^batch check record_value should not in$/, async function (table) {
+    let dataTable = table.hashes()
+        .map((item) => {
+            return {
+                name: item.name,
+                key: item.key,
+                value: item.value
+            }
+        })
+    for (let data of dataTable) {
+        let result = await resolver.get_record_value(data.name)
+        logger.debug(result);
+        if ('Ok' in result) {
+            let target = result.Ok.find((item) => {
+                return item[0] == data.key
+            })
+            expect(target).to.undefined
+        } else {
+            expect.fail(`batch check record_value failed: ${result.Err}`)
+        }
     }
 });

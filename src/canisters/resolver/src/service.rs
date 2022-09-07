@@ -276,7 +276,11 @@ impl From<PatchValueOperation> for UpdatePrimaryNameInput {
                 UpdatePrimaryNameInput::InsertOrIgnore(Principal::from_text(value).unwrap())
             }
             PatchValueOperation::Remove(value) => {
-                UpdatePrimaryNameInput::Remove(Principal::from_text(value).unwrap())
+                if value.is_empty() {
+                    UpdatePrimaryNameInput::RemoveByName
+                } else {
+                    UpdatePrimaryNameInput::Remove(Principal::from_text(value).unwrap())
+                }
             }
         }
     }
@@ -390,20 +394,6 @@ impl PatchValuesValidator {
 
     pub fn resolver_value_import_validate(&self) -> ServiceResult<SetRecordValueInputGenerator> {
         let update_primary_name_input_value = self.get_update_primary_name_input();
-        if let Some(update_primary_name_input_value) = update_primary_name_input_value.clone() {
-            if update_primary_name_input_value.get_value().is_empty() {
-                let mut patch_values = HashMap::new();
-                patch_values.insert(
-                    RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL.to_string(),
-                    UpdateRecordInput::Remove,
-                );
-                return Ok(SetRecordValueInputGenerator::new(
-                    self.name.clone(),
-                    patch_values,
-                    None,
-                ));
-            }
-        }
         let patch_values = self.patch_values_validate(None)?;
         Ok(SetRecordValueInputGenerator::new(
             self.name.clone(),
@@ -523,6 +513,7 @@ pub enum UpdatePrimaryNameInput {
     Set(Principal),
     InsertOrIgnore(Principal),
     Remove(Principal),
+    RemoveByName,
 }
 
 #[derive(Eq, PartialEq, Debug, Clone)]
@@ -568,6 +559,13 @@ impl SetRecordValueInput {
                     UpdatePrimaryNameInput::Remove(value) => {
                         info!("Removing reverse resolution principal {}", value);
                         store.remove_primary_name(value);
+                    }
+                    UpdatePrimaryNameInput::RemoveByName => {
+                        info!(
+                            "Removing reverse resolution principal by name {}",
+                            self.name
+                        );
+                        store.remove_primary_name_by_name(&self.name);
                     }
                 }
             }
