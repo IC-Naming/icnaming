@@ -181,7 +181,7 @@ impl PatchValuesValidator {
             }
             Some(PatchValueOperation::InsertOrIgnore(value)) => {
                 validate_well_known_value(&WellKnownResolverKey::IcpPrincipal, value)?;
-                Ok(UpdatePrimaryNameInput::Set(
+                Ok(UpdatePrimaryNameInput::InsertOrIgnore(
                     Principal::from_text(value).unwrap(),
                 ))
             }
@@ -285,7 +285,7 @@ impl SetRecordByOwnerValidator {
                 match update_primary_name_input_value {
                     PatchValueOperation::Upsert(_value) => UpdatePrimaryNameInput::Set(owner),
                     PatchValueOperation::InsertOrIgnore(_value) => {
-                        UpdatePrimaryNameInput::Set(owner)
+                        UpdatePrimaryNameInput::InsertOrIgnore(owner)
                     }
                     PatchValueOperation::Remove => UpdatePrimaryNameInput::Remove,
                 }

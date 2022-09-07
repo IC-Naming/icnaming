@@ -16,7 +16,8 @@ fn add_test_resolver(name: &str) -> Resolver {
         let mut resolver = Resolver::new(name.to_string());
         resolver.set_record_value(RESOLVER_KEY_GITHUB.to_string(), "icns".to_string());
         resolver.set_record_value(RESOLVER_KEY_TWITTER.to_string(), "twitter".to_string());
-        resolvers.insert(name.to_string(), resolver).unwrap()
+        resolvers.insert(name.to_string(), resolver.clone());
+        resolver
     })
 }
 
@@ -232,12 +233,14 @@ mod batch_get_reverse_resolver {
 }
 
 mod set_record_validation {}
+
 mod import_record_value {
     use super::*;
     use crate::set_record_value_input::{
         PatchValueOperation, UpdatePrimaryNameInput, UpdateRecordInput,
     };
     use common::permissions::get_admin;
+
     fn generate_resolver_value_import_item(
         name: &str,
         key: &str,
