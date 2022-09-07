@@ -45,7 +45,7 @@ export interface InitArgs {
   'dev_named_canister_ids' : Array<[CanisterNames, Principal]>,
 }
 export type PatchValueOperation = { 'InsertOrIgnore' : string } |
-  { 'Remove' : string } |
+  { 'Remove' : null } |
   { 'Upsert' : string };
 export interface ResolverValueImportItem {
   'key' : string,

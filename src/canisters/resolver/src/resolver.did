@@ -40,7 +40,7 @@ type InitArgs = record {
 };
 type PatchValueOperation = variant {
   InsertOrIgnore : text;
-  Remove : text;
+  Remove;
   Upsert : text;
 };
 type ResolverValueImportItem = record {

@@ -62,7 +62,7 @@ export const idlFactory = ({ IDL }) => {
   });
   const PatchValueOperation = IDL.Variant({
     'InsertOrIgnore' : IDL.Text,
-    'Remove' : IDL.Text,
+    'Remove' : IDL.Null,
     'Upsert' : IDL.Text,
   });
   const ResolverValueImportItem = IDL.Record({

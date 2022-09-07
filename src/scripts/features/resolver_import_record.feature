@@ -1,4 +1,5 @@
 @resolver
+@dev
 Feature: Resolver import Api
 
   Background:

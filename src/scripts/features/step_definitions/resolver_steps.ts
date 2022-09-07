@@ -158,7 +158,7 @@ When(/^import_record_value$/, async function (table) {
             }
         } else if (operation == 'Remove') {
             value_and_operation = {
-                Remove: item.value
+                Remove: null
             }
         } else {
             expect.fail(`import_record_value failed: ${operation} not support`)
