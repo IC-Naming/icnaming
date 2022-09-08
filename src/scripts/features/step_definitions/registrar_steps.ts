@@ -14,7 +14,7 @@ import {
     BooleanActorResponse as RenewNameResult,
     QuotaType,
     GetDetailsActorResponse as RegisterWithPaymentResponse,
-    GetNameStatueActorResponse, ImportNameRegistrationItem,
+    GetNameStatueActorResponse,
 } from '~/declarations/registrar/registrar.did'
 import {identities} from '~/identityHelper'
 import {Result} from '~/utils/Result'
@@ -26,9 +26,6 @@ import {
     AssignNameResponse,
     ImportQuotaResponse
 } from '~/declarations/registrar_control_gateway/registrar_control_gateway.did'
-import {Principal} from "@dfinity/principal";
-import * as csv from 'csv-parser';
-import {import_max_timeout} from "./setup";
 
 let global_available_response: AvailableResult
 let global_register_with_quota_response: RegisterWithQuotaResult
@@ -52,8 +49,7 @@ function diff_less_than(a: bigint, b: bigint, diff: bigint): boolean {
 function is_around_to_date(value: bigint, diff_year: number): boolean {
     const target = now_add_years(diff_year)
     logger.debug(`Target: ${target}, Value: ${value}`)
-    // 5 min
-    return diff_less_than(value, target, BigInt(import_max_timeout))
+    return diff_less_than(value, target, BigInt(60000))
 }
 
 function now_add_years(years: number): bigint {
@@ -143,7 +139,6 @@ Then(/^registrar get_details "([^"]*)" result is$/,
         expect(details.name).to.equal(target.name)
         const expiredAt = get_expired_at(parseInt(target.expired_at))
         expect(details.expired_at).eq(expiredAt)
-        logger.debug(`details: ${JSON.stringify(details.created_at)}`)
         expect(is_around_to_date(details.created_at, parseInt(target.created_at))).to.be.true
     })
 When(/^Update quota as follow operations$/,
@@ -458,30 +453,3 @@ Then(/^Last register_with_payment result is '([^']*)'$/,
     function (status: string) {
         assert_remote_result(global_register_with_payment_result, status)
     });
-Given(/^Import registrar names data from csv file "([^"]*)"$/, {timeout: import_max_timeout}, async function (file) {
-    let items: ImportNameItem[] = [];
-    let job = new Promise<void>(resolve => {
-        fs.createReadStream('./scripts/features/data/' + file)
-            .pipe(csv.default({
-                headers: ['name', 'owner', 'years'],
-                skipLines: 1
-            }))
-            .on('data', (data) => items.push(data))
-            .on('end', () => {
-                resolve();
-            });
-    })
-    await job;
-    logger.debug(`import_registrations items: ${JSON.stringify(items)}`)
-    const result = await registrar.import_registrations({
-        items: items.map(item => {
-            return {
-                name: item.name,
-                owner: Principal.fromText(item.owner),
-                years: parseInt(item.years)
-            } as ImportNameRegistrationItem
-        })
-    })
-    logger.info(`import_registrations result: ${JSON.stringify(result)}`)
-
-});
