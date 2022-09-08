@@ -118,20 +118,7 @@ Feature: Resolver import Api
       | hello.ic | Upsert    | Unknown |
     Then check import_record_value response is error, expect message contains "Length of value must be less than 512"
 
-  Scenario: Import resolver record from csv file with 5000 entries and then validate the first and last. Maximum timeout is 5 minutes
-    Given Import registrar names data from csv file "RegistrarImportNames.csv"
-    Then registrar get_details "sourceforge.ic" result is
-      | key        | value          |
-      | owner      | user3          |
-      | name       | sourceforge.ic |
-      | expired_at | 1              |
-      | created_at | 0              |
-    And registrar get_details "xn--80auehs.ic" result is
-      | key        | value          |
-      | owner      | user1          |
-      | name       | xn--80auehs.ic |
-      | expired_at | 2              |
-      | created_at | 0              |
+  Scenario: Import resolver record from csv file with 5000 entries and then validate the first and last.
     When import_record_value from csv file "ResolverImportRecords.csv"
     Then check import_record_value response is ok
     And batch check record_value

@@ -268,7 +268,7 @@ When(/^import_record_value, value len is "([^"]*)"$/, async function (len, table
     logger.debug(`import_record_value request: ${JSON.stringify(request)}`)
     global_import_record_value_response = await localResolver.import_record_value(request)
 });
-When(/^import_record_value from csv file "([^"]*)"$/, {timeout: import_max_timeout}, async function (file) {
+When(/^import_record_value from csv file "([^"]*)"$/, async function (file) {
     const items: {
         name: string,
         operation: string,
