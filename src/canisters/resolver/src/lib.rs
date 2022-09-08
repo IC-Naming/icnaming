@@ -152,7 +152,7 @@ fn batch_get_reverse_resolve_principal(
 async fn import_record_value(request: ImportRecordValueRequest) -> BooleanActorResponse {
     let call_context = CallContext::from_ic();
     let service = ResolverService::default();
-    let result = service.import_record_value(&call_context, &request);
+    let result = service.import_record_value(&call_context, &request).await;
     BooleanActorResponse::new(result)
 }
 

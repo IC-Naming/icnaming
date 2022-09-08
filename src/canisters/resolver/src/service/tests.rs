@@ -298,7 +298,7 @@ mod import_record_value {
     }
 
     #[rstest]
-    fn test_import_record_value_insert_ignore_success(
+    async fn test_import_record_value_insert_ignore_success(
         _init_test: (),
         service: ResolverService,
         _mock_now: u64,
@@ -328,7 +328,7 @@ mod import_record_value {
         add_test_resolver(name);
 
         // act
-        let result = service.import_record_value(&call_context, &request);
+        let result = service.import_record_value(&call_context, &request).await;
         let validation_result = service.get_record_value(name);
 
         // assert
@@ -342,7 +342,7 @@ mod import_record_value {
     }
 
     #[rstest]
-    fn test_import_record_value_primary_name_insert_ignore_success(
+    async fn test_import_record_value_primary_name_insert_ignore_success(
         _init_test: (),
         service: ResolverService,
         _mock_now: u64,
@@ -372,7 +372,7 @@ mod import_record_value {
         add_test_resolver(name);
 
         // act
-        let result = service.import_record_value(&call_context, &request);
+        let result = service.import_record_value(&call_context, &request).await;
         let validation_result = service.get_record_value(name);
 
         // assert
@@ -389,7 +389,7 @@ mod import_record_value {
     }
 
     #[rstest]
-    fn test_import_record_value_service_remove_primary_name_empty_success(
+    async fn test_import_record_value_service_remove_primary_name_empty_success(
         _init_test: (),
         service: ResolverService,
         _mock_now: u64,
@@ -418,7 +418,7 @@ mod import_record_value {
         add_test_resolver(name);
 
         // act
-        let result = service.import_record_value(&call_context, &request);
+        let result = service.import_record_value(&call_context, &request).await;
         let validation_result = service.get_record_value(name);
 
         // assert
