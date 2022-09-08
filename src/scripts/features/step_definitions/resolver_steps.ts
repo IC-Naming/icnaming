@@ -13,12 +13,15 @@ import {identities} from '~/identityHelper'
 import {Principal} from "@dfinity/principal"
 import logger from "node-color-log";
 import {utils} from "@deland-labs/ic-dev-kit";
+import fs from "fs";
+import * as csv from "csv-parser";
+import {import_max_timeout} from "./setup";
 
 let global_ensure_resolver_created_result: EnsureResolverCreatedResult
 let global_update_record_value_result: UpdateRecordValueResult
 
 let global_batch_get_reverse_resolve_principal_result: BatchGetReverseResolvePrincipalResponse
-let import_record_value_response: BooleanActorResponse
+let global_import_record_value_response: BooleanActorResponse
 
 When(/^I call ensure_resolver_created "([^"]*)"$/,
     async function (name: string) {
@@ -176,7 +179,7 @@ When(/^import_record_value$/, async function (table) {
         items: dataTable
     } as ImportRecordValueRequest
     logger.debug(`import_record_value request: ${JSON.stringify(request)}`)
-    import_record_value_response = await localResolver.import_record_value(request)
+    global_import_record_value_response = await localResolver.import_record_value(request)
 });
 Then(/^batch check record_value$/, async function (table) {
     let dataTable: {
@@ -221,11 +224,11 @@ Then(/^batch check record_value should not in$/, async function (table) {
     }
 });
 Then(/^check import_record_value response is ok$/, function () {
-    assert_remote_result(import_record_value_response, 'Ok')
+    assert_remote_result(global_import_record_value_response, 'Ok')
 });
 Then(/^check import_record_value response is error, expect message contains "([^"]*)"$/, function (message) {
-    if ('Err' in import_record_value_response) {
-        expect(import_record_value_response.Err.message).to.contains(message)
+    if ('Err' in global_import_record_value_response) {
+        expect(global_import_record_value_response.Err.message).to.contains(message)
     } else {
         expect.fail(`check import_record_value response is error, expect message contains ${message}, but response is Ok`)
     }
@@ -263,5 +266,56 @@ When(/^import_record_value, value len is "([^"]*)"$/, async function (len, table
         items: dataTable
     } as ImportRecordValueRequest
     logger.debug(`import_record_value request: ${JSON.stringify(request)}`)
-    import_record_value_response = await localResolver.import_record_value(request)
+    global_import_record_value_response = await localResolver.import_record_value(request)
+});
+When(/^import_record_value from csv file "([^"]*)"$/, {timeout: import_max_timeout}, async function (file) {
+    const items: {
+        name: string,
+        operation: string,
+        key: string,
+        value: string
+    }[] = [];
+    let job = new Promise<void>(resolve => {
+        fs.createReadStream('./scripts/features/data/' + file)
+            .pipe(csv.default(
+                {
+                    headers: ['name', 'operation', 'key', 'value'],
+                    skipLines: 1
+                }
+            ))
+            .on('data', (data) => items.push(data))
+            .on('end', () => {
+                resolve();
+            });
+    })
+    await job;
+    logger.debug(`first item: ${JSON.stringify(items[0])}`)
+    const result = await resolver.import_record_value({
+        items: items.map(item => {
+            let value_and_operation
+            if (item.operation == 'InsertOrIgnore') {
+                value_and_operation = {
+                    InsertOrIgnore: item.value
+                }
+            } else if (item.operation == 'Upsert') {
+                value_and_operation = {
+                    Upsert: item.value
+                }
+            } else if (item.operation == 'Remove') {
+                value_and_operation = {
+                    Remove: null
+                }
+            } else {
+                expect.fail(`import_record_value failed: ${item.operation} not support`)
+            }
+            return {
+                name: item.name,
+                key: item.key,
+                value_and_operation: value_and_operation,
+            }
+        })
+    })
+    logger.info(`import_record_value result: ${JSON.stringify(result)}`)
+    global_import_record_value_response = result
+
 });

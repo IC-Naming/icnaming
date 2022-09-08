@@ -1,5 +1,4 @@
 @resolver
-@dev
 Feature: Resolver import Api
 
   Background: Registry name and auto resolver
@@ -11,6 +10,7 @@ Feature: Resolver import Api
     When import_record_value
       | name         | operation      | key                                   | value                                                            |
       | hello.ic     | Upsert         | principal.icp                         | 2eis6-ev3kx-wr3pi-otbsb-kzzrp-z3oyb-poe6w-bdbtz-gtigi-6ipki-3qe  |
+      | hello.ic     | Upsert         | principal.icp                         | xat7x-vbdo7-g6upd-ko36c-wa4f3-2ni3u-476z3-66eyd-hxmi3-mvsgo-mae  |
       | hello.ic     | Upsert         | Unknown                               | Unknown                                                          |
       | hello.ic     | Upsert         | account_id.icp                        | 3445e6cc1bb5397fd89fd1e81090f09541923359bc37fab92c29873b168ba70e |
       | wonderful.ic | InsertOrIgnore | settings.reverse_resolution.principal | xat7x-vbdo7-g6upd-ko36c-wa4f3-2ni3u-476z3-66eyd-hxmi3-mvsgo-mae  |
@@ -18,7 +18,7 @@ Feature: Resolver import Api
     Then check import_record_value response is ok
     And batch check record_value
       | name         | key                                   | value                                                            |
-      | hello.ic     | principal.icp                         | 2eis6-ev3kx-wr3pi-otbsb-kzzrp-z3oyb-poe6w-bdbtz-gtigi-6ipki-3qe  |
+      | hello.ic     | principal.icp                         | xat7x-vbdo7-g6upd-ko36c-wa4f3-2ni3u-476z3-66eyd-hxmi3-mvsgo-mae  |
       | hello.ic     | Unknown                               | Unknown                                                          |
       | hello.ic     | account_id.icp                        | 3445e6cc1bb5397fd89fd1e81090f09541923359bc37fab92c29873b168ba70e |
       | wonderful.ic | settings.reverse_resolution.principal | xat7x-vbdo7-g6upd-ko36c-wa4f3-2ni3u-476z3-66eyd-hxmi3-mvsgo-mae  |
@@ -117,3 +117,24 @@ Feature: Resolver import Api
       | name     | operation | key     |
       | hello.ic | Upsert    | Unknown |
     Then check import_record_value response is error, expect message contains "Length of value must be less than 512"
+
+  Scenario: Import resolver record from csv file with 5000 entries and then validate the first and last. Maximum timeout is 5 minutes
+    Given Import registrar names data from csv file "RegistrarImportNames.csv"
+    Then registrar get_details "sourceforge.ic" result is
+      | key        | value          |
+      | owner      | user3          |
+      | name       | sourceforge.ic |
+      | expired_at | 1              |
+      | created_at | 0              |
+    And registrar get_details "xn--80auehs.ic" result is
+      | key        | value          |
+      | owner      | user1          |
+      | name       | xn--80auehs.ic |
+      | expired_at | 2              |
+      | created_at | 0              |
+    When import_record_value from csv file "ResolverImportRecords.csv"
+    Then check import_record_value response is ok
+    And batch check record_value
+      | name           | key            | value                                                            |
+      | sourceforge.ic | principal.icp  | bygyz-vtdaa-aaaaa-aaaaa-aaaaa-aaaaa-aaaaa-aaaaa-aaaaa-aaaaa-aaa  |
+      | xn--80auehs.ic | account_id.icp | 63daaaab97f18d5bc29daf711dc771cd744e0f06e4e18e2b60b9e27730e726f6 |
