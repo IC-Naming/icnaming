@@ -280,10 +280,7 @@ impl SetRecordByOwnerValidator {
 
         Ok(SetRecordValueInput::new(
             self.name,
-            self.patch_values
-                .iter()
-                .map(|(k, v)| (k.clone(), v.clone()))
-                .collect(),
+            self.patch_values,
             if let Some(update_primary_name_input_value) =
                 self.update_primary_name_input_value.clone()
             {
@@ -336,7 +333,7 @@ impl SetRecordValueInput {
         }
     }
 
-    pub fn update_state(&self) -> ServiceResult<()> {
+    pub fn update_state(self) -> ServiceResult<()> {
         STATE.with(|s| {
             // set primary name
             {

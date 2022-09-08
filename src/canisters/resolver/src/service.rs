@@ -206,17 +206,7 @@ impl ResolverService {
         }
 
         for input in list {
-            let result = input.update_state();
-            match result {
-                Ok(_) => info!("Imported resolver value: {:?}", input),
-                Err(err) => {
-                    error!(
-                        "Failed to import resolver value: {:?}, error:{:?}",
-                        input, err
-                    );
-                    return Err(err);
-                }
-            }
+            input.update_state()?;
         }
         Ok(true)
     }
