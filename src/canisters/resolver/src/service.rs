@@ -170,7 +170,7 @@ impl ResolverService {
         })
     }
 
-    pub async fn import_record_value(
+    pub fn import_record_value(
         &self,
         call_context: &CallContext,
         request: &ImportRecordValueRequest,
