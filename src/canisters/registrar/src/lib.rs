@@ -42,6 +42,7 @@ use crate::nft::{
 use crate::token_identifier::TokenIdentifier;
 use common::dto::{GetPageInput, GetPageOutput, ImportQuotaRequest, ImportQuotaStatus};
 use common::errors::{BooleanActorResponse, ErrorInfo, ServiceResult};
+use common::named_canister_ids::{get_named_get_canister_id, CanisterNames};
 use common::named_principals::PRINCIPAL_NAME_TIMER_TRIGGER;
 use common::permissions::must_be_named_principal;
 use common::{CallContext, TimeInNs};
@@ -654,7 +655,7 @@ pub type GetMinterActorResponse = Principal;
 #[query(name = "getMinter")]
 #[candid_method(query, rename = "getMinter")]
 pub fn minter() -> GetMinterActorResponse {
-    Principal::anonymous()
+    get_named_get_canister_id(CanisterNames::Registrar)
 }
 
 #[derive(CandidType)]
