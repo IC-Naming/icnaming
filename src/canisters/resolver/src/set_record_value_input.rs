@@ -376,15 +376,12 @@ impl SetRecordValueInput {
                 for (key, value) in self.update_records_input.iter() {
                     match value {
                         UpdateRecordInput::Remove => {
-                            info!("Removing resolver record {}:{}", &self.name, key);
                             resolver.remove_record_value(key.clone());
                         }
                         UpdateRecordInput::Set(value) => {
-                            info!("Setting resolver record {}:{}", &self.name, key);
                             resolver.set_record_value(key.clone(), value.clone());
                         }
                         UpdateRecordInput::InsertOrIgnore(value) => {
-                            info!("Inserting or ignore resolver record {}:{}", &self.name, key);
                             if !resolver.has_record_value(key) {
                                 resolver.set_record_value(key.clone(), value.clone());
                             }
