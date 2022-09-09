@@ -2,9 +2,9 @@ import "./setup"
 import {DataTable, Given, Then, When} from '@cucumber/cucumber'
 import {createResolver, resolver} from '~/declarations/resolver'
 import {
-    BatchGetReverseResolvePrincipalResponse,
+    BatchGetReverseResolvePrincipalResponse, BooleanActorResponse,
     BooleanActorResponse as EnsureResolverCreatedResult,
-    BooleanActorResponse as UpdateRecordValueResult
+    BooleanActorResponse as UpdateRecordValueResult, ImportRecordValueRequest, ResolverValueImportItem
 } from '~/declarations/resolver/resolver.did'
 import {expect} from 'chai'
 import {Result} from '~/utils/Result'
@@ -13,11 +13,15 @@ import {identities} from '~/identityHelper'
 import {Principal} from "@dfinity/principal"
 import logger from "node-color-log";
 import {utils} from "@deland-labs/ic-dev-kit";
+import fs from "fs";
+import * as csv from "csv-parser";
+import {import_max_timeout} from "./setup";
 
 let global_ensure_resolver_created_result: EnsureResolverCreatedResult
 let global_update_record_value_result: UpdateRecordValueResult
 
 let global_batch_get_reverse_resolve_principal_result: BatchGetReverseResolvePrincipalResponse
+let global_import_record_value_response: BooleanActorResponse
 
 When(/^I call ensure_resolver_created "([^"]*)"$/,
     async function (name: string) {
@@ -142,4 +146,176 @@ Then(/^batch check reverse resolve principal$/, async function (table) {
     } else {
         expect.fail(`batch check reverse resolve principal failed: ${global_batch_get_reverse_resolve_principal_result.Err}`)
     }
+});
+When(/^import_record_value$/, async function (table) {
+    let dataTable: ResolverValueImportItem[] = table.hashes().map((item) => {
+
+        let operation = item.operation;
+        let value_and_operation;
+        if (operation == 'InsertOrIgnore') {
+            value_and_operation = {
+                InsertOrIgnore: item.value
+            }
+        } else if (operation == 'Upsert') {
+            value_and_operation = {
+                Upsert: item.value
+            }
+        } else if (operation == 'Remove') {
+            value_and_operation = {
+                Remove: null
+            }
+        } else {
+            expect.fail(`import_record_value failed: ${operation} not support`)
+        }
+        return {
+            key: item.key,
+            name: item.name,
+            value_and_operation: value_and_operation
+        } as ResolverValueImportItem
+    })
+    const identityInfo = identities.getIdentity("main")
+    let localResolver = createResolver(identityInfo)
+    let request = {
+        items: dataTable
+    } as ImportRecordValueRequest
+    logger.debug(`import_record_value request: ${JSON.stringify(request)}`)
+    global_import_record_value_response = await localResolver.import_record_value(request)
+});
+Then(/^batch check record_value$/, async function (table) {
+    let dataTable: {
+        name: string,
+        key: string,
+        value: string
+    }[] = table.hashes();
+    for (let data of dataTable) {
+        let result = await resolver.get_record_value(data.name)
+        logger.debug(result);
+        if ('Ok' in result) {
+            let target = result.Ok.find((item) => {
+                return item[0] == data.key
+            })
+            if (target) {
+                expect(target[1]).to.equal(data.value)
+            } else {
+                expect.fail(`batch check record_value failed: ${data.name} ${data.key} not found`)
+            }
+        } else {
+            expect.fail(`batch check record_value failed: ${result.Err}`)
+        }
+    }
+});
+Then(/^batch check record_value should not in$/, async function (table) {
+    let dataTable: {
+        name: string,
+        key: string,
+        value: string
+    }[] = table.hashes();
+    for (let data of dataTable) {
+        let result = await resolver.get_record_value(data.name)
+        logger.debug(result);
+        if ('Ok' in result) {
+            let target = result.Ok.find((item) => {
+                return item[0] == data.key
+            })
+            expect(target).to.undefined
+        } else {
+            expect.fail(`batch check record_value failed: ${result.Err}`)
+        }
+    }
+});
+Then(/^check import_record_value response is ok$/, function () {
+    assert_remote_result(global_import_record_value_response, 'Ok')
+});
+Then(/^check import_record_value response is error, expect message contains "([^"]*)"$/, function (message) {
+    if ('Err' in global_import_record_value_response) {
+        expect(global_import_record_value_response.Err.message).to.contains(message)
+    } else {
+        expect.fail(`check import_record_value response is error, expect message contains ${message}, but response is Ok`)
+    }
+});
+When(/^import_record_value, value len is "([^"]*)"$/, async function (len, table) {
+    let dataTable: ResolverValueImportItem[] = table.hashes().map((item) => {
+
+        let operation = item.operation;
+        let value_and_operation;
+        let value = "a".repeat(Number(len))
+        if (operation == 'InsertOrIgnore') {
+            value_and_operation = {
+                InsertOrIgnore: value
+            }
+        } else if (operation == 'Upsert') {
+            value_and_operation = {
+                Upsert: value
+            }
+        } else if (operation == 'Remove') {
+            value_and_operation = {
+                Remove: null
+            }
+        } else {
+            expect.fail(`import_record_value failed: ${operation} not support`)
+        }
+        return {
+            key: item.key,
+            name: item.name,
+            value_and_operation: value_and_operation
+        } as ResolverValueImportItem
+    })
+    const identityInfo = identities.getIdentity("main")
+    let localResolver = createResolver(identityInfo)
+    let request = {
+        items: dataTable
+    } as ImportRecordValueRequest
+    logger.debug(`import_record_value request: ${JSON.stringify(request)}`)
+    global_import_record_value_response = await localResolver.import_record_value(request)
+});
+When(/^import_record_value from csv file "([^"]*)"$/, async function (file) {
+    const items: {
+        name: string,
+        operation: string,
+        key: string,
+        value: string
+    }[] = [];
+    let job = new Promise<void>(resolve => {
+        fs.createReadStream('./scripts/features/data/' + file)
+            .pipe(csv.default(
+                {
+                    headers: ['name', 'operation', 'key', 'value'],
+                    skipLines: 1
+                }
+            ))
+            .on('data', (data) => items.push(data))
+            .on('end', () => {
+                resolve();
+            });
+    })
+    await job;
+    logger.debug(`first item: ${JSON.stringify(items[0])}`)
+    const result = await resolver.import_record_value({
+        items: items.map(item => {
+            let value_and_operation
+            if (item.operation == 'InsertOrIgnore') {
+                value_and_operation = {
+                    InsertOrIgnore: item.value
+                }
+            } else if (item.operation == 'Upsert') {
+                value_and_operation = {
+                    Upsert: item.value
+                }
+            } else if (item.operation == 'Remove') {
+                value_and_operation = {
+                    Remove: null
+                }
+            } else {
+                expect.fail(`import_record_value failed: ${item.operation} not support`)
+            }
+            return {
+                name: item.name,
+                key: item.key,
+                value_and_operation: value_and_operation,
+            }
+        })
+    })
+    logger.info(`import_record_value result: ${JSON.stringify(result)}`)
+    global_import_record_value_response = result
+
 });

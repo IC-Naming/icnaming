@@ -34,8 +34,19 @@ type HttpResponse = record {
   streaming_strategy : opt StreamingStrategy;
   status_code : nat16;
 };
+type ImportRecordValueRequest = record { items : vec ResolverValueImportItem };
 type InitArgs = record {
   dev_named_canister_ids : vec record { CanisterNames; principal };
+};
+type PatchValueOperation = variant {
+  InsertOrIgnore : text;
+  Remove;
+  Upsert : text;
+};
+type ResolverValueImportItem = record {
+  key : text;
+  name : text;
+  value_and_operation : PatchValueOperation;
 };
 type ReverseResolvePrincipalResponse = variant {
   Ok : opt text;
@@ -61,6 +72,7 @@ service : (opt InitArgs) -> {
   get_stats : () -> (GetStatsResponse) query;
   get_wasm_info : () -> (vec record { text; text }) query;
   http_request : (HttpRequest) -> (HttpResponse) query;
+  import_record_value : (ImportRecordValueRequest) -> (BooleanActorResponse);
   load_state : (StateExportData) -> (BooleanActorResponse);
   remove_resolvers : (vec text) -> (BooleanActorResponse);
   reverse_resolve_principal : (principal) -> (

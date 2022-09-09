@@ -2,6 +2,7 @@ mod coinaddress;
 mod http;
 mod resolver_store;
 mod service;
+mod set_record_value_input;
 mod state;
 
 mod reverse_resolver_store;
@@ -22,7 +23,8 @@ use ic_cdk_macros::*;
 use common::errors::{BooleanActorResponse, ErrorInfo, ServiceResult};
 use common::named_canister_ids::CanisterNames;
 
-use crate::service::ResolverService;
+use crate::service::{ImportRecordValueRequest, ResolverService};
+
 use crate::state::InitArgs;
 
 /// Ensure the resolver is created.
@@ -56,7 +58,7 @@ async fn set_record_value(
     let call_context = CallContext::from_ic();
     let mut service = ResolverService::default();
     let result = service
-        .set_record_value(call_context, name.as_str(), patch_values)
+        .set_record_value(call_context, &name, patch_values)
         .await;
     BooleanActorResponse::new(result)
 }
@@ -143,6 +145,15 @@ fn batch_get_reverse_resolve_principal(
     let service = ResolverService::default();
     let result = service.batch_get_reverse_resolve_principal(principals);
     BatchGetReverseResolvePrincipalResponse::new(result)
+}
+
+#[update(name = "import_record_value")]
+#[candid_method(update)]
+fn import_record_value(request: ImportRecordValueRequest) -> BooleanActorResponse {
+    let call_context = CallContext::from_ic();
+    let service = ResolverService::default();
+    let result = service.import_record_value(&call_context, &request);
+    BooleanActorResponse::new(result)
 }
 
 candid::export_service!();

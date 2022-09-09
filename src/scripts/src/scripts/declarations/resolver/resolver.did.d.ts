@@ -38,8 +38,19 @@ export interface HttpResponse {
   'streaming_strategy' : [] | [StreamingStrategy],
   'status_code' : number,
 }
+export interface ImportRecordValueRequest {
+  'items' : Array<ResolverValueImportItem>,
+}
 export interface InitArgs {
   'dev_named_canister_ids' : Array<[CanisterNames, Principal]>,
+}
+export type PatchValueOperation = { 'InsertOrIgnore' : string } |
+  { 'Remove' : null } |
+  { 'Upsert' : string };
+export interface ResolverValueImportItem {
+  'key' : string,
+  'name' : string,
+  'value_and_operation' : PatchValueOperation,
 }
 export type ReverseResolvePrincipalResponse = { 'Ok' : [] | [string] } |
   { 'Err' : ErrorInfo };
@@ -65,6 +76,10 @@ export interface _SERVICE {
   'get_stats' : ActorMethod<[], GetStatsResponse>,
   'get_wasm_info' : ActorMethod<[], Array<[string, string]>>,
   'http_request' : ActorMethod<[HttpRequest], HttpResponse>,
+  'import_record_value' : ActorMethod<
+    [ImportRecordValueRequest],
+    BooleanActorResponse,
+  >,
   'load_state' : ActorMethod<[StateExportData], BooleanActorResponse>,
   'remove_resolvers' : ActorMethod<[Array<string>], BooleanActorResponse>,
   'reverse_resolve_principal' : ActorMethod<

@@ -60,6 +60,19 @@ export const idlFactory = ({ IDL }) => {
     'streaming_strategy' : IDL.Opt(StreamingStrategy),
     'status_code' : IDL.Nat16,
   });
+  const PatchValueOperation = IDL.Variant({
+    'InsertOrIgnore' : IDL.Text,
+    'Remove' : IDL.Null,
+    'Upsert' : IDL.Text,
+  });
+  const ResolverValueImportItem = IDL.Record({
+    'key' : IDL.Text,
+    'name' : IDL.Text,
+    'value_and_operation' : PatchValueOperation,
+  });
+  const ImportRecordValueRequest = IDL.Record({
+    'items' : IDL.Vec(ResolverValueImportItem),
+  });
   const ReverseResolvePrincipalResponse = IDL.Variant({
     'Ok' : IDL.Opt(IDL.Text),
     'Err' : ErrorInfo,
@@ -88,6 +101,11 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'http_request' : IDL.Func([HttpRequest], [HttpResponse], ['query']),
+    'import_record_value' : IDL.Func(
+        [ImportRecordValueRequest],
+        [BooleanActorResponse],
+        [],
+      ),
     'load_state' : IDL.Func([StateExportData], [BooleanActorResponse], []),
     'remove_resolvers' : IDL.Func(
         [IDL.Vec(IDL.Text)],

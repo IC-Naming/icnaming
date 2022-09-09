@@ -1667,6 +1667,7 @@ dependencies = [
  "env_logger",
  "ic-cdk",
  "ic-cdk-macros",
+ "itertools",
  "log",
  "num-bigint",
  "num-integer",
