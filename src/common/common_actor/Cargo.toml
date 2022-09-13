@@ -21,4 +21,4 @@ once_cell = "1.14"
 
 [build-dependencies]
 vergen = { version = "7", default-features = false, features = ["build", "git"] }
-anyhow = "1.0.64"
+anyhow = "1.0.65"
