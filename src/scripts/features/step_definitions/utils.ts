@@ -5,11 +5,65 @@ import {expect} from 'chai'
 import {canister, utils} from '@deland-labs/ic-dev-kit'
 import logger from 'node-color-log'
 import {identities} from '~/identityHelper'
+import fs from "fs";
+import * as csv from "csv-parser";
+import {resolver} from '~/declarations/resolver'
 
 Then(/^Sleep for "([^"]*)" secs.$/, async function (sec: string) {
     // sleep for secs
     await new Promise(resolve => setTimeout(resolve, parseFloat(sec) * 1000))
 })
+
+
+export const import_record_value_from_csv = async (file_name: string) => {
+    const items: {
+        name: string,
+        operation: string,
+        key: string,
+        value: string
+    }[] = []
+    let job = new Promise<void>(resolve => {
+        fs.createReadStream('./scripts/features/data/' + file_name)
+            .pipe(csv.default(
+                {
+                    headers: ['name', 'operation', 'key', 'value'],
+                    skipLines: 1
+                }
+            ))
+            .on('data', (data) => items.push(data))
+            .on('end', () => {
+                resolve();
+            })
+    })
+    await job
+    const result = await resolver.import_record_value({
+        items: items.map(item => {
+            let value_and_operation
+            if (item.operation == 'InsertOrIgnore') {
+                value_and_operation = {
+                    InsertOrIgnore: item.value
+                }
+            } else if (item.operation == 'Upsert') {
+                value_and_operation = {
+                    Upsert: item.value
+                }
+            } else if (item.operation == 'Remove') {
+                value_and_operation = {
+                    Remove: null
+                }
+            } else {
+                expect.fail(`import_record_value failed: ${item.operation} not support`)
+            }
+            return {
+                name: item.name,
+                key: item.key,
+                value_and_operation: value_and_operation,
+            }
+        })
+    })
+    return result
+
+}
 
 export const set_balance_to = async (to: string, balance: string | BigInt): Promise<void> => {
     let balance_bigint
