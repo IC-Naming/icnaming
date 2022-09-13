@@ -204,7 +204,6 @@ const insertOrIgnoreDefaultValueForUninitializedRegistrarName = async (registrar
             throw new Error(`can not find owner for name ${record.name}`)
         }
     })
-    // await saveOperationToCsv(operations, "AddDefaultForRegistrar")
     return operations
 }
 
@@ -261,9 +260,9 @@ const run = async () => {
 
     const removeNames = removeOperations.map((record) => record.name)
     const upsertNames = upsertOperations.map((record) => record.name)
-    //intersections
+    //reverse resolution intersections
     const resolverReverseKeyOperationIntersections = removeNames.filter((name) => upsertNames.includes(name))
-    logger.debug(`resolverReverseKey operation intersections count: ${resolverReverseKeyOperationIntersections.length}`)
+    logger.debug(`reverse resolution key operation intersections count: ${resolverReverseKeyOperationIntersections.length}`)
     await saveOperationToCsv(removeOperations, "RemoveResolverRecordFromInvalidRegistrarName")
     await saveOperationToCsv(upsertOperations, `UpsertDefaultResolverReverseForUserAllReverseAreEmpty`)
     await saveOperationToCsv(insertOrIgnoreOperations, `InsertDefaultReverseResolutionForRegistrar`)
