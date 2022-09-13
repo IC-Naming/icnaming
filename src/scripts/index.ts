@@ -30,4 +30,11 @@ program
         require("./export_state");
     });
 
+program
+    .command("generate-resolver-operation")
+    .description("generate resolver operation")
+    .action(async () => {
+        require("./generate_resolver_operation");
+    });
+
 program.parse(process.argv);
