@@ -204,6 +204,28 @@ const insertOrIgnoreDefaultValueForUninitializedRegistrarName = async (registrar
     await saveOperationToCsv(operations, "AddDefaultForRegistrar")
 }
 
+const upsertUserHasNoDefaultResolverReverse = async (registrarRecords: RegistrarRecord[], resolverReverseRecords: ResolverReverseRecord[]) => {
+    const userGroup = groupBy(registrarRecords, (record) => record.owner)
+    const operations: OperationRecord[] = []
+    for (const [key, value] of Object.entries(userGroup)) {
+        const user = key
+        const names = value.map((record) => record.name)
+        const resolverReverseRecordsForUser = resolverReverseRecords.filter((record) => names.includes(record.name))
+        if (resolverReverseRecordsForUser.length === 0) {
+            let name = names.sort()[0]
+            operations.push({
+                name: name,
+                key: resolverReverseKey,
+                operation: "Upsert",
+                value: user
+            })
+        }
+
+    }
+    logger.debug(`upsertUserHasNoDefaultResolverReverse count : ${operations.length}`)
+    await saveOperationToCsv(operations, `UpsertDefaultResolverReverseForUserAllReverseAreEmpty`)
+}
+
 const saveOperationToCsv = async (operations: OperationRecord[], fileName) => {
     // save records to csv
     const csvWriter = createObjectCsvWriter({
@@ -226,6 +248,7 @@ const run = async () => {
     let resolverReverseRecords = await readResolverReverseCsv()
     await removeResolverRecordFromInvalidRegistrarName(registrarRecords, resolverRecords, resolverReverseRecords)
     await insertOrIgnoreDefaultValueForUninitializedRegistrarName(registrarRecords, resolverRecords)
+    await upsertUserHasNoDefaultResolverReverse(registrarRecords, resolverReverseRecords)
 }
 
 (async () => {
