@@ -157,13 +157,16 @@ const removeResolverRecordFromInvalidRegistrarName = async (registrarRecords: Re
             value: ''
         })
     })
-    await saveOperationToCsv(operations, "RemoveResolverRecordFromInvalidRegistrarName")
+    //await saveOperationToCsv(operations, "RemoveResolverRecordFromInvalidRegistrarName")
+    return operations
 }
 
 const insertOrIgnoreDefaultValueForUninitializedRegistrarName = async (registrarRecords: RegistrarRecord[], resolverRecords: ResolverRecord[]) => {
     const registrarNames = registrarRecords.map((record) => record.name)
-    const resolvers = resolverRecords.filter((record) => registrarNames.includes(record.name))
-    logger.debug(`resolvers count : ${resolvers.length}`)
+    const resolvers = resolverRecords
+        .filter((record) => registrarNames.includes(record.name))
+    logger.debug(`insert default value reverse value count : ${resolvers.length}`)
+
     const uninitializedAccountIdKeyResolvers = resolvers.filter((record) => {
         const keys = record.pairs.map((pair) => pair.key)
         return !keys.includes(accountIdKey)
@@ -172,7 +175,7 @@ const insertOrIgnoreDefaultValueForUninitializedRegistrarName = async (registrar
         const keys = record.pairs.map((pair) => pair.key)
         return !keys.includes(principalKey)
     })
-    const operations: OperationRecord[] = []
+    let operations: OperationRecord[] = []
     uninitializedAccountIdKeyResolvers.forEach((record) => {
         let owner = registrarRecords.find((registrarRecord) => registrarRecord.name === record.name)?.owner
         if (owner) {
@@ -201,7 +204,8 @@ const insertOrIgnoreDefaultValueForUninitializedRegistrarName = async (registrar
             throw new Error(`can not find owner for name ${record.name}`)
         }
     })
-    await saveOperationToCsv(operations, "AddDefaultForRegistrar")
+    // await saveOperationToCsv(operations, "AddDefaultForRegistrar")
+    return operations
 }
 
 const upsertUserHasNoDefaultResolverReverse = async (registrarRecords: RegistrarRecord[], resolverReverseRecords: ResolverReverseRecord[]) => {
@@ -223,7 +227,8 @@ const upsertUserHasNoDefaultResolverReverse = async (registrarRecords: Registrar
 
     }
     logger.debug(`upsertUserHasNoDefaultResolverReverse count : ${operations.length}`)
-    await saveOperationToCsv(operations, `UpsertDefaultResolverReverseForUserAllReverseAreEmpty`)
+    // await saveOperationToCsv(operations, `UpsertDefaultResolverReverseForUserAllReverseAreEmpty`)
+    return operations
 }
 
 const saveOperationToCsv = async (operations: OperationRecord[], fileName) => {
@@ -242,13 +247,22 @@ const saveOperationToCsv = async (operations: OperationRecord[], fileName) => {
         })
 }
 const run = async () => {
-    let registrarRecords = await readRegistrarCsv()
+    const registrarRecords = await readRegistrarCsv()
     logger.debug(`registrarRecords: ${JSON.stringify(registrarRecords.length)}`)
-    let resolverRecords = await readResolverCsv()
-    let resolverReverseRecords = await readResolverReverseCsv()
-    await removeResolverRecordFromInvalidRegistrarName(registrarRecords, resolverRecords, resolverReverseRecords)
-    await insertOrIgnoreDefaultValueForUninitializedRegistrarName(registrarRecords, resolverRecords)
-    await upsertUserHasNoDefaultResolverReverse(registrarRecords, resolverReverseRecords)
+    const resolverRecords = await readResolverCsv()
+    const resolverReverseRecords = await readResolverReverseCsv()
+    const removeOperations = await removeResolverRecordFromInvalidRegistrarName(registrarRecords, resolverRecords, resolverReverseRecords)
+    const upsertOperations = await upsertUserHasNoDefaultResolverReverse(registrarRecords, resolverReverseRecords)
+    let insertOrIgnoreOperations = await insertOrIgnoreDefaultValueForUninitializedRegistrarName(registrarRecords, resolverRecords)
+
+    const removeNames = removeOperations.map((record) => record.name)
+    const upsertNames = upsertOperations.map((record) => record.name)
+    //intersections
+    const resolverReverseKeyOperationIntersections = removeNames.filter((name) => upsertNames.includes(name))
+    logger.debug(`resolverReverseKey operation intersections count: ${resolverReverseKeyOperationIntersections.length}`)
+    await saveOperationToCsv(removeOperations, "RemoveResolverRecordFromInvalidRegistrarName")
+    await saveOperationToCsv(upsertOperations, `UpsertDefaultResolverReverseForUserAllReverseAreEmpty`)
+    await saveOperationToCsv(insertOrIgnoreOperations, `InsertDefaultReverseResolutionForRegistrar`)
 }
 
 (async () => {
