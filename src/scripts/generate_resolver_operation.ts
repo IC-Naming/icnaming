@@ -263,9 +263,9 @@ const run = async () => {
     //reverse resolution intersections
     const resolverReverseKeyOperationIntersections = removeNames.filter((name) => upsertNames.includes(name))
     logger.debug(`reverse resolution key operation intersections count: ${resolverReverseKeyOperationIntersections.length}`)
-    await saveOperationToCsv(removeOperations, "RemoveResolverRecordFromInvalidRegistrarName")
-    await saveOperationToCsv(upsertOperations, `UpsertDefaultResolverReverseForUserAllReverseAreEmpty`)
-    await saveOperationToCsv(insertOrIgnoreOperations, `InsertDefaultReverseResolutionForRegistrar`)
+
+    const mergeOperations = removeOperations.concat(insertOrIgnoreOperations).concat(upsertOperations)
+    await saveOperationToCsv(mergeOperations, "ImportResolverRecordOperations")
 }
 
 (async () => {
