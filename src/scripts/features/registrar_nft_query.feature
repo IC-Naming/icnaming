@@ -50,9 +50,9 @@ Feature: EXT token standard query API
   Scenario: getRegistry
     When registrar getRegistry result is
       | index | name      |
-      | 1     | name1.ic  |
-      | 2     | na2.ic    |
-      | 3     | iiiiii.ic |
+      | 1     | user1  |
+      | 2     | user2    |
+      | 3     | user3 |
 
   Scenario: supply
     When registrar supply result is "3"
