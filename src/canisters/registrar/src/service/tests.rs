@@ -1363,11 +1363,12 @@ mod nft_query_service {
     ) {
         let test_name_str = create_test_name("icnaming");
         let expired_name_str = create_test_name("expired");
+        let user1_account_id = AccountIdentifier::new(mock_user1, None);
         registration_name_init(&test_name_str, mock_user1, mock_std_time_tomorrow);
         registration_name_init(&expired_name_str, mock_user1, mock_timestamp_1986);
         let result = service.get_registry(mock_std_time_now);
         assert_eq!(result.len(), 1);
-        assert_eq!(result[0].1, test_name_str);
+        assert_eq!(result[0].1, user1_account_id);
     }
 
     #[rstest]
@@ -1880,11 +1881,14 @@ mod nft_transfer_service {
         service: RegistrarService,
         mut _mock_registry_api: MockRegistryApi,
         mock_user1: Principal,
+        mock_user2: Principal,
         mock_std_time_tomorrow: u64,
         mock_std_time_now: u64,
     ) {
         let icnaming_name_str = create_test_name("icnaming");
         let test_name_str = create_test_name("test");
+        let user1_account_id = AccountIdentifier::new(mock_user1, None);
+        let user2_account_id = AccountIdentifier::new(mock_user2, None);
         let admin = get_admin();
         registration_init(
             &icnaming_name_str.to_string(),
@@ -1893,7 +1897,7 @@ mod nft_transfer_service {
         );
         registration_init(
             &test_name_str.to_string(),
-            mock_user1,
+            mock_user2,
             mock_std_time_tomorrow,
         );
 
@@ -1911,8 +1915,8 @@ mod nft_transfer_service {
         assert!(import_result.is_ok());
         assert_eq!(import_result.unwrap(), 2);
         assert_eq!(registry_result.len(), 2);
-        assert!(names.contains(&icnaming_name_str));
-        assert!(names.contains(&test_name_str));
+        assert!(names.contains(&user1_account_id));
+        assert!(names.contains(&user2_account_id));
     }
 }
 
