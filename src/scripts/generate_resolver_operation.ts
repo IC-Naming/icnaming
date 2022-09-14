@@ -40,8 +40,7 @@ const resolverReverseKey = "settings.reverse_resolution.principal"
 const accountIdKey = "account_id.icp"
 const principalKey = "principal.icp"
 
-const readRegistrarCsv = async () => {
-    const fileName = 'RegistrarRecords'
+const readRegistrarCsv = async (fileName) => {
     const items: RegistrarRecord[] = []
     let job = new Promise<void>((resolve, reject) => {
         fs.createReadStream(`./scripts/features/data/${fileName}.csv`)
@@ -60,8 +59,7 @@ const groupBy = <T, K extends keyof any>(arr: T[], key: (i: T) => K) =>
         (groups[key(item)] ||= []).push(item);
         return groups;
     }, {} as Record<K, T[]>);
-const readResolverCsv = async () => {
-    const fileName = 'ResolverRecords'
+const readResolverCsv = async (fileName) => {
     const items: {
         name: string,
         key,
@@ -92,8 +90,7 @@ const readResolverCsv = async () => {
 }
 
 
-const readResolverReverseCsv = async () => {
-    const fileName = 'ResolverReverseRecords'
+const readResolverReverseCsv = async (fileName) => {
     const items: ResolverReverseRecord[] = []
     let job = new Promise<void>((resolve, reject) => {
         fs.createReadStream(`./scripts/features/data/${fileName}.csv`)
@@ -245,12 +242,12 @@ const saveOperationToCsv = async (operations: OperationRecord[], fileName) => {
             logger.log('...Done')
         })
 }
-const run = async () => {
-    const registrarRecords = await readRegistrarCsv()
+const run = async (registrarFileName, resolverFileName, resolverReverseFileName) => {
+    const registrarRecords = await readRegistrarCsv(registrarFileName)
     logger.debug(`registrar records count: ${JSON.stringify(registrarRecords.length)}`)
-    const resolverRecords = await readResolverCsv()
+    const resolverRecords = await readResolverCsv(resolverFileName)
     logger.debug(`resolver records count: ${JSON.stringify(resolverRecords.length)}`)
-    const resolverReverseRecords = await readResolverReverseCsv()
+    const resolverReverseRecords = await readResolverReverseCsv(resolverReverseFileName)
     logger.debug(`resolver reverse records count: ${JSON.stringify(resolverReverseRecords.length)}`)
     const removeOperations = await removeResolverRecordFromInvalidRegistrarName(registrarRecords, resolverRecords, resolverReverseRecords)
     const upsertOperations = await upsertUserHasNoDefaultResolverReverse(registrarRecords, resolverReverseRecords)
@@ -272,7 +269,7 @@ const run = async () => {
 (async () => {
     logger.debug('Start generate csv')
     const startTime = performance.now()
-    await run()
+    await run('RegistrarRecords', 'ResolverRecords', 'ResolverReverseRecords')
     const endTime = performance.now()
     logger.debug(`generate resolver operation took ${endTime - startTime} milliseconds`)
 })().then(() => {
