@@ -51,8 +51,8 @@ Feature: EXT token standard query API
     When registrar getRegistry result is
       | index | name  |
       | 1     | user1 |
-      | 2     | user2 |
-      | 3     | user3 |
+      | 2     | user1 |
+      | 3     | user2 |
 
   Scenario: supply
     When registrar supply result is "3"
