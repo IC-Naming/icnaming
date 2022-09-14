@@ -119,7 +119,7 @@ Feature: Resolver import Api
     Then check import_record_value response is error, expect message contains "Length of value must be less than 512"
 
   Scenario: Import resolver record from csv file with 5000 entries and then validate the first and last.
-    When import_record_value from csv file "ResolverImportRecords.csv"
+    When import_record_value from csv file "ResolverImportRecords"
     Then check import_record_value response is ok
     And batch check record_value
       | name           | key            | value                                                            |

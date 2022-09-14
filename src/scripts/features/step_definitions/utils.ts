@@ -23,7 +23,7 @@ export const import_record_value_from_csv = async (file_name: string) => {
         value: string
     }[] = []
     let job = new Promise<void>(resolve => {
-        fs.createReadStream('./scripts/features/data/' + file_name)
+        fs.createReadStream(`./scripts/features/data/${file_name}.csv`)
             .pipe(csv.default(
                 {
                     headers: ['name', 'operation', 'key', 'value'],

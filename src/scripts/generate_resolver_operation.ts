@@ -1,6 +1,5 @@
-import {Principal} from "@dfinity/principal";
+
 import logger from "node-color-log";
-import {utils} from "@deland-labs/ic-dev-kit";
 import fs from "fs";
 import * as csvParser from "csv-parser";
 import {createObjectCsvWriter} from "csv-writer";
@@ -43,9 +42,10 @@ const accountIdKey = "account_id.icp"
 const principalKey = "principal.icp"
 
 const readRegistrarCsv = async () => {
+    const fileName = 'RegistrarRecords'
     const items: RegistrarRecord[] = []
     let job = new Promise<void>((resolve, reject) => {
-        fs.createReadStream('./scripts/features/data/' + 'RegistrarRecords.csv')
+        fs.createReadStream(`./scripts/features/data/${fileName}.csv`)
             .pipe(csvParser.default())
             .on('data', (data) => {
                 items.push(data)
@@ -62,13 +62,14 @@ const groupBy = <T, K extends keyof any>(arr: T[], key: (i: T) => K) =>
         return groups;
     }, {} as Record<K, T[]>);
 const readResolverCsv = async () => {
+    const fileName = 'ResolverRecords'
     const items: {
         name: string,
         key,
         value,
     }[] = []
     let job = new Promise<void>((resolve, reject) => {
-        fs.createReadStream('./scripts/features/data/' + 'ResolverRecords.csv')
+        fs.createReadStream(`./scripts/features/data/${fileName}.csv`)
             .pipe(csvParser.default())
             .on('data', (data) => items.push(data))
             .on('end', resolve)
@@ -93,9 +94,10 @@ const readResolverCsv = async () => {
 
 
 const readResolverReverseCsv = async () => {
+    const fileName = 'ResolverReverseRecords'
     const items: ResolverReverseRecord[] = []
     let job = new Promise<void>((resolve, reject) => {
-        fs.createReadStream('./scripts/features/data/' + 'ResolverReverseRecords.csv')
+        fs.createReadStream(`./scripts/features/data/${fileName}.csv`)
             .pipe(csvParser.default())
             .on('data', (data) => items.push(data))
             .on('end', resolve)
@@ -232,7 +234,7 @@ const upsertUserHasNoDefaultResolverReverse = async (registrarRecords: Registrar
 const saveOperationToCsv = async (operations: OperationRecord[], fileName) => {
     // save records to csv
     const csvWriter = createObjectCsvWriter({
-        path: './scripts/features/data/' + `${fileName}.csv`,
+        path: `./scripts/features/data/${fileName}.csv`,
         header: [
             {id: 'name', title: 'name'},
             {id: 'operation', title: 'operation'},
