@@ -1,4 +1,3 @@
-
 import logger from "node-color-log";
 import fs from "fs";
 import * as csvParser from "csv-parser";
@@ -255,7 +254,7 @@ const run = async () => {
     logger.debug(`resolver reverse records count: ${JSON.stringify(resolverReverseRecords.length)}`)
     const removeOperations = await removeResolverRecordFromInvalidRegistrarName(registrarRecords, resolverRecords, resolverReverseRecords)
     const upsertOperations = await upsertUserHasNoDefaultResolverReverse(registrarRecords, resolverReverseRecords)
-    let insertOrIgnoreOperations = await insertOrIgnoreDefaultValueForUninitializedRegistrarName(registrarRecords, resolverRecords)
+    const insertOrIgnoreOperations = await insertOrIgnoreDefaultValueForUninitializedRegistrarName(registrarRecords, resolverRecords)
     logger.debug(`remove operations count: ${JSON.stringify(removeOperations.length)}`)
     logger.debug(`upsert operations count: ${JSON.stringify(upsertOperations.length)}`)
     logger.debug(`insert or ignore operations count: ${JSON.stringify(insertOrIgnoreOperations.length)}`)
@@ -272,7 +271,10 @@ const run = async () => {
 
 (async () => {
     logger.debug('Start generate csv')
+    const startTime = performance.now()
     await run()
+    const endTime = performance.now()
+    logger.debug(`generate resolver operation took ${endTime - startTime} milliseconds`)
 })().then(() => {
     logger.info('csv generation done')
 })
