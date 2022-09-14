@@ -56,8 +56,8 @@ Feature: EXT token standard transfer API
 
   Scenario: Ext transfer from owner to allowance
     Given registrar ext_approve name to spender, the caller is the name owner
-      | spender | name     |
-      | user3   | name1.ic |
+      | spender | name     | owner |
+      | user3   | name1.ic | user1 |
     And registrar ext_transfer action
       | caller | name     | from  | to    | from_type | to_type   |
       | user3  | name1.ic | user1 | user3 | principal | principal |

@@ -71,7 +71,7 @@ const get_name_bear = async (name: string) => {
     if (token_id != undefined) {
         const result = await registrar.bearer(token_id)
         if ('Ok' in result) {
-            return identities.getUserByPrincipal(result.Ok)
+            result.Ok
         }
     }
 }
@@ -232,7 +232,7 @@ Given(/^registrar ext_approve name to spender, the caller is the name owner$/, a
     for (let targetData of dataTable) {
         const spender = targetData.spender
 
-        const owner = await get_name_bear(targetData.name)
+        const owner = targetData.owner
         const token = await get_token_id_by_name(targetData.name)
         logger.debug(`owner: ${JSON.stringify(owner)}`)
         if (owner != undefined) {
