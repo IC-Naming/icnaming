@@ -147,7 +147,8 @@ Then(/^registrar getRegistry result is$/, async function (table) {
     for (let i = 0; i < dataTable.length; i++) {
         let targetData = dataTable[i]
         expect(result[i][0]).to.equal(Number(targetData.index))
-        expect(result[i][1]).to.equal(targetData.name)
+        let principal = identities.getPrincipal(targetData.name)
+        expect(result[i][1]).to.equal(principal)
     }
 });
 Then(/^registrar supply result is "([^"]*)"$/, async function (count) {
