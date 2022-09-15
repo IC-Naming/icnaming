@@ -707,29 +707,14 @@ pub fn import_token_id_from_registration() -> ImportTokenIdResponse {
     ImportTokenIdResponse::new(result)
 }
 
-#[derive(CandidType)]
-pub enum EXTApproveResponse {
-    Ok(bool),
-    Err(CommonError),
-}
-
-impl EXTApproveResponse {
-    pub fn new(result: NFTServiceResult<bool>) -> EXTApproveResponse {
-        match result {
-            Ok(data) => EXTApproveResponse::Ok(data),
-            Err(err) => EXTApproveResponse::Err(err),
-        }
-    }
-}
-
 #[update(name = "ext_approve")]
 #[candid_method(update)]
-pub fn ext_approve(request: ApproveRequest) -> EXTApproveResponse {
+pub fn ext_approve(request: ApproveRequest) -> bool {
     let service = RegistrarService::default();
     let call_context = CallContext::from_ic();
     let now = api::time();
     let result = service.ext_approve(&call_context, request.spender, &request.token, now);
-    EXTApproveResponse::new(result)
+    result
 }
 
 #[derive(CandidType)]

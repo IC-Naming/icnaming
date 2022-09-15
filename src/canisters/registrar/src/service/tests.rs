@@ -1574,7 +1574,7 @@ mod nft_transfer_service {
         let canisterid = get_named_get_canister_id(CanisterNames::Registrar);
         let token_id = encode_token_id(CanisterId(canisterid), TokenIndex(1u32));
         let result = service.ext_approve(&call_context, mock_user2, &token_id, mock_std_time_now);
-        assert!(result.is_ok());
+        assert!(result);
     }
 
     #[rstest]
@@ -1596,7 +1596,7 @@ mod nft_transfer_service {
         let canisterid = get_named_get_canister_id(CanisterNames::Registrar);
         let token_id = encode_token_id(CanisterId(canisterid), TokenIndex(1u32));
         let result = service.ext_approve(&call_context, mock_user1, &token_id, mock_std_time_now);
-        assert!(result.is_ok());
+        assert_eq!(result, false);
     }
 
     #[rstest]
@@ -1618,7 +1618,7 @@ mod nft_transfer_service {
         let token_id = encode_token_id(CanisterId(canister_id), TokenIndex(1u32));
 
         let result = service.ext_approve(&call_context, mock_user2, &token_id, mock_std_time_now);
-        assert!(result.is_ok());
+        assert!(result);
 
         let owner = User::Principal(call_context.caller.clone());
 
@@ -1647,7 +1647,7 @@ mod nft_transfer_service {
         let token_id = encode_token_id(CanisterId(canister_id), TokenIndex(1u32));
 
         let result = service.ext_approve(&call_context, mock_user2, &token_id, mock_std_time_now);
-        assert!(result.is_ok());
+        assert!(result);
 
         let owner = User::Address(AccountIdentifier::new(call_context.caller, None));
 
@@ -1677,7 +1677,7 @@ mod nft_transfer_service {
         let token_id = encode_token_id(CanisterId(canister_id), TokenIndex(1u32));
 
         let result = service.ext_approve(&call_context, mock_user1, &token_id, mock_std_time_now);
-        assert!(result.is_ok());
+        assert!(result);
 
         let owner = User::Principal(call_context.caller.clone());
 
@@ -1708,7 +1708,7 @@ mod nft_transfer_service {
         let token_id = encode_token_id(CanisterId(canister_id), TokenIndex(1u32));
 
         let result = service.ext_approve(&call_context, mock_user2, &token_id, mock_std_time_now);
-        assert!(result.is_ok());
+        assert!(result);
 
         let owner = User::Principal(call_context.caller.clone());
 
