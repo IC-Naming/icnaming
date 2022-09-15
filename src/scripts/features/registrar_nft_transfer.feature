@@ -41,8 +41,8 @@ Feature: EXT token standard transfer API
 
   Scenario: Ext transfer from owner to receiver
     Given registrar ext_approve name to spender, the caller is the name owner
-      | spender | name     |
-      | user3   | name1.ic |
+      | spender | name     | owner |
+      | user3   | name1.ic | user1 |
     And registrar ext_transfer action
       | caller | name     | from  | to    | from_type | to_type   |
       | user3  | name1.ic | user1 | user2 | principal | principal |
@@ -56,8 +56,8 @@ Feature: EXT token standard transfer API
 
   Scenario: Ext transfer from owner to allowance
     Given registrar ext_approve name to spender, the caller is the name owner
-      | spender | name     |
-      | user3   | name1.ic |
+      | spender | name     | owner |
+      | user3   | name1.ic | user1 |
     And registrar ext_transfer action
       | caller | name     | from  | to    | from_type | to_type   |
       | user3  | name1.ic | user1 | user3 | principal | principal |
@@ -89,8 +89,8 @@ Feature: EXT token standard transfer API
 
   Scenario: Ext transfer failed account id not supported
     Given registrar ext_approve name to spender, the caller is the name owner
-      | spender | name     |
-      | user3   | name1.ic |
+      | spender | name     | owner |
+      | user3   | name1.ic | user1 |
     And registrar ext_transfer action
       | caller | name     | from                                                             | to    | from_type | to_type   |
       | user3  | name1.ic | 3352b4176f9818dfa25c862cbca82f0f05b8e150dded0263e2ef05b094103e34 | user2 | address   | principal |
@@ -106,8 +106,8 @@ Feature: EXT token standard transfer API
 
   Scenario: Ext allowance success
     Given registrar ext_approve name to spender, the caller is the name owner
-      | spender | name     |
-      | user2   | name1.ic |
+      | spender | name     | owner |
+      | user2   | name1.ic | user1 |
     And registrar allowance action, caller is none
       | name     | from  | to    | from_type |
       | name1.ic | user1 | user2 | principal |

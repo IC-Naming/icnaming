@@ -18,6 +18,7 @@ import {identities} from '~/identityHelper'
 import {assert_remote_result} from './utils'
 import logger from 'node-color-log'
 import {IDL} from '@dfinity/candid'
+import {utils} from "@deland-labs/ic-dev-kit";
 
 
 interface getTokensDto {
@@ -70,7 +71,7 @@ const get_name_bear = async (name: string) => {
     if (token_id != undefined) {
         const result = await registrar.bearer(token_id)
         if ('Ok' in result) {
-            return identities.getUserByPrincipal(result.Ok)
+            result.Ok
         }
     }
 }
@@ -117,7 +118,7 @@ Then(/^registrar getTokens result is$/, async function (table) {
         let targetData = dataTable[i]
         let index = result[i][0]
         let nonfungible = result[i][1]
-        if ('nonfungible' in nonfungible) {
+        if ('nonfungible' in nonfungible && nonfungible.nonfungible.metadata.length) {
             let metadata = nonfungible.nonfungible.metadata[0].map((item) => {
                 return Number(item)
             })
@@ -146,7 +147,9 @@ Then(/^registrar getRegistry result is$/, async function (table) {
     for (let i = 0; i < dataTable.length; i++) {
         let targetData = dataTable[i]
         expect(result[i][0]).to.equal(Number(targetData.index))
-        expect(result[i][1]).to.equal(targetData.name)
+        const principal = identities.getPrincipal(targetData.name)
+        const accountId = utils.principalToAccountID(principal)
+        expect(result[i][1]).to.equal(accountId)
     }
 });
 Then(/^registrar supply result is "([^"]*)"$/, async function (count) {
@@ -163,10 +166,11 @@ Then(/^registrar bearer result is$/, async function (table) {
         const id = await get_token_id_by_name(targetData.name)
         if (id != undefined) {
             const result = await registrar.bearer(id)
-            const principal = identities.getPrincipal(targetData.user).toText()
+            const principal = identities.getPrincipal(targetData.user)
+            const accountId = utils.principalToAccountID(principal)
             if ('Ok' in result) {
                 logger.debug(`result: ${JSON.stringify(result)}`)
-                expect(result.Ok).to.equal(principal)
+                expect(result.Ok).to.equal(accountId)
             }
         } else {
             expect(false, 'get registrar bearer failed').to.equal(true)
@@ -228,7 +232,7 @@ Given(/^registrar ext_approve name to spender, the caller is the name owner$/, a
     for (let targetData of dataTable) {
         const spender = targetData.spender
 
-        const owner = await get_name_bear(targetData.name)
+        const owner = targetData.owner
         const token = await get_token_id_by_name(targetData.name)
         logger.debug(`owner: ${JSON.stringify(owner)}`)
         if (owner != undefined) {

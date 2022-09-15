@@ -40,6 +40,7 @@ use crate::nft::{
     NFTTransferServiceResult, TransferError, TransferRequest,
 };
 use crate::token_identifier::TokenIdentifier;
+use common::canister_api::AccountIdentifier;
 use common::dto::{GetPageInput, GetPageOutput, ImportQuotaRequest, ImportQuotaStatus};
 use common::errors::{BooleanActorResponse, ErrorInfo, ServiceResult};
 use common::named_canister_ids::{get_named_get_canister_id, CanisterNames};
@@ -581,7 +582,7 @@ impl GetNameStatueActorResponse {
     }
 }
 
-pub type GetRegistryActorResponse = Vec<(u32, String)>;
+pub type GetRegistryActorResponse = Vec<(u32, AccountIdentifier)>;
 
 #[query(name = "getRegistry")]
 #[candid_method(query, rename = "getRegistry")]
@@ -660,12 +661,12 @@ pub fn minter() -> GetMinterActorResponse {
 
 #[derive(CandidType)]
 pub enum BearerActorResponse {
-    Ok(String),
+    Ok(AccountIdentifier),
     Err(CommonError),
 }
 
 impl BearerActorResponse {
-    pub fn new(result: NFTServiceResult<String>) -> BearerActorResponse {
+    pub fn new(result: NFTServiceResult<AccountIdentifier>) -> BearerActorResponse {
         match result {
             Ok(data) => BearerActorResponse::Ok(data),
             Err(err) => BearerActorResponse::Err(err.into()),

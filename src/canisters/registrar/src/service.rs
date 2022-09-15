@@ -987,7 +987,7 @@ impl RegistrarService {
         });
     }
 
-    pub(crate) fn get_registry(&self, now: u64) -> Vec<(u32, String)> {
+    pub(crate) fn get_registry(&self, now: u64) -> Vec<(u32, AccountIdentifier)> {
         let mut list = STATE.with(|s| {
             let token_index_store = s.token_index_store.borrow();
             let registration_store = s.registration_store.borrow();
@@ -998,7 +998,7 @@ impl RegistrarService {
                 .map(|registration_agg| {
                     (
                         registration_agg.get_index().get_value(),
-                        registration_agg.get_name(),
+                        AccountIdentifier::new(registration_agg.get_owner(), None),
                     )
                 })
                 .collect::<Vec<_>>();
@@ -1058,14 +1058,18 @@ impl RegistrarService {
         })
     }
 
-    pub(crate) fn bearer(&self, token: &TokenIdentifier, now: u64) -> NFTServiceResult<String> {
+    pub(crate) fn bearer(
+        &self,
+        token: &TokenIdentifier,
+        now: u64,
+    ) -> NFTServiceResult<AccountIdentifier> {
         let registration = STATE.with(|s| {
             let token_index_store = s.token_index_store.borrow();
             let registration_store = s.registration_store.borrow();
             let query = RegistrationNameQueryContext::new(&token_index_store, &registration_store);
             query.get_unexpired_registration(token, now)
         })?;
-        Ok(registration.get_owner().to_text())
+        Ok(AccountIdentifier::new(registration.get_owner(), None))
     }
 
     pub(crate) fn import_token_id_from_registration(

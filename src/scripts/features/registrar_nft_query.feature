@@ -49,10 +49,10 @@ Feature: EXT token standard query API
 
   Scenario: getRegistry
     When registrar getRegistry result is
-      | index | name      |
-      | 1     | name1.ic  |
-      | 2     | na2.ic    |
-      | 3     | iiiiii.ic |
+      | index | name  |
+      | 1     | user1 |
+      | 2     | user1 |
+      | 3     | user2 |
 
   Scenario: supply
     When registrar supply result is "3"
