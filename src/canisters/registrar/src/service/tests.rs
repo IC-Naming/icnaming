@@ -1677,7 +1677,7 @@ mod nft_transfer_service {
         let token_id = encode_token_id(CanisterId(canister_id), TokenIndex(1u32));
 
         let result = service.ext_approve(&call_context, mock_user1, &token_id, mock_std_time_now);
-        assert!(result);
+        assert_eq!(result, false);
 
         let owner = User::Principal(call_context.caller.clone());
 
