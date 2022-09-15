@@ -189,7 +189,7 @@ service : (opt InitArgs) -> {
   batch_transfer_quota : (BatchTransferRequest) -> (BooleanActorResponse);
   bearer : (text) -> (BearerActorResponse) query;
   export_state : () -> (StateExportResponse);
-  ext_approve : (ApproveRequest) -> ();
+  ext_approve : (ApproveRequest) -> (bool);
   ext_transfer : (TransferRequest) -> (EXTTransferResponse);
   getMinter : () -> (principal) query;
   getRegistry : () -> (vec record { nat32; text }) query;

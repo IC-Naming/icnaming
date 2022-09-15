@@ -216,7 +216,7 @@ export interface _SERVICE {
   >,
   'bearer' : ActorMethod<[string], BearerActorResponse>,
   'export_state' : ActorMethod<[], StateExportResponse>,
-  'ext_approve' : ActorMethod<[ApproveRequest], undefined>,
+  'ext_approve' : ActorMethod<[ApproveRequest], boolean>,
   'ext_transfer' : ActorMethod<[TransferRequest], EXTTransferResponse>,
   'getMinter' : ActorMethod<[], Principal>,
   'getRegistry' : ActorMethod<[], Array<[number, string]>>,
