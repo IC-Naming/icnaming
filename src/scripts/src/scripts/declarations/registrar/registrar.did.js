@@ -279,7 +279,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'bearer' : IDL.Func([IDL.Text], [BearerActorResponse], ['query']),
     'export_state' : IDL.Func([], [StateExportResponse], []),
-    'ext_approve' : IDL.Func([ApproveRequest], [], []),
+    'ext_approve' : IDL.Func([ApproveRequest], [IDL.Bool], []),
     'ext_transfer' : IDL.Func([TransferRequest], [EXTTransferResponse], []),
     'getMinter' : IDL.Func([], [IDL.Principal], ['query']),
     'getRegistry' : IDL.Func(
