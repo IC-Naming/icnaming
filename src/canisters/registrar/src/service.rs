@@ -1110,7 +1110,7 @@ impl RegistrarService {
                 spender,
             );
             return match result {
-                Ok(_) => true,
+                Ok(value) => value,
                 Err(_) => false,
             };
         }
