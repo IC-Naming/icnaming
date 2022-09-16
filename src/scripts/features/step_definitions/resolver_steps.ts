@@ -8,14 +8,11 @@ import {
 } from '~/declarations/resolver/resolver.did'
 import {expect} from 'chai'
 import {Result} from '~/utils/Result'
-import {assert_remote_result} from './utils'
+import {assert_remote_result, import_record_value_from_csv} from './utils'
 import {identities} from '~/identityHelper'
 import {Principal} from "@dfinity/principal"
 import logger from "node-color-log";
 import {utils} from "@deland-labs/ic-dev-kit";
-import fs from "fs";
-import * as csv from "csv-parser";
-import {import_max_timeout} from "./setup";
 
 let global_ensure_resolver_created_result: EnsureResolverCreatedResult
 let global_update_record_value_result: UpdateRecordValueResult
@@ -268,54 +265,6 @@ When(/^import_record_value, value len is "([^"]*)"$/, async function (len, table
     logger.debug(`import_record_value request: ${JSON.stringify(request)}`)
     global_import_record_value_response = await localResolver.import_record_value(request)
 });
-When(/^import_record_value from csv file "([^"]*)"$/, async function (file) {
-    const items: {
-        name: string,
-        operation: string,
-        key: string,
-        value: string
-    }[] = [];
-    let job = new Promise<void>(resolve => {
-        fs.createReadStream('./scripts/features/data/' + file)
-            .pipe(csv.default(
-                {
-                    headers: ['name', 'operation', 'key', 'value'],
-                    skipLines: 1
-                }
-            ))
-            .on('data', (data) => items.push(data))
-            .on('end', () => {
-                resolve();
-            });
-    })
-    await job;
-    logger.debug(`first item: ${JSON.stringify(items[0])}`)
-    const result = await resolver.import_record_value({
-        items: items.map(item => {
-            let value_and_operation
-            if (item.operation == 'InsertOrIgnore') {
-                value_and_operation = {
-                    InsertOrIgnore: item.value
-                }
-            } else if (item.operation == 'Upsert') {
-                value_and_operation = {
-                    Upsert: item.value
-                }
-            } else if (item.operation == 'Remove') {
-                value_and_operation = {
-                    Remove: null
-                }
-            } else {
-                expect.fail(`import_record_value failed: ${item.operation} not support`)
-            }
-            return {
-                name: item.name,
-                key: item.key,
-                value_and_operation: value_and_operation,
-            }
-        })
-    })
-    logger.info(`import_record_value result: ${JSON.stringify(result)}`)
-    global_import_record_value_response = result
-
+When(/^import_record_value from csv file "([^"]*)"$/, async function (file_name) {
+    global_import_record_value_response = await import_record_value_from_csv(file_name)
 });
