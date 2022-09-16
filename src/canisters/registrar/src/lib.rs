@@ -709,11 +709,12 @@ pub fn import_token_id_from_registration() -> ImportTokenIdResponse {
 
 #[update(name = "ext_approve")]
 #[candid_method(update)]
-pub fn ext_approve(request: ApproveRequest) {
+pub fn ext_approve(request: ApproveRequest) -> bool {
     let service = RegistrarService::default();
     let call_context = CallContext::from_ic();
     let now = api::time();
-    let _ = service.ext_approve(&call_context, request.spender, &request.token, now);
+    let result = service.ext_approve(&call_context, request.spender, &request.token, now);
+    result
 }
 
 #[derive(CandidType)]

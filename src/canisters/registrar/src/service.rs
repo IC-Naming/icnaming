@@ -1095,20 +1095,26 @@ impl RegistrarService {
         spender: Principal,
         token: &TokenIdentifier,
         now: u64,
-    ) -> NFTServiceResult<()> {
-        let reggistration_agg = STATE.with(|s| {
+    ) -> bool {
+        let registration_agg_result = STATE.with(|s| {
             let token_index_store = s.token_index_store.borrow();
             let registration_store = s.registration_store.borrow();
             let query = RegistrationNameQueryContext::new(&token_index_store, &registration_store);
             query.get_unexpired_registration(token, now)
-        })?;
-        let _ = self.approve(
-            &call_context.caller,
-            call_context.now.0,
-            reggistration_agg.get_name().as_str(),
-            spender,
-        );
-        Ok(())
+        });
+        if let Ok(registration_agg) = registration_agg_result {
+            let result = self.approve(
+                &call_context.caller,
+                call_context.now.0,
+                registration_agg.get_name().as_str(),
+                spender,
+            );
+            return match result {
+                Ok(value) => value,
+                Err(_) => false,
+            };
+        }
+        false
     }
 
     pub(crate) fn allowance(
