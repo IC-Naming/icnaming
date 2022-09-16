@@ -14,7 +14,9 @@ use time::{OffsetDateTime, Time};
 use crate::nft::{
     CommonError, Metadata, NFTServiceResult, NFTTransferServiceResult, NonFungible, User,
 };
-use crate::token_identifier::{encode_token_id, get_valid_token_index, TokenIdentifier};
+use crate::token_identifier::{
+    encode_token_id, get_valid_token_index, TokenIdentifier, TokenIndex,
+};
 use common::canister_api::ic_impl::{CyclesMintingApi, RegistryApi, ResolverApi};
 use common::canister_api::{AccountIdentifier, ICyclesMintingApi, IRegistryApi, IResolverApi};
 use common::constants::*;
@@ -295,7 +297,7 @@ impl RegistrarService {
                         error!("failed to register success from token index {:?}", e);
                     }
                 }
-                store.get_user_own_registration_count(&owner.0)
+                store.get_user_owned_registrations_count(&owner.0)
             });
             MERTRICS_COUNTER.with(|c| {
                 let mut counter = c.borrow_mut();
@@ -1213,6 +1215,33 @@ impl RegistrarService {
                 .collect()
         })
     }
+
+    pub(crate) fn ext_tokens_of(
+        &self,
+        principals: &Vec<Principal>,
+        now: u64,
+    ) -> NFTServiceResult<HashMap<Principal, Vec<u32>>> {
+        let mut auth_principals = Vec::new();
+        for principal in principals {
+            auth_principals.push(must_not_anonymous(principal)?);
+        }
+        STATE.with(|s| {
+            let token_index_store = s.token_index_store.borrow();
+            let registration_store = s.registration_store.borrow();
+            let query = RegistrationNameQueryContext::new(&token_index_store, &registration_store);
+            let result = query
+                .get_unexpired_token_index_of_registrations_by_owners(&auth_principals, now)
+                .iter()
+                .map(|(key, value)| {
+                    (
+                        key.to_owned(),
+                        value.iter().map(|item| item.get_value()).collect(),
+                    )
+                })
+                .collect();
+            Ok(result)
+        })
+    }
 }
 
 fn get_price_in_xdr_permyriad(len: u8) -> BigUint {
@@ -1485,6 +1514,31 @@ impl<'a> RegistrationNameQueryContext<'a> {
             }
         }
         Err(NamingError::RegistrationNotFound.into())
+    }
+
+    pub fn get_unexpired_token_index_of_registrations_by_owners(
+        &self,
+        owners: &Vec<AuthPrincipal>,
+        now: u64,
+    ) -> HashMap<Principal, Vec<TokenIndex>> {
+        let mut result = HashMap::new();
+        for owner in owners {
+            let mut token_indexes: Vec<TokenIndex> = Vec::new();
+            self.registration_store
+                .get_user_owned_registrations(&owner.0)
+                .iter()
+                .filter(|registration| !registration.is_expired(now))
+                .for_each(|registration| {
+                    let token_index = self
+                        .token_index_store
+                        .get_registration_by_name(&registration.get_name());
+                    if let Some(token_index) = token_index {
+                        token_indexes.push(token_index.borrow().get_index());
+                    }
+                });
+            result.insert(owner.0.to_owned(), token_indexes.to_owned());
+        }
+        result
     }
 }
 

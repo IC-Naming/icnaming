@@ -785,6 +785,29 @@ pub fn get_token_details_by_names(names: Vec<String>) -> GetTokenIdListByNamesRe
     result
 }
 
+#[derive(CandidType)]
+pub enum EXTTokensOfResponse {
+    Ok(HashMap<Principal, Vec<u32>>),
+    Err(CommonError),
+}
+
+impl EXTTokensOfResponse {
+    pub fn new(result: NFTServiceResult<HashMap<Principal, Vec<u32>>>) -> EXTTokensOfResponse {
+        match result {
+            Ok(data) => EXTTokensOfResponse::Ok(data),
+            Err(err) => EXTTokensOfResponse::Err(err.into()),
+        }
+    }
+}
+#[query(name = "ext_tokens_of")]
+#[candid_method(query)]
+pub fn ext_tokens_of(principals: Vec<Principal>) -> NFTServiceResult<HashMap<Principal, Vec<u32>>> {
+    let service = RegistrarService::default();
+    let now = api::time();
+    let result = service.ext_tokens_of(&principals, now);
+    result
+}
+
 candid::export_service!();
 
 #[query(name = "__get_candid_interface_tmp_hack")]
