@@ -318,24 +318,27 @@ When(/^registrar ext_tokens_of "([^"]*)" result is$/, async function (user, tabl
     const response = await registrar.ext_tokens_of(identities.getPrincipal(user))
     const dataTable = table.hashes().map((item) => Number(item.index))
     if ('Ok' in response) {
-        expect(response.Ok).to.deep.equal(dataTable)
+        expect(response.Ok).to.includes(dataTable)
     } else {
         assert_remote_result(response)
     }
 });
 When(/^registrar ext_batch_tokens_of result is$/, async function (table) {
-    const dataTable = table.hashes()
-    const users = dataTable.map((item) => item.user)
+    const dataTable:{
+        user: string,
+        index: number
+    }[] = table.hashes()
+    const users: string[] = [...new Set(dataTable.map((item) => item.user))]
     const map = new Map<Principal, number[]>()
     for (let user of users) {
-        const tokens = dataTable.filter((item) => item.user == user).map((item) => parseInt(item.index))
+        const tokens = dataTable.filter((item) => item.user == user).map((item) => item.index)
         map.set(identities.getPrincipal(user), tokens)
     }
     const response = await registrar.ext_batch_tokens_of(Array.from(map.keys()))
     if ('Ok' in response) {
         for (let [user, tokens] of response.Ok) {
             const expected = map.get(user)
-            expect(tokens).to.deep.equal(expected)
+            expect(tokens).to.includes(expected)
         }
     } else {
         assert_remote_result(response)
