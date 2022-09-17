@@ -329,15 +329,15 @@ When(/^registrar ext_batch_tokens_of result is$/, async function (table) {
         index: number
     }[] = table.hashes()
     const users: string[] = [...new Set(dataTable.map((item) => item.user))]
-    const map = new Map<Principal, number[]>()
+    const map = new Map<string, number[]>()
     for (let user of users) {
         const tokens = dataTable.filter((item) => item.user == user).map((item) => item.index)
-        map.set(identities.getPrincipal(user), tokens)
+        map.set(identities.getPrincipal(user).toText(), tokens)
     }
-    const response = await registrar.ext_batch_tokens_of(Array.from(map.keys()))
+    const response = await registrar.ext_batch_tokens_of(Array.from(map.keys()).map((item) => Principal.fromText(item)))
     if ('Ok' in response) {
         for (let [user, tokens] of response.Ok) {
-            const expected = map.get(user)
+            const expected = map.get(user.toText())
             expect(tokens).to.includes(expected)
         }
     } else {
