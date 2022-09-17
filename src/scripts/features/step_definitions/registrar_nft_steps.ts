@@ -7,7 +7,8 @@ import {expect} from 'chai'
 import {
     AllowanceActorResponse,
     AllowanceRequest,
-    ApproveRequest, EXTTokensOfResponse,
+    ApproveRequest,
+    EXTTokensOfResponse,
     EXTTransferResponse,
     ImportTokenIdResponse,
     TransferRequest,
@@ -329,16 +330,15 @@ When(/^registrar ext_batch_tokens_of result is$/, async function (table) {
         index: number
     }[] = table.hashes()
     const users: string[] = [...new Set(dataTable.map((item) => item.user))]
-    const map = new Map<string, number[]>()
+    const map = {}
     for (let user of users) {
-        const tokens = dataTable.filter((item) => item.user == user).map((item) => item.index)
-        map.set(identities.getPrincipal(user).toText(), tokens)
+        map[identities.getPrincipal(user).toText()] = dataTable.filter((item) => item.user == user).map((item) => item.index)
     }
-    const response = await registrar.ext_batch_tokens_of(Array.from(map.keys()).map((item) => Principal.fromText(item)))
+    const response = await registrar.ext_batch_tokens_of(users.map((item) => identities.getPrincipal(item)))
     if ('Ok' in response) {
         for (let [user, tokens] of response.Ok) {
-            const expected = map.get(user.toText())
-            expect(tokens).to.includes(expected)
+            const expected = map[user.toText()]
+            expect(Array.from(tokens)).to.eql(expected.map((item)=>Number(item)))
         }
     } else {
         assert_remote_result(response)
