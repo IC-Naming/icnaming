@@ -1664,6 +1664,7 @@ dependencies = [
  "build_common",
  "candid",
  "common",
+ "csv",
  "env_logger",
  "ic-cdk",
  "ic-cdk-macros",

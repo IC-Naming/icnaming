@@ -13,7 +13,7 @@ use common::ic_logger::ICLogger;
 use common::named_canister_ids::{
     ensure_current_canister_id_match, update_dev_named_canister_ids, CanisterNames,
 };
-use common::state::StableState;
+use common::state::{decode_store, decode_store_or_default, StableState};
 
 use crate::resolver_store::ResolverStore;
 use crate::reverse_resolver_store::ReverseResolverStore;
@@ -38,6 +38,8 @@ impl State {
     }
 }
 
+pub type EncodedState = (Vec<u8>, Option<Vec<u8>>);
+
 impl StableState for State {
     fn encode(&self) -> Vec<u8> {
         encode_args((
@@ -48,14 +50,13 @@ impl StableState for State {
     }
 
     fn decode(bytes: Vec<u8>) -> Result<Self, String> {
-        let (resolver_store_bytes, reverse_resolver_store_bytes) = decode_args(&bytes).unwrap();
+        let (resolver_store_bytes, reverse_resolver_store_bytes): EncodedState =
+            decode_args(&bytes).unwrap();
 
-        Ok(State {
-            resolver_store: RefCell::new(ResolverStore::decode(resolver_store_bytes)?),
-            reverse_resolver_store: RefCell::new(ReverseResolverStore::decode(
-                reverse_resolver_store_bytes,
-            )?),
-        })
+        return Ok(State {
+            resolver_store: decode_store(resolver_store_bytes)?,
+            reverse_resolver_store: decode_store_or_default(reverse_resolver_store_bytes)?,
+        });
     }
 }
 

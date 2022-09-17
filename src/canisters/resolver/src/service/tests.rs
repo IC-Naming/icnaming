@@ -432,3 +432,53 @@ mod import_record_value {
         );
     }
 }
+
+// mod load_state {
+//     use super::*;
+//     use crate::state::State;
+//     use common::dto::decode_zlib;
+//     use common::state::StableState;
+//     use std::fs::File;
+//     use std::io::Write;
+//
+//     #[rstest]
+//     fn get_registration_owners() {
+//         let zlib = include_bytes!("../../../../local_state_data/resolver/latest.zlib");
+//         let candi = decode_zlib(zlib);
+//         let state = State::decode(candi).unwrap();
+//         {
+//             let store = state.resolver_store.borrow();
+//             // out to file registrar.csv
+//             let mut wtr = csv::Writer::from_writer(vec![]);
+//             wtr.serialize(("name", "key", "value")).unwrap();
+//             for (name, resolver) in store.get_resolvers() {
+//                 for (key, value) in resolver.get_record_value() {
+//                     if key != RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL {
+//                         wtr.serialize((name, key, value)).unwrap();
+//                     }
+//                 }
+//             }
+//             wtr.flush().unwrap();
+//             let csv = String::from_utf8(wtr.into_inner().unwrap()).unwrap();
+//             File::create("../../scripts/features/data/ResolverRecords.csv")
+//                 .unwrap()
+//                 .write_all(csv.as_bytes())
+//                 .unwrap();
+//         }
+//         {
+//             let store = state.reverse_resolver_store.borrow();
+//             // out to file registrar.csv
+//             let mut wtr = csv::Writer::from_writer(vec![]);
+//             wtr.serialize(("name", "value")).unwrap();
+//             for (name, principal) in store.primary_names_reverse() {
+//                 wtr.serialize((name, principal.to_string())).unwrap();
+//             }
+//             wtr.flush().unwrap();
+//             let csv = String::from_utf8(wtr.into_inner().unwrap()).unwrap();
+//             File::create("../../scripts/features/data/ResolverReverseRecords.csv")
+//                 .unwrap()
+//                 .write_all(csv.as_bytes())
+//                 .unwrap();
+//         }
+//     }
+// }
