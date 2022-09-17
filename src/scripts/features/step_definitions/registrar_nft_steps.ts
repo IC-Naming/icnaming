@@ -32,7 +32,6 @@ interface getTokensDto {
 let global_transfer_result_list: EXTTransferResponse[] = []
 let global_allowance_result_list: AllowanceActorResponse[] = []
 let global_import_token_id_from_registration_result: ImportTokenIdResponse
-let global_tokens_of_result: EXTTokensOfResponse
 
 export const get_metadata_type = () => {
     return [IDL.Vec(IDL.Tuple(
