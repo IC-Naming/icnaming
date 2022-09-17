@@ -316,11 +316,9 @@ When(/^last registrar import token id from registration result is ok, and value 
 });
 When(/^registrar ext_tokens_of "([^"]*)" result is$/, async function (user, table) {
     const response = await registrar.ext_tokens_of(identities.getPrincipal(user))
-    const dataTable = table.hashes()
+    const dataTable = table.hashes().map((item) => Number(item.index))
     if ('Ok' in response) {
-        for (let targetData of dataTable) {
-            expect(response.Ok).to.include(targetData.index)
-        }
+        expect(response.Ok).to.deep.equal(dataTable)
     } else {
         assert_remote_result(response)
     }
