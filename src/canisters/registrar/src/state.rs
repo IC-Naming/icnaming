@@ -13,7 +13,7 @@ use common::ic_logger::ICLogger;
 use common::named_canister_ids::{
     ensure_current_canister_id_match, update_dev_named_canister_ids, CanisterNames,
 };
-use common::state::StableState;
+use common::state::{decode_store, decode_store_or_default, StableState};
 
 use crate::name_locker::NameLocker;
 use crate::quota_import_store::QuotaImportStore;
@@ -81,12 +81,12 @@ impl State {
 }
 
 pub type EncodedState = (
-    Option<Vec<u8>>,
-    Option<Vec<u8>>,
-    Option<Vec<u8>>,
-    Option<Vec<u8>>,
-    Option<Vec<u8>>,
-    Option<Vec<u8>>,
+    Vec<u8>,
+    Vec<u8>,
+    Vec<u8>,
+    Vec<u8>,
+    Vec<u8>,
+    Vec<u8>,
     Option<Vec<u8>>,
 );
 
@@ -116,28 +116,14 @@ impl StableState for State {
         ): EncodedState = decode_args(&bytes).unwrap();
 
         return Ok(State {
-            settings: decode_or_default::<Settings>(settings_bytes)?,
-            user_quota_store: decode_or_default::<UserQuotaStore>(user_quota_store_bytes)?,
-            registration_store: decode_or_default::<RegistrationStore>(registration_store_bytes)?,
-            quota_import_store: decode_or_default::<QuotaImportStore>(quota_import_store_bytes)?,
-            registration_approval_store: decode_or_default::<RegistrationApprovalStore>(
-                registration_approval_store_bytes,
-            )?,
-            balance_store: decode_or_default::<BalanceStore>(balance_store_bytes)?,
-            token_index_store: decode_or_default::<TokenIndexStore>(token_index_store_bytes)?,
+            settings: decode_store(settings_bytes)?,
+            user_quota_store: decode_store(user_quota_store_bytes)?,
+            registration_store: decode_store(registration_store_bytes)?,
+            quota_import_store: decode_store(quota_import_store_bytes)?,
+            registration_approval_store: decode_store(registration_approval_store_bytes)?,
+            balance_store: decode_store(balance_store_bytes)?,
+            token_index_store: decode_store_or_default(token_index_store_bytes)?,
         });
-
-        fn decode_or_default<T>(bytes: Option<Vec<u8>>) -> Result<RefCell<T>, String>
-        where
-            T: Default + StableState,
-        {
-            let inner = if let Some(bytes) = bytes {
-                T::decode(bytes)?
-            } else {
-                T::default()
-            };
-            Ok(RefCell::new(inner))
-        }
     }
 }
 

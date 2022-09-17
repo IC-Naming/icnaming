@@ -59,4 +59,11 @@ impl ReverseResolverStore {
     pub fn get_primary_name_reverse(&self, name: &String) -> Option<&Principal> {
         self.primary_names_reverse.get(name)
     }
+
+    pub fn primary_names(&self) -> &HashMap<Principal, String> {
+        &self.primary_names
+    }
+    pub fn primary_names_reverse(&self) -> &HashMap<String, Principal> {
+        &self.primary_names_reverse
+    }
 }

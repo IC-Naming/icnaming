@@ -1921,27 +1921,30 @@ mod nft_transfer_service {
 }
 
 // mod load_state {
-//     use std::fs::File;
-//     use std::io::Write;
+//     use super::*;
 //     use common::dto::decode_zlib;
 //     use common::state::StableState;
-//     use super::*;
+//     use std::fs::File;
+//     use std::io::Write;
 //
 //     #[rstest]
-//     fn get_registration_owners(
-//         service: RegistrarService,
-//     ) {
+//     fn get_registration_owners(service: RegistrarService) {
 //         let zlib = include_bytes!("../../../../local_state_data/registrar/latest.zlib");
 //         let candi = decode_zlib(zlib);
 //         let state = State::decode(candi).unwrap();
 //         let store = state.registration_store.borrow();
 //         // out to file registrar.csv
 //         let mut wtr = csv::Writer::from_writer(vec![]);
+//         wtr.serialize(("name", "owner")).unwrap();
 //         for (name, registration) in store.get_registrations() {
-//             wtr.serialize((name, registration.get_owner().to_string())).unwrap();
+//             wtr.serialize((name, registration.get_owner().to_string()))
+//                 .unwrap();
 //         }
 //         wtr.flush().unwrap();
 //         let csv = String::from_utf8(wtr.into_inner().unwrap()).unwrap();
-//         File::create("registrar.csv").unwrap().write_all(csv.as_bytes()).unwrap();
+//         File::create("../../scripts/features/data/RegistrarRecords.csv")
+//             .unwrap()
+//             .write_all(csv.as_bytes())
+//             .unwrap();
 //     }
 // }
