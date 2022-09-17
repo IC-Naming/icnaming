@@ -7,7 +7,7 @@ import {expect} from 'chai'
 import {
     AllowanceActorResponse,
     AllowanceRequest,
-    ApproveRequest,
+    ApproveRequest, EXTTokensOfResponse,
     EXTTransferResponse,
     ImportTokenIdResponse,
     TransferRequest,
@@ -19,6 +19,7 @@ import {assert_remote_result} from './utils'
 import logger from 'node-color-log'
 import {IDL} from '@dfinity/candid'
 import {utils} from "@deland-labs/ic-dev-kit";
+import {Principal} from "@dfinity/principal";
 
 
 interface getTokensDto {
@@ -30,6 +31,7 @@ interface getTokensDto {
 let global_transfer_result_list: EXTTransferResponse[] = []
 let global_allowance_result_list: AllowanceActorResponse[] = []
 let global_import_token_id_from_registration_result: ImportTokenIdResponse
+let global_tokens_of_result: EXTTokensOfResponse
 
 export const get_metadata_type = () => {
     return [IDL.Vec(IDL.Tuple(
@@ -310,5 +312,34 @@ When(/^last registrar import token id from registration result is ok, and value 
     assert_remote_result(global_import_token_id_from_registration_result)
     if ('Ok' in global_import_token_id_from_registration_result) {
         expect(global_import_token_id_from_registration_result.Ok).to.equal(BigInt(value))
+    }
+});
+When(/^registrar ext_tokens_of "([^"]*)" result is$/, async function (user, table) {
+    const response = await registrar.ext_tokens_of(identities.getPrincipal(user))
+    const dataTable = table.hashes()
+    if ('Ok' in response) {
+        for (let targetData of dataTable) {
+            expect(response.Ok).to.include(targetData.index)
+        }
+    } else {
+        assert_remote_result(response)
+    }
+});
+When(/^registrar ext_batch_tokens_of result is$/, async function (table) {
+    const dataTable = table.hashes()
+    const users = dataTable.map((item) => item.user)
+    const map = new Map<Principal, number[]>()
+    for (let user of users) {
+        const tokens = dataTable.filter((item) => item.user == user).map((item) => parseInt(item.index))
+        map.set(identities.getPrincipal(user), tokens)
+    }
+    const response = await registrar.ext_batch_tokens_of(Array.from(map.keys()))
+    if ('Ok' in response) {
+        for (let [user, tokens] of response.Ok) {
+            const expected = map.get(user)
+            expect(tokens).to.deep.equal(expected)
+        }
+    } else {
+        assert_remote_result(response)
     }
 });

@@ -63,3 +63,18 @@ Feature: EXT token standard query API
       | name1.ic  | user1 |
       | na2.ic    | user1 |
       | iiiiii.ic | user2 |
+
+  @dev
+  Scenario: ext_tokens_of
+    When registrar ext_tokens_of "user1" result is
+      | index |
+      | 1     |
+      | 2     |
+
+  @dev
+  Scenario: ext_batch_tokens_of
+    When registrar ext_batch_tokens_of result is
+      | user  | index |
+      | user1 | 1     |
+      | user1 | 2     |
+      | user2 | 3     |
