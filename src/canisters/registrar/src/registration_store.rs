@@ -98,7 +98,14 @@ impl RegistrationStore {
             });
     }
 
-    pub fn get_user_own_registration_count(&self, user: &Principal) -> usize {
+    pub fn get_user_owned_registrations(&self, owner: &Principal) -> Vec<&Registration> {
+        self.registrations
+            .values()
+            .filter(|registration| registration.is_owner(owner))
+            .collect()
+    }
+
+    pub fn get_user_owned_registrations_count(&self, user: &Principal) -> usize {
         self.registrations
             .values()
             .filter(|registration| registration.is_owner(user))

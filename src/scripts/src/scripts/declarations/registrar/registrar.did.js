@@ -68,6 +68,14 @@ export const idlFactory = ({ IDL }) => {
     'allowance' : IDL.Nat,
     'spender' : IDL.Principal,
   });
+  const EXTBatchTokensOfResponse = IDL.Variant({
+    'Ok' : IDL.Vec(IDL.Tuple(IDL.Principal, IDL.Vec(IDL.Nat32))),
+    'Err' : CommonError,
+  });
+  const EXTTokensOfResponse = IDL.Variant({
+    'Ok' : IDL.Vec(IDL.Nat32),
+    'Err' : CommonError,
+  });
   const TransferRequest = IDL.Record({
     'to' : User,
     'token' : IDL.Text,
@@ -280,6 +288,16 @@ export const idlFactory = ({ IDL }) => {
     'bearer' : IDL.Func([IDL.Text], [BearerActorResponse], ['query']),
     'export_state' : IDL.Func([], [StateExportResponse], []),
     'ext_approve' : IDL.Func([ApproveRequest], [IDL.Bool], []),
+    'ext_batch_tokens_of' : IDL.Func(
+        [IDL.Vec(IDL.Principal)],
+        [EXTBatchTokensOfResponse],
+        ['query'],
+      ),
+    'ext_tokens_of' : IDL.Func(
+        [IDL.Principal],
+        [EXTTokensOfResponse],
+        ['query'],
+      ),
     'ext_transfer' : IDL.Func([TransferRequest], [EXTTransferResponse], []),
     'getMinter' : IDL.Func([], [IDL.Principal], ['query']),
     'getRegistry' : IDL.Func(

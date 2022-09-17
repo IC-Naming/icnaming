@@ -6,7 +6,7 @@ use candid::{CandidType, Deserialize, Principal};
 use itertools::Itertools;
 
 use common::CallContext;
-use log::{debug, error, info};
+use log::{debug, info};
 
 use common::constants::RESOLVER_KEY_SETTING_REVERSE_RESOLUTION_PRINCIPAL;
 

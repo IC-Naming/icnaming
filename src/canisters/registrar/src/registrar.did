@@ -28,6 +28,11 @@ type CanisterNames = variant {
   Resolver;
 };
 type CommonError = variant { InvalidToken : text; Other : text };
+type EXTBatchTokensOfResponse = variant {
+  Ok : vec record { principal; vec nat32 };
+  Err : CommonError;
+};
+type EXTTokensOfResponse = variant { Ok : vec nat32; Err : CommonError };
 type EXTTransferResponse = variant { Ok : nat; Err : TransferError };
 type ErrorInfo = record { code : nat32; message : text };
 type Fungible = record {
@@ -190,6 +195,8 @@ service : (opt InitArgs) -> {
   bearer : (text) -> (BearerActorResponse) query;
   export_state : () -> (StateExportResponse);
   ext_approve : (ApproveRequest) -> (bool);
+  ext_batch_tokens_of : (vec principal) -> (EXTBatchTokensOfResponse) query;
+  ext_tokens_of : (principal) -> (EXTTokensOfResponse) query;
   ext_transfer : (TransferRequest) -> (EXTTransferResponse);
   getMinter : () -> (principal) query;
   getRegistry : () -> (vec record { nat32; text }) query;

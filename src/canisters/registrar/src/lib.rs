@@ -1,5 +1,3 @@
-extern crate core;
-
 mod http;
 mod name_locker;
 mod periodic_tasks_runner;
@@ -39,7 +37,7 @@ use crate::nft::{
     AllowanceRequest, ApproveRequest, CommonError, Metadata, NFTServiceResult,
     NFTTransferServiceResult, TransferError, TransferRequest,
 };
-use crate::token_identifier::TokenIdentifier;
+use crate::token_identifier::{TokenIdentifier, TokenIndex};
 use common::canister_api::AccountIdentifier;
 use common::dto::{GetPageInput, GetPageOutput, ImportQuotaRequest, ImportQuotaStatus};
 use common::errors::{BooleanActorResponse, ErrorInfo, ServiceResult};
@@ -783,6 +781,55 @@ pub fn get_token_details_by_names(names: Vec<String>) -> GetTokenIdListByNamesRe
     let now = api::time();
     let result = service.get_token_details_by_names(&names, now);
     result
+}
+
+#[derive(CandidType)]
+pub enum EXTTokensOfResponse {
+    Ok(Vec<TokenIndex>),
+    Err(CommonError),
+}
+
+impl EXTTokensOfResponse {
+    pub fn new(result: NFTServiceResult<Vec<TokenIndex>>) -> EXTTokensOfResponse {
+        match result {
+            Ok(data) => EXTTokensOfResponse::Ok(data),
+            Err(err) => EXTTokensOfResponse::Err(err.into()),
+        }
+    }
+}
+
+#[query(name = "ext_tokens_of")]
+#[candid_method(query)]
+pub fn ext_tokens_of(principal: Principal) -> EXTTokensOfResponse {
+    let service = RegistrarService::default();
+    let now = api::time();
+    let result = service.ext_tokens_of(&principal, now);
+    EXTTokensOfResponse::new(result)
+}
+
+#[derive(CandidType)]
+pub enum EXTBatchTokensOfResponse {
+    Ok(HashMap<Principal, Vec<TokenIndex>>),
+    Err(CommonError),
+}
+
+impl EXTBatchTokensOfResponse {
+    pub fn new(
+        result: NFTServiceResult<HashMap<Principal, Vec<TokenIndex>>>,
+    ) -> EXTBatchTokensOfResponse {
+        match result {
+            Ok(data) => EXTBatchTokensOfResponse::Ok(data),
+            Err(err) => EXTBatchTokensOfResponse::Err(err.into()),
+        }
+    }
+}
+#[query(name = "ext_batch_tokens_of")]
+#[candid_method(query)]
+pub fn ext_batch_tokens_of(principals: Vec<Principal>) -> EXTBatchTokensOfResponse {
+    let service = RegistrarService::default();
+    let now = api::time();
+    let result = service.ext_batch_tokens_of(&principals, now);
+    EXTBatchTokensOfResponse::new(result)
 }
 
 candid::export_service!();

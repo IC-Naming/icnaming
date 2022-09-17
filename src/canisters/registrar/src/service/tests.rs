@@ -1339,10 +1339,10 @@ mod nft_query_service {
     use candid::decode_args;
     use std::string::String;
 
-    fn registration_name_init(name: &String, user: Principal, now: u64) {
+    fn registration_name_init(name: &String, user: Principal, now: u64) -> TokenIndex {
         STATE.with(|s| {
             let mut store = s.token_index_store.borrow_mut();
-            store.try_add_registration_name(name);
+            let index = store.try_add_registration_name(name);
             let mut store = s.registration_store.borrow_mut();
             store.add_registration(Registration::new(
                 user.clone(),
@@ -1350,7 +1350,12 @@ mod nft_query_service {
                 now + 1,
                 now,
             ));
-        });
+            if let Ok(index) = index {
+                index
+            } else {
+                panic!("Failed to add registration name");
+            }
+        })
     }
 
     #[rstest]
@@ -1495,6 +1500,116 @@ mod nft_query_service {
         assert!(registration_name.is_some());
         let registration_name = result.get(&expired_name_str).unwrap();
         assert!(registration_name.is_none());
+    }
+
+    #[rstest]
+    fn test_tokens_of(
+        service: RegistrarService,
+        mock_user1: Principal,
+        mock_std_time_tomorrow: u64,
+        mock_std_time_now: u64,
+        mock_timestamp_1986: u64,
+    ) {
+        let test_name_str1 = create_test_name("icnaming1");
+        let test_name_str2 = create_test_name("icnaming2");
+        let expired_name_str = create_test_name("expired");
+        let name1_index =
+            registration_name_init(&test_name_str1, mock_user1, mock_std_time_tomorrow);
+        let name2_index =
+            registration_name_init(&test_name_str2, mock_user1, mock_std_time_tomorrow);
+        let expired_index =
+            registration_name_init(&expired_name_str, mock_user1, mock_timestamp_1986);
+
+        let result = service.ext_tokens_of(&mock_user1, mock_std_time_now);
+        assert!(result.is_ok());
+        let result = result.unwrap();
+        assert!(result.contains(&name1_index));
+        assert!(result.contains(&name2_index));
+        assert!(!result.contains(&expired_index));
+    }
+
+    #[rstest]
+    fn test_tokens_of_anonymous(
+        service: RegistrarService,
+        mock_user1: Principal,
+        mock_std_time_tomorrow: u64,
+        mock_std_time_now: u64,
+        mock_timestamp_1986: u64,
+    ) {
+        let test_name_str1 = create_test_name("icnaming1");
+        let test_name_str2 = create_test_name("icnaming2");
+        let expired_name_str = create_test_name("expired");
+        let _name1_index =
+            registration_name_init(&test_name_str1, mock_user1, mock_std_time_tomorrow);
+        let _name2_index =
+            registration_name_init(&test_name_str2, mock_user1, mock_std_time_tomorrow);
+        let _expired_index =
+            registration_name_init(&expired_name_str, mock_user1, mock_timestamp_1986);
+
+        let anonymous = Principal::anonymous();
+
+        let result = service.ext_tokens_of(&anonymous, mock_std_time_now);
+        assert!(result.is_err());
+        let error = result.unwrap_err();
+        assert_eq!(error, NamingError::Unauthorized.into());
+    }
+
+    #[rstest]
+    fn test_tokens_of_empty(
+        service: RegistrarService,
+        mock_user1: Principal,
+        mock_std_time_now: u64,
+        mock_timestamp_1986: u64,
+    ) {
+        let expired_name_str = create_test_name("expired");
+        registration_name_init(&expired_name_str, mock_user1, mock_timestamp_1986);
+
+        let result = service.ext_tokens_of(&mock_user1, mock_std_time_now);
+        assert!(result.is_ok());
+        let result = result.unwrap();
+        assert!(result.is_empty());
+    }
+
+    #[rstest]
+    fn test_batch_tokens_of(
+        service: RegistrarService,
+        mock_user1: Principal,
+        mock_user2: Principal,
+        mock_std_time_tomorrow: u64,
+        mock_std_time_now: u64,
+        mock_timestamp_1986: u64,
+    ) {
+        let user1_name_str1 = create_test_name("icnaming1");
+        let user1_name_str2 = create_test_name("icnaming2");
+        let user1_expired_name_str = create_test_name("expired");
+        let user1_name1_index =
+            registration_name_init(&user1_name_str1, mock_user1, mock_std_time_tomorrow);
+        let user1_name2_index =
+            registration_name_init(&user1_name_str2, mock_user1, mock_std_time_tomorrow);
+        let user1_expired_index =
+            registration_name_init(&user1_expired_name_str, mock_user1, mock_timestamp_1986);
+
+        let user2_name_str1 = create_test_name("icnaming3");
+        let user2_name_str2 = create_test_name("icnaming4");
+        let user2_expired_name_str = create_test_name("expired2");
+        let user2_name1_index =
+            registration_name_init(&user2_name_str1, mock_user2, mock_std_time_tomorrow);
+        let user2_name2_index =
+            registration_name_init(&user2_name_str2, mock_user2, mock_std_time_tomorrow);
+        let user2_expired_index =
+            registration_name_init(&user2_expired_name_str, mock_user2, mock_timestamp_1986);
+
+        let result = service.ext_batch_tokens_of(&vec![mock_user1, mock_user2], mock_std_time_now);
+        assert!(result.is_ok());
+        let result = result.unwrap();
+        let user1_result = result.get(&mock_user1).unwrap();
+        assert!(user1_result.contains(&user1_name1_index));
+        assert!(user1_result.contains(&user1_name2_index));
+        assert!(!user1_result.contains(&user1_expired_index));
+        let user2_result = result.get(&mock_user2).unwrap();
+        assert!(user2_result.contains(&user2_name1_index));
+        assert!(user2_result.contains(&user2_name2_index));
+        assert!(!user2_result.contains(&user2_expired_index));
     }
 }
 

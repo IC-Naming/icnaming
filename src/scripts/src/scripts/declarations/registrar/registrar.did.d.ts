@@ -36,6 +36,12 @@ export type CanisterNames = { 'NamingMarketplace' : null } |
   { 'Resolver' : null };
 export type CommonError = { 'InvalidToken' : string } |
   { 'Other' : string };
+export type EXTBatchTokensOfResponse = {
+    'Ok' : Array<[Principal, Array<number>]>
+  } |
+  { 'Err' : CommonError };
+export type EXTTokensOfResponse = { 'Ok' : Array<number> } |
+  { 'Err' : CommonError };
 export type EXTTransferResponse = { 'Ok' : bigint } |
   { 'Err' : TransferError };
 export interface ErrorInfo { 'code' : number, 'message' : string }
@@ -217,6 +223,11 @@ export interface _SERVICE {
   'bearer' : ActorMethod<[string], BearerActorResponse>,
   'export_state' : ActorMethod<[], StateExportResponse>,
   'ext_approve' : ActorMethod<[ApproveRequest], boolean>,
+  'ext_batch_tokens_of' : ActorMethod<
+    [Array<Principal>],
+    EXTBatchTokensOfResponse,
+  >,
+  'ext_tokens_of' : ActorMethod<[Principal], EXTTokensOfResponse>,
   'ext_transfer' : ActorMethod<[TransferRequest], EXTTransferResponse>,
   'getMinter' : ActorMethod<[], Principal>,
   'getRegistry' : ActorMethod<[], Array<[number, string]>>,

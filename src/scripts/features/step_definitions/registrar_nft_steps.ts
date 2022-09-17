@@ -8,6 +8,7 @@ import {
     AllowanceActorResponse,
     AllowanceRequest,
     ApproveRequest,
+    EXTTokensOfResponse,
     EXTTransferResponse,
     ImportTokenIdResponse,
     TransferRequest,
@@ -19,6 +20,7 @@ import {assert_remote_result} from './utils'
 import logger from 'node-color-log'
 import {IDL} from '@dfinity/candid'
 import {utils} from "@deland-labs/ic-dev-kit";
+import {Principal} from "@dfinity/principal";
 
 
 interface getTokensDto {
@@ -310,5 +312,34 @@ When(/^last registrar import token id from registration result is ok, and value 
     assert_remote_result(global_import_token_id_from_registration_result)
     if ('Ok' in global_import_token_id_from_registration_result) {
         expect(global_import_token_id_from_registration_result.Ok).to.equal(BigInt(value))
+    }
+});
+When(/^registrar ext_tokens_of "([^"]*)" result is$/, async function (user, table) {
+    const response = await registrar.ext_tokens_of(identities.getPrincipal(user))
+    const dataTable = table.hashes().map((item) => Number(item.index))
+    if ('Ok' in response) {
+        expect(response.Ok).to.includes(dataTable)
+    } else {
+        assert_remote_result(response)
+    }
+});
+When(/^registrar ext_batch_tokens_of result is$/, async function (table) {
+    const dataTable:{
+        user: string,
+        index: number
+    }[] = table.hashes()
+    const users: string[] = [...new Set(dataTable.map((item) => item.user))]
+    const map = {}
+    for (let user of users) {
+        map[identities.getPrincipal(user).toText()] = dataTable.filter((item) => item.user == user).map((item) => item.index)
+    }
+    const response = await registrar.ext_batch_tokens_of(users.map((item) => identities.getPrincipal(item)))
+    if ('Ok' in response) {
+        for (let [user, tokens] of response.Ok) {
+            const expected = map[user.toText()]
+            expect(Array.from(tokens)).to.eql(expected.map((item)=>Number(item)))
+        }
+    } else {
+        assert_remote_result(response)
     }
 });
