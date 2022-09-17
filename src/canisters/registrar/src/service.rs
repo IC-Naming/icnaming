@@ -1218,6 +1218,24 @@ impl RegistrarService {
 
     pub(crate) fn ext_tokens_of(
         &self,
+        principal: &Principal,
+        now: u64,
+    ) -> NFTServiceResult<Vec<u32>> {
+        let result = self.ext_batch_tokens_of(&vec![principal.to_owned()], now);
+        match result {
+            Ok(value) => {
+                if let Some(tokens) = value.get(&principal) {
+                    Ok(tokens.to_owned())
+                } else {
+                    Ok(vec![])
+                }
+            }
+            Err(e) => Err(e),
+        }
+    }
+
+    pub(crate) fn ext_batch_tokens_of(
+        &self,
         principals: &Vec<Principal>,
         now: u64,
     ) -> NFTServiceResult<HashMap<Principal, Vec<u32>>> {
