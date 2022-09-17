@@ -1523,9 +1523,9 @@ mod nft_query_service {
         let result = service.ext_tokens_of(&mock_user1, mock_std_time_now);
         assert!(result.is_ok());
         let result = result.unwrap();
-        assert!(result.contains(&name1_index.get_value()));
-        assert!(result.contains(&name2_index.get_value()));
-        assert!(!result.contains(&expired_index.get_value()));
+        assert!(result.contains(&name1_index));
+        assert!(result.contains(&name2_index));
+        assert!(!result.contains(&expired_index));
     }
 
     #[rstest]
@@ -1603,13 +1603,13 @@ mod nft_query_service {
         assert!(result.is_ok());
         let result = result.unwrap();
         let user1_result = result.get(&mock_user1).unwrap();
-        assert!(user1_result.contains(&user1_name1_index.get_value()));
-        assert!(user1_result.contains(&user1_name2_index.get_value()));
-        assert!(!user1_result.contains(&user1_expired_index.get_value()));
+        assert!(user1_result.contains(&user1_name1_index));
+        assert!(user1_result.contains(&user1_name2_index));
+        assert!(!user1_result.contains(&user1_expired_index));
         let user2_result = result.get(&mock_user2).unwrap();
-        assert!(user2_result.contains(&user2_name1_index.get_value()));
-        assert!(user2_result.contains(&user2_name2_index.get_value()));
-        assert!(!user2_result.contains(&user2_expired_index.get_value()));
+        assert!(user2_result.contains(&user2_name1_index));
+        assert!(user2_result.contains(&user2_name2_index));
+        assert!(!user2_result.contains(&user2_expired_index));
     }
 }
 

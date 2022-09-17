@@ -37,7 +37,7 @@ use crate::nft::{
     AllowanceRequest, ApproveRequest, CommonError, Metadata, NFTServiceResult,
     NFTTransferServiceResult, TransferError, TransferRequest,
 };
-use crate::token_identifier::TokenIdentifier;
+use crate::token_identifier::{TokenIdentifier, TokenIndex};
 use common::canister_api::AccountIdentifier;
 use common::dto::{GetPageInput, GetPageOutput, ImportQuotaRequest, ImportQuotaStatus};
 use common::errors::{BooleanActorResponse, ErrorInfo, ServiceResult};
@@ -785,12 +785,12 @@ pub fn get_token_details_by_names(names: Vec<String>) -> GetTokenIdListByNamesRe
 
 #[derive(CandidType)]
 pub enum EXTTokensOfResponse {
-    Ok(Vec<u32>),
+    Ok(Vec<TokenIndex>),
     Err(CommonError),
 }
 
 impl EXTTokensOfResponse {
-    pub fn new(result: NFTServiceResult<Vec<u32>>) -> EXTTokensOfResponse {
+    pub fn new(result: NFTServiceResult<Vec<TokenIndex>>) -> EXTTokensOfResponse {
         match result {
             Ok(data) => EXTTokensOfResponse::Ok(data),
             Err(err) => EXTTokensOfResponse::Err(err.into()),
@@ -809,12 +809,14 @@ pub fn ext_tokens_of(principal: Principal) -> EXTTokensOfResponse {
 
 #[derive(CandidType)]
 pub enum EXTBatchTokensOfResponse {
-    Ok(HashMap<Principal, Vec<u32>>),
+    Ok(HashMap<Principal, Vec<TokenIndex>>),
     Err(CommonError),
 }
 
 impl EXTBatchTokensOfResponse {
-    pub fn new(result: NFTServiceResult<HashMap<Principal, Vec<u32>>>) -> EXTBatchTokensOfResponse {
+    pub fn new(
+        result: NFTServiceResult<HashMap<Principal, Vec<TokenIndex>>>,
+    ) -> EXTBatchTokensOfResponse {
         match result {
             Ok(data) => EXTBatchTokensOfResponse::Ok(data),
             Err(err) => EXTBatchTokensOfResponse::Err(err.into()),

@@ -1220,7 +1220,7 @@ impl RegistrarService {
         &self,
         principal: &Principal,
         now: u64,
-    ) -> NFTServiceResult<Vec<u32>> {
+    ) -> NFTServiceResult<Vec<TokenIndex>> {
         let result = self.ext_batch_tokens_of(&vec![principal.to_owned()], now);
         match result {
             Ok(value) => {
@@ -1238,7 +1238,7 @@ impl RegistrarService {
         &self,
         principals: &Vec<Principal>,
         now: u64,
-    ) -> NFTServiceResult<HashMap<Principal, Vec<u32>>> {
+    ) -> NFTServiceResult<HashMap<Principal, Vec<TokenIndex>>> {
         let mut auth_principals = Vec::new();
         for principal in principals {
             auth_principals.push(must_not_anonymous(principal)?);
@@ -1247,16 +1247,8 @@ impl RegistrarService {
             let token_index_store = s.token_index_store.borrow();
             let registration_store = s.registration_store.borrow();
             let query = RegistrationNameQueryContext::new(&token_index_store, &registration_store);
-            let result = query
-                .get_unexpired_token_index_of_registrations_by_owners(&auth_principals, now)
-                .iter()
-                .map(|(key, value)| {
-                    (
-                        key.to_owned(),
-                        value.iter().map(|item| item.get_value()).collect(),
-                    )
-                })
-                .collect();
+            let result =
+                query.get_unexpired_token_index_of_registrations_by_owners(&auth_principals, now);
             Ok(result)
         })
     }
