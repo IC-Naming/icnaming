@@ -1529,6 +1529,32 @@ mod nft_query_service {
     }
 
     #[rstest]
+    fn test_tokens_of_anonymous(
+        service: RegistrarService,
+        mock_user1: Principal,
+        mock_std_time_tomorrow: u64,
+        mock_std_time_now: u64,
+        mock_timestamp_1986: u64,
+    ) {
+        let test_name_str1 = create_test_name("icnaming1");
+        let test_name_str2 = create_test_name("icnaming2");
+        let expired_name_str = create_test_name("expired");
+        let name1_index =
+            registration_name_init(&test_name_str1, mock_user1, mock_std_time_tomorrow);
+        let name2_index =
+            registration_name_init(&test_name_str2, mock_user1, mock_std_time_tomorrow);
+        let expired_index =
+            registration_name_init(&expired_name_str, mock_user1, mock_timestamp_1986);
+
+        let anonymous = Principal::anonymous();
+
+        let result = service.ext_tokens_of(&anonymous, mock_std_time_now);
+        assert!(result.is_err());
+        let error = result.unwrap_err();
+        assert_eq!(error, NamingError::Unauthorized.into());
+    }
+
+    #[rstest]
     fn test_tokens_of_empty(
         service: RegistrarService,
         mock_user1: Principal,
