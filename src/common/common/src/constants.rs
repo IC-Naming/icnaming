@@ -148,11 +148,6 @@ pub enum NamingEnv {
     Production,
 }
 
-pub enum NamingLogLevelEnv {
-    Ok(LevelFilter),
-    None,
-}
-
 pub fn is_env(env: NamingEnv) -> bool {
     match env {
         NamingEnv::Dev => NAMING_CANISTER_ENV == NAMING_ENV_DEV,
@@ -165,13 +160,13 @@ pub fn is_dev_env() -> bool {
     is_env(NamingEnv::Dev)
 }
 
-pub fn get_log_level_env() -> NamingLogLevelEnv {
+pub fn get_log_level_env() -> Option<LevelFilter> {
     match NAMING_CANISTER_LOG_LEVEL_ENV {
-        NAMING_LOG_LEVEL_INFO => NamingLogLevelEnv::Ok(LevelFilter::Info),
-        NAMING_LOG_LEVEL_WARN => NamingLogLevelEnv::Ok(LevelFilter::Warn),
-        NAMING_LOG_LEVEL_ERROR => NamingLogLevelEnv::Ok(LevelFilter::Error),
-        NAMING_LOG_LEVEL_OFF => NamingLogLevelEnv::Ok(LevelFilter::Off),
-        _ => NamingLogLevelEnv::None,
+        NAMING_LOG_LEVEL_INFO => Some(LevelFilter::Info),
+        NAMING_LOG_LEVEL_WARN => Some(LevelFilter::Warn),
+        NAMING_LOG_LEVEL_ERROR => Some(LevelFilter::Error),
+        NAMING_LOG_LEVEL_OFF => Some(LevelFilter::Off),
+        _ => None,
     }
 }
 

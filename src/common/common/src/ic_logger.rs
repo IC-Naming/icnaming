@@ -49,12 +49,22 @@ impl ICLogger {
     pub fn init(current_name: &str) {
         update_current_canister_name(current_name);
 
-        if let NamingLogLevelEnv::Ok(level_filter) = get_log_level_env() {
+        if let Some(level_filter) = get_log_level_env() {
             log::set_max_level(level_filter);
         } else if is_dev_env() {
             log::set_max_level(LevelFilter::Trace);
         } else {
             log::set_max_level(LevelFilter::Off);
+        }
+        match get_log_level_env() {
+            Some(level_filter) => log::set_max_level(level_filter),
+            None => {
+                if is_dev_env() {
+                    log::set_max_level(LevelFilter::Trace);
+                } else {
+                    log::set_max_level(LevelFilter::Off);
+                }
+            }
         }
 
         if is_dev_env() && log::set_logger(&ICLogger).is_ok() {
