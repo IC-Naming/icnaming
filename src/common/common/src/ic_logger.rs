@@ -51,8 +51,10 @@ impl ICLogger {
 
         if let NamingLogLevelEnv::Ok(level_filter) = get_log_level_env() {
             log::set_max_level(level_filter);
-        } else {
+        } else if is_dev_env() {
             log::set_max_level(LevelFilter::Trace);
+        } else {
+            log::set_max_level(LevelFilter::Off);
         }
 
         if is_dev_env() && log::set_logger(&ICLogger).is_ok() {
