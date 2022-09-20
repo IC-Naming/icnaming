@@ -1,5 +1,7 @@
-use crate::constants::is_dev_env;
 use crate::constants::NAMING_CANISTER_ENV;
+use crate::constants::{
+    get_log_level_env, is_dev_env, NamingLogLevelEnv, NAMING_CANISTER_LOG_LEVEL_ENV,
+};
 use ic_cdk::api;
 use log::{info, Level, LevelFilter, Metadata, Record};
 use std::panic;
@@ -46,8 +48,14 @@ impl log::Log for ICLogger {
 impl ICLogger {
     pub fn init(current_name: &str) {
         update_current_canister_name(current_name);
-        if is_dev_env() && log::set_logger(&ICLogger).is_ok() {
+
+        if let NamingLogLevelEnv::Ok(level_filter) = get_log_level_env() {
+            log::set_max_level(level_filter);
+        } else {
             log::set_max_level(LevelFilter::Trace);
+        }
+
+        if is_dev_env() && log::set_logger(&ICLogger).is_ok() {
             panic::set_hook(Box::new(|data| {
                 let message = format!("{}", data);
                 api::print(Paint::red(message).to_string());
