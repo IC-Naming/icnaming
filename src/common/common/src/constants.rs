@@ -134,6 +134,7 @@ pub const NAMING_ENV_PRODUCTION: &str = "production";
 #[from_env]
 pub const NAMING_CANISTER_ENV: &str = "dev";
 
+pub const NAMING_LOG_LEVEL_TRACE: &str = "trace";
 pub const NAMING_LOG_LEVEL_INFO: &str = "info";
 pub const NAMING_LOG_LEVEL_WARN: &str = "warn";
 pub const NAMING_LOG_LEVEL_ERROR: &str = "error";
@@ -162,6 +163,7 @@ pub fn is_dev_env() -> bool {
 
 pub fn get_log_level_env() -> LevelFilter {
     match NAMING_CANISTER_LOG_LEVEL_ENV {
+        NAMING_LOG_LEVEL_TRACE => LevelFilter::Trace,
         NAMING_LOG_LEVEL_INFO => LevelFilter::Info,
         NAMING_LOG_LEVEL_WARN => LevelFilter::Warn,
         NAMING_LOG_LEVEL_ERROR => LevelFilter::Error,
