@@ -1,7 +1,7 @@
 use crate::constants::NAMING_CANISTER_ENV;
-use crate::constants::{get_log_level_env, is_dev_env, NAMING_CANISTER_LOG_LEVEL_ENV};
+use crate::constants::{get_log_level_env, is_dev_env};
 use ic_cdk::api;
-use log::{info, Level, LevelFilter, Metadata, Record};
+use log::{info, Level, Metadata, Record};
 use std::panic;
 use yansi::Paint;
 
