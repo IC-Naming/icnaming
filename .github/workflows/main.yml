@@ -28,10 +28,11 @@ jobs:
         with:
           working-directory: "src"
       - name: run package
+        env:
+          DFX_NETWORK: "local"
         run: |
           cd $GITHUB_WORKSPACE/src
           dfx start --background
-          ./sh_setup_dev.sh
           setenv MYVAR myvalue
           ./sh_package.sh
       - name: Archive artifacts
