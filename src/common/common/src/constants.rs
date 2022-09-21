@@ -160,13 +160,19 @@ pub fn is_dev_env() -> bool {
     is_env(NamingEnv::Dev)
 }
 
-pub fn get_log_level_env() -> Option<LevelFilter> {
+pub fn get_log_level_env() -> LevelFilter {
     match NAMING_CANISTER_LOG_LEVEL_ENV {
-        NAMING_LOG_LEVEL_INFO => Some(LevelFilter::Info),
-        NAMING_LOG_LEVEL_WARN => Some(LevelFilter::Warn),
-        NAMING_LOG_LEVEL_ERROR => Some(LevelFilter::Error),
-        NAMING_LOG_LEVEL_OFF => Some(LevelFilter::Off),
-        _ => None,
+        NAMING_LOG_LEVEL_INFO => LevelFilter::Info,
+        NAMING_LOG_LEVEL_WARN => LevelFilter::Warn,
+        NAMING_LOG_LEVEL_ERROR => LevelFilter::Error,
+        NAMING_LOG_LEVEL_OFF => LevelFilter::Off,
+        _ => {
+            if is_dev_env() {
+                LevelFilter::Trace
+            } else {
+                LevelFilter::Off
+            }
+        }
     }
 }
 

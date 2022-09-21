@@ -46,16 +46,7 @@ impl log::Log for ICLogger {
 impl ICLogger {
     pub fn init(current_name: &str) {
         update_current_canister_name(current_name);
-        match get_log_level_env() {
-            Some(level_filter) => log::set_max_level(level_filter),
-            None => {
-                if is_dev_env() {
-                    log::set_max_level(LevelFilter::Trace);
-                } else {
-                    log::set_max_level(LevelFilter::Off);
-                }
-            }
-        }
+        log::set_max_level(get_log_level_env());
 
         if is_dev_env() && log::set_logger(&ICLogger).is_ok() {
             panic::set_hook(Box::new(|data| {
