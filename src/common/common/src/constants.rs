@@ -128,7 +128,6 @@ pub const MAX_LENGTH_USER_FAVORITES: usize = 256;
 pub const MAX_LENGTH_OF_NAME_QUOTA_TYPE: u8 = 7;
 
 pub const NAMING_ENV_DEV: &str = "dev";
-pub const NAMING_ENV_IT_DEV: &str = "itdev";
 pub const NAMING_ENV_STAGING: &str = "staging";
 pub const NAMING_ENV_PRODUCTION: &str = "production";
 
@@ -145,7 +144,6 @@ pub const NAMING_CANISTER_LOG_LEVEL_ENV: &str = "";
 
 pub enum NamingEnv {
     Dev,
-    ITDev,
     Staging,
     Production,
 }
@@ -153,7 +151,6 @@ pub enum NamingEnv {
 pub fn is_env(env: NamingEnv) -> bool {
     match env {
         NamingEnv::Dev => NAMING_CANISTER_ENV == NAMING_ENV_DEV,
-        NamingEnv::ITDev => NAMING_CANISTER_ENV == NAMING_ENV_IT_DEV,
         NamingEnv::Staging => NAMING_CANISTER_ENV == NAMING_ENV_STAGING,
         NamingEnv::Production => NAMING_CANISTER_ENV == NAMING_ENV_PRODUCTION,
     }
