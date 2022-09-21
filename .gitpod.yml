@@ -5,6 +5,8 @@ ports:
     onOpen: ignore
 tasks:
   - name: dfx dev
+    env:
+      NAMING_CANISTER_LOG_LEVEL_ENV: "off"
     init: |
       . ~/fix_gitpod_path.sh
       cd src
