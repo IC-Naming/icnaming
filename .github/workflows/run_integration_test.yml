@@ -29,8 +29,6 @@ jobs:
           name: dev
           path: ~/download/dev
       - name: run integration test
-        env:
-          NAMING_CANISTER_LOG_LEVEL_ENV: "off"
         run: |
           cd $GITHUB_WORKSPACE/src
           echo "scripts/features/**/${{ matrix.feature }}.feature" > feature_target.txt
