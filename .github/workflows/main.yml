@@ -32,6 +32,7 @@ jobs:
           NAMING_CANISTER_LOG_LEVEL_ENV: off
         run: |
           cd $GITHUB_WORKSPACE/src
+          echo "NAMING_CANISTER_LOG_LEVEL_ENV=$NAMING_CANISTER_LOG_LEVEL_ENV"
           dfx start --background
           ./sh_package.sh
       - name: Archive artifacts
