@@ -31,6 +31,7 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE/src
           dfx start --background
+          ./sh_setup_dev.sh
           ./sh_package.sh
       - name: Archive artifacts
         uses: actions/upload-artifact@v3
