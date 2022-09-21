@@ -34,24 +34,19 @@ jobs:
           cd $GITHUB_WORKSPACE/src
           dfx start --background
           ./sh_package.sh
+          echo "$NAMING_CANISTER_LOG_LEVEL_ENV"
       - name: Archive artifacts
         uses: actions/upload-artifact@v3
-        env:
-          NAMING_CANISTER_LOG_LEVEL_ENV: off
         with:
           name: "dev"
           path: src/package/dev/
       - name: Archive artifacts
         uses: actions/upload-artifact@v3
-        env:
-          NAMING_CANISTER_LOG_LEVEL_ENV: off
         with:
           name: "staging"
           path: src/package/staging/
       - name: Archive artifacts
         uses: actions/upload-artifact@v3
-        env:
-          NAMING_CANISTER_LOG_LEVEL_ENV: off
         with:
           name: "production"
           path: src/package/production/
