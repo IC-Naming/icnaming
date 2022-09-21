@@ -43,6 +43,8 @@ jobs:
         with:
           working-directory: "src"
       - name: run package
+        env:
+          NAMING_CANISTER_LOG_LEVEL_ENV: "off"
         run: |
           cd $GITHUB_WORKSPACE/src
           dfx start --background
