@@ -31,6 +31,7 @@ jobs:
         env:
           NAMING_CANISTER_LOG_LEVEL_ENV: off
         run: |
+          echo "$NAMING_CANISTER_LOG_LEVEL_ENV"
           cd $GITHUB_WORKSPACE/src
           dfx start --background
           ./sh_package.sh
