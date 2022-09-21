@@ -3,7 +3,7 @@ use crate::canister_api::AccountIdentifier;
 use crate::named_canister_ids::{CanisterNames, DEV_NAMED_CANISTER_IDS};
 use candid::Principal;
 use const_env::from_env;
-use log::info;
+use log::{info, LevelFilter};
 use once_cell::sync::Lazy;
 use std::str::FromStr;
 
@@ -134,6 +134,15 @@ pub const NAMING_ENV_PRODUCTION: &str = "production";
 #[from_env]
 pub const NAMING_CANISTER_ENV: &str = "dev";
 
+pub const NAMING_LOG_LEVEL_TRACE: &str = "trace";
+pub const NAMING_LOG_LEVEL_INFO: &str = "info";
+pub const NAMING_LOG_LEVEL_WARN: &str = "warn";
+pub const NAMING_LOG_LEVEL_ERROR: &str = "error";
+pub const NAMING_LOG_LEVEL_OFF: &str = "off";
+
+#[from_env]
+pub const NAMING_CANISTER_LOG_LEVEL_ENV: &str = "";
+
 pub enum NamingEnv {
     Dev,
     Staging,
@@ -150,6 +159,23 @@ pub fn is_env(env: NamingEnv) -> bool {
 
 pub fn is_dev_env() -> bool {
     is_env(NamingEnv::Dev)
+}
+
+pub fn get_log_level_env() -> LevelFilter {
+    match NAMING_CANISTER_LOG_LEVEL_ENV {
+        NAMING_LOG_LEVEL_TRACE => LevelFilter::Trace,
+        NAMING_LOG_LEVEL_INFO => LevelFilter::Info,
+        NAMING_LOG_LEVEL_WARN => LevelFilter::Warn,
+        NAMING_LOG_LEVEL_ERROR => LevelFilter::Error,
+        NAMING_LOG_LEVEL_OFF => LevelFilter::Off,
+        _ => {
+            if is_dev_env() {
+                LevelFilter::Trace
+            } else {
+                LevelFilter::Off
+            }
+        }
+    }
 }
 
 #[from_env]
