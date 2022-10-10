@@ -1613,7 +1613,7 @@ mod nft_query_service {
     }
 
     #[rstest]
-    fn test_nft_get_domain(
+    fn test_nft_svg_get_domain(
         service: RegistrarService,
         mock_std_time_tomorrow: u64,
         mock_user1: Principal,
