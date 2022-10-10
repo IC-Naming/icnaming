@@ -1611,6 +1611,33 @@ mod nft_query_service {
         assert!(user2_result.contains(&user2_name2_index));
         assert!(!user2_result.contains(&user2_expired_index));
     }
+
+    #[rstest]
+    fn test_nft_get_domain(
+        service: RegistrarService,
+        mock_std_time_tomorrow: u64,
+        mock_user1: Principal,
+        mock_std_time_now: u64,
+    ) {
+        let user1_domain_str1 = "icnaming1";
+        let user1_name_str1 = create_test_name(user1_domain_str1);
+        let user1_name1_index =
+            registration_name_init(&user1_name_str1, mock_user1, mock_std_time_tomorrow);
+        let canisterid = get_named_get_canister_id(CanisterNames::Registrar);
+        let token_id = encode_token_id(CanisterId(canisterid), user1_name1_index);
+
+        STATE.with(|s| {
+            let token_index_store = s.token_index_store.borrow();
+            let registration_store = s.registration_store.borrow();
+            let query = RegistrationNameQueryContext::new(&token_index_store, &registration_store);
+            let result = query.get_unexpired_registration(&token_id, mock_std_time_now);
+            assert!(result.is_ok());
+            let result = result.unwrap();
+            let domain = result.get_domain();
+            assert_eq!(domain, user1_domain_str1);
+            debug!("result: {:?}", domain);
+        });
+    }
 }
 
 mod nft_transfer_service {

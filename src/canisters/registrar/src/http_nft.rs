@@ -67,7 +67,7 @@ fn get_nft_svg_bytes(registration: &UnexpiredRegistrationAggDto) -> ByteBuf {
     let expired_at = registration.get_expired_at();
     let expired_at = time_format(expired_at);
     let svg_content = svg_content.replace("{{expired_at}}", expired_at.as_str());
-    let svg_content = svg_content.replace("{{name}}", registration.get_name().as_str());
+    let svg_content = svg_content.replace("{{name}}", registration.get_domain().as_str());
     ByteBuf::from(svg_content.as_bytes())
 }
 
