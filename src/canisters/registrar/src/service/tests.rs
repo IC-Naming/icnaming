@@ -1619,12 +1619,12 @@ mod nft_query_service {
         mock_user1: Principal,
         mock_std_time_now: u64,
     ) {
-        let user1_domain_str1 = "icnaming1";
-        let user1_name_str1 = create_test_name(user1_domain_str1);
-        let user1_name1_index =
-            registration_name_init(&user1_name_str1, mock_user1, mock_std_time_tomorrow);
+        let user_domain_str = "icnaming1";
+        let user_name_str = create_test_name(user_domain_str);
+        let user_name_index =
+            registration_name_init(&user_name_str, mock_user1, mock_std_time_tomorrow);
         let canisterid = get_named_get_canister_id(CanisterNames::Registrar);
-        let token_id = encode_token_id(CanisterId(canisterid), user1_name1_index);
+        let token_id = encode_token_id(CanisterId(canisterid), user_name_index);
 
         STATE.with(|s| {
             let token_index_store = s.token_index_store.borrow();
@@ -1634,7 +1634,7 @@ mod nft_query_service {
             assert!(result.is_ok());
             let result = result.unwrap();
             let domain = result.get_domain();
-            assert_eq!(domain, user1_domain_str1);
+            assert_eq!(domain, user_domain_str);
             debug!("result: {:?}", domain);
         });
     }
