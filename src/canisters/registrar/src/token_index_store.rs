@@ -206,6 +206,14 @@ impl UnexpiredRegistrationAggDto {
         self.name.clone()
     }
 
+    pub fn get_domain(&self) -> String {
+        self.name
+            .split('.')
+            .nth(0)
+            .unwrap_or(self.name.as_str())
+            .to_string()
+    }
+
     pub fn get_metadata(&self) -> Option<Vec<u8>> {
         let mut metadata = HashMap::new();
         metadata.insert("name".to_string(), self.get_name());

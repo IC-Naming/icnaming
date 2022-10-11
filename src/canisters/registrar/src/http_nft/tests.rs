@@ -43,7 +43,8 @@ mod test_http_request {
         mock_std_time_tomorrow: u64,
         mock_std_time_now: u64,
     ) {
-        let test_name_str = create_test_name("icnaming");
+        let user_domain_str = "icnaming1";
+        let test_name_str = create_test_name(user_domain_str);
         let time_str = time_format(mock_std_time_tomorrow);
         registration_name_init(
             &test_name_str.to_string(),
@@ -56,6 +57,7 @@ mod test_http_request {
         let res = get_nft_http_response(param_str.as_str(), mock_std_time_now);
         let str = String::from_utf8(res.body.to_vec()).unwrap();
         assert!(str.contains(&time_str));
-        assert!(str.contains(&test_name_str));
+        assert!(str.contains(&user_domain_str));
+        assert!(!str.contains(&test_name_str));
     }
 }
