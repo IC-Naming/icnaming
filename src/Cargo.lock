@@ -307,7 +307,7 @@ dependencies = [
  "anyhow",
  "binread",
  "byteorder",
- "candid_derive",
+ "candid_derive 0.4.5",
  "codespan-reporting",
  "hex",
  "ic-types",
@@ -326,10 +326,51 @@ dependencies = [
 ]
 
 [[package]]
+name = "candid"
+version = "0.8.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "244005a1917bb7614cd775ca8a5d59efeb5ac74397bb14ba29a19347ebd78591"
+dependencies = [
+ "anyhow",
+ "binread",
+ "byteorder",
+ "candid_derive 0.5.0",
+ "codespan-reporting",
+ "crc32fast",
+ "data-encoding",
+ "hex",
+ "lalrpop",
+ "lalrpop-util",
+ "leb128",
+ "logos",
+ "num-bigint",
+ "num-traits",
+ "num_enum",
+ "paste",
+ "pretty",
+ "serde",
+ "serde_bytes",
+ "sha2",
+ "thiserror",
+]
+
+[[package]]
 name = "candid_derive"
 version = "0.4.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2e02c03c4d547674a3f3f3109538fb49871fbe636216daa019f06a62faca9061"
+dependencies = [
+ "lazy_static",
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "candid_derive"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "58f1f4db7c7d04b87b70b3a35c5dc5c2c9dd73cef8bdf6760e2f18a0d45350dd"
 dependencies = [
  "lazy_static",
  "proc-macro2",
@@ -369,7 +410,7 @@ dependencies = [
  "anyhow",
  "async-trait",
  "build_common",
- "candid",
+ "candid 0.8.4",
  "const_env",
  "crc32fast",
  "env_logger",
@@ -395,7 +436,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "async-trait",
- "candid",
+ "candid 0.8.4",
  "common",
  "ic-cdk",
  "ic-cdk-macros",
@@ -518,7 +559,7 @@ dependencies = [
  "anyhow",
  "async-std",
  "async-trait",
- "candid",
+ "candid 0.8.4",
  "common",
  "env_logger",
  "getset",
@@ -670,7 +711,7 @@ dependencies = [
  "anyhow",
  "async-std",
  "build_common",
- "candid",
+ "candid 0.8.4",
  "common",
  "env_logger",
  "ic-cdk",
@@ -933,7 +974,7 @@ version = "0.5.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4ebabbd2e082472e93928ec9725a5aeec4572284e07bf399f3e1eb6a358a4ba6"
 dependencies = [
- "candid",
+ "candid 0.7.18",
  "cfg-if",
  "serde",
 ]
@@ -944,7 +985,7 @@ version = "0.5.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d453dcbe269b19ebd9b3a377819c9f32b3c5c99c3dd42bfd6789600aa77b510c"
 dependencies = [
- "candid",
+ "candid 0.7.18",
  "ic-cdk",
  "proc-macro2",
  "quote",
@@ -1211,7 +1252,7 @@ dependencies = [
  "anyhow",
  "async-std",
  "async-trait",
- "candid",
+ "candid 0.8.4",
  "common",
  "env_logger",
  "getset",
@@ -1234,7 +1275,7 @@ dependencies = [
  "anyhow",
  "async-std",
  "async-trait",
- "candid",
+ "candid 0.8.4",
  "common",
  "env_logger",
  "getset",
@@ -1586,7 +1627,7 @@ dependencies = [
  "async-std",
  "async-trait",
  "build_common",
- "candid",
+ "candid 0.8.4",
  "common",
  "csv",
  "env_logger",
@@ -1614,7 +1655,7 @@ dependencies = [
  "async-std",
  "async-trait",
  "build_common",
- "candid",
+ "candid 0.8.4",
  "common",
  "env_logger",
  "flate2",
@@ -1640,7 +1681,7 @@ dependencies = [
  "anyhow",
  "async-std",
  "build_common",
- "candid",
+ "candid 0.8.4",
  "common",
  "csv",
  "env_logger",
@@ -1662,7 +1703,7 @@ dependencies = [
  "anyhow",
  "async-std",
  "build_common",
- "candid",
+ "candid 0.8.4",
  "common",
  "csv",
  "env_logger",
@@ -1876,7 +1917,7 @@ name = "test_common"
 version = "0.1.0"
 dependencies = [
  "async-trait",
- "candid",
+ "candid 0.8.4",
  "common",
  "crc32fast",
  "env_logger",
