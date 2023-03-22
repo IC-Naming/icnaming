@@ -307,7 +307,7 @@ dependencies = [
  "anyhow",
  "binread",
  "byteorder",
- "candid_derive",
+ "candid_derive 0.4.5",
  "codespan-reporting",
  "hex",
  "ic-types",
@@ -326,10 +326,51 @@ dependencies = [
 ]
 
 [[package]]
+name = "candid"
+version = "0.8.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "244005a1917bb7614cd775ca8a5d59efeb5ac74397bb14ba29a19347ebd78591"
+dependencies = [
+ "anyhow",
+ "binread",
+ "byteorder",
+ "candid_derive 0.5.0",
+ "codespan-reporting",
+ "crc32fast",
+ "data-encoding",
+ "hex",
+ "lalrpop",
+ "lalrpop-util",
+ "leb128",
+ "logos",
+ "num-bigint",
+ "num-traits",
+ "num_enum",
+ "paste",
+ "pretty",
+ "serde",
+ "serde_bytes",
+ "sha2",
+ "thiserror",
+]
+
+[[package]]
 name = "candid_derive"
 version = "0.4.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2e02c03c4d547674a3f3f3109538fb49871fbe636216daa019f06a62faca9061"
+dependencies = [
+ "lazy_static",
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "candid_derive"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "58f1f4db7c7d04b87b70b3a35c5dc5c2c9dd73cef8bdf6760e2f18a0d45350dd"
 dependencies = [
  "lazy_static",
  "proc-macro2",
@@ -369,14 +410,14 @@ dependencies = [
  "anyhow",
  "async-trait",
  "build_common",
- "candid",
+ "candid 0.7.18",
  "const_env",
  "crc32fast",
  "env_logger",
  "flate2",
  "hex",
- "ic-cdk",
- "ic-cdk-macros",
+ "ic-cdk 0.7.4",
+ "ic-cdk-macros 0.5.6",
  "log",
  "num-bigint",
  "once_cell",
@@ -395,10 +436,10 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "async-trait",
- "candid",
+ "candid 0.7.18",
  "common",
- "ic-cdk",
- "ic-cdk-macros",
+ "ic-cdk 0.7.4",
+ "ic-cdk-macros 0.5.6",
  "log",
  "once_cell",
  "serde",
@@ -518,12 +559,12 @@ dependencies = [
  "anyhow",
  "async-std",
  "async-trait",
- "candid",
+ "candid 0.7.18",
  "common",
  "env_logger",
  "getset",
- "ic-cdk",
- "ic-cdk-macros",
+ "ic-cdk 0.7.4",
+ "ic-cdk-macros 0.5.6",
  "log",
  "num-bigint",
  "num-traits",
@@ -670,11 +711,11 @@ dependencies = [
  "anyhow",
  "async-std",
  "build_common",
- "candid",
+ "candid 0.7.18",
  "common",
  "env_logger",
- "ic-cdk",
- "ic-cdk-macros",
+ "ic-cdk 0.7.4",
+ "ic-cdk-macros 0.5.6",
  "log",
  "rstest",
  "serde",
@@ -933,9 +974,22 @@ version = "0.5.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4ebabbd2e082472e93928ec9725a5aeec4572284e07bf399f3e1eb6a358a4ba6"
 dependencies = [
- "candid",
+ "candid 0.7.18",
  "cfg-if",
  "serde",
+]
+
+[[package]]
+name = "ic-cdk"
+version = "0.7.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9beb0bf1dcd0639c313630e34aa547a2b19450ddf1969c176e13225ef3b29048"
+dependencies = [
+ "candid 0.8.4",
+ "ic-cdk-macros 0.6.10",
+ "ic0",
+ "serde",
+ "serde_bytes",
 ]
 
 [[package]]
@@ -944,8 +998,22 @@ version = "0.5.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d453dcbe269b19ebd9b3a377819c9f32b3c5c99c3dd42bfd6789600aa77b510c"
 dependencies = [
- "candid",
- "ic-cdk",
+ "candid 0.7.18",
+ "ic-cdk 0.5.6",
+ "proc-macro2",
+ "quote",
+ "serde",
+ "serde_tokenstream",
+ "syn",
+]
+
+[[package]]
+name = "ic-cdk-macros"
+version = "0.6.10"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ebf50458685a0fc6b0e414cdba487610aeb199ac94db52d9fd76270565debee7"
+dependencies = [
+ "candid 0.8.4",
  "proc-macro2",
  "quote",
  "serde",
@@ -967,6 +1035,12 @@ dependencies = [
  "sha2",
  "thiserror",
 ]
+
+[[package]]
+name = "ic0"
+version = "0.18.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "978b91fc78de9d2eb0144db717839cde3b35470199ea51aca362cb6310e93dfd"
 
 [[package]]
 name = "idna"
@@ -1211,12 +1285,12 @@ dependencies = [
  "anyhow",
  "async-std",
  "async-trait",
- "candid",
+ "candid 0.7.18",
  "common",
  "env_logger",
  "getset",
- "ic-cdk",
- "ic-cdk-macros",
+ "ic-cdk 0.7.4",
+ "ic-cdk-macros 0.5.6",
  "log",
  "num-bigint",
  "num-traits",
@@ -1234,12 +1308,12 @@ dependencies = [
  "anyhow",
  "async-std",
  "async-trait",
- "candid",
+ "candid 0.7.18",
  "common",
  "env_logger",
  "getset",
- "ic-cdk",
- "ic-cdk-macros",
+ "ic-cdk 0.7.4",
+ "ic-cdk-macros 0.5.6",
  "log",
  "num-bigint",
  "num-traits",
@@ -1586,15 +1660,15 @@ dependencies = [
  "async-std",
  "async-trait",
  "build_common",
- "candid",
+ "candid 0.7.18",
  "common",
  "csv",
  "env_logger",
  "flate2",
  "getset",
  "hex",
- "ic-cdk",
- "ic-cdk-macros",
+ "ic-cdk 0.7.4",
+ "ic-cdk-macros 0.5.6",
  "log",
  "num-bigint",
  "num-traits",
@@ -1614,14 +1688,14 @@ dependencies = [
  "async-std",
  "async-trait",
  "build_common",
- "candid",
+ "candid 0.7.18",
  "common",
  "env_logger",
  "flate2",
  "getset",
  "hex",
- "ic-cdk",
- "ic-cdk-macros",
+ "ic-cdk 0.7.4",
+ "ic-cdk-macros 0.5.6",
  "log",
  "num-bigint",
  "num-traits",
@@ -1640,13 +1714,13 @@ dependencies = [
  "anyhow",
  "async-std",
  "build_common",
- "candid",
+ "candid 0.7.18",
  "common",
  "csv",
  "env_logger",
  "flate2",
- "ic-cdk",
- "ic-cdk-macros",
+ "ic-cdk 0.7.4",
+ "ic-cdk-macros 0.5.6",
  "log",
  "rstest",
  "serde",
@@ -1662,12 +1736,12 @@ dependencies = [
  "anyhow",
  "async-std",
  "build_common",
- "candid",
+ "candid 0.7.18",
  "common",
  "csv",
  "env_logger",
- "ic-cdk",
- "ic-cdk-macros",
+ "ic-cdk 0.7.4",
+ "ic-cdk-macros 0.5.6",
  "itertools",
  "log",
  "num-bigint",
@@ -1876,13 +1950,13 @@ name = "test_common"
 version = "0.1.0"
 dependencies = [
  "async-trait",
- "candid",
+ "candid 0.7.18",
  "common",
  "crc32fast",
  "env_logger",
  "hex",
- "ic-cdk",
- "ic-cdk-macros",
+ "ic-cdk 0.7.4",
+ "ic-cdk-macros 0.5.6",
  "log",
  "mockall",
  "rstest",
