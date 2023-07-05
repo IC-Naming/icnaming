@@ -1,11 +1,11 @@
 use std::borrow::Borrow;
 use std::sync::Arc;
-
+use std::borrow::BorrowMut;
+use std::collections::HashSet;
 use candid::Principal;
-
 use rstest::*;
-
 use common::cycles_minting_types::{IcpXdrConversionRate, IcpXdrConversionRateCertifiedResponse};
+use common::named_principals::{NAME_DPRINCIPALS, PRINCIPAL_NAME_ADMIN};
 use test_common::canister_api::*;
 use test_common::ic_api::init_test;
 use test_common::user::*;
@@ -13,6 +13,18 @@ use test_common::user::*;
 use super::*;
 
 const TEST_QUOTA: QuotaType = QuotaType::LenGte(4);
+
+#[fixture]
+fn system_admin() -> AuthPrincipal {
+    let user = mock_user1();
+    NAME_DPRINCIPALS.with(|m| {
+        let mut m = m.borrow_mut();
+        let mut set = HashSet::new();
+        set.insert(user.clone());
+        m.principals.insert(PRINCIPAL_NAME_ADMIN, set);
+    });
+    AuthPrincipal(user)
+}
 
 #[fixture]
 fn owner() -> AuthPrincipal {
@@ -109,16 +121,16 @@ mod validate_name {
 
     #[rstest]
     #[case(
-        create_test_name("nice"),
-        Ok(FirstLevelName::from(create_test_name("nice")))
+    create_test_name("nice"),
+    Ok(FirstLevelName::from(create_test_name("nice")))
     )]
     #[case(
-        create_test_name("ni-e"),
-        Ok(FirstLevelName::from(create_test_name("ni-e")))
+    create_test_name("ni-e"),
+    Ok(FirstLevelName::from(create_test_name("ni-e")))
     )]
     #[case(
-        create_test_name("n1-e"),
-        Ok(FirstLevelName::from(create_test_name("n1-e")))
+    create_test_name("n1-e"),
+    Ok(FirstLevelName::from(create_test_name("n1-e")))
     )]
     #[case(create_test_name("www.nice"),
     Err("it must be second level name".to_string())
@@ -1398,7 +1410,7 @@ mod nft_query_service {
         let last_token = result.last().unwrap().to_owned();
         match first_token.1 {
             Metadata::NonFungible(registration) => {
-                let (metadata,): (HashMap<String, String>,) =
+                let (metadata, ): (HashMap<String, String>, ) =
                     decode_args(&registration.metadata.unwrap()).unwrap();
                 assert_eq!(metadata.get("name").unwrap(), &test_name_str1);
             }
@@ -1408,7 +1420,7 @@ mod nft_query_service {
         }
         match last_token.1 {
             Metadata::NonFungible(registration) => {
-                let (metadata,): (HashMap<String, String>,) =
+                let (metadata, ): (HashMap<String, String>, ) =
                     decode_args(&registration.metadata.unwrap()).unwrap();
                 assert_eq!(metadata.get("name").unwrap(), &test_name_str2);
             }
@@ -1435,7 +1447,7 @@ mod nft_query_service {
         let result = result.unwrap();
         match result {
             Metadata::NonFungible(registration) => {
-                let (metadata,): (HashMap<String, String>,) =
+                let (metadata, ): (HashMap<String, String>, ) =
                     decode_args(&registration.metadata.unwrap()).unwrap();
                 assert_eq!(metadata.get("name").unwrap(), &test_name_str);
             }
@@ -2059,6 +2071,68 @@ mod nft_transfer_service {
         assert_eq!(registry_result.len(), 2);
         assert!(names.contains(&user1_account_id));
         assert!(names.contains(&user2_account_id));
+    }
+}
+
+mod batch_extend_expired_at {
+    use common::dto::RegistryDto;
+    use super::*;
+
+    #[rstest]
+    async fn test_batch_extend_expired_at(
+        mut service: RegistrarService,
+        owner: AuthPrincipal,
+        system_admin: AuthPrincipal,
+        quota_owner: AuthPrincipal,
+        register_years: u32,
+        mut mock_registry_api: MockRegistryApi,
+        mock_now: u64,
+    ) {
+        let name = create_test_name("nice");
+        let api_name = name.clone();
+        let extend_years = 6;
+
+        let _ctx = mock_registry_api.expect_set_subdomain_owner().returning(
+            move |label, parent_name, sub_owner, ttl, resolver| {
+                Ok(RegistryDto {
+                    owner: owner.0,
+                    name: api_name.to_string(),
+                    ttl,
+                    resolver,
+                })
+            },
+        );
+        service.registry_api = Arc::new(mock_registry_api);
+        let context = RegisterCoreContext::new(
+            name.clone(),
+            owner,
+            register_years,
+            TimeInNs(mock_now),
+            false,
+        );
+        service
+            .register_with_quota_core(context, &quota_owner, TEST_QUOTA)
+            .await.unwrap();
+
+        // act
+        let names = vec![name.to_string()];
+        let result = service.batch_extend_expired_at(system_admin.0.clone(), &names, extend_years);
+
+        // assert
+        assert_eq!(result, Ok(()));
+        STATE.with(|s| {
+            let store = s.registration_store.borrow();
+            let registrations = store.get_registrations();
+            assert_eq!(
+                registrations.borrow().get(&name),
+                Some(&Registration::new(
+                    owner.0,
+                    name.clone(),
+                    get_expired_at(register_years + extend_years, TimeInNs(mock_now)).0,
+                    mock_now,
+                ))
+            );
+        });
     }
 }
 

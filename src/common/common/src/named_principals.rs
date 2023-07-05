@@ -1,3 +1,4 @@
+use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 use std::fmt::Display;
 use std::str::FromStr;
@@ -7,7 +8,7 @@ use candid::Principal;
 use log::{debug, info};
 
 thread_local! {
-    pub static NAME_DPRINCIPALS :NamedPrincipals = NamedPrincipals::new();
+    pub static NAME_DPRINCIPALS :RefCell<NamedPrincipals> = RefCell::new(NamedPrincipals::new());
 }
 
 pub struct NamedPrincipals {
@@ -46,6 +47,10 @@ impl NamedPrincipals {
         info!("named principals: {}", &result);
         result
     }
+
+    pub fn set(&mut self, name: &'static str, principals: HashSet<Principal>) {
+        self.principals.insert(name, principals);
+    }
 }
 
 pub(crate) fn lines_hashset(s: &str) -> HashSet<Principal> {
@@ -65,11 +70,15 @@ pub(crate) fn lines_hashset(s: &str) -> HashSet<Principal> {
 
 pub fn is_named_principal(name: &str, principal: &Principal) -> bool {
     let result =
-        NAME_DPRINCIPALS.with(|store| store.principals.get(name).unwrap().contains(principal));
+        NAME_DPRINCIPALS.with(|store| {
+            let store = store.borrow();
+            store.principals.get(name).unwrap().contains(principal)
+        });
     if is_dev_env() {
         debug!("is_named_principal({}, {}) = {}", name, principal, result);
         if !result {
             NAME_DPRINCIPALS.with(|store| {
+                let store = store.borrow();
                 store.principals.get(name).unwrap().iter().for_each(|p| {
                     debug!("  {}", p);
                 });
@@ -80,7 +89,10 @@ pub fn is_named_principal(name: &str, principal: &Principal) -> bool {
 }
 
 pub fn get_named_principals(name: &str) -> HashSet<Principal> {
-    NAME_DPRINCIPALS.with(|store| store.principals.get(name).unwrap().clone())
+    NAME_DPRINCIPALS.with(|store| {
+        let store = store.borrow();
+        store.principals.get(name).unwrap().clone()
+    })
 }
 
 pub const PRINCIPAL_NAME_ADMIN: &str = "user:administrator";

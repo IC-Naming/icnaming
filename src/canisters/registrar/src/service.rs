@@ -224,7 +224,7 @@ impl RegistrarService {
             quota_owner,
             quota_type,
         )
-        .await
+            .await
     }
 
     pub async fn import_registrations(
@@ -361,7 +361,7 @@ impl RegistrarService {
             &quota_owner,
             quota_type,
         )
-        .await
+            .await
     }
 
     async fn register_with_quota_core(
@@ -954,6 +954,21 @@ impl RegistrarService {
         Ok(true)
     }
 
+    pub fn batch_extend_expired_at(&self, caller: Principal, names: &[String], years: u32) -> ServiceResult<()> {
+        must_be_system_owner(&caller)?;
+        STATE.with(|s| {
+            let mut registration_store = s.registration_store.borrow_mut();
+            for name in names {
+                let name = validate_name(name)?;
+                let registration = registration_store.get_registration(&name).unwrap();
+                let new_expired_at =
+                    get_expired_at(years, TimeInNs(registration.get_expired_at()));
+                registration_store.update_expired_at(&name, new_expired_at.0);
+            }
+            Ok(())
+        })
+    }
+
     pub fn get_name_status(&self, name: &str) -> ServiceResult<NameStatus> {
         let name = validate_name(name)?;
         if let Some(status) = STATE.with(|s| {
@@ -1331,7 +1346,7 @@ fn validate_year(years: u32) -> ServiceResult<()> {
     Ok(())
 }
 
-pub fn get_expired_at(years: u32, now: TimeInNs) -> TimeInNs {
+fn get_expired_at(years: u32, now: TimeInNs) -> TimeInNs {
     let now_time = OffsetDateTime::from_unix_timestamp_nanos(now.0 as i128).unwrap();
     // remove ms and ns
     let now_time = now_time
