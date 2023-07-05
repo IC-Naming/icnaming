@@ -823,6 +823,7 @@ impl EXTBatchTokensOfResponse {
         }
     }
 }
+
 #[query(name = "ext_batch_tokens_of")]
 #[candid_method(query)]
 pub fn ext_batch_tokens_of(principals: Vec<Principal>) -> EXTBatchTokensOfResponse {
@@ -830,6 +831,15 @@ pub fn ext_batch_tokens_of(principals: Vec<Principal>) -> EXTBatchTokensOfRespon
     let now = api::time();
     let result = service.ext_batch_tokens_of(&principals, now);
     EXTBatchTokensOfResponse::new(result)
+}
+
+#[update(name = "batch_extend_expired_at")]
+#[candid_method(update)]
+pub fn batch_extend_expired_at(names: Vec<String>, years: u32) -> BooleanActorResponse {
+    let service = RegistrarService::default();
+    let call_context = CallContext::from_ic();
+    service.batch_extend_expired_at(call_context.caller, &names, years).unwrap();
+    BooleanActorResponse::new(Ok(true))
 }
 
 candid::export_service!();

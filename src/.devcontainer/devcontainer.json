@@ -13,6 +13,7 @@
     "--security-opt",
     "seccomp=unconfined"
   ],
+  "remoteUser": "root",
   // "postStartCommand":["bash", "${containerWorkspaceFolder}/sh_post_container_start.sh"],
   "postCreateCommand":["bash", "${containerWorkspaceFolder}/sh_post_container_created.sh"],
   // Set *default* container specific settings.json values on container create.
