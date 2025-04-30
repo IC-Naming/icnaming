@@ -94,8 +94,9 @@ fn init_function() {
     guard_func().unwrap();
 }
 
-#[pre_upgrade(guard = "guard_func")]
+#[pre_upgrade]
 fn pre_upgrade() {
+    guard_func().unwrap();
     STATE.with(|s| {
         let bytes = s.encode();
         match storage::stable_save((&bytes,)) {
@@ -108,8 +109,9 @@ fn pre_upgrade() {
     });
 }
 
-#[post_upgrade(guard = "guard_func")]
+#[post_upgrade]
 fn post_upgrade() {
+    guard_func().unwrap();
     STATE.with(|s| match storage::stable_restore::<(Vec<u8>,)>() {
         Ok(bytes) => {
             let new_state = State::decode(bytes.0).expect("Decoding stable memory failed");

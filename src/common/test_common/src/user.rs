@@ -1,5 +1,5 @@
+use candid::Principal;
 use common::canister_api::{AccountIdentifier, Subaccount};
-use ic_cdk::export::Principal;
 use rstest::*;
 
 #[fixture]

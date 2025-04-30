@@ -1,9 +1,6 @@
 use std::collections::HashMap;
-
-use candid::{decode_args, encode_args, CandidType, Deserialize};
-use ic_cdk::export::Principal;
+use candid::{decode_args, encode_args, CandidType, Deserialize, Principal};
 use log::debug;
-
 use common::state::StableState;
 
 #[derive(CandidType, Deserialize)]

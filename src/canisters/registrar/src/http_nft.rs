@@ -29,7 +29,7 @@ pub fn get_nft_http_response(param: &str, now: u64) -> HttpResponse {
         if kv.len() == 2 {
             params.insert(kv[0].trim().to_lowercase(), kv[1].trim().to_lowercase());
         } else {
-            api::print(format!("kv is {:?}", kv));
+            api::debug_print(format!("kv is {:?}", kv));
         }
     }
     let token_id_key = "tokenid";

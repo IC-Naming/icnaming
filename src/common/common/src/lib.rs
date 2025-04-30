@@ -97,7 +97,7 @@ impl CallContext {
 
     pub fn from_ic() -> Self {
         Self {
-            caller: api::caller(),
+            caller: api::msg_caller(),
             now: TimeInNs(api::time()),
         }
     }

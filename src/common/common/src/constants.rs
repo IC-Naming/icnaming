@@ -244,9 +244,9 @@ const NAMING_CANISTER_IDS_LEDGER: &str = "";
 pub static CANISTER_IDS_LEDGER: Lazy<Principal> =
     Lazy::new(|| load_dev_or_env(CanisterNames::Ledger, NAMING_CANISTER_IDS_LEDGER));
 #[from_env]
-const NAMING_CANISTER_IDS_DICP: &str = "";
-pub static CANISTER_IDS_DICP: Lazy<Principal> =
-    Lazy::new(|| load_dev_or_env(CanisterNames::DICP, NAMING_CANISTER_IDS_DICP));
+const NAMING_CANISTER_IDS_ICP: &str = "";
+pub static CANISTER_IDS_ICP: Lazy<Principal> =
+    Lazy::new(|| load_dev_or_env(CanisterNames::ICP, NAMING_CANISTER_IDS_ICP));
 #[from_env]
 const NAMING_CANISTER_IDS_MYSTERY_BOX: &str = "";
 pub static CANISTER_IDS_MYSTERY_BOX: Lazy<Principal> =

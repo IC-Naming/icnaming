@@ -36,7 +36,7 @@ async fn set_subdomain_owner(
     ttl: u64,
     resolver: Principal,
 ) -> SetSubdomainOwnerResponse {
-    let owner = ic_cdk::api::caller();
+    let owner = ic_cdk::api::msg_caller();
     // TODO: to enable add subdomain to normal user but need to limit count of subdomains
     let result = if owner != get_named_get_canister_id(CanisterNames::Registrar) {
         Err(NamingError::PermissionDenied)
@@ -73,7 +73,7 @@ impl SetSubdomainOwnerResponse {
 #[update(name = "set_record")]
 #[candid_method(update)]
 fn set_record(name: String, ttl: u64, resolver: Principal) -> BooleanActorResponse {
-    let caller = ic_cdk::api::caller();
+    let caller = ic_cdk::api::msg_caller();
     let mut service = RegistriesService::new();
     let result = service.set_record(&caller, name.as_str(), ttl, &resolver);
     BooleanActorResponse::new(result)
@@ -109,7 +109,7 @@ impl GetResolverResponse {
 #[candid_method(update)]
 fn set_resolver(name: String, resolver: Principal) -> BooleanActorResponse {
     let service = RegistriesService::new();
-    let caller = ic_cdk::api::caller();
+    let caller = ic_cdk::api::msg_caller();
 
     let result = service.set_resolver(caller, &name, resolver);
     BooleanActorResponse::new(result)
@@ -125,7 +125,7 @@ fn set_resolver(name: String, resolver: Principal) -> BooleanActorResponse {
 #[candid_method(update)]
 fn set_approval(name: String, operator: Principal, approved: bool) -> BooleanActorResponse {
     let mut service = RegistriesService::new();
-    let caller = &ic_cdk::api::caller();
+    let caller = &ic_cdk::api::msg_caller();
     let result = if approved {
         service.set_approval(name.as_str(), caller, &operator)
     } else {
@@ -239,7 +239,7 @@ impl GetOwnerResponse {
 #[update(name = "set_owner")]
 #[candid_method(update)]
 fn set_owner(name: String, new_owner: Principal) -> BooleanActorResponse {
-    let caller = ic_cdk::api::caller();
+    let caller = ic_cdk::api::msg_caller();
     let service = RegistriesService::new();
     let result = service.set_owner(caller, name.as_str(), new_owner);
     BooleanActorResponse::new(result)
@@ -300,7 +300,7 @@ impl GetDetailsResponse {
 #[update(name = "reclaim_name")]
 #[candid_method(update)]
 fn reclaim_name(name: String, owner: Principal, resolver: Principal) -> BooleanActorResponse {
-    let caller = &ic_cdk::api::caller();
+    let caller = &ic_cdk::api::msg_caller();
 
     let mut service = RegistriesService::new();
     let result = service.reclaim_name(name.as_str(), caller, &owner, &resolver);
@@ -310,7 +310,7 @@ fn reclaim_name(name: String, owner: Principal, resolver: Principal) -> BooleanA
 #[update(name = "transfer")]
 #[candid_method(update)]
 async fn transfer(name: String, new_owner: Principal, resolver: Principal) -> BooleanActorResponse {
-    let caller = &ic_cdk::api::caller();
+    let caller = &ic_cdk::api::msg_caller();
 
     let mut service = RegistriesService::new();
     let result = service

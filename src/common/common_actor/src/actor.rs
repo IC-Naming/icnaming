@@ -27,7 +27,7 @@ pub fn get_stats() -> GetStatsResponse<Stats> {
 #[update(name = "export_state")]
 #[candid_method(update, rename = "export_state")]
 pub async fn export_state() -> StateExportResponse {
-    let caller = &api::caller();
+    let caller = &api::msg_caller();
     let permission_result = must_be_named_principal(caller, PRINCIPAL_NAME_STATE_EXPORTER);
     if permission_result.is_err() {
         return StateExportResponse::new(Err(permission_result.err().unwrap()));
@@ -44,7 +44,7 @@ pub async fn load_state(request: LoadStateRequest) -> BooleanActorResponse {
         return BooleanActorResponse::new(Err(NamingError::Unknown));
     }
     debug!("load_state: {}", request);
-    let caller = &api::caller();
+    let caller = &api::msg_caller();
     if must_be_system_owner(caller).is_err() {
         error!("load_state: caller is not system owner");
         return BooleanActorResponse::new(Err(NamingError::PermissionDenied));
@@ -68,13 +68,12 @@ pub async fn load_state(request: LoadStateRequest) -> BooleanActorResponse {
 fn get_wasm_info() -> HashMap<&'static str, &'static str> {
     let mut map = HashMap::new();
     map.insert("VERGEN_BUILD_TIMESTAMP", env!("VERGEN_BUILD_TIMESTAMP"));
-    map.insert("VERGEN_BUILD_SEMVER", env!("VERGEN_BUILD_SEMVER"));
+    map.insert("VERGEN_RUSTC_SEMVER", env!("VERGEN_RUSTC_SEMVER"));
     map.insert("VERGEN_GIT_BRANCH", env!("VERGEN_GIT_BRANCH"));
     map.insert(
         "VERGEN_GIT_COMMIT_TIMESTAMP",
         env!("VERGEN_GIT_COMMIT_TIMESTAMP"),
     );
-    map.insert("VERGEN_GIT_SEMVER", env!("VERGEN_GIT_SEMVER"));
     map.insert("VERGEN_GIT_SHA", env!("VERGEN_GIT_SHA"));
     map
 }

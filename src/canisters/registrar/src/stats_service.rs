@@ -14,7 +14,7 @@ pub struct StatsService {}
 impl StatsService {
     pub fn get_stats(&self, _now: u64) -> Stats {
         let mut stats = Stats::default();
-        stats.cycles_balance = api::canister_balance();
+        stats.cycles_balance = api::canister_cycle_balance();
         NAME_LOCKER.with(|name_locker| {
             stats.name_lock_count = name_locker.borrow().get_count() as u64;
         });
@@ -137,7 +137,7 @@ pub fn encode_metrics(w: &mut MetricsEncoder<Vec<u8>>, now: u64) -> std::io::Res
 
 #[derive(CandidType, Deserialize, Default)]
 pub struct Stats {
-    cycles_balance: u64,
+    cycles_balance: u128,
     user_count: u64,
     user_quota_count: HashMap<String, u64>,
     registration_count: u64,

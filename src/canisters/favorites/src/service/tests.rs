@@ -12,7 +12,7 @@ fn service() -> ManagerService {
     ManagerService::new()
 }
 
-mod get_favorites {
+mod get_favorites   {
     use super::*;
 
     #[rstest]

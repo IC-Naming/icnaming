@@ -30,13 +30,13 @@ impl log::Log for ICLogger {
             });
 
             let str = match level {
-                Level::Error => Paint::red(message),
-                Level::Warn => Paint::yellow(message),
-                Level::Info => Paint::blue(message),
-                Level::Debug => Paint::green(message),
-                Level::Trace => Paint::magenta(message),
+                Level::Error => message.red(),
+                Level::Warn => message.yellow(),
+                Level::Info => message.blue(),
+                Level::Debug => message.green(),
+                Level::Trace => message.magenta(),
             };
-            api::print(str.to_string());
+            api::debug_print(str.to_string());
         }
     }
 
@@ -51,7 +51,7 @@ impl ICLogger {
         if is_dev_env() && log::set_logger(&ICLogger).is_ok() {
             panic::set_hook(Box::new(|data| {
                 let message = format!("{}", data);
-                api::print(Paint::red(message).to_string());
+                api::debug_print(message.red().to_string());
             }));
             info!("current wasm is a {} package", NAMING_CANISTER_ENV);
         }

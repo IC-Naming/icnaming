@@ -26,7 +26,7 @@ use crate::service::ManagerService;
 #[query(name = "get_favorites")]
 #[candid_method(query, rename = "get_favorites")]
 fn get_favorites() -> GetFavoritesResponse {
-    let user = api::caller();
+    let user = api::msg_caller();
     let service = ManagerService::new();
     let result = service.get_favorites(&user);
     GetFavoritesResponse::new(result)
@@ -50,7 +50,7 @@ impl GetFavoritesResponse {
 #[update(name = "add_favorite")]
 #[candid_method(update, rename = "add_favorite")]
 async fn add_favorite(new_item: String) -> BooleanActorResponse {
-    let user = api::caller();
+    let user = api::msg_caller();
     let now = api::time();
     let service = ManagerService::new();
     let result = service.add_favorite(now, &user, &new_item);
@@ -60,7 +60,7 @@ async fn add_favorite(new_item: String) -> BooleanActorResponse {
 #[update(name = "remove_favorite")]
 #[candid_method(update, rename = "remove_favorite")]
 async fn remove_favorite(item: String) -> BooleanActorResponse {
-    let user = api::caller();
+    let user = api::msg_caller();
     let now = api::time();
     let service = ManagerService::new();
     let result = service.remove_favorite(now, &user, &item);

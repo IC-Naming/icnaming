@@ -9,7 +9,7 @@ pub struct StatsService {}
 impl StatsService {
     pub(crate) fn get_stats(&self, _now: u64) -> Stats {
         let mut stats = Stats::default();
-        stats.cycles_balance = api::canister_balance();
+        stats.cycles_balance = api::canister_cycle_balance();
         STATE.with(|s| {
             {
                 let store = s.name_assignment_store.borrow();
@@ -59,7 +59,7 @@ pub fn encode_metrics(w: &mut MetricsEncoder<Vec<u8>>, now: u64) -> std::io::Res
 
 #[derive(CandidType, Deserialize, Default)]
 pub struct Stats {
-    cycles_balance: u64,
+    cycles_balance: u128,
     acceptable_file_hashes_count: u64,
     imported_file_hashes_count: u64,
     name_assignments_count: u64,

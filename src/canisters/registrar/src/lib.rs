@@ -55,7 +55,7 @@ use crate::user_quota_store::{QuotaType, TransferQuotaDetails};
 #[update(name = "run_tasks")]
 #[candid_method(update)]
 pub async fn run_tasks() -> BooleanActorResponse {
-    let caller = &api::caller();
+    let caller = &api::msg_caller();
     let permission_result = must_be_named_principal(caller, PRINCIPAL_NAME_TIMER_TRIGGER);
     if permission_result.is_err() {
         return BooleanActorResponse::new(Err(permission_result.err().unwrap()));
@@ -123,7 +123,7 @@ impl GetNameExpiresActorResponse {
 #[update(name = "register_for")]
 #[candid_method(update)]
 pub async fn register_for(name: String, owner: Principal, years: u64) -> BooleanActorResponse {
-    let caller = &api::caller();
+    let caller = &api::msg_caller();
     debug!("register_for: caller: {}", caller);
 
     let mut service = RegistrarService::default();
@@ -144,7 +144,7 @@ pub async fn register_for(name: String, owner: Principal, years: u64) -> Boolean
 #[update(name = "register_with_quota")]
 #[candid_method(update)]
 pub async fn register_with_quota(name: String, quota_type: QuotaType) -> BooleanActorResponse {
-    let caller = api::caller();
+    let caller = api::msg_caller();
     debug!("register_with_quota: caller: {}", caller);
 
     let mut service = RegistrarService::default();
@@ -166,7 +166,7 @@ pub async fn register_with_quota(name: String, quota_type: QuotaType) -> Boolean
 #[update(name = "register_from_gateway")]
 #[candid_method(update)]
 pub async fn register_from_gateway(name: String, owner: Principal) -> BooleanActorResponse {
-    let caller = api::caller();
+    let caller = api::msg_caller();
     debug!("register_from_gateway: caller: {}", caller);
 
     let mut service = RegistrarService::default();
@@ -306,7 +306,7 @@ impl GetAllDetailsActorResponse {
 #[query(name = "get_last_registrations")]
 #[candid_method(query)]
 pub fn get_last_registrations() -> GetAllDetailsActorResponse {
-    let caller = api::caller();
+    let caller = api::msg_caller();
     let service = RegistrarService::default();
     let result = service.get_last_registrations(&caller);
     GetAllDetailsActorResponse::new(result)
@@ -320,7 +320,7 @@ pub fn add_quota(quota_owner: Principal, quota_type: QuotaType, diff: u32) -> Bo
         // all quotas in production should be imported by import_quota.
         BooleanActorResponse::new(Ok(false))
     } else {
-        let caller = &api::caller();
+        let caller = &api::msg_caller();
         debug!("add_quota: caller: {}", caller);
 
         let mut service = RegistrarService::default();
@@ -341,7 +341,7 @@ pub fn batch_add_quota(request: BatchAddQuotaRequest) -> BooleanActorResponse {
 #[update(name = "import_quota")]
 #[candid_method(update)]
 pub fn import_quota(request: ImportQuotaRequest) -> ImportQuotaResponse {
-    let caller = &api::caller();
+    let caller = &api::msg_caller();
     debug!("import_quota: caller: {}", caller);
 
     let service = RegistrarService::default();
@@ -367,7 +367,7 @@ impl ImportQuotaResponse {
 #[update(name = "sub_quota")]
 #[candid_method(update)]
 pub fn sub_quota(quota_owner: Principal, quota_type: QuotaType, diff: u32) -> BooleanActorResponse {
-    let caller = &api::caller();
+    let caller = &api::msg_caller();
     debug!("sub_quota: caller: {}", caller);
 
     let mut service = RegistrarService::default();
@@ -378,7 +378,7 @@ pub fn sub_quota(quota_owner: Principal, quota_type: QuotaType, diff: u32) -> Bo
 #[query(name = "get_quota")]
 #[candid_method(query)]
 pub fn get_quota(quota_owner: Principal, quota_type: QuotaType) -> GetQuotaActorResponse {
-    let caller = &api::caller();
+    let caller = &api::msg_caller();
     debug!("sub_quota: caller: {}", caller);
 
     let service = RegistrarService::default();
@@ -404,7 +404,7 @@ impl GetQuotaActorResponse {
 #[update(name = "transfer")]
 #[candid_method(update)]
 async fn transfer(name: String, new_owner: Principal) -> BooleanActorResponse {
-    let caller = &api::caller();
+    let caller = &api::msg_caller();
 
     let service = RegistrarService::default();
     let result = service.transfer(name.as_str(), caller, new_owner).await;
@@ -414,7 +414,7 @@ async fn transfer(name: String, new_owner: Principal) -> BooleanActorResponse {
 #[update(name = "transfer_by_admin")]
 #[candid_method(update)]
 async fn transfer_by_admin(name: String, new_owner: Principal) -> BooleanActorResponse {
-    let caller = &api::caller();
+    let caller = &api::msg_caller();
 
     let service = RegistrarService::default();
     let result = service
@@ -426,7 +426,7 @@ async fn transfer_by_admin(name: String, new_owner: Principal) -> BooleanActorRe
 #[update(name = "approve")]
 #[candid_method(update)]
 fn approve(name: String, to: Principal) -> BooleanActorResponse {
-    let caller = &api::caller();
+    let caller = &api::msg_caller();
     let now = api::time();
 
     let service = RegistrarService::default();
@@ -437,7 +437,7 @@ fn approve(name: String, to: Principal) -> BooleanActorResponse {
 #[update(name = "transfer_from")]
 #[candid_method(update)]
 async fn transfer_from(name: String) -> BooleanActorResponse {
-    let caller = &api::caller();
+    let caller = &api::msg_caller();
     let _now = api::time();
 
     let service = RegistrarService::default();
@@ -448,7 +448,7 @@ async fn transfer_from(name: String) -> BooleanActorResponse {
 #[update(name = "transfer_quota")]
 #[candid_method(update)]
 async fn transfer_quota(to: Principal, quota_type: QuotaType, diff: u32) -> BooleanActorResponse {
-    let caller = api::caller();
+    let caller = api::msg_caller();
 
     let service = RegistrarService::default();
     let result = service.transfer_quota(
@@ -465,7 +465,7 @@ async fn transfer_quota(to: Principal, quota_type: QuotaType, diff: u32) -> Bool
 #[update(name = "batch_transfer_quota")]
 #[candid_method(update)]
 async fn batch_transfer_quota(request: BatchTransferRequest) -> BooleanActorResponse {
-    let caller = api::caller();
+    let caller = api::msg_caller();
 
     let service = RegistrarService::default();
     let result = service.batch_transfer_quota(caller, request);
@@ -483,7 +483,7 @@ pub struct TransferFromQuotaRequest {
 #[update(name = "transfer_from_quota")]
 #[candid_method(update)]
 async fn transfer_from_quota(request: TransferFromQuotaRequest) -> BooleanActorResponse {
-    let caller = &api::caller();
+    let caller = &api::msg_caller();
 
     let service = RegistrarService::default();
     let result = service.transfer_from_quota(
@@ -499,7 +499,7 @@ async fn transfer_from_quota(request: TransferFromQuotaRequest) -> BooleanActorR
 #[update(name = "unlock_names")]
 #[candid_method(update)]
 async fn unlock_names(names: Vec<String>) -> BooleanActorResponse {
-    let caller = &api::caller();
+    let caller = &api::msg_caller();
 
     let service = RegistrarService::default();
     let result = service.unlock_names(caller, names.iter().map(|n| n.as_str()).collect());
@@ -509,7 +509,7 @@ async fn unlock_names(names: Vec<String>) -> BooleanActorResponse {
 #[update(name = "reclaim_name")]
 #[candid_method(update)]
 async fn reclaim_name(name: String) -> BooleanActorResponse {
-    let caller = &api::caller();
+    let caller = &api::msg_caller();
     let service = RegistrarService::default();
     let result = service.reclaim_name(name.as_str(), caller).await;
     BooleanActorResponse::new(result)
@@ -541,7 +541,7 @@ impl GetPublicResolverActorResponse {
 #[update(name = "renew_name")]
 #[candid_method(update)]
 async fn renew_name(request: RenewNameRequest) -> BooleanActorResponse {
-    let caller = api::caller();
+    let caller = api::msg_caller();
     let now = api::time();
     let service = RegistrarService::default();
     let result = service.renew_name(caller, TimeInNs(now), request).await;

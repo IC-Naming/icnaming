@@ -143,7 +143,7 @@ impl IDICPApi for DICPApi {
         nonce: Option<u64>,
     ) -> ActorResult<TransactionResponse> {
         call_canister_as_icns_result(
-            CanisterNames::DICP,
+            CanisterNames::ICP,
             "transferFrom",
             (spender_sub_account, from, to, value, nonce),
         )
@@ -158,7 +158,7 @@ impl IDICPApi for DICPApi {
         nonce: Option<u64>,
     ) -> ActorResult<TransactionResponse> {
         call_canister_as_icns_result(
-            CanisterNames::DICP,
+            CanisterNames::ICP,
             "transfer",
             (from_sub_account, to, value, nonce),
         )
@@ -166,7 +166,7 @@ impl IDICPApi for DICPApi {
     }
 
     async fn balance_of(&self, token_holder: String) -> ActorResult<Nat> {
-        call_canister_as_result(CanisterNames::DICP, "balanceOf", (token_holder,)).await
+        call_canister_as_result(CanisterNames::ICP, "balanceOf", (token_holder,)).await
     }
 }
 

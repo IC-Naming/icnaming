@@ -27,7 +27,7 @@ use crate::service::{AssignNameResult, GatewayService, ImportQuotaResult};
 #[update(name = "import_quota")]
 #[candid_method(update, rename = "import_quota")]
 pub async fn import_quota(file_content: Vec<u8>) -> ImportQuotaResponse {
-    let caller = &api::caller();
+    let caller = &api::msg_caller();
     debug!("import_quota: caller: {}", caller);
 
     let service = GatewayService::default();
@@ -53,7 +53,7 @@ impl ImportQuotaResponse {
 #[update(name = "assign_name")]
 #[candid_method(update, rename = "assign_name")]
 pub async fn assign_name(name: String, owner: Principal) -> AssignNameResponse {
-    let caller = &api::caller();
+    let caller = &api::msg_caller();
     debug!("import_quota: caller: {}", caller);
     let now = api::time();
 

@@ -52,7 +52,7 @@ impl NamedCanisterIds {
             CanisterNames::CyclesMinting => *CANISTER_IDS_CYCLES_MINTING.deref(),
             CanisterNames::Favorites => *CANISTER_IDS_FAVORITES.deref(),
             CanisterNames::Ledger => *CANISTER_IDS_LEDGER.deref(),
-            CanisterNames::DICP => *CANISTER_IDS_DICP.deref(),
+            CanisterNames::ICP => *CANISTER_IDS_ICP.deref(),
             CanisterNames::MysteryBox => *CANISTER_IDS_MYSTERY_BOX.deref(),
             CanisterNames::NamingMarketplace => *CANISTER_IDS_NAMING_MARKETPLACE.deref(),
         }
@@ -74,7 +74,7 @@ pub fn is_named_canister_id(name: CanisterNames, id: Principal) -> bool {
 }
 
 pub fn ensure_current_canister_id_match(name: CanisterNames) -> Result<(), String> {
-    let current = api::id();
+    let current = api::canister_self();
     let expected = get_named_get_canister_id(name);
     if current != expected {
         Err(format!(
@@ -114,7 +114,7 @@ pub enum CanisterNames {
     Resolver,
     Favorites,
     CyclesMinting,
-    DICP,
+    ICP,
     Ledger,
     MysteryBox,
     NamingMarketplace,

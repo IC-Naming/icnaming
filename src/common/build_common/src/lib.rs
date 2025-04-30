@@ -1,12 +1,20 @@
 use anyhow::{Ok, Result};
 use env_file_reader::read_file;
-use vergen::{vergen, Config};
+use vergen_gix::{
+    BuildBuilder, CargoBuilder, Emitter, GixBuilder, RustcBuilder, SysinfoBuilder,
+};
 
 pub fn generate_envs() -> Result<()> {
     // Generate the default 'cargo:' instruction output
 
     // generate git info
-    vergen(Config::default())?;
+    Emitter::default()
+        .add_instructions(&BuildBuilder::all_build()?)?
+        .add_instructions(&CargoBuilder::all_cargo()?)?
+        .add_instructions(&GixBuilder::all_git()?)?
+        .add_instructions(&RustcBuilder::all_rustc()?)?
+        .add_instructions(&SysinfoBuilder::all_sysinfo()?)?
+        .emit()?;
 
     println!("rerun-if-env-changed=NAMING_CANISTER_ENV");
     let env = if let Some(env) = option_env!("NAMING_CANISTER_ENV") {

@@ -9,7 +9,7 @@ pub struct StatsService {}
 impl StatsService {
     pub fn get_stats(&self, _now: u64) -> Stats {
         let mut stats = Stats::default();
-        stats.cycles_balance = api::canister_balance();
+        stats.cycles_balance = api::canister_cycle_balance();
         STATE.with(|s| {
             let store = s.resolver_store.borrow();
             let resolvers = store.get_resolvers();
@@ -39,6 +39,6 @@ pub fn encode_metrics(w: &mut MetricsEncoder<Vec<u8>>, now: u64) -> std::io::Res
 
 #[derive(CandidType, Deserialize, Default)]
 pub struct Stats {
-    cycles_balance: u64,
+    cycles_balance: u128,
     resolver_count: u64,
 }
